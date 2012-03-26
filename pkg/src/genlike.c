@@ -42,17 +42,20 @@
 double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j, double nu1, double nu2, double alpha, double tau, struct dna_dist *dnainfo, struct param *par){
 	/* double out, T = ti>tj ? ti-tj : 0.0, Tabs = ti>tj ? ti-tj : tj-ti; */
 	double out, T, Xi1, Xi2, Xi3, Xi4, Pk;
-	int k, q, r, transi, tranv, common, nb_comp;
+	int k, q, r, transi, transv, common, nb_comp, nb_comp_k, nb_pk_sum=0;
 
 
 	/* Compute Pk for each sequence 'k' in S_i */
 	/* Pk = p(s_i^k| s_i^1, ..., s_i^{k-1}, S_j, i<-j) */
 
-	nb_comp = 0; /* count the number of effective sequence comparisons used in Pk */
+	nb_comp = 0; /* count the number of effective sequence comparisons used overall */
 
 	if((m_i > 0 && m_j > 0) || m_i>1){ /* likelihood tractable if at least a pair is available */
-		Pk = 0.0;
 		for(k=0;k<m_i;k++){
+			/* initialize k-specific variables */
+			Pk = 0.0;
+			nb_comp_k = 0;
+
 			/* for a given 'k' */
 			/* ancestries from S_j */
 			Xi1=0.0;
@@ -60,12 +63,12 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
 			for(q=0;q<m_j;q++){
 				/* stuff used to compute Poisson mass function */
 				T = t_i[k]>t_j[q] ? t_i[k]-t_j[q] : t_j[q]-t_i[k]; /* time difference (absolute value) */
-				tansi = matint_ij(dnainfo->transi,s_i[k],s_j[q]); /* transitions */
-				tansv = matint_ij(dnainfo->transv,s_i[k],s_j[q]); /* transversions */
+				transi = matint_ij(dnainfo->transi,s_i[k],s_j[q]); /* transitions */
+				transv = matint_ij(dnainfo->transv,s_i[k],s_j[q]); /* transversions */
 				common = matint_ij(dnainfo->nbcommon,s_i[k],s_j[q]); /* nb of nucleotides compared */
 
 				if(common > 0){
-					nb_comp++;
+					nb_comp_k++;
 
 					/* direct ancestries */
 					if(t_i[k] > t_j[q]){
@@ -86,15 +89,15 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
 			/* ancestries from S_i */
 			Xi2=0.0;
 			Xi4=0.0;
-			for(r=0;r<(k-1);r++){
+			for(r=0;r<k;r++){
 				/* stuff used to compute Poisson mass function */
 				T = t_i[k]>t_i[r] ? t_i[k]-t_i[r] : t_i[r]-t_i[k]; /* time difference (absolute value) */
-				tansi = matint_ij(dnainfo->transi,s_i[k],s_i[r]); /* transitions */
-				tansv = matint_ij(dnainfo->transv,s_i[k],s_i[r]); /* transversions */
+				transi = matint_ij(dnainfo->transi,s_i[k],s_i[r]); /* transitions */
+				transv = matint_ij(dnainfo->transv,s_i[k],s_i[r]); /* transversions */
 				common = matint_ij(dnainfo->nbcommon,s_i[k],s_i[r]); /* nb of nucleotides compared */
 
 				if(common > 0){
-					nb_comp++;
+					nb_comp_k++;
 
 					/* direct ancestries */
 					if(t_i[k] > t_i[r]){
@@ -112,24 +115,36 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
 				}
 			}
 
-			/* likelihood (p_s_i^k | s_i^1, ..., s_i^{k-1}, S_j, i<-j)*/
-			Pk = alpha * (Xi1 + Xi2) + (1.0-alpha) * (Xi3 + Xi4);
+			/* compute likelihood if sequences were compared */
+			if(nb_comp_k>0){
+				nb_comp += nb_comp_k;
 
-			/* update general likelihood */
-			out += log(Pk);
+				/* likelihood (p_s_i^k | s_i^1, ..., s_i^{k-1}, S_j, i<-j)*/
+				Pk = alpha * (Xi1 + Xi2) + (1.0-alpha) * (Xi3 + Xi4);
+				/* printf("\nvalue of pk: %f \n",Pk); */
+
+				/* update general likelihood */
+				out += log(Pk);
+			}
 		}
 	}
 
 	/* Two cases when likelihood can't be computed:
 	   - no pair of sequences to be compared
 	   - no compared sequence had nucleotide in common */
+	/* printf("\nnb comparisons: %d", nb_comp); */
 	if(nb_comp==0){
 		out = log(par->weightNaGen);
+	} else {
+		/* log-like are averaged, not summed */
+		out = out/((double) nb_comp);
 	}
 
 	/* RETURN */
 	return out;
 } /* end compute_genlike */
+
+
 
 
 
@@ -143,8 +158,8 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
 
 int main(){
 	const int N=5, L=10;
-	int i,j;
-	double alpha=0.5, tau=2.0;
+	int i,j, s_i[2] = {0,1}, s_j[3] = {2,3,4};
+	double alpha=0.5, tau=2.0, t_i[2] = {0.0, 10.0}, t_j[3] = {12.0, 50.0, 100.0};
 
 	/* create a list of sequences */
 	struct list_dnaseq * test = create_list_dnaseq(N, L);
@@ -172,22 +187,25 @@ int main(){
 
 	/* COMPUTE LIKELIHOOD */
 	struct param *par = create_param();
-	double out=0, nu1 = 0.01, nu2=0.02, t_vec[5]={0.0, 10.0, 12.0, 50.0, 100.0}, T;
+	double out=0, nu1 = 0.01, nu2=0.02, T;
 	int count=0;
 
 	par->weightNaGen = 0.001; /* near zero if no data */
-	for(i=0;i<N-1;i++){
-		for(j=i+1;j<N;j++){
-			T = t_vec[i]>t_vec[j] ? t_vec[i] - t_vec[j] : t_vec[j]-t_vec[i];
-			printf("\npair %d <-> %d:",i+1,j+1);
-			printf("\nnb transi %d:", get_transi(distinfo,i,j));
-			printf(" (esperance: %.1f)", T*nu1*get_nbcommon(distinfo,i,j));
-			printf("\nnb transv %d:", get_transv(distinfo,i,j));
-			printf(" (esperance: %.1f)", T*nu2*get_nbcommon(distinfo,i,j));
-			out = compute_genlike(i, j, t_vec[i], t_vec[j], nu1, nu2, alpha, tau, distinfo, par);
-			printf("\npseudo-likelihood %d <-> %d: %.5f\n",i+1,j+1, out);
-		}
-	}
+
+	/* likelihood, sequences available */
+	out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, par);
+	printf("\npseudo log-likelihood (i: 0,1; j: 2,3,4): %.5f\n", out);
+
+	/* likelihood, only within-host sequences available */
+	int nothing[0];
+	out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, par);
+	printf("\npseudo log-likelihood (i: 0,1; j:NA): %.5f\n", out);
+
+	/* likelihood, no sequence available */
+	out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, par);
+	printf("\npseudo log-likelihood (i: NA, j:NA): %.5f\n", out);
+
+
 	printf("\n");
 
 	/* free and return */
