@@ -30,26 +30,101 @@
    === MAIN EXTERNAL FUNCTIONS ===
    ===============================
 */
+/* 
+   computes the likelihood of a sequences "S_i" given that "j infected i" and "S_j", with:
+   - s_i: indices of sequences in i (target patient)
+   - s_j: indices of sequences in j (infector)
+   - t_i, t_j: collection times for sets of sequences S_i and S_j
+   - m_i, m_j: number of sequences for patients i and j; length of vectors s_i,s_j,t_i,t_j
+   - dnainfo: the pre-computed pairwise comparisons of DNA sequences
+   
+*/
+double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j, double nu1, double nu2, double alpha, double tau, struct dna_dist *dnainfo, struct param *par){
+	/* double out, T = ti>tj ? ti-tj : 0.0, Tabs = ti>tj ? ti-tj : tj-ti; */
+	double out, T, Xi1, Xi2, Xi3, Xi4, Pk;
+	int k, q, r, transi, tranv, common, nb_comp;
 
-double compute_genlike(int i, int j, double ti, double tj, double nu1, double nu2, double alpha, double tau, struct dna_dist *dnainfo, struct param *par){
-	double out, T = ti>tj ? ti-tj : tj-ti;
-	int temp;
 
-	/* SORT I/J TO OPTIMIZE CACHE USAGE */
-	if(i>j){
-		temp=i;
-		i=j;
-		j=temp;
+	/* Compute Pk for each sequence 'k' in S_i */
+	/* Pk = p(s_i^k| s_i^1, ..., s_i^{k-1}, S_j, i<-j) */
+
+	nb_comp = 0; /* count the number of effective sequence comparisons used in Pk */
+
+	if((m_i > 0 && m_j > 0) || m_i>1){ /* likelihood tractable if at least a pair is available */
+		Pk = 0.0;
+		for(k=0;k<m_i;k++){
+			/* for a given 'k' */
+			/* ancestries from S_j */
+			Xi1=0.0;
+			Xi3=0.0;
+			for(q=0;q<m_j;q++){
+				/* stuff used to compute Poisson mass function */
+				T = t_i[k]>t_j[q] ? t_i[k]-t_j[q] : t_j[q]-t_i[k]; /* time difference (absolute value) */
+				tansi = matint_ij(dnainfo->transi,s_i[k],s_j[q]); /* transitions */
+				tansv = matint_ij(dnainfo->transv,s_i[k],s_j[q]); /* transversions */
+				common = matint_ij(dnainfo->nbcommon,s_i[k],s_j[q]); /* nb of nucleotides compared */
+
+				if(common > 0){
+					nb_comp++;
+
+					/* direct ancestries */
+					if(t_i[k] > t_j[q]){
+						/* transitions */
+						Xi1 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transi,s_i[k],s_j[q]), nu1*T*common);
+						/* transversions */
+						Xi1 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transv,s_i[k],s_j[q]), nu2*T*common);
+					}
+
+					/* indirect ancestries */
+					/* transitions */
+					Xi3 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transi,s_i[k],s_j[q]), nu1*(T+2.0*tau)*common);
+					/* transversions */
+					Xi3 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transv,s_i[k],s_j[q]), nu2*(T+2.0*tau)*common);
+				}
+			}
+
+			/* ancestries from S_i */
+			Xi2=0.0;
+			Xi4=0.0;
+			for(r=0;r<(k-1);r++){
+				/* stuff used to compute Poisson mass function */
+				T = t_i[k]>t_i[r] ? t_i[k]-t_i[r] : t_i[r]-t_i[k]; /* time difference (absolute value) */
+				tansi = matint_ij(dnainfo->transi,s_i[k],s_i[r]); /* transitions */
+				tansv = matint_ij(dnainfo->transv,s_i[k],s_i[r]); /* transversions */
+				common = matint_ij(dnainfo->nbcommon,s_i[k],s_i[r]); /* nb of nucleotides compared */
+
+				if(common > 0){
+					nb_comp++;
+
+					/* direct ancestries */
+					if(t_i[k] > t_i[r]){
+						/* transitions */
+						Xi2 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transi,s_i[k],s_i[r]), nu1*T*common);
+						/* transversions */
+						Xi2 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transv,s_i[k],s_i[r]), nu2*T*common);
+					}
+
+					/* indirect ancestries */
+					/* transitions */
+					Xi4 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transi,s_i[k],s_i[r]), nu1*(T+2.0*tau)*common);
+					/* transversions */
+					Xi4 += gsl_ran_poisson_pdf((unsigned int) matint_ij(dnainfo->transv,s_i[k],s_i[r]), nu2*(T+2.0*tau)*common);
+				}
+			}
+
+			/* likelihood (p_s_i^k | s_i^1, ..., s_i^{k-1}, S_j, i<-j)*/
+			Pk = alpha * (Xi1 + Xi2) + (1.0-alpha) * (Xi3 + Xi4);
+
+			/* update general likelihood */
+			out += log(Pk);
+		}
 	}
 
-	/* GET PSEUDO-LIKELIHOOD */
-	if(dnainfo->nbcommon->rows[i]->values[j] < 1) { /* if no genetic data */
-		out = par->weightNaGen;
-	} else { /* if genetic info availavable */
-		out = alpha * ( gsl_ran_poisson_pdf((unsigned int) dnainfo->transi->rows[i]->values[j], nu1*T*dnainfo->nbcommon->rows[i]->values[j]) 
-				+ gsl_ran_poisson_pdf((unsigned int) dnainfo->transv->rows[i]->values[j], nu2*T*dnainfo->nbcommon->rows[i]->values[j]) ) 
-			+ (1.0-alpha) * ( gsl_ran_poisson_pdf((unsigned int) dnainfo->transi->rows[i]->values[j], nu1*(T+2.0*tau)*dnainfo->nbcommon->rows[i]->values[j]) 
-				       + gsl_ran_poisson_pdf((unsigned int) dnainfo->transv->rows[i]->values[j], nu2*(T+2.0*tau)*dnainfo->nbcommon->rows[i]->values[j]) ) ;
+	/* Two cases when likelihood can't be computed:
+	   - no pair of sequences to be compared
+	   - no compared sequence had nucleotide in common */
+	if(nb_comp==0){
+		out = log(par->weightNaGen);
 	}
 
 	/* RETURN */

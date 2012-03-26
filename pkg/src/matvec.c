@@ -135,10 +135,33 @@ void free_mat_int(struct mat_int *in){
    ===============================
 */
 
+int vecint_i(struct vec_int *in, int i){
+	if(i >= in->length) {
+		fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length);
+		exit(1);
+	}
+	return in->values[i];
+}
+
+
+
+
+int matint_ij(struct mat_int *in, int i, int j){
+	if(i >= in->n) {
+		fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n);
+		exit(1);
+	}
+	return vecint_i(in->rows[i], j);
+}
+
+
+
+
 void print_vec_int(struct vec_int *in){
 	int i;
 	printf("\nVector of %d values: ", in->length);
-	for(i=0;i<in->length;i++) printf("%d ", in->values[i]);
+	/* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
+	for(i=0;i<in->length;i++) printf("%d ", vecint_i(in,i));
 	printf("\n");
 }
 
@@ -148,16 +171,14 @@ void print_vec_int(struct vec_int *in){
 void print_mat_int(struct mat_int *in){
 	int i,j;
 
-	/* printf("\npairwise comparisons between %d individuals:\n", in->n); */
 	for(i=0;i<in->n;i++){
 	printf("\n");
 		for(j=0;j<in->n;j++)
-			printf("%d ", in->rows[i]->values[j]);
+			/* printf("%d ", in->rows[i]->values[j]); */
+			printf("%d ", matint_ij(in,i,j));
 	}
 	printf("\n");
 }
-
-
 
 
 

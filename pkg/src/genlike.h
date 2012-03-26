@@ -25,7 +25,7 @@
    === EXTERNAL FUNCTIONS ===
    ==========================
 */
-double compute_genlike(int i, int j, double ti, double tj, double nu1, double nu2, double alpha, double tau, struct dna_dist *dnainfo, struct param *par);
+double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j, double nu1, double nu2, double alpha, double tau, struct dna_dist *dnainfo, struct param *par);
 
 
 #endif

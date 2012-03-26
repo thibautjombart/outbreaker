@@ -10,7 +10,6 @@
 #define __MATVEC_H
 
 
-
 /*
    ==================
    === STRUCTURES ===
@@ -67,6 +66,9 @@ void free_vec_int(struct vec_int *in);
    === EXTERNAL FUNCTIONS ===
    ==========================
 */
+int vecint_i(struct vec_int *in, int i);
+
+int matint_ij(struct mat_int *in, int i, int j);
 
 void print_vec_int(struct vec_int *in);
 
