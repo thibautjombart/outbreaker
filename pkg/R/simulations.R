@@ -9,7 +9,7 @@ sim.mrsa <- function(t.max = 10, seq.length=1e4, mu=1e-5, p.new.patient=0.8,
     if(!require(ape)) stop("The ape package is required.")
 
 
-     ## HANDLE ARGUMENTS ##
+    ## HANDLE ARGUMENTS ##
     if(is.numeric(gen.time)){
         gen.time.val <- gen.time
         gen.time <- function(){gen.time.val}

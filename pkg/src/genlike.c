@@ -149,72 +149,103 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
 
 
 
+
+
 /*
    =========================
    === TESTING FUNCTIONS ===
    =========================
 */
 
+/* TESTING WITH R INTERFACE */
+void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int *s_j, double *t_i, double *t_j, int *m_i, int *m_j, double *nu1, double *nu2, double *alpha, double *tau, double *out){
 
-int main(){
-	const int N=5, L=10;
-	int i,j, s_i[2] = {0,1}, s_j[3] = {2,3,4};
-	double alpha=0.5, tau=2.0, t_i[2] = {0.0, 10.0}, t_j[3] = {12.0, 50.0, 100.0};
-
-	/* create a list of sequences */
-	struct list_dnaseq * test = create_list_dnaseq(N, L);
-
-	for(i=0;i<N;i++){
-		for(j=0;j<L;j++){
-			if(i*j % 5 ==0) test->list[i]->seq[j] = 'a';
-			else if(i*j % 3 ==0)test->list[i]->seq[j] = 't';
-			else if(i*j % 2 ==0)test->list[i]->seq[j] = 'g';
-			else test->list[i]->seq[j] = 'c';
-		}
-	}
-
-	for(i=5;i<L;i++)
-		test->list[0]->seq[i] = '-';
-	for(i=0;i<5;i++)
-		test->list[N-1]->seq[i] = '-';
-
-	print_list_dnaseq(test);
-
-	/* COMPUTE DISTANCES */
-	struct dna_dist *distinfo = compute_dna_distances(test);
-	print_dna_dist(distinfo);
+	/* MAKE DNAINFO AND PARAM */
+	struct param *par = create_param();
+	printf("\nI'm here\n");
+	struct list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length);
+	printf("\nI'm here\n");
+	struct dna_dist * dnainfo = compute_dna_distances(dna);
+	printf("\nI'm here\n");
+	par->weightNaGen = 0.0000001; /* near zero if no data */
 
 
 	/* COMPUTE LIKELIHOOD */
-	struct param *par = create_param();
-	double out=0, nu1 = 0.01, nu2=0.02, T;
-	int count=0;
+	*out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, dnainfo, par);
 
-	par->weightNaGen = 0.001; /* near zero if no data */
-
-	/* likelihood, sequences available */
-	out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, par);
-	printf("\npseudo log-likelihood (i: 0,1; j: 2,3,4): %.5f\n", out);
-
-	/* likelihood, only within-host sequences available */
-	int nothing[0];
-	out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, par);
-	printf("\npseudo log-likelihood (i: 0,1; j:NA): %.5f\n", out);
-
-	/* likelihood, no sequence available */
-	out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, par);
-	printf("\npseudo log-likelihood (i: NA, j:NA): %.5f\n", out);
-
-
-	printf("\n");
-
-	/* free and return */
-	free_list_dnaseq(test);
-	free_dna_dist(distinfo);
+	/* FREE STUFF */
+	free_list_dnaseq(dna);
+	free_dna_dist(dnainfo);
 	free_param(par);
 
-	return 0;
 }
+
+
+
+
+
+
+
+/* /\* PURE C TESTING *\/ */
+/* int main(){ */
+/* 	const int N=5, L=10; */
+/* 	int i,j, s_i[2] = {0,1}, s_j[3] = {2,3,4}; */
+/* 	double alpha=0.5, tau=2.0, t_i[2] = {0.0, 10.0}, t_j[3] = {12.0, 50.0, 100.0}; */
+
+/* 	/\* create a list of sequences *\/ */
+/* 	struct list_dnaseq * test = create_list_dnaseq(N, L); */
+
+/* 	for(i=0;i<N;i++){ */
+/* 		for(j=0;j<L;j++){ */
+/* 			if(i*j % 5 ==0) test->list[i]->seq[j] = 'a'; */
+/* 			else if(i*j % 3 ==0)test->list[i]->seq[j] = 't'; */
+/* 			else if(i*j % 2 ==0)test->list[i]->seq[j] = 'g'; */
+/* 			else test->list[i]->seq[j] = 'c'; */
+/* 		} */
+/* 	} */
+
+/* 	for(i=5;i<L;i++) */
+/* 		test->list[0]->seq[i] = '-'; */
+/* 	for(i=0;i<5;i++) */
+/* 		test->list[N-1]->seq[i] = '-'; */
+
+/* 	print_list_dnaseq(test); */
+
+/* 	/\* COMPUTE DISTANCES *\/ */
+/* 	struct dna_dist *distinfo = compute_dna_distances(test); */
+/* 	print_dna_dist(distinfo); */
+
+
+/* 	/\* COMPUTE LIKELIHOOD *\/ */
+/* 	struct param *par = create_param(); */
+/* 	double out=0, nu1 = 0.01, nu2=0.02, T; */
+/* 	int count=0; */
+
+/* 	par->weightNaGen = 0.001; /\* near zero if no data *\/ */
+
+/* 	/\* likelihood, sequences available *\/ */
+/* 	out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, par); */
+/* 	printf("\npseudo log-likelihood (i: 0,1; j: 2,3,4): %.5f\n", out); */
+
+/* 	/\* likelihood, only within-host sequences available *\/ */
+/* 	int nothing[0]; */
+/* 	out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, par); */
+/* 	printf("\npseudo log-likelihood (i: 0,1; j:NA): %.5f\n", out); */
+
+/* 	/\* likelihood, no sequence available *\/ */
+/* 	out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, par); */
+/* 	printf("\npseudo log-likelihood (i: NA, j:NA): %.5f\n", out); */
+
+
+/* 	printf("\n"); */
+
+/* 	/\* free and return *\/ */
+/* 	free_list_dnaseq(test); */
+/* 	free_dna_dist(distinfo); */
+/* 	free_param(par); */
+	
+/* 	return 0; */
+/* } */
 
 
 
