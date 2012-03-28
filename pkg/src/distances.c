@@ -113,12 +113,15 @@ struct dna_dist * compute_dna_distances(struct list_dnaseq *in){
 	/* CREATE OUTPUT */
 	struct dna_dist *out = create_dna_dist(N);
 
+	printf("\ncreated dna_dist object\n");
 	/* COMPUTE DISTANCES */
 	/* for all unique pairs of sequences */
 	for(i=0;i<(N-1);i++){
 		for(j=i+1;j<N;j++){
+			printf("\npair %d-%d\n", i, j);
 			/* for all pairs of nucleotides */
 			for(k=0;k<L;k++){
+				printf("\n %d\n", k);
 				if(is_atgc(in->list[i]->seq[k]) && is_atgc(in->list[j]->seq[k])){ /*if non-missing data*/
 					/* one more nucleotide was comparable */
 					out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;

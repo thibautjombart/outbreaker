@@ -149,7 +149,7 @@ char DNAbin2char(unsigned char in){
 
 
 /* convert DNAbin class to list_dnaseq */
-struct list_dnaseq * DNAbin2list_dnaseq(unsigned char * in, int *n, int *length){
+struct list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 	int i, j, count=0;
 
 	/* CREATE OUTPUT */
