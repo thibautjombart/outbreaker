@@ -118,7 +118,6 @@ void print_dnaseq(struct dnaseq *in){
 
 
 
-
 void print_list_dnaseq(struct list_dnaseq *in){
 	int i;
 	printf("\nList of DNA %d sequences (size: %d)\n", in->n, in->length);
@@ -128,6 +127,8 @@ void print_list_dnaseq(struct list_dnaseq *in){
 	}
 	printf("\n");
 }
+
+
 
 
 /* convert a 'raw' of DNAbin object to char */
@@ -162,9 +163,9 @@ struct list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 		}
 	}
 
-	printf("\nlist_dnaseq in C:\n");
-	print_list_dnaseq(out);
-	printf("\n");
+	/* printf("\nlist_dnaseq in C:\n"); */
+	/* print_list_dnaseq(out); */
+	/* printf("\n"); */
 
 	/* RETURN */
 	return out;
