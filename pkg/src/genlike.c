@@ -166,29 +166,29 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 
     /* CHECK THAT ARGUMENT ARE PASSED ALL RIGHT */
     int i;
-    printf("\ns_i:");
-    for(i=0;i<*m_i;i++){
-	printf("%d ",s_i[i]);
-    }
-    printf("\ns_j:");
-    for(i=0;i<*m_j;i++){
-	printf("%d ",s_j[i]);
-    }
-    printf("\nt_i:");
-    for(i=0;i<*m_i;i++){
-	printf("%.4f ",t_i[i]);
-    }
-    printf("\nt_j:");
-    for(i=0;i<*m_j;i++){
-	printf("%.4f ",t_j[i]);
-    }
-    printf("\nnu1: %.4f nu2: %.4f alpha:%.4f tau: %.4f out:%.4f\n",*nu1,*nu2, *alpha, *tau, *out);
+    /* printf("\ns_i:"); */
+    /* for(i=0;i<*m_i;i++){ */
+    /* 	printf("%d ",s_i[i]); */
+    /* } */
+    /* printf("\ns_j:"); */
+    /* for(i=0;i<*m_j;i++){ */
+    /* 	printf("%d ",s_j[i]); */
+    /* } */
+    /* printf("\nt_i:"); */
+    /* for(i=0;i<*m_i;i++){ */
+    /* 	printf("%.4f ",t_i[i]); */
+    /* } */
+    /* printf("\nt_j:"); */
+    /* for(i=0;i<*m_j;i++){ */
+    /* 	printf("%.4f ",t_j[i]); */
+    /* } */
+    /* printf("\nnu1: %.4f nu2: %.4f alpha:%.4f tau: %.4f out:%.4f\n",*nu1,*nu2, *alpha, *tau, *out); */
 
 
     /* MAKE DNAINFO AND PARAM */
     struct param *par = create_param();
     struct list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length);
-    print_list_dnaseq(dna);
+    /* print_list_dnaseq(dna); */
     struct dna_dist *distinfo = compute_dna_distances(dna);
 
     par->weightNaGen = 0.0000001; /* near zero if no data */
