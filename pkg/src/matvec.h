@@ -43,8 +43,6 @@ struct vec_int * create_vec_int(int n);
 
 struct mat_int * create_mat_int(int n);
 
-struct vec_int * create_vec_int_zero(int n);
-
 
 
 /*

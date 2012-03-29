@@ -25,7 +25,7 @@ struct vec_int * create_vec_int(int n){
 
 	/* NOTE out->values is not allocated when n=0 */
 	if(n>0){
-		out->values = (int *) malloc(n * sizeof(int));
+		out->values = (int *) calloc(n, sizeof(int));
 		if(out->values == NULL){
 			fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
 			exit(1);
@@ -41,24 +41,24 @@ struct vec_int * create_vec_int(int n){
 
 
 
-/* CREATE A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO */
-struct vec_int * create_vec_int_zero(int n){
-	struct vec_int *out = (struct vec_int *) malloc(sizeof(struct vec_int));
-	if(out == NULL){
-		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
-		exit(1);
-	}
+/* /\* CREATE A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO *\/ */
+/* struct vec_int * create_vec_int_zero(int n){ */
+/* 	struct vec_int *out = (struct vec_int *) malloc(sizeof(struct vec_int)); */
+/* 	if(out == NULL){ */
+/* 		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
+/* 		exit(1); */
+/* 	} */
 
-	out->values = (int *) calloc(n, sizeof(int));
-	if(out->values == NULL){
-		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
-		exit(1);
-	}
+/* 	out->values = (int *) calloc(n, sizeof(int)); */
+/* 	if(out->values == NULL){ */
+/* 		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
+/* 		exit(1); */
+/* 	} */
 
-	out->length = n;
+/* 	out->length = n; */
 
-	return(out);
-}
+/* 	return(out); */
+/* } */
 
 
 
@@ -79,14 +79,14 @@ struct mat_int * create_mat_int(int n){
 	}
 
 	/* fill in content */
-	out->rows = (struct vec_int **) malloc(n * sizeof(struct vec_int *));
+	out->rows = (struct vec_int **) calloc(n, sizeof(struct vec_int *));
 	if(out->rows == NULL){
 		fprintf(stderr, "\n[in: distances.c->create_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
 		exit(1);
 	}
 
 	for(i=0;i<n;i++){
-		out->rows[i] = create_vec_int_zero(n);
+		out->rows[i] = create_vec_int(n);
 	}
 
 	out->n = n;
