@@ -164,8 +164,7 @@ struct list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 	}
 
 	/* printf("\nlist_dnaseq in C:\n"); */
-	/* print_list
-_dnaseq(out); */
+	/* print_list_dnaseq(out); */
 	/* printf("\n"); */
 
 	/* RETURN */
