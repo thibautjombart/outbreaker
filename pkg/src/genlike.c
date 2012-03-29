@@ -163,23 +163,42 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
 /* TESTING WITH R INTERFACE */
 void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int *s_j, double *t_i, double *t_j, int *m_i, int *m_j, double *nu1, double *nu2, double *alpha, double *tau, double *out){
 
+
+    /* CHECK THAT ARGUMENT ARE PASSED ALL RIGHT */
+    int i;
+    printf("\ns_i:");
+    for(i=0;i<*m_i;i++){
+	printf("%d ",s_i[i]);
+    }
+    printf("\ns_j:");
+    for(i=0;i<*m_j;i++){
+	printf("%d ",s_j[i]);
+    }
+    printf("\nt_i:");
+    for(i=0;i<*m_i;i++){
+	printf("%.4f ",t_i[i]);
+    }
+    printf("\nt_j:");
+    for(i=0;i<*m_j;i++){
+	printf("%.4f ",t_j[i]);
+    }
+    printf("\nnu1: %.4f nu2: %.4f alpha:%.4f tau: %.4f out:%.4f\n",*nu1,*nu2, *alpha, *tau, *out);
+
+
     /* MAKE DNAINFO AND PARAM */
     struct param *par = create_param();
-    printf("\nI'm here\n");
     struct list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length);
-    printf("\nprinting recreated object\n");
     print_list_dnaseq(dna);
-    struct dna_dist * dnainfo = compute_dna_distances(dna);
-    printf("\nDNA distances computed\n");
+    struct dna_dist *distinfo = compute_dna_distances(dna);
+
     par->weightNaGen = 0.0000001; /* near zero if no data */
 
-
     /* COMPUTE LIKELIHOOD */
-    *out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, dnainfo, par);
+    *out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, distinfo, par);
 
     /* FREE STUFF */
     free_list_dnaseq(dna);
-    free_dna_dist(dnainfo);
+    free_dna_dist(distinfo);
     free_param(par);
 
 }
@@ -191,68 +210,68 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 
 
 /* /\* PURE C TESTING *\/ */
-int main(){
-    int N=5, L=10;
-    int i,j, s_i[2] = {0,1}, s_j[3] = {2,3,4}, count=0;
-    double alpha=0.5, tau=2.0, t_i[2] = {0.0, 10.0}, t_j[3] = {12.0, 50.0, 100.0},out, nu1 = 0.01, nu2=0.02, T;
-    struct param *par = create_param();
-    par->weightNaGen = 0.001; /* near zero if no data */
+/* int main(){ */
+/*     int N=5, L=10; */
+/*     int i,j, s_i[2] = {0,1}, s_j[3] = {2,3,4}, count=0; */
+/*     double alpha=0.5, tau=2.0, t_i[2] = {0.0, 10.0}, t_j[3] = {12.0, 50.0, 100.0},out, nu1 = 0.01, nu2=0.02, T; */
+/*     struct param *par = create_param(); */
+/*     par->weightNaGen = 0.001; /\* near zero if no data *\/ */
 
-    /* create a list of sequences */
-    struct list_dnaseq * test = create_list_dnaseq(N, L);
+/*     /\* create a list of sequences *\/ */
+/*     struct list_dnaseq * test = create_list_dnaseq(N, L); */
 
-    for(i=0;i<N;i++){
-	for(j=0;j<L;j++){
-	    if(i*j % 5 ==0) test->list[i]->seq[j] = 'a';
-	    else if(i*j % 3 ==0)test->list[i]->seq[j] = 't';
-	    else if(i*j % 2 ==0)test->list[i]->seq[j] = 'g';
-	    else test->list[i]->seq[j] = 'c';
-	}
-    }
+/*     for(i=0;i<N;i++){ */
+/* 	for(j=0;j<L;j++){ */
+/* 	    if(i*j % 5 ==0) test->list[i]->seq[j] = 'a'; */
+/* 	    else if(i*j % 3 ==0)test->list[i]->seq[j] = 't'; */
+/* 	    else if(i*j % 2 ==0)test->list[i]->seq[j] = 'g'; */
+/* 	    else test->list[i]->seq[j] = 'c'; */
+/* 	} */
+/*     } */
 
-    for(i=5;i<L;i++)
-	test->list[0]->seq[i] = '-';
-    for(i=0;i<5;i++)
-	test->list[N-1]->seq[i] = '-';
+/*     for(i=5;i<L;i++) */
+/* 	test->list[0]->seq[i] = '-'; */
+/*     for(i=0;i<5;i++) */
+/* 	test->list[N-1]->seq[i] = '-'; */
 
-    print_list_dnaseq(test);
+/*     print_list_dnaseq(test); */
 
-    /* COMPUTE DISTANCES */
-    struct dna_dist *distinfo = compute_dna_distances(test);
-    print_dna_dist(distinfo);
-
-
-    /* COMPUTE LIKELIHOOD */
-    /* likelihood, sequences available */
-    printf("\nsi: %d %d\n",s_i[0], s_i[1]);
-    printf("\nsj: %d %d %d\n",s_j[0], s_j[1], s_j[2]);
-    printf("\nti: %f %f\n",t_i[0], t_i[1]);
-    printf("\ntj: %f %f %f\n",t_j[0], t_j[1], t_j[2]);
-    printf("\nnu1: %f nu2: %f alpha:%f tau: %f\n",nu1,nu2, alpha, tau);
-
-    out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, par);
-    log(out);
-    //printf("\npseudo log-likelihood (i: 0,1; j: 2,3,4): %.5f\n", out);
-
-    /* likelihood, only within-host sequences available */
-    /* int *nothing=NULL; */
-    /* out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, par); */
-    //printf("\npseudo log-likelihood (i: 0,1; j:NA): %.5f\n", out);
-
-    /* likelihood, no sequence available */
-    /* out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, par); */
-    //printf("\npseudo log-likelihood (i: NA, j:NA): %.5f\n", out);
+/*     /\* COMPUTE DISTANCES *\/ */
+/*     struct dna_dist *distinfo = compute_dna_distances(test); */
+/*     print_dna_dist(distinfo); */
 
 
-    printf("\n");
+/*     /\* COMPUTE LIKELIHOOD *\/ */
+/*     /\* likelihood, sequences available *\/ */
+/*     printf("\nsi: %d %d\n",s_i[0], s_i[1]); */
+/*     printf("\nsj: %d %d %d\n",s_j[0], s_j[1], s_j[2]); */
+/*     printf("\nti: %f %f\n",t_i[0], t_i[1]); */
+/*     printf("\ntj: %f %f %f\n",t_j[0], t_j[1], t_j[2]); */
+/*     printf("\nnu1: %f nu2: %f alpha:%f tau: %f\n",nu1,nu2, alpha, tau); */
 
-    /* free and return */
-    free_list_dnaseq(test);
-    free_dna_dist(distinfo);
-    free_param(par);
-	
-    return 0;
-}
+/*     out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, par); */
+/*     log(out); */
+/*     //printf("\npseudo log-likelihood (i: 0,1; j: 2,3,4): %.5f\n", out); */
+
+/*     /\* likelihood, only within-host sequences available *\/ */
+/*     /\* int *nothing=NULL; *\/ */
+/*     /\* out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, par); *\/ */
+/*     //printf("\npseudo log-likelihood (i: 0,1; j:NA): %.5f\n", out); */
+
+/*     /\* likelihood, no sequence available *\/ */
+/*     /\* out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, par); *\/ */
+/*     //printf("\npseudo log-likelihood (i: NA, j:NA): %.5f\n", out); */
+
+
+/*     printf("\n"); */
+
+/*     /\* free and return *\/ */
+/*     free_list_dnaseq(test); */
+/*     free_dna_dist(distinfo); */
+/*     free_param(par); */
+
+/*     return 0; */
+/* } */
 
 
 

@@ -69,6 +69,8 @@ int get_nbcommon(struct dna_dist * in, int i, int j);
    ==========================
 */
 
+void print_dna_dist(struct dna_dist *in);
+
 struct dna_dist * compute_dna_distances(struct list_dnaseq *in);
 
 

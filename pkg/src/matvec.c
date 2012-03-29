@@ -193,7 +193,7 @@ void print_mat_int(struct mat_int *in){
 
 
 /* int main(){ */
-/* 	const int N = 10; */
+/* 	int N = 10; */
 /* 	struct mat_int * test = create_mat_int(N); */
 
 /* 	print_mat_int (test); */
