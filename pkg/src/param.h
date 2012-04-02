@@ -26,7 +26,7 @@
 */
 
 struct param{
-	double nu1, nu2, kappa, tau, alpha, weightNaGen;
+	double nu1, nu2, tau, alpha, weightNaGen;
 };
 
 

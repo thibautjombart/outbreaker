@@ -8,10 +8,12 @@
 #include "alloc.h"
 #include "tuneVariances.h"
 
-extern gsl_rng * rng;
 
-void CalculIsInHosp(nb_data * nbData, raw_data *data)
-{
+
+
+
+
+void CalculIsInHosp(nb_data * nbData, raw_data *data){
     int i,k,t;
     for(i=0 ; i<NbPatients ; i++)
 	{
@@ -27,9 +29,12 @@ void CalculIsInHosp(nb_data * nbData, raw_data *data)
 		}
 	}
 }
-	
-void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *augData)
-{
+
+
+
+
+
+void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *augData){
     int i,t;
     double a = param->mu*param->mu/(param->sigma*param->sigma);
     double b = param->sigma*param->sigma/param->mu;
@@ -63,12 +68,12 @@ void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *
 	    if(nbData->NbPosSwabs[i]>0)
 		{
 		    augData->C[i] = gsl_vector_get(data->P[i],0);
-		    //augData->E[i] = GSL_MAX(augData->C[i]+ceil(gsl_ran_gamma (rng, a, b)),1+gsl_vector_get(data->P[i],nbData->NbPosSwabs[i]-1));
+		    /* augData->E[i] = GSL_MAX(augData->C[i]+ceil(gsl_ran_gamma (param->rng, a, b)),1+gsl_vector_get(data->P[i],nbData->NbPosSwabs[i]-1)); */
 		    augData->E[i] = augData->C[i]+ceil(param->mu);
 		}else
 		{
 		    augData->C[i] = -100;
-		    //augData->E[i] = augData->C[i]+ceil(gsl_ran_gamma (rng, a, b));
+		    /* augData->E[i] = augData->C[i]+ceil(gsl_ran_gamma (param->rng, a, b)); */
 		    augData->E[i] = augData->C[i]+ceil(param->mu);
 		}
 
@@ -122,8 +127,11 @@ void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *
 
 }
 
-void InitMCMCSettings(mcmcInternals *MCMCSettings)
-{
+
+
+
+
+void InitMCMCSettings(mcmcInternals *MCMCSettings){
     MCMCSettings->NbSimul = 110000;
     MCMCSettings->SubSample = 10;
     MCMCSettings->BurnIn = 10000;
@@ -143,8 +151,11 @@ void InitMCMCSettings(mcmcInternals *MCMCSettings)
     MCMCSettings->Sigma_alpha=0.1;
 }
 
-void InitParam(parameters *param)
-{
+
+
+
+
+void InitParam(parameters *param){
     int i,j;
 
     for(i=0 ; i<2 ; i++)
@@ -158,7 +169,7 @@ void InitParam(parameters *param)
     param->betaWardOut=0.1;
     param->betaOutOut=0.1;
 
-    //param->Sp = 1.0;
+    /* param->Sp = 1.0; */
     param->Se = 0.9;
 
     param->Pi = 0.1;
@@ -166,8 +177,8 @@ void InitParam(parameters *param)
     param->mu = 5;
     param->sigma=1;
 
-    param->nu1=0.01;
-    param->nu2=0.01;
+    param->nu1=1e-6;
+    param->nu2=1e-6;
 
     param->tau = 10;
     param->alpha=0.5;
