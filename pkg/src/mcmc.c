@@ -175,19 +175,19 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    /* moveTau(MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	    /* moveAlpha(MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
-	    gsl_ran_choose (rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	    gsl_ran_choose (param->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	    for(i=0 ; i<NbChangeAugData ; i++)
 		{
 		    moveC(AugDataToMove[i], MCMCSettings, param, data,nb, augData) ;
 		}
 
-	    gsl_ran_choose (rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	    gsl_ran_choose (param->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	    for(i=0 ; i<NbChangeAugData ; i++)
 		{
 		    moveE(AugDataToMove[i], MCMCSettings, param, data,nb, augData) ;
 		}
 
-	    gsl_ran_choose (rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	    gsl_ran_choose (param->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	    for(i=0 ; i<NbChangeAugData ; i++)
 		{
 		    moveCandE(AugDataToMove[i], MCMCSettings, param, data,nb, augData) ;

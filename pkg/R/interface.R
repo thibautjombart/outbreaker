@@ -72,6 +72,7 @@ testSimLike <- function(mu=0.01, p.new.patient=0.5, seq.length=100, min.n=10,...
 ##
 ##  library(outbreaker)
 ##  test <- testSimLike()
+##  library(ggplot2)
 ##  qplot(likelihood,data=test,colour=actual, geom="density")
 ##
 ##
