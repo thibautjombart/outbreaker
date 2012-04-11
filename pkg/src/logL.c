@@ -94,7 +94,7 @@ double ObsLevel (raw_data * data, nb_data *nb, aug_data *augData, parameters * p
     int i;
     double L = 0;
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    L+=ObsLevelPerCase (i, data, nb, augData, param);
 	}
@@ -134,7 +134,7 @@ double DurationColon (aug_data *augData, parameters * param){
     int i;
     double L = 0;
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<augData->NbPatients ; i++)
 	{
 	    L+=DurationColonPerCase (i, augData, param);
 	}
@@ -148,7 +148,7 @@ double DurationColon (aug_data *augData, parameters * param){
 
 double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, parameters * param){
     double L = 0;
-    int l,s,t,j,r;
+    int l, s, t, j, r, NbPatients=data->NbPatients;
     double Num = 0;
     double Denom = 0;
 
@@ -285,7 +285,7 @@ double Colon (raw_data *data, nb_data *nb, aug_data *augData, parameters * param
     int i;
     double L = 0;
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    fflush(stdout);
 	    L+=ColonPerCase (i, data, nb, augData, param);

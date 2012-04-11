@@ -16,7 +16,7 @@
 
 
 /**************** nb_data ****************/
-nb_data * createNbData(){
+nb_data * createNbData(int NbPatients){
     nb_data *nb = (nb_data *) malloc(sizeof(nb_data));
     if(nb == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
@@ -48,6 +48,7 @@ nb_data * createNbData(){
     }
 
     nb->NbColonisedPatients = 0;
+    nb->NbPatients = NbPatients;
 
     return nb;
 }
@@ -61,7 +62,6 @@ void freeNbData(nb_data *nb){
     free(nb->NbPosSwabs);
     free(nb->NbNegSwabs);
     free(nb->indexColonisedPatients);
-
     free(nb);
 }
 
@@ -79,26 +79,55 @@ raw_data *createRawData(nb_data *nb){
 	exit(1);
     }
 
-    data->ward = (int *) calloc(NbPatients, sizeof(int));
+    data->ward = (int *) calloc(nb->NbPatients, sizeof(int));
     if(data->ward == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
     }
 
-    data->PatientIndex = (int *) calloc(NbPatients, sizeof(int));
+    data->PatientIndex = (int *) calloc(nb->NbPatients, sizeof(int));
     if(data->PatientIndex == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
     }
 
-    data->timeSeq = (int *) calloc(NbPatients, sizeof(int));
+    data->timeSeq = (int *) calloc(nb->NbPatients, sizeof(int));
     if(data->timeSeq == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
     }
 
+    data->A = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
+    if(data->A == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
 
-    for(i=0 ; i<NbPatients; i++){
+    data->D = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
+    if(data->D == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+
+    data->P = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
+    if(data->P == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+
+    data->N = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
+    if(data->N == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+
+    data->IsInHosp = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
+    if(data->IsInHosp == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+
+    for(i=0 ; i<nb->NbPatients; i++){
 	data->A[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
 	data->D[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
 	if(nb->NbPosSwabs[i]>0)
@@ -111,6 +140,8 @@ raw_data *createRawData(nb_data *nb){
 	data->IsInHosp[i] = gsl_vector_calloc(T);
     }
 
+    data->NbPatients = nb->NbPatients;
+
     return data;
 }
 
@@ -121,11 +152,7 @@ raw_data *createRawData(nb_data *nb){
 void freeRawData(raw_data *data){
     int i;
 
-    free(data->ward);
-    free(data->PatientIndex);
-    free(data->timeSeq);
-
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    gsl_vector_free(data->A[i]);
 	    gsl_vector_free(data->D[i]);
@@ -134,6 +161,14 @@ void freeRawData(raw_data *data){
 	    gsl_vector_free(data->IsInHosp[i]);
 	}
 
+    free(data->ward);
+    free(data->PatientIndex);
+    free(data->timeSeq);
+    free(data->A);
+    free(data->D);
+    free(data->P);
+    free(data->N);
+    free(data->IsInHosp);
     free(data);
 }
 
@@ -143,7 +178,7 @@ void freeRawData(raw_data *data){
 
 
 /**************** aug_data ****************/
-aug_data *createAugData(){
+aug_data *createAugData(int NbPatients){
     aug_data *augData = (aug_data *) malloc(sizeof(aug_data));
     if(augData == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
@@ -175,6 +210,7 @@ aug_data *createAugData(){
 	exit(1);
     }
 
+    augData->NbPatients = NbPatients;
     return augData;
 }
 
@@ -185,10 +221,8 @@ aug_data *createAugData(){
 void freeAugData(aug_data *augData){
     free(augData->C);
     free(augData->E);
-
     free(augData->I0);
     free(augData->I1);
-
     free(augData);
 }
 
@@ -197,8 +231,9 @@ void freeAugData(aug_data *augData){
 
 
 void copyAugData(aug_data *augDataDest, aug_data *augDataSource){
-    memcpy(augDataDest->C, augDataSource->C, NbPatients*sizeof(int));
-    memcpy(augDataDest->E, augDataSource->E, NbPatients*sizeof(int));
+    augDataDest->NbPatients = augDataSource->NbPatients;
+    memcpy(augDataDest->C, augDataSource->C, augDataDest->NbPatients*sizeof(int));
+    memcpy(augDataDest->E, augDataSource->E, augDataDest->NbPatients*sizeof(int));
     memcpy(augDataDest->I0, augDataSource->I0, T*sizeof(int));
     memcpy(augDataDest->I1, augDataSource->I1, T*sizeof(int));
 }

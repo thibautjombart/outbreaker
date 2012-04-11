@@ -15,7 +15,7 @@
 
 void CalculIsInHosp(nb_data * nbData, raw_data *data){
     int i,k,t;
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<nbData->NbPatients ; i++)
 	{
 	    for(k = 0 ; k<nbData->NbAdmissions[i] ; k++)
 		{
@@ -63,7 +63,7 @@ void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *
       exit(1);
       }*/
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<nbData->NbPatients ; i++)
 	{
 	    if(nbData->NbPosSwabs[i]>0)
 		{

@@ -6,13 +6,13 @@
 #ifndef __ALLOC_H
 #define __ALLOC_H
 
-nb_data *createNbData();
+nb_data *createNbData(int NbPatients);
 void freeNbData(nb_data *);
 
 raw_data *createRawData(nb_data *);
 void freeRawData(raw_data *);
 
-aug_data *createAugData();
+aug_data *createAugData(int NbPatients);
 void freeAugData(aug_data *);
 void copyAugData(aug_data *, aug_data *);
 
