@@ -144,6 +144,6 @@ int main(int argc, char *argv[]){
 
    gcc -o outbreaker -Wall -g alloc.c logL.c prior.c moves.c mcmc.c init.c InputOutput.c tuneVariances.c outbreaker.c -lgsl -lgslcblas
 
-   valgrind -v --leak-check=full --track-origins=yes outbreaker 
+   valgrind -v --leak-check=full --track-origins=yes --show-reachable=yes outbreaker 
 
 */

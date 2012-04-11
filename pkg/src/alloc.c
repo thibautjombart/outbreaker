@@ -73,7 +73,7 @@ void freeNbData(nb_data *nb){
 /**************** raw_data ****************/
 raw_data *createRawData(nb_data *nb){
     int i;
-    raw_data *data = (raw_data *) calloc(sizeof(raw_data));
+    raw_data *data = (raw_data *) calloc(1, sizeof(raw_data));
     if(data == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
