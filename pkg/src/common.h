@@ -31,14 +31,14 @@
 #define TRUE 1
 #define FALSE 0
 /* #define NbPatients 142 */
-#define T 100 /* number of time steps corresponding to the study period */
+/* #define T 100 /\* number of time steps corresponding to the study period *\/ */
 
 typedef short int bool;
 
 
 
 typedef struct{
-    int NbPatients;
+    int NbPatients, T;
     int *NbAdmissions;
     int *NbPosSwabs;
     int *NbNegSwabs;
@@ -51,7 +51,7 @@ typedef struct{
 
 
 typedef struct{
-    int NbPatients;
+    int NbPatients, T;
     int * ward; /* 0 for adult, 1 for pediatric */
     int * timeSeq; /* time of sequence for each patient */
     int * PatientIndex;
@@ -61,18 +61,14 @@ typedef struct{
     gsl_vector ** N; /* times of positive swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] */
     /* gsl_vector *IsInHosp[NbPatients]; /\* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T *\/ */
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
-   /* gsl_vector * A[NbPatients]; /\* admission times. A[i] is a vector of size nb_data->NbAdmissions[i] *\/ */
-    /* gsl_vector * D[NbPatients]; /\* discharge times. D[i] is a vector of size nb_data->NbAdmissions[i] *\/ */
-    /* gsl_vector *P[NbPatients]; /\* times of positive swabs. P[i] is a vector of size nb_data->NbPosSwabs[i] *\/ */
-    /* gsl_vector *N[NbPatients]; /\* times of positive swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] *\/ */
- } raw_data;
+} raw_data;
 
 
 
 
 
 typedef struct{
-    int NbPatients;
+    int NbPatients, T;
     int *C; /* colonisation times */
     int *E; /* times of end of colonisation */
     int *I0; /* number of colonised individuals in ward 0 at each time step */

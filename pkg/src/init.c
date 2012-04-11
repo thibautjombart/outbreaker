@@ -14,7 +14,7 @@
 
 
 void CalculIsInHosp(nb_data * nbData, raw_data *data){
-    int i,k,t;
+    int i,k,t, T=data->T;
     for(i=0 ; i<nbData->NbPatients ; i++)
 	{
 	    for(k = 0 ; k<nbData->NbAdmissions[i] ; k++)
@@ -35,7 +35,7 @@ void CalculIsInHosp(nb_data * nbData, raw_data *data){
 
 
 void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *augData){
-    int i,t;
+    int i,t, NbPatients = nbData->NbPatients, T = nbData->T;
     double a = param->mu*param->mu/(param->sigma*param->sigma);
     double b = param->sigma*param->sigma/param->mu;
     FILE *fichC, *fichE;
@@ -63,7 +63,7 @@ void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *
       exit(1);
       }*/
 
-    for(i=0 ; i<nbData->NbPatients ; i++)
+    for(i=0 ; i<NbPatients ; i++)
 	{
 	    if(nbData->NbPosSwabs[i]>0)
 		{

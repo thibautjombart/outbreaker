@@ -148,7 +148,7 @@ double DurationColon (aug_data *augData, parameters * param){
 
 double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, parameters * param){
     double L = 0;
-    int l, s, t, j, r, NbPatients=data->NbPatients;
+    int l, s, t, j, r, NbPatients=data->NbPatients, T=data->T;
     double Num = 0;
     double Denom = 0;
 
