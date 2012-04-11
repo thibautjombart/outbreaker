@@ -45,6 +45,7 @@ void readFakeNbData(nb_data *nb){
 		}
 	    nb->NbNegSwabs[i]=V;
 	}
+    fclose(fich);
 
     fich = fopen("nbPos.txt","r");
     if ( fich == NULL )
@@ -65,6 +66,7 @@ void readFakeNbData(nb_data *nb){
 	    nb->NbPosSwabs[i]=V;
 	}
 
+    fclose(fich);
 }
 
 
