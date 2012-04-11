@@ -444,7 +444,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     /* updating C[i] with Metropolis algorithm */
     /* proposal distribution = uniform between [C_i-l ; C_i+l] */
 
-    int l = 1, NbPatients = data->NbPatients; /* half-width of the proposal interval */
+    int l = 1, NbPatients = data->NbPatients, T=data->T; /* half-width of the proposal interval */
     int random;
     int j,t;
     int curMinTime, curMaxTime;
@@ -456,7 +456,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     double r,z;
     double pAccept = 0;
     double pAccept2;
-    aug_data *newAugData = createAugData(NbPatients);
+    aug_data *newAugData = createAugData(NbPatients, T);
     copyAugData(newAugData,curAugData);
 
     curVal = &curAugData->C[i];
@@ -590,7 +590,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     /* updating E[i] with Metropolis algorithm */
     /* proposal distribution = uniform between [E_i-l ; E_i+l] */
 
-    int l = 1, NbPatients = data->NbPatients; /* half-width of the proposal interval */
+    int l = 1, NbPatients = data->NbPatients, T = data->T; /* half-width of the proposal interval */
     int random;
     int j,t;
     int curMinTime, curMaxTime;
@@ -601,7 +601,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     int *newVal, *curVal;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData(NbPatients);
+    aug_data *newAugData = createAugData(NbPatients, T);
     copyAugData(newAugData,curAugData);
 
     curVal = &curAugData->E[i];
@@ -717,14 +717,14 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
     /* updating C[i] and E[i] with Metropolis algorithm */
     /* proposal distribution = C_i uniform between [C_i-l ; C_i+l] and E_i shifted so that E_i - C_i constant */
 
-    int l = 1, NbPatients = data->NbPatients; /* half-width of the proposal interval */
+    int l = 1, NbPatients = data->NbPatients, T = data->T; /* half-width of the proposal interval */
     int random;
     int j,t;
     int *newValC, *curValC;
     int *newValE, *curValE;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData(NbPatients);
+    aug_data *newAugData = createAugData(NbPatients, T);
     copyAugData(newAugData,curAugData);
 
     curValC = &curAugData->C[i];

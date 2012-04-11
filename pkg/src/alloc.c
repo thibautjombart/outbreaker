@@ -16,7 +16,7 @@
 
 
 /**************** nb_data ****************/
-nb_data * createNbData(int NbPatients){
+nb_data * createNbData(int NbPatients, int T){
     nb_data *nb = (nb_data *) malloc(sizeof(nb_data));
     if(nb == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
@@ -49,6 +49,7 @@ nb_data * createNbData(int NbPatients){
 
     nb->NbColonisedPatients = 0;
     nb->NbPatients = NbPatients;
+    nb->T = T;
 
     return nb;
 }
@@ -73,7 +74,7 @@ void freeNbData(nb_data *nb){
 /**************** raw_data ****************/
 raw_data *createRawData(nb_data *nb){
     int i;
-    raw_data *data = (raw_data *) calloc(1, sizeof(raw_data));
+    raw_data *data = (raw_data *) malloc(sizeof(raw_data));
     if(data == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
@@ -137,10 +138,11 @@ raw_data *createRawData(nb_data *nb){
 		nb->NbColonisedPatients++;
 	    }
 	if(nb->NbNegSwabs[i]>0){data->N[i] = gsl_vector_calloc(nb->NbNegSwabs[i]);}
-	data->IsInHosp[i] = gsl_vector_calloc(T);
+	data->IsInHosp[i] = gsl_vector_calloc(data->T);
     }
 
     data->NbPatients = nb->NbPatients;
+    data->T = nb->T;
 
     return data;
 }
@@ -178,7 +180,7 @@ void freeRawData(raw_data *data){
 
 
 /**************** aug_data ****************/
-aug_data *createAugData(int NbPatients){
+aug_data *createAugData(int NbPatients, int T){
     aug_data *augData = (aug_data *) malloc(sizeof(aug_data));
     if(augData == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
@@ -211,6 +213,8 @@ aug_data *createAugData(int NbPatients){
     }
 
     augData->NbPatients = NbPatients;
+    augData->T = T;
+
     return augData;
 }
 
@@ -232,10 +236,11 @@ void freeAugData(aug_data *augData){
 
 void copyAugData(aug_data *augDataDest, aug_data *augDataSource){
     augDataDest->NbPatients = augDataSource->NbPatients;
+    augDataDest->T = augDataSource->T;
     memcpy(augDataDest->C, augDataSource->C, augDataDest->NbPatients*sizeof(int));
     memcpy(augDataDest->E, augDataSource->E, augDataDest->NbPatients*sizeof(int));
-    memcpy(augDataDest->I0, augDataSource->I0, T*sizeof(int));
-    memcpy(augDataDest->I1, augDataSource->I1, T*sizeof(int));
+    memcpy(augDataDest->I0, augDataSource->I0, augDataSource->T*sizeof(int));
+    memcpy(augDataDest->I1, augDataSource->I1, augDataSource->T*sizeof(int));
 }
 
 
@@ -372,7 +377,6 @@ acceptance *createAcceptance(){
     }
 
     accept->PourcAcc_beta = gsl_matrix_calloc(2,2);
-
     accept->PourcAcc_betaWardOut=0;
     accept->PourcAcc_betaOutOut=0;
     accept->PourcAcc_mu=0;
