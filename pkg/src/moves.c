@@ -18,41 +18,43 @@
 void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept, NbProposals *NbProp){
     /* updating beta_{i,j} with Metropolis algorithm */
     /* proposal distribution = lognormal */
+    
+    return; 
 
-    double * newVal, *curVal;
-    double * nbAccept;
-    double * nbPropos;
-    double sigmaProp;
-    double r,z;
-    double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
+    /* double * newVal, *curVal; */
+    /* double * nbAccept; */
+    /* double * nbPropos; */
+    /* double sigmaProp; */
+    /* double r,z; */
+    /* double pAccept = 0; */
+    /* parameters *newParam = createParam(); */
+    /* copyParam(newParam,curParam); */
 
-    curVal = gsl_matrix_ptr(curParam->beta,i,j);
-    newVal = gsl_matrix_ptr(newParam->beta,i,j);
+    /* curVal = gsl_matrix_ptr(curParam->beta,i,j); */
+    /* newVal = gsl_matrix_ptr(newParam->beta,i,j); */
 
-    sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j);
-    nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j);
-    nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j);
+    /* sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j); */
+    /* nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j); */
+    /* nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j); */
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp);
+    /* *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp); */
 
-    pAccept += Colon(data, nb, augData, newParam);
-    pAccept -= Colon(data, nb, augData, curParam);
+    /* pAccept += Colon(data, nb, augData, newParam); */
+    /* pAccept -= Colon(data, nb, augData, curParam); */
 
-    pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam);
+    /* pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam); */
 
-    pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
+    /* pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
 
-    if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(curParam->rng);
-    if (log(z)<=r) {
-	*curVal = *newVal;
-	*nbAccept +=1;
-    }
-    *nbPropos+=1;
+    /* if (pAccept>0) r=0; else r=pAccept; */
+    /* z=gsl_rng_uniform(curParam->rng); */
+    /* if (log(z)<=r) { */
+    /* 	*curVal = *newVal; */
+    /* 	*nbAccept +=1; */
+    /* } */
+    /* *nbPropos+=1; */
 
-    freeParam(newParam);
+    /* freeParam(newParam); */
 
 }
 
