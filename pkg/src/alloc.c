@@ -138,7 +138,7 @@ raw_data *createRawData(nb_data *nb){
 		nb->NbColonisedPatients++;
 	    }
 	if(nb->NbNegSwabs[i]>0){data->N[i] = gsl_vector_calloc(nb->NbNegSwabs[i]);}
-	data->IsInHosp[i] = gsl_vector_calloc(data->T);
+	data->IsInHosp[i] = gsl_vector_calloc(nb->T);
     }
 
     data->NbPatients = nb->NbPatients;

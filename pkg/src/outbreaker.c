@@ -39,18 +39,22 @@ int main(int argc, char *argv[]){
 
     /*RAW DATA*/
     nb_data *nb = createNbData(NbPatients, T);
+    /* printf("\ncreated nb data\n"); */
+
     /* reading Nbdata */
-    /***************************************
-     *************** TO WRITE ***************
-     ****************************************/
     readFakeNbData(nb);
+    /* printf("\nread fake nb data\n"); */
+
     raw_data *data = createRawData(nb);
+    /* printf("\ncreated raw data\n"); */
 
     /*AUG DATA*/
     aug_data *augData = createAugData(NbPatients, T);
+    /* printf("\ncreated aug data\n"); */
 
     /*parameters */
     parameters *param = createParam();
+    /* printf("\ncreated param\n"); */
 
     /* Output files */
     output_files *Files = createFILES(workspace);
