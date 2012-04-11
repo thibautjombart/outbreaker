@@ -202,8 +202,11 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	 	}
 	}
 
+    /* PRINT ACCESPTANCE RATE */
     printAcceptance(accept,nbProp);
 
+    /* FREE ALLOCATED MEMORY */
+    free(AugDataToMove);
     gsl_matrix_free(isAcceptOKBeta);
 
 }

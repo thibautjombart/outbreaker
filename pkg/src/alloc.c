@@ -72,13 +72,12 @@ void freeNbData(nb_data *nb){
 
 /**************** raw_data ****************/
 raw_data *createRawData(nb_data *nb){
-    raw_data *data = (raw_data *) malloc(sizeof(raw_data));
+    int i;
+    raw_data *data = (raw_data *) calloc(sizeof(raw_data));
     if(data == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
     }
-
-    int i;
 
     data->ward = (int *) calloc(NbPatients, sizeof(int));
     if(data->ward == NULL){
@@ -123,6 +122,7 @@ void freeRawData(raw_data *data){
     int i;
 
     free(data->ward);
+    free(data->PatientIndex);
     free(data->timeSeq);
 
     for(i=0 ; i<NbPatients ; i++)

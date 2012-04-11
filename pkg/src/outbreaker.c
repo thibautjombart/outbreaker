@@ -17,21 +17,17 @@
 /******************************************************************************/
 
 int main(int argc, char *argv[]){
-    clock_t start = clock() ;
-    int where = 1;
+    time_t start, end;
+    int TimeElapsed;
     char workspace[500];
 
-    /*****************************************************/
-    /***      CHANGE THE WORKSPACE IF NEEDED           ***/
-    /*****************************************************/
+    /* SET TIMER */
+    time(&start);
 
-    if(where==1)
-	{
-	    strcpy(workspace, "");
-	}else
-	{
-	    strcpy(workspace, "\\\\fi--san01\\homes\\acori\\workspace\\EpiGenet\\");
-	}
+    /**********************************/
+    /***      SET THE WORKSPACE     ***/
+    /**********************************/
+    strcpy(workspace, "");
 
 
     /*****************************************************/
@@ -106,10 +102,13 @@ int main(int argc, char *argv[]){
     /*****************************************************/
     /***                 Launch MCMC                   ***/
     /*****************************************************/
+    MCMCSettings->BurnIn = 100;
+    MCMCSettings->NbSimul = 100;
+    MCMCSettings->SubSample = 10;
 
     printf("Starting estimation\n");
     fflush(stdout);
-    metro (MCMCSettings, param, data, nb, augData, accept, acceptOK, nbProp, Files);
+    metro(MCMCSettings, param, data, nb, augData, accept, acceptOK, nbProp, Files);
 
 
     /*****************************************************/
@@ -126,10 +125,10 @@ int main(int argc, char *argv[]){
     freeIsAcceptOK(acceptOK);
     freeNbProposals(nbProp);
 
-    clock_t end = clock() ;
-    double TimeElapsed = (end-start)/(double)CLOCKS_PER_SEC ;
+    time(&end);
+    TimeElapsed = (int) end - (int) start;
 
-    printf("Computing time: %lf seconds\n",TimeElapsed);
+    printf("Computing time: %i seconds\n",TimeElapsed);
 
     /* getchar(); */
     return 0;
@@ -143,8 +142,8 @@ int main(int argc, char *argv[]){
 
    Compilation instructions: 
 
-   gcc -o epilike -Wall -g alloc.c logL.c prior.c moves.c mcmc.c init.c InputOutput.c tuneVariances.c epilike.c -lgsl -lgslcblas && ./epilike
+   gcc -o outbreaker -Wall -g alloc.c logL.c prior.c moves.c mcmc.c init.c InputOutput.c tuneVariances.c outbreaker.c -lgsl -lgslcblas
 
-   valgrind epilike -v --leak-check=full --track-origins=yes
+   valgrind -v --leak-check=full --track-origins=yes outbreaker 
 
 */
