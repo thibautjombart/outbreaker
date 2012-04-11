@@ -122,9 +122,8 @@ void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *
 		}
 	}
 
-    fclose(fichC);
-    fclose(fichE);
-
+    /* fclose(fichC); */
+    /* fclose(fichE); */
 }
 
 
