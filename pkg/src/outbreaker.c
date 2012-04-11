@@ -18,7 +18,7 @@
 
 int main(int argc, char *argv[]){
     time_t start, end;
-    int TimeElapsed;
+    int TimeElapsed, NbPatients=142;
     char workspace[500];
 
     /* SET TIMER */
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
     mcmcInternals *MCMCSettings = createMcmcInternals();
 
     /*RAW DATA*/
-    nb_data *nb = createNbData();
+    nb_data *nb = createNbData(NbPatients);
     /* reading Nbdata */
     /***************************************
      *************** TO WRITE ***************
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
     raw_data *data = createRawData(nb);
 
     /*AUG DATA*/
-    aug_data *augData = createAugData();
+    aug_data *augData = createAugData(NbPatients);
 
     /*parameters */
     parameters *param = createParam();
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
     /***   Preparing output files (writing headers)    ***/
     /*****************************************************/
 
-    prepAllFiles(Files);
+    prepAllFiles(Files, NbPatients);
 
     /*****************************************************/
 

@@ -18,7 +18,7 @@
 
 
 void readFakeNbData(nb_data *nb){
-    int i;
+    int i, NbPatients = nb->NbPatients;
     FILE *fich;
     int V;
 
@@ -73,7 +73,7 @@ void readFakeNbData(nb_data *nb){
 
 void readFakeData(nb_data *nb, raw_data *data){
     FILE *fich;
-    int i,k;
+    int i, k, NbPatients = nb->NbPatients;
     int V;
 
     fich = fopen("Admission.txt","r");
@@ -211,9 +211,9 @@ void readFakeData(nb_data *nb, raw_data *data){
 /* preparing output file                                                 */
 /*************************************************************************/
 
-void prepAllFiles(output_files * Files){
+void prepAllFiles(output_files * Files, int NbPatients){
     int i;
-	
+
     fprintf(Files->LogL,"LogLikelihood\n");
     fflush(Files->LogL);
 
@@ -283,7 +283,7 @@ void writeAllFiles(output_files * Files, parameters * param, nb_data *nb, raw_da
     fprintf(Files->Parameters,"%lf\n",param->alpha);
     fflush(Files->Parameters);
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<nb->NbPatients ; i++)
 	{
 	    if(nb->NbPosSwabs[i]>0)
 		{
@@ -299,6 +299,6 @@ void writeAllFiles(output_files * Files, parameters * param, nb_data *nb, raw_da
     fprintf(Files->EndColonDates,"\n");
     fflush(Files->ColonDates);
     fflush(Files->EndColonDates);
-	
+
 }
 

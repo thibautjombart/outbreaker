@@ -9,7 +9,7 @@ void readFakeNbData(nb_data *);
 
 void readFakeData(nb_data *, raw_data *);
 
-void prepAllFiles(output_files *);
+void prepAllFiles(output_files *, int NbPatients);
 
 void writeAllFiles(output_files * ,parameters * , nb_data *, raw_data * , aug_data *);
 

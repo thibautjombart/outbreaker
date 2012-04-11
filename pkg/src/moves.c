@@ -18,8 +18,6 @@
 void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept, NbProposals *NbProp){
     /* updating beta_{i,j} with Metropolis algorithm */
     /* proposal distribution = lognormal */
-    
-    return; 
 
     /* double * newVal, *curVal; */
     /* double * nbAccept; */
@@ -145,7 +143,7 @@ void moveSp(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
     double NbFalsePos=0;
     int i,j,k;
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    for(j=0 ; j<nb->NbPosSwabs[i] ; j++) /* positive swabs */
 		{
@@ -176,7 +174,7 @@ void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
     double NbTruePos=0;
     int i,j,k;
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    for(j=0 ; j<nb->NbPosSwabs[i] ; j++) /* positive swabs */
 		{
@@ -207,7 +205,7 @@ void movePi(parameters * curParam, raw_data * data, aug_data *augData, acceptanc
     double NonColonisedAtFirstAdmission=0;
     int i;
 
-    for(i=0 ; i<NbPatients ; i++)
+    for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    if(augData->C[i]<gsl_vector_get(data->A[i],0))
 		{
@@ -446,7 +444,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     /* updating C[i] with Metropolis algorithm */
     /* proposal distribution = uniform between [C_i-l ; C_i+l] */
 
-    int l = 1; /* half-width of the proposal interval */
+    int l = 1, NbPatients = data->NbPatients; /* half-width of the proposal interval */
     int random;
     int j,t;
     int curMinTime, curMaxTime;
@@ -458,7 +456,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     double r,z;
     double pAccept = 0;
     double pAccept2;
-    aug_data *newAugData = createAugData();
+    aug_data *newAugData = createAugData(NbPatients);
     copyAugData(newAugData,curAugData);
 
     curVal = &curAugData->C[i];
@@ -592,7 +590,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     /* updating E[i] with Metropolis algorithm */
     /* proposal distribution = uniform between [E_i-l ; E_i+l] */
 
-    int l = 1; /* half-width of the proposal interval */
+    int l = 1, NbPatients = data->NbPatients; /* half-width of the proposal interval */
     int random;
     int j,t;
     int curMinTime, curMaxTime;
@@ -603,7 +601,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     int *newVal, *curVal;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData();
+    aug_data *newAugData = createAugData(NbPatients);
     copyAugData(newAugData,curAugData);
 
     curVal = &curAugData->E[i];
@@ -719,14 +717,14 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
     /* updating C[i] and E[i] with Metropolis algorithm */
     /* proposal distribution = C_i uniform between [C_i-l ; C_i+l] and E_i shifted so that E_i - C_i constant */
 
-    int l = 1; /* half-width of the proposal interval */
+    int l = 1, NbPatients = data->NbPatients; /* half-width of the proposal interval */
     int random;
     int j,t;
     int *newValC, *curValC;
     int *newValE, *curValE;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData();
+    aug_data *newAugData = createAugData(NbPatients);
     copyAugData(newAugData,curAugData);
 
     curValC = &curAugData->C[i];
