@@ -38,7 +38,7 @@ typedef short int bool;
 
 
 typedef struct{
-    int NbPatients, T;
+    int NbPatients, T; /* T: number of time steps corresponding to the study period */
     int * NbAdmissions;
     int * NbPosSwabs;
     int * NbNegSwabs;
@@ -53,7 +53,7 @@ typedef struct{
 
 typedef struct{
     /* EPI DATA */
-    int NbPatients, T;
+    int NbPatients, T; /* T: number of time steps corresponding to the study period */
     int * ward; /* 0 for adult, 1 for pediatric */
     int * timeSeq; /* time of sequence for each patient */
     int * PatientIndex;

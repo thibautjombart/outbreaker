@@ -1,3 +1,78 @@
+####################
+## sim.testrun.data
+####################
+##
+## simple function to simulate data to test R/C interface
+sim.testrun.data <- function(n.patients=10, min.n.swab=0, max.n.swab=10,
+                             min.n.seq=0, max.n.seq=10, time.span=100,
+                             seq.length=30){
+
+    ## CHECKS ##
+    if(!require(ape)) stop("The ape package is required.")
+    if(max.n.seq>max.n.swab) max.n.seq <- max.n.swab
+
+
+    ## EPI DATA ##
+    ## nb of swab per patient
+    n.swab <- as.integer(round(runif(n.patients, min.n.swab, max.n.swab)))
+
+     ## simulate swab data
+    swab <- lapply(n.swab, function(i) as.integer(sample(0:1,i,replace=TRUE)))
+    t.swab <- lapply(n.swab, function(i) as.double(round(runif(i, 0, time.span))))
+
+    ## simulate wards
+    ward <- sapply(1:n.patients, function(i) as.integer(sample(0:1,1)))
+
+    ## simulate admissions / discharges
+    n.adm <- rep(1L, n.patients)
+
+    t.adm <- sapply(t.swab, function(e) ifelse(all(is.na(e)), 0, min(e)-1) )
+    t.adm[t.adm<0] <- 0
+    t.adm <- as.double(t.adm)
+
+    t.dis <- sapply(t.swab, function(e) ifelse(all(is.na(e)), time.span, max(e)+1) )
+    t.dis[t.dis>time.span] <- time.span
+    t.dis <- as.double(t.dis)
+
+    ## presence in hospital (0:no, 1:yes)
+    hosp.pres <- lapply(1:n.patients, function(i) sapply(0:time.span, function(t) ifelse(t<t.adm[i] | t>t.dis[i],0,1)))
+
+
+    ## GENETIC DATA ##
+    ## generate sequence from scratch
+    NUCL <- c("a","t","c","g","-")
+    NA.prop <- .02
+    PROB <- c(rep((1-NA.prop)/4,4),NA.prop)
+    seq.gen <- function(){
+        res <- sample(NUCL, size=seq.length, replace=TRUE, prob=PROB)
+        return(res)
+    }
+
+    ## nb of sequences per patient
+    n.seq <- sapply(n.swab, function(e) round(runif(1, 0, e)))
+    n.seq[n.seq<min.n.seq] <- min.n.seq
+    n.seq[n.seq>max.n.seq] <- max.n.seq
+
+    ## simulate sequences
+    dna <- as.DNAbin(lapply(1:sum(n.seq), function(i) seq.gen()))
+    t.dna <- mapply(function(a,b) sample(a, b, replace=TRUE), t.swab, n.seq)
+
+    ## simulate sequence indices for the patients
+    temp <- unlist(lapply(1:length(n.seq), function(i) rep(i, n.seq[i])))
+    temp <- sample(temp)
+    idx.dna <- lapply(1:n.patients, function(i) as.integer(which(temp==i)))
+
+
+    ## FORM RESULT AND RETURN ##
+    res <- list(n.swab=n.swab, swab=swab, t.swab=t.swab, ward=ward, n.adm=n.adm, t.adm=t.adm, t.dis=t.dis,
+                hosp.pres=hosp.pres, n.seq=n.seq, dna=dna, t.dna=t.dna, idx.dna=idx.dna)
+    return(res)
+
+} # end sim.testrun.data
+
+
+
+
 ############
 ## sim.mrsa
 ############
