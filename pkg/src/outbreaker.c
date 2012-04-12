@@ -14,87 +14,54 @@
 /* MAIN                                                                       */
 /******************************************************************************/
 
-void R_outbreaker(){
-    int TimeElapsed, NbPatients=142, T=100;
-    char workspace[500];
+void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, double *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen){
 
-  
-    /*****************************************************/
-    /***           DECLARE ALL STRUCTURES              ***/
-    /*****************************************************/
+    int NbPatients=*nbPatients, T = *duration;
+    char workspace[500]= "";
 
-    /*MCMC */
+    /* === CREATE AND FILL OBJECTS === */
+    /* MCMC */
     mcmcInternals *MCMCSettings = createMcmcInternals();
 
-    /*RAW DATA*/
-    nb_data *nb = createNbData(NbPatients, T);
-    /* printf("\ncreated nb data\n"); */
+    /* DATA */
+    /* allocate / fill in */
+    nb_data *nb = createNbData(NbPatients, T); /* nb_data*/
+    importNbData(nbAdmVec, nbPosSwab, nbNegSwab, nbColPatients, nbPatients, duration, idxColPatients, nbSeqPat, nb);
 
-    /* reading Nbdata */
-    readFakeNbData(nb);
-    /* printf("\nread fake nb data\n"); */
+    raw_data *data = createRawData(nb); /* epi data */
+    importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
 
-    raw_data *data = createRawData(nb);
-    /* printf("\ncreated raw data\n"); */
+    list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
+    dna_dist *dnainfo = compute_dna_distances(dna); /* genetic distances - all DNA info needed */
+    aug_data *augData = createAugData(NbPatients, T); /* augmented data */
 
-    /*AUG DATA*/
-    aug_data *augData = createAugData(NbPatients, T);
-    /* printf("\ncreated aug data\n"); */
 
-    /*parameters */
+    /* PARAMETERS */
     parameters *param = createParam();
-    param->weightNaGen = 0.01;
-    /* printf("\ncreated param\n"); */
+    param->weightNaGen = *weightNaGen;
 
-    /* Output files */
+    /* OUTPUT FILES */
     output_files *Files = createFILES(workspace);
 
-    /* Acceptance */
+    /* ACCEPTANCE */
     acceptance *accept = createAcceptance(); /* accept is initialized to zero */
     isAcceptOK *acceptOK = createIsAcceptOK();
     NbProposals *nbProp = createNbProposals();
 
 
-    /* DNA DISTANCES */
-    dna_dist *dnainfo = NULL;
-
-    /*****************************************************/
-    /***         READ DATA AND MCMC SETTINGS           ***/
-    /***        + INIT AUGDATA AND PARAMETERS          ***/
-    /*****************************************************/
-
-    /* reading data */
-    /***************************************
-     *************** TO WRITE ***************
-     ****************************************/
-    readFakeData(nb, data);
-
-    /* filling in data->IsInHosp */
-    CalculIsInHosp(nb, data);
-
-    /* fill in MCMC settings */
+    /* AUGMENTED DATA AND PARAMETER INITIALIZATION */
+    /* Initialize in MCMC settings */
     InitMCMCSettings(MCMCSettings);
-
-    /* initialize parameters */
-    /***************************************
-     *************** TO WRITE ***************
-     ****************************************/
+    /* !!! TO WRITE !!! */
     InitParam(param);
 
     /* initialize augmented data */
     InitAugData(param, nb, data, augData);
 
-    /*****************************************************/
 
-
-
-    /*****************************************************/
-    /***   Preparing output files (writing headers)    ***/
-    /*****************************************************/
-
+    /* OUTPUT FILE PREPARATION  */
     prepAllFiles(Files, NbPatients);
 
-    /*****************************************************/
 
     /*****************************************************/
     /***                 Launch MCMC                   ***/
@@ -122,7 +89,6 @@ void R_outbreaker(){
     freeIsAcceptOK(acceptOK);
     freeNbProposals(nbProp);
 
-   
 } /* end R_outbreaker */
 
 

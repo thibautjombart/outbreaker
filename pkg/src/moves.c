@@ -170,8 +170,11 @@ void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
 
     for(i=0;i<data->NbPatients;i++){
 	for(j=0;j<nb->NbPosSwabs[i];j++){ /* positive swabs */
-	    
-	    if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i] && gsl_vector_get(data->P[i],j)!=data->timeSeq[i]){
+	    /* !!! THIS NEEDS TO BE CHANGED; TIMESEQ IS NO LONGER USED !!! */
+	    /* if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i] && gsl_vector_get(data->P[i],j)!=data->timeSeq[i]){ */
+	    /* 	NbTruePos++; /\* true positives *\/ */
+	    /* } */
+	    if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i]){
 		NbTruePos++; /* true positives */
 	    }
 	}
