@@ -6,6 +6,8 @@
 #include "moves.h"
 #include "prior.h"
 #include "alloc.h"
+#include "genclasses.h"
+#include "matvec.h"
 #include "tuneVariances.h"
 
 
@@ -44,6 +46,12 @@ nb_data * createNbData(int NbPatients, int T){
 	exit(1);
     }
 
+    nb->M = (int *) calloc(NbPatients, sizeof(int));
+    if(nb->M == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
+	exit(1);
+    }
+
     nb->NbColonisedPatients = 0;
     nb->NbPatients = NbPatients;
     nb->T = T;
@@ -60,6 +68,7 @@ void freeNbData(nb_data *nb){
     free(nb->NbPosSwabs);
     free(nb->NbNegSwabs);
     free(nb->indexColonisedPatients);
+    free(nb->M);
     free(nb);
 }
 
@@ -72,6 +81,8 @@ void freeNbData(nb_data *nb){
 raw_data *createRawData(nb_data *nb){
     int i;
     raw_data *data = (raw_data *) malloc(sizeof(raw_data));
+
+    /* EPI DATA */
     if(data == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
@@ -142,7 +153,41 @@ raw_data *createRawData(nb_data *nb){
     data->NbPatients = nb->NbPatients;
     data->T = nb->T;
 
-    /* random number generator */
+
+    /* GENETIC DATA */
+    /* S: indices of sequences collected for each patient */
+    data->S = (int **) malloc(nb->NbPatients*sizeof(int *));
+    if(data->S == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+    for(i=0;i<nb->NbPatients;i++){
+	data->S[i] = (int *) calloc(nb->M[i], sizeof(int));
+	if(data->S[i] == NULL){
+	    fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	    exit(1);
+	}
+    }
+
+    /* Tcollec: collection times for each sequence */
+    data->Tcollec = (double *) calloc(nb->NbPatients, sizeof(double));
+    if(data->Tcollec == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+
+    /* M: number of sequences collected for each patient */
+    data->M = (int *) calloc(nb->NbPatients, sizeof(int));
+    if(data->M == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	exit(1);
+    }
+    for(i=0;i<nb->NbPatients;i++){
+	data->M[i] = nb->M[i];
+    }
+
+
+    /* RANDOM NUMBER GENERATOR */
     time_t t = time(NULL); // time in seconds, used to change the seed of the random generator
     const gsl_rng_type *typ;
     gsl_rng_env_setup();
@@ -160,14 +205,14 @@ raw_data *createRawData(nb_data *nb){
 void freeRawData(raw_data *data){
     int i;
 
-    for(i=0 ; i<data->NbPatients ; i++)
-	{
-	    gsl_vector_free(data->A[i]);
-	    gsl_vector_free(data->D[i]);
-	    gsl_vector_free(data->P[i]);
-	    gsl_vector_free(data->N[i]);
-	    gsl_vector_free(data->IsInHosp[i]);
-	}
+    for(i=0 ; i<data->NbPatients ; i++){
+	gsl_vector_free(data->A[i]);
+	gsl_vector_free(data->D[i]);
+	gsl_vector_free(data->P[i]);
+	gsl_vector_free(data->N[i]);
+	gsl_vector_free(data->IsInHosp[i]);
+	free(data->S);
+    }
 
     free(data->ward);
     free(data->PatientIndex);
@@ -177,6 +222,9 @@ void freeRawData(raw_data *data){
     free(data->P);
     free(data->N);
     free(data->IsInHosp);
+    free(data->S);
+    free(data->Tcollec);
+    free(data->M);
     gsl_rng_free(data->rng);
     free(data);
 }
@@ -329,13 +377,11 @@ mcmcInternals *createMcmcInternals(){
 void printStdProp(mcmcInternals *MCMCSettings){
     int i,j;
 
-    for (i=0 ;  i<2 ; i++)
-	{
-	    for (j=0 ; j<2 ; j++)
-		{
-		    printf("Std proposal for beta_%d,%d: %lg\n",i,j,gsl_matrix_get(MCMCSettings->Sigma_beta,i,j));
-		}
+    for (i=0;i<2;i++){
+	for (j=0;j<2;j++){
+	    printf("Std proposal for beta_%d,%d: %lg\n",i,j,gsl_matrix_get(MCMCSettings->Sigma_beta,i,j));
 	}
+    }
     printf("Std proposal for betaWardOut: %lg\n",MCMCSettings->Sigma_betaWardOut);
     printf("Std proposal for betaOutOut: %lg\n",MCMCSettings->Sigma_betaOutOut);
     printf("Std proposal for mu: %lg\n",MCMCSettings->Sigma_mu);
@@ -391,13 +437,11 @@ acceptance *createAcceptance(){
 
 void reInitiateAcceptance(acceptance *accept){
     int i,j;
-    for(i=0 ; i<2 ; i++)
-	{
-	    for(j=0 ; j<2 ; j++)
-		{
-		    gsl_matrix_set(accept->PourcAcc_beta,i,j,0);
-		}
+    for(i=0;i<2;i++){
+	for(j=0;j<2;j++){
+	    gsl_matrix_set(accept->PourcAcc_beta,i,j,0);
 	}
+    }
 
     accept->PourcAcc_betaWardOut=0;
     accept->PourcAcc_betaOutOut=0;
@@ -417,14 +461,12 @@ void reInitiateAcceptance(acceptance *accept){
 void printAcceptance(acceptance *accept, NbProposals *NbProp){
     int i,j;
 
-    for(i=0 ; i<2 ; i++)
-	{
-	    for(j=0 ; j<2 ; j++)
-		{
-		    printf("Prob accept beta_%d,%d\t%lg\n",i,j,gsl_matrix_get(accept->PourcAcc_beta,i,j)/gsl_matrix_get(NbProp->NbProp_beta,i,j));
-		    fflush(stdout);
-		}
+    for(i=0;i<2;i++){
+	for(j=0;j<2;j++){
+	    printf("Prob accept beta_%d,%d\t%lg\n",i,j,gsl_matrix_get(accept->PourcAcc_beta,i,j)/gsl_matrix_get(NbProp->NbProp_beta,i,j));
+	    fflush(stdout);
 	}
+    }
 
     printf("Prob accept betaWardOut\t%lg\n",accept->PourcAcc_betaWardOut/NbProp->NbProp_betaWardOut);
     fflush(stdout);
@@ -451,7 +493,6 @@ void printAcceptance(acceptance *accept, NbProposals *NbProp){
 
 void freeAcceptance(acceptance *accept){
     gsl_matrix_free(accept->PourcAcc_beta);
-
     free(accept);
 }
 
@@ -506,7 +547,6 @@ NbProposals *createNbProposals(){
 	fprintf(stderr, "\n[in: alloc.c->createNbProposals]\nNo memory left for creating NbProp. Exiting.\n");
 	exit(1);
     }
-
 
     NbProp->NbProp_beta = gsl_matrix_calloc(2,2);
 
@@ -573,7 +613,6 @@ output_files *createFILES(char *workspace){
     }
 
     char fileName[300];
-
 
     strcpy(fileName, workspace);
     strcat(fileName,"LogL.txt");

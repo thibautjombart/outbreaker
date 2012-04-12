@@ -8,7 +8,6 @@
 #include "alloc.h"
 #include "tuneVariances.h"
 
-/* extern gsl_rng * rng; */
 
 
 
@@ -63,13 +62,11 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
 void moveAllBeta(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept, NbProposals *NbProp){
     int i,j;
 
-    for (i=0 ; i<2 ; i++)
-	{
-	    for(j=0 ; j<2 ; j++)
-		{
-		    moveBeta(i,j,MCMCSettings, curParam, data, nb, augData, accept, NbProp);
-		}
+    for (i=0;i<2;i++){
+	for(j=0;j<2;j++){
+	    moveBeta(i,j,MCMCSettings, curParam, data, nb, augData, accept, NbProp);
 	}
+    }
 
 }
 
@@ -143,23 +140,20 @@ void moveSp(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
     double NbFalsePos=0;
     int i,j,k;
 
-    for(i=0 ; i<data->NbPatients ; i++)
-	{
-	    for(j=0 ; j<nb->NbPosSwabs[i] ; j++) /* positive swabs */
-		{
-		    if(gsl_vector_get(data->P[i],j)<augData->C[i] || gsl_vector_get(data->P[i],j)>augData->E[i])
-			{
-			    NbFalsePos++; /* false positives */
-			}
+    for(i=0;i<data->NbPatients;i++){
+	for(j=0;j<nb->NbPosSwabs[i];j++) /* positive swabs */
+	    {
+		if(gsl_vector_get(data->P[i],j)<augData->C[i] || gsl_vector_get(data->P[i],j)>augData->E[i]){
+		    NbFalsePos++; /* false positives */
 		}
-	    for(k=0 ; k<nb->NbNegSwabs[i] ; k++) /* positive swabs */
-		{
-		    if(gsl_vector_get(data->N[i],k)<augData->C[i] || gsl_vector_get(data->N[i],k)>augData->E[i])
-			{
-			    NbTrueNeg++; /* true negatives */
-			}
+	    }
+	for(k=0;k<nb->NbNegSwabs[i];k++) /* positive swabs */
+	    {
+		if(gsl_vector_get(data->N[i],k)<augData->C[i] || gsl_vector_get(data->N[i],k)>augData->E[i]){
+		    NbTrueNeg++; /* true negatives */
 		}
-	}
+	    }
+    }
 
     /* curParam->Sp = gsl_ran_beta (data->rng, NbTrueNeg+1, NbFalsePos+1); */
 }
@@ -174,23 +168,20 @@ void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
     double NbTruePos=0;
     int i,j,k;
 
-    for(i=0 ; i<data->NbPatients ; i++)
-	{
-	    for(j=0 ; j<nb->NbPosSwabs[i] ; j++) /* positive swabs */
-		{
-		    if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i] && gsl_vector_get(data->P[i],j)!=data->timeSeq[i])
-			{
-			    NbTruePos++; /* true positives */
-			}
+    for(i=0;i<data->NbPatients;i++){
+	for(j=0;j<nb->NbPosSwabs[i];j++) /* positive swabs */
+	    {
+		if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i] && gsl_vector_get(data->P[i],j)!=data->timeSeq[i]){
+		    NbTruePos++; /* true positives */
 		}
-	    for(k=0 ; k<nb->NbNegSwabs[i] ; k++) /* positive swabs */
-		{
-		    if(augData->C[i]<=gsl_vector_get(data->N[i],k) && gsl_vector_get(data->N[i],k)<=augData->E[i])
-			{
-			    NbFalseNeg++; /* false negatives */
-			}
+	    }
+	for(k=0;k<nb->NbNegSwabs[i];k++) /* positive swabs */
+	    {
+		if(augData->C[i]<=gsl_vector_get(data->N[i],k) && gsl_vector_get(data->N[i],k)<=augData->E[i]){
+		    NbFalseNeg++; /* false negatives */
 		}
-	}
+	    }
+    }
 
     curParam->Se = gsl_ran_beta (data->rng, NbTruePos+1, NbFalseNeg+1);
 }
@@ -205,16 +196,13 @@ void movePi(parameters * curParam, raw_data * data, aug_data *augData, acceptanc
     double NonColonisedAtFirstAdmission=0;
     int i;
 
-    for(i=0 ; i<data->NbPatients ; i++)
-	{
-	    if(augData->C[i]<gsl_vector_get(data->A[i],0))
-		{
-		    ColonisedAtFirstAdmission++;
-		} else
-		{
-		    NonColonisedAtFirstAdmission++;
-		}
+    for(i=0;i<data->NbPatients;i++){
+	if(augData->C[i]<gsl_vector_get(data->A[i],0)){
+	    ColonisedAtFirstAdmission++;
+	} else {
+	    NonColonisedAtFirstAdmission++;
 	}
+    }
 
     curParam->Pi = gsl_ran_beta (data->rng, ColonisedAtFirstAdmission+1, NonColonisedAtFirstAdmission+1);
 }
@@ -442,7 +430,7 @@ void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * d
 /*********************** Move augmented data ***********************/
 void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData){
     /* updating C[i] with Metropolis algorithm */
-    /* proposal distribution = uniform between [C_i-l ; C_i+l] */
+    /* proposal distribution = uniform between [C_i-l;C_i+l] */
 
     int l = 1, NbPatients = data->NbPatients, T=data->T; /* half-width of the proposal interval */
     int random;
@@ -468,69 +456,49 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     random=gsl_rng_uniform_int (data->rng, curNbPoss);
 
-    if(random<l)
-	{
-	    *newVal = curMinTime + random;
-	} else
-	{
-	    *newVal = curMinTime + random + 1;
-	}
+    if(random<l){
+	*newVal = curMinTime + random;
+    } else {
+	*newVal = curMinTime + random + 1;
+    }
 
-    if(*newVal < *curVal)
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T))
-			{
-			    for (t=GSL_MAX(*newVal,0) ; t<GSL_MIN(*curVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]++;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T))
-			{
-			    for (t=GSL_MAX(*newVal,0) ; t<GSL_MIN(*curVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]++;
-					}
-				}
-			}
+    if(*newVal < *curVal){
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
+		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]++;
+		    }
 		}
-	} else
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T))
-			{
-			    for (t=GSL_MAX(*curVal,0) ; t<GSL_MIN(*newVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]--;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T))
-			{
-			    for (t=GSL_MAX(*curVal,0) ; t<GSL_MIN(*newVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]--;
-					}
-				}
-			}
+	    }
+	} else {
+	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
+		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]++;
+		    }
 		}
+	    }
 	}
+    } else {
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
+		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]--;
+		    }
+		}
+	    }
+	} else {
+	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
+		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]--;
+		    }
+		}
+	    }
+	}
+    }
 
     newMinTime = *newVal - l;
     newMaxTime = GSL_MIN(*newVal + l,curAugData->E[i]-1);
@@ -543,12 +511,11 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     pAccept += DurationColonPerCase (i, newAugData, param) - DurationColonPerCase (i, curAugData, param);
 
-    for(j=0 ; j<NbPatients ; j++) /* only patients who are colonised after C_i are affected by the change in C_i */
+    for(j=0;j<NbPatients;j++) /* only patients who are colonised after C_i are affected by the change in C_i */
 	{
-	    if(curAugData->C[j]>=GSL_MIN(*newVal,*curVal))
-		{
-		    pAccept += ColonPerCase(j,data, nb, newAugData, param) - ColonPerCase(j,data, nb, curAugData, param);
-		}
+	    if(curAugData->C[j]>=GSL_MIN(*newVal,*curVal)){
+		pAccept += ColonPerCase(j,data, nb, newAugData, param) - ColonPerCase(j,data, nb, curAugData, param);
+	    }
 	} /* this loop should be equivalent to pAccept += Colon(data, nb, newAugData, param) - Colon (data, nb, curAugData, param); */
 
     pAccept +=   log(QCur) - log(QNew); /* correction for truncation (C_i has to be < E_i) */
@@ -558,14 +525,12 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     /* printf("%d\t%lg\t%lg\n",i,pAccept,pAccept2); */
     /* fflush(stdout); */
-    /*if(abs(pAccept-pAccept2)>0.01)
-      {
+    /*if(abs(pAccept-pAccept2)>0.01){
       printf("difference pAccept pAccept2\n");
       fflush(stdout);
       system("pause");
       }
-      if(pAccept>0)
-      {
+      if(pAccept>0){
       printf("pAccept>0\n");
       fflush(stdout);
       system("pause");
@@ -588,7 +553,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
 void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData){
     /* updating E[i] with Metropolis algorithm */
-    /* proposal distribution = uniform between [E_i-l ; E_i+l] */
+    /* proposal distribution = uniform between [E_i-l;E_i+l] */
 
     int l = 1, NbPatients = data->NbPatients, T = data->T; /* half-width of the proposal interval */
     int random;
@@ -613,69 +578,49 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     random=gsl_rng_uniform_int (data->rng, curNbPoss);
 
-    if(random<l)
-	{
-	    *newVal = curMaxTime - random;
-	} else
-	{
-	    *newVal = curMaxTime - random - 1;
-	}
+    if(random<l){
+	*newVal = curMaxTime - random;
+    } else {
+	*newVal = curMaxTime - random - 1;
+    }
 
-    if(*newVal < *curVal)
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T))
-			{
-			    for (t=GSL_MAX(*newVal,0) ; t<GSL_MIN(*curVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]--;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T))
-			{
-			    for (t=GSL_MAX(*newVal,0) ; t<GSL_MIN(*curVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]--;
-					}
-				}
-			}
+    if(*newVal < *curVal){
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
+		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]--;
+		    }
 		}
-	} else
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T))
-			{
-			    for (t=GSL_MAX(*curVal,0) ; t<GSL_MIN(*newVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]++;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T))
-			{
-			    for (t=GSL_MAX(*curVal,0) ; t<GSL_MIN(*newVal,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]++;
-					}
-				}
-			}
+	    }
+	} else {
+	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
+		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]--;
+		    }
 		}
+	    }
 	}
+    } else {
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
+		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]++;
+		    }
+		}
+	    }
+	} else {
+	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
+		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]++;
+		    }
+		}
+	    }
+	}
+    }
 
     newMinTime = GSL_MAX(*newVal - l,curAugData->C[i]+1);
     newMaxTime = *newVal + l;
@@ -688,12 +633,11 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     pAccept += DurationColonPerCase (i, newAugData, param) - DurationColonPerCase (i, curAugData, param);
 
-    for(j=0 ; j<NbPatients ; j++) /* only patients who are colonised after E_i are affected by the change in E_i */
+    for(j=0;j<NbPatients;j++) /* only patients who are colonised after E_i are affected by the change in E_i */
 	{
-	    if(curAugData->C[j]>=GSL_MIN(*newVal,*curVal))
-		{
-		    pAccept += ColonPerCase(j,data, nb, newAugData, param) - ColonPerCase(j,data, nb, curAugData, param);
-		}
+	    if(curAugData->C[j]>=GSL_MIN(*newVal,*curVal)){
+		pAccept += ColonPerCase(j,data, nb, newAugData, param) - ColonPerCase(j,data, nb, curAugData, param);
+	    }
 	} /* this loop should be equivalent to pAccept += Colon(data, nb, newAugData, param) - Colon (data, nb, curAugData, param); */
 
     pAccept +=   log(QCur) - log(QNew); /* correction for truncation (E_i has to be > C_i) */
@@ -715,7 +659,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
 void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData){
     /* updating C[i] and E[i] with Metropolis algorithm */
-    /* proposal distribution = C_i uniform between [C_i-l ; C_i+l] and E_i shifted so that E_i - C_i constant */
+    /* proposal distribution = C_i uniform between [C_i-l;C_i+l] and E_i shifted so that E_i - C_i constant */
 
     int l = 1, NbPatients = data->NbPatients, T = data->T; /* half-width of the proposal interval */
     int random;
@@ -735,136 +679,97 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 
     random=gsl_rng_uniform_int (data->rng, 2*l);
 
-    if(random<l)
-	{
-	    *newValC = *curValC - l + random;
-	    *newValE = *curValE - l + random;
-	} else
-	{
-	    *newValC = *curValC - l + random + 1;
-	    *newValE = *curValE - l + random + 1;
-	}
+    if(random<l){
+	*newValC = *curValC - l + random;
+	*newValE = *curValE - l + random;
+    } else {
+	*newValC = *curValC - l + random + 1;
+	*newValE = *curValE - l + random + 1;
+    }
 
-    if(*newValC < *curValC)
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*newValC,0)<GSL_MIN(*curValC,T))
-			{
-			    for (t=GSL_MAX(*newValC,0) ; t<GSL_MIN(*curValC,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]++;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*newValC,0)<GSL_MIN(*curValC,T))
-			{
-			    for (t=GSL_MAX(*newValC,0) ; t<GSL_MIN(*curValC,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]++;
-					}
-				}
-			}
+    if(*newValC < *curValC){
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*newValC,0)<GSL_MIN(*curValC,T)){
+		for (t=GSL_MAX(*newValC,0);t<GSL_MIN(*curValC,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]++;
+		    }
 		}
-	} else
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*curValC,0)<GSL_MIN(*newValC,T))
-			{
-			    for (t=GSL_MAX(*curValC,0) ; t<GSL_MIN(*newValC,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]--;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*curValC,0)<GSL_MIN(*newValC,T))
-			{
-			    for (t=GSL_MAX(*curValC,0) ; t<GSL_MIN(*newValC,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]--;
-					}
-				}
-			}
+	    }
+	} else {
+	    if(GSL_MAX(*newValC,0)<GSL_MIN(*curValC,T)){
+		for (t=GSL_MAX(*newValC,0);t<GSL_MIN(*curValC,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]++;
+		    }
 		}
+	    }
 	}
+    } else {
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*curValC,0)<GSL_MIN(*newValC,T)){
+		for (t=GSL_MAX(*curValC,0);t<GSL_MIN(*newValC,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]--;
+		    }
+		}
+	    }
+	} else {
+	    if(GSL_MAX(*curValC,0)<GSL_MIN(*newValC,T)){
+		for (t=GSL_MAX(*curValC,0);t<GSL_MIN(*newValC,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]--;
+		    }
+		}
+	    }
+	}
+    }
 
-    if(*newValE < *curValE)
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*newValE,0)<GSL_MIN(*curValE,T))
-			{
-			    for (t=GSL_MAX(*newValE,0) ; t<GSL_MIN(*curValE,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]--;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*newValE,0)<GSL_MIN(*curValE,T))
-			{
-			    for (t=GSL_MAX(*newValE,0) ; t<GSL_MIN(*curValE,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]--;
-					}
-				}
-			}
+    if(*newValE < *curValE){
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*newValE,0)<GSL_MIN(*curValE,T)){
+		for (t=GSL_MAX(*newValE,0);t<GSL_MIN(*curValE,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]--;
+		    }
 		}
-	} else
-	{
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(*curValE,0)<GSL_MIN(*newValE,T))
-			{
-			    for (t=GSL_MAX(*curValE,0) ; t<GSL_MIN(*newValE,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I0[t]++;
-					}
-				}
-			}
-		} else
-		{
-		    if(GSL_MAX(*curValE,0)<GSL_MIN(*newValE,T))
-			{
-			    for (t=GSL_MAX(*curValE,0) ; t<GSL_MIN(*newValE,T) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    newAugData->I1[t]++;
-					}
-				}
-			}
+	    }
+	} else {
+	    if(GSL_MAX(*newValE,0)<GSL_MIN(*curValE,T)){
+		for (t=GSL_MAX(*newValE,0);t<GSL_MIN(*curValE,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]--;
+		    }
 		}
+	    }
 	}
+    } else {
+	if(data->ward[i]==0){
+	    if(GSL_MAX(*curValE,0)<GSL_MIN(*newValE,T)){
+		for (t=GSL_MAX(*curValE,0);t<GSL_MIN(*newValE,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I0[t]++;
+		    }
+		}
+	    }
+	} else {
+	    if(GSL_MAX(*curValE,0)<GSL_MIN(*newValE,T)){
+		for (t=GSL_MAX(*curValE,0);t<GSL_MIN(*newValE,T);t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			newAugData->I1[t]++;
+		    }
+		}
+	    }
+	}
+    }
 
     pAccept += ObsLevelPerCase(i, data, nb, newAugData, param) - ObsLevelPerCase(i, data, nb, curAugData, param);
-    for(j=0 ; j<NbPatients ; j++) /* only patients who are colonised after C_i are affected by the change in C_i */
-	{
-	    if(curAugData->C[j]>=GSL_MIN(*newValC,*curValC))
-		{
-		    pAccept += ColonPerCase(j,data, nb, newAugData, param) - ColonPerCase(j,data, nb, curAugData, param);
-		}
-	} /* this loop should be equivalent to pAccept += Colon(data, nb, newAugData, param) - Colon (data, nb, curAugData, param); */
+    for(j=0;j<NbPatients;j++){ /* only patients who are colonised after C_i are affected by the change in C_i */
+
+	if(curAugData->C[j]>=GSL_MIN(*newValC,*curValC)){
+	    pAccept += ColonPerCase(j,data, nb, newAugData, param) - ColonPerCase(j,data, nb, curAugData, param);
+	}
+    } /* this loop should be equivalent to pAccept += Colon(data, nb, newAugData, param) - Colon (data, nb, curAugData, param); */
     if (pAccept>0) r=0; else r=pAccept;
     z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {

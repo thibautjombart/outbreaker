@@ -15,31 +15,32 @@
 
 
 
-
-
-/*
-  =================
-  === AUXILIARY ===
-  =================
-*/
-
-
-
 /*
   ===============================
   === MAIN EXTERNAL FUNCTIONS ===
   ===============================
 */
-/* 
+/*
    computes the likelihood of a sequences "S_i" given that "j infected i" and "S_j", with:
+   == in 'data' ==
    - s_i: indices of sequences in i (target patient)
    - s_j: indices of sequences in j (infector)
    - t_i, t_j: collection times for sets of sequences S_i and S_j
    - m_i, m_j: number of sequences for patients i and j; length of vectors s_i,s_j,t_i,t_j
-   - dnainfo: the pre-computed pairwise comparisons of DNA sequences
-   
+
+   == in 'dnainfo' ==
+   - the pre-computed pairwise comparisons of DNA sequences
+
+   == in 'param' ==
+   - the various parameters needed
 */
-double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j, double nu1, double nu2, double alpha, double tau, struct dna_dist *dnainfo, parameters *par){
+double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *param){
+    /* extract variables from input objects */
+    int *s_i=data->S[i], *s_j=data->S[j], m_i=data->M[i], m_j=data->M[j];
+    double *t_i=data->Tcollec[s_i], double *t_j=data->Tcollec[s_j];
+    double nu1=param->nu1, nu2=param->nu2, alpha=param->alpha, tau=param->tau;
+
+    /* variables used in computations */
     double out, Tabs, Xi1, Xi2, Xi3, Xi4, Pk;
     int k, q, r, transi, transv, common, nb_comp, nb_comp_k;
     bool tag=FALSE;
@@ -135,7 +136,7 @@ double genlike_ij(int *s_i, int *s_j, double *t_i, double *t_j, int m_i, int m_j
        - no compared sequence had nucleotide in common */
     /* printf("\nnb comparisons: %d", nb_comp); */
     if(nb_comp==0){
-	out = log(par->weightNaGen);
+	out = log(param->weightNaGen);
     } else {
 	/* log-like are averaged, not summed */
 	out = out/((double) nb_comp);
@@ -184,20 +185,20 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 
 
     /* MAKE DNAINFO AND PARAM */
-    parameters *par = createParam();
-    struct list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length);
+    parameters *param = createParam();
+    list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length);
     /* print_list_dnaseq(dna); */
-    struct dna_dist *distinfo = compute_dna_distances(dna);
+    dna_dist *distinfo = compute_dna_distances(dna);
 
-    par->weightNaGen = 0.0000001; /* near zero if no data */
+    param->weightNaGen = 0.0000001; /* near zero if no data */
 
     /* COMPUTE LIKELIHOOD */
-    *out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, distinfo, par);
+    *out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, distinfo, param);
 
     /* FREE STUFF */
     free_list_dnaseq(dna);
     free_dna_dist(distinfo);
-    freeParam(par);
+    freeParam(param);
 
 }
 
@@ -212,11 +213,11 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 /*     int N=5, L=10; */
 /*     int i,j, s_i[2] = {0,1}, s_j[3] = {2,3,4}; */
 /*     double alpha=0.5, tau=2.0, t_i[2] = {0.0, 10.0}, t_j[3] = {12.0, 50.0, 100.0}, out, nu1 = 0.01, nu2=0.02; */
-/*     parameters *par = createParam(); */
-/*     par->weightNaGen = 0.001; /\* near zero if no data *\/ */
+/*     parameters *param = createParam(); */
+/*     param->weightNaGen = 0.001; /\* near zero if no data *\/ */
 
 /*     /\* create a list of sequences *\/ */
-/*     struct list_dnaseq * test = create_list_dnaseq(N, L); */
+/*     list_dnaseq * test = create_list_dnaseq(N, L); */
 
 /*     for(i=0;i<N;i++){ */
 /* 	for(j=0;j<L;j++){ */
@@ -235,7 +236,7 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 /*     print_list_dnaseq(test); */
 
 /*     /\* COMPUTE DISTANCES *\/ */
-/*     struct dna_dist *distinfo = compute_dna_distances(test); */
+/*     dna_dist *distinfo = compute_dna_distances(test); */
 /*     print_dna_dist(distinfo); */
 
 
@@ -247,17 +248,17 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 /*     printf("\ntj: %f %f %f\n",t_j[0], t_j[1], t_j[2]); */
 /*     printf("\nnu1: %f nu2: %f alpha:%f tau: %f\n",nu1,nu2, alpha, tau); */
 
-/*     out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, par); */
+/*     out = genlike_ij(s_i, s_j, t_i, t_j, 2, 3, nu1, nu2, alpha, tau, distinfo, param); */
 /*     log(out); */
 /*     //printf("\npseudo log-likelihood (i: 0,1; j: 2,3,4): %.5f\n", out); */
 
 /*     /\* likelihood, only within-host sequences available *\/ */
 /*     /\* int *nothing=NULL; *\/ */
-/*     /\* out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, par); *\/ */
+/*     /\* out = genlike_ij(s_i, nothing, t_i, t_j, 2, 0, nu1, nu2, alpha, tau, distinfo, param); *\/ */
 /*     //printf("\npseudo log-likelihood (i: 0,1; j:NA): %.5f\n", out); */
 
 /*     /\* likelihood, no sequence available *\/ */
-/*     /\* out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, par); *\/ */
+/*     /\* out = genlike_ij(nothing, nothing, t_i, t_j, 0, 0, nu1, nu2, alpha, tau, distinfo, param); *\/ */
 /*     /\* printf("\npseudo log-likelihood (i: NA, j:NA): %.5f\n", out); *\/ */
 
 
@@ -266,7 +267,7 @@ void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int
 /*     /\* free and return *\/ */
 /*     free_list_dnaseq(test); */
 /*     free_dna_dist(distinfo); */
-/*     freeParam(par); */
+/*     freeParam(param); */
 
 /*     return 0; */
 /* } */

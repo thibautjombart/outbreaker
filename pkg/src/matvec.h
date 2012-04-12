@@ -17,15 +17,15 @@
 */
 
 
-struct vec_int{
+typedef struct{
 	int *values, length;
-};
+} vec_int;
 
 
-struct mat_int{
+typedef struct{
 	struct vec_int ** rows;
 	int n;
-};
+} mat_int;
 
 
 
@@ -39,9 +39,9 @@ struct mat_int{
 
 
 
-struct vec_int * create_vec_int(int n);
+vec_int * create_vec_int(int n);
 
-struct mat_int * create_mat_int(int n);
+mat_int * create_mat_int(int n);
 
 
 
@@ -52,9 +52,9 @@ struct mat_int * create_mat_int(int n);
 */
 
 
-void free_mat_int(struct mat_int *in);
+void free_mat_int(mat_int *in);
 
-void free_vec_int(struct vec_int *in);
+void free_vec_int(vec_int *in);
 
 
 
@@ -64,13 +64,13 @@ void free_vec_int(struct vec_int *in);
    === EXTERNAL FUNCTIONS ===
    ==========================
 */
-int vecint_i(struct vec_int *in, int i);
+int vecint_i(vec_int *in, int i);
 
-int matint_ij(struct mat_int *in, int i, int j);
+int matint_ij(mat_int *in, int i, int j);
 
-void print_vec_int(struct vec_int *in);
+void print_vec_int(vec_int *in);
 
-void print_mat_int(struct mat_int *in);
+void print_mat_int(mat_int *in);
 
 
 

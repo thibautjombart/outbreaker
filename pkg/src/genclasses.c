@@ -24,9 +24,9 @@
 */
 
 /* CREATE DNASEQ OBJECT - ONE DNA SEQUENCE */
-struct dnaseq * create_dnaseq(int length){
+dnaseq * create_dnaseq(int length){
 	/* ALLOCATE OUTPUT */
-	struct dnaseq *out = (struct dnaseq *) malloc(sizeof(struct dnaseq));
+	dnaseq *out = (dnaseq *) malloc(sizeof(dnaseq));
 	if(out==NULL){
 		fprintf(stderr, "\n[in: classes.c->create_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
 		exit(1);
@@ -42,18 +42,18 @@ struct dnaseq * create_dnaseq(int length){
 
 
 /* CREATE LIST_DNASEQ OBJECT - A LIST OF ALIGNED DNA SEQUENCES */
-struct list_dnaseq * create_list_dnaseq(int n, int length){
+list_dnaseq * create_list_dnaseq(int n, int length){
 	int i;
 
 	/* ALLOCATE OUTPUT */
-	struct list_dnaseq *out = (struct list_dnaseq *) malloc(sizeof(struct list_dnaseq));
+	list_dnaseq *out = (list_dnaseq *) malloc(sizeof(list_dnaseq));
 	if(out==NULL){
 		fprintf(stderr, "\n[in: classes.c->create_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
 		exit(1);
 	}
 
 	/* FILL/ALLOCATE CONTENT */
-	out->list = (struct dnaseq **) malloc(n*sizeof(struct dnaseq *));
+	out->list = (dnaseq **) malloc(n*sizeof(dnaseq *));
 	if(out->list==NULL){
 		fprintf(stderr, "\n[in: classes.c->create_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
 		exit(1);
@@ -80,7 +80,7 @@ struct list_dnaseq * create_list_dnaseq(int n, int length){
   ===========
 */
 
-void free_dnaseq(struct dnaseq *in){
+void free_dnaseq(dnaseq *in){
 	if(in!=NULL){
 		free(in->seq);
 		free(in);
@@ -88,7 +88,7 @@ void free_dnaseq(struct dnaseq *in){
 }
 
 
-void free_list_dnaseq(struct list_dnaseq *in){
+void free_list_dnaseq(list_dnaseq *in){
 	int i;
 	if(in!=NULL){
 		for(i=0;i<in->n;i++){
@@ -107,7 +107,7 @@ void free_list_dnaseq(struct list_dnaseq *in){
   ===================
 */
 
-void print_dnaseq(struct dnaseq *in){
+void print_dnaseq(dnaseq *in){
 	int i;
 	for(i=0;i<in->length;i++){
 		printf("%c", in->seq[i]);
@@ -118,7 +118,7 @@ void print_dnaseq(struct dnaseq *in){
 
 
 
-void print_list_dnaseq(struct list_dnaseq *in){
+void print_list_dnaseq(list_dnaseq *in){
 	int i;
 	printf("\nList of DNA %d sequences (size: %d)\n", in->n, in->length);
 	for(i=0;i<in->n;i++){
@@ -150,11 +150,11 @@ char DNAbin2char(unsigned char in){
 
 
 /* convert DNAbin class to list_dnaseq */
-struct list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
+list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 	int i, j, count=0;
 
 	/* CREATE OUTPUT */
-	struct list_dnaseq *out = create_list_dnaseq(*n,*length);
+	list_dnaseq *out = create_list_dnaseq(*n,*length);
 
 	/* FILL IN THE OUTPUT */
 	for(i=0;i<*n;i++){
@@ -187,7 +187,7 @@ struct list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 /* 	int i,j; */
 
 /* 	/\* create a list of sequences *\/ */
-/* 	struct list_dnaseq * test = create_list_dnaseq(N, L); */
+/* 	list_dnaseq * test = create_list_dnaseq(N, L); */
 
 /* 	for(i=0;i<N;i++){ */
 /* 		for(j=0;j<L;j++){ */

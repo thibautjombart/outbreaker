@@ -39,11 +39,12 @@ typedef short int bool;
 
 typedef struct{
     int NbPatients, T;
-    int *NbAdmissions;
-    int *NbPosSwabs;
-    int *NbNegSwabs;
+    int * NbAdmissions;
+    int * NbPosSwabs;
+    int * NbNegSwabs;
     int NbColonisedPatients; /* those who have at least one positive swab */
-    int *indexColonisedPatients; /* those who have at least one positive swab */
+    int * indexColonisedPatients; /* those who have at least one positive swab */
+    int * M; /* number of sequences in each patient */
 } nb_data;
 
 
@@ -51,6 +52,7 @@ typedef struct{
 
 
 typedef struct{
+    /* EPI DATA */
     int NbPatients, T;
     int * ward; /* 0 for adult, 1 for pediatric */
     int * timeSeq; /* time of sequence for each patient */
@@ -62,7 +64,13 @@ typedef struct{
     /* gsl_vector *IsInHosp[NbPatients]; /\* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T *\/ */
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
 
-    gsl_rng * rng; /* random number generator - nice here since raw data don't change */
+    /* GENETIC DATA */
+    int ** S; /* indices of sequences collected for each patient S->patient->vec of indices */
+    double * Tcollec; /* collection times of the sequences */
+    int * M; /* number of sequences collected for each patient */
+
+    /* RANDOM NUMBER GENERATOR */
+    gsl_rng * rng; /* nice here since raw data don't change */
 } raw_data;
 
 

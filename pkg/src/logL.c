@@ -6,6 +6,9 @@
 #include "moves.h"
 #include "prior.h"
 #include "alloc.h"
+#include "genclasses.h"
+#include "distances.h"
+#include "genlike.h"
 #include "tuneVariances.h"
 
 
@@ -145,7 +148,7 @@ double DurationColon (aug_data *augData, parameters * param){
 
 
 
-double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, parameters * param){
+double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, parameters * param){
     double L = 0;
     int l, s, t, j, r, NbPatients=data->NbPatients, T=data->T;
     double Num = 0;
@@ -201,11 +204,11 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, para
 			    L += log(1-exp(-gsl_matrix_get(param->beta,data->ward[i],0)*augData->I0[augData->C[i]] - gsl_matrix_get(param->beta,data->ward[i],1)*augData->I1[augData->C[i]] - param->betaWardOut));
 
 			    /* relative weights of each route of transmission incorporating genetic data : */
-			    for(j=0 ; j<NbPatients ; j++)
-				{
+			    for(j=0 ; j<NbPatients ; j++){
 				    /* calculate fij */
-				    /**************** Here need to incorporate Thibaut's genetic likelihood ****************/
-				    fij = 1;
+				    fij = genlike_ij(data, dnainfo, param);
+
+
 				    /*****************/
 				    if(augData->C[i]>=0 && augData->C[i]<T && augData->C[j]<=augData->C[i] && augData->C[i]<augData->E[j] && gsl_vector_get(data->IsInHosp[j],augData->C[i])) /* individual j is colonised and in hospital at time C_i */
 					{
@@ -280,14 +283,14 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, para
 
 
 
-double Colon (raw_data *data, nb_data *nb, aug_data *augData, parameters * param){
+double Colon(raw_data *data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, parameters * param){
     int i;
     double L = 0;
 
     for(i=0 ; i<data->NbPatients ; i++)
 	{
 	    fflush(stdout);
-	    L+=ColonPerCase (i, data, nb, augData, param);
+	    L+=ColonPerCase (i, data, nb, augData, dnainfo, param);
 	}
 
     return L;
@@ -300,8 +303,8 @@ double Colon (raw_data *data, nb_data *nb, aug_data *augData, parameters * param
 
 
 /**************** Total ****************/
-double fullLoglikelihoodPerCase(int i, raw_data * data, nb_data *nb, aug_data *augData, parameters * param){
-    double L = ObsLevelPerCase (i, data, nb, augData, param) + DurationColonPerCase (i, augData, param) + ColonPerCase (i, data, nb, augData, param);
+double fullLoglikelihoodPerCase(int i, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, parameters * param){
+    double L = ObsLevelPerCase (i, data, nb, augData, param) + DurationColonPerCase (i, augData, param) + ColonPerCase (i, data, nb, augData, dnainfo, param);
     return(L);
 }
 
@@ -309,10 +312,10 @@ double fullLoglikelihoodPerCase(int i, raw_data * data, nb_data *nb, aug_data *a
 
 
 
-double fullLoglikelihood(raw_data * data, nb_data *nb, aug_data *augData, parameters * param){
+double fullLoglikelihood(raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, parameters * param){
     double L = ObsLevel (data, nb, augData, param);
     L+= DurationColon(augData, param);
-    L+= Colon (data, nb, augData, param);
+    L+= Colon(data, nb, augData, dnainfo, param);
     return(L);
 }
 
