@@ -35,6 +35,8 @@
    - the various parameters needed
 */
 double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *param){
+    return 1.0;
+
     /* extract variables from input objects */
     int *s_i=data->S[i], *s_j=data->S[j], m_i=data->M[i], m_j=data->M[j];
     double t_i[m_i], t_j[m_j];
