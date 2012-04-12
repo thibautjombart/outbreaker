@@ -19,8 +19,8 @@
 */
 
 /* CREATE A DNA_DIST OBJECT */
-struct dna_dist * create_dna_dist(int n){
-    struct dna_dist * out = (struct dna_dist *) malloc(sizeof(struct dna_dist));
+dna_dist * create_dna_dist(int n){
+    dna_dist * out = (dna_dist *) malloc(sizeof(dna_dist));
     if(out==NULL){
 	fprintf(stderr, "\n[in: distances.c->create_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n");
 	exit(1);
@@ -45,7 +45,7 @@ struct dna_dist * create_dna_dist(int n){
   ===================
 */
 
-void free_dna_dist(struct dna_dist * in){
+void free_dna_dist(dna_dist * in){
     free_mat_int(in->transi);
     free_mat_int(in->transv);
     free_mat_int(in->nbcommon);
@@ -68,17 +68,17 @@ bool is_atgc(char in){
 }
 
 
-int get_transi(struct dna_dist * in, int i, int j){
+int get_transi(dna_dist * in, int i, int j){
     return in->transi->rows[i]->values[j];
 }
 
 
-int get_transv(struct dna_dist * in, int i, int j){
+int get_transv(dna_dist * in, int i, int j){
     return in->transv->rows[i]->values[j];
 }
 
 
-int get_nbcommon(struct dna_dist * in, int i, int j){
+int get_nbcommon(dna_dist * in, int i, int j){
     return in->nbcommon->rows[i]->values[j];
 }
 
@@ -92,7 +92,7 @@ int get_nbcommon(struct dna_dist * in, int i, int j){
   ===============================
 */
 
-void print_dna_dist(struct dna_dist *in){
+void print_dna_dist(dna_dist *in){
     printf("\n - transitions -");
     print_mat_int(in->transi);
 
@@ -108,12 +108,12 @@ void print_dna_dist(struct dna_dist *in){
 
 
 /* GET ALL PAIRWISE DISTANCES (TRANSITIONS/TRANSVERSIONS) IN A LIST OF SEQUENCES */
-struct dna_dist * compute_dna_distances(struct list_dnaseq *in){
+dna_dist * compute_dna_distances(list_dnaseq *in){
     int i,j,k;
     int N=in->n, L=in->length;
 
     /* CREATE OUTPUT */
-    struct dna_dist *out = create_dna_dist(N);
+    dna_dist *out = create_dna_dist(N);
   
     /* COMPUTE DISTANCES */
     /* for all unique pairs of sequences */
@@ -169,7 +169,7 @@ struct dna_dist * compute_dna_distances(struct list_dnaseq *in){
 /* 	int i,j; */
 
 /* 	/\* create a list of sequences *\/ */
-/* 	struct list_dnaseq * test = create_list_dnaseq(N, L); */
+/* 	list_dnaseq * test = create_list_dnaseq(N, L); */
 
 /* 	for(i=0;i<N;i++){ */
 /* 		for(j=0;j<L;j++){ */
@@ -188,7 +188,7 @@ struct dna_dist * compute_dna_distances(struct list_dnaseq *in){
 /* 	print_list_dnaseq(test); */
 
 /* 	/\* compute distances *\/ */
-/* 	struct dna_dist *out = compute_dna_distances(test); */
+/* 	dna_dist *out = compute_dna_distances(test); */
 
 
 /* 	print_dna_dist(out); */

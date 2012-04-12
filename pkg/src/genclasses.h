@@ -13,17 +13,17 @@
   DATA STRUCTURES
   ===============
 */
-struct dnaseq{
+typedef struct{
 	char *seq;
 	int length;
-};
+} dnaseq;
 
 
 
-struct list_dnaseq{
-	struct dnaseq **list;
+typedef struct{
+	dnaseq **list;
 	int n, length; /* n: nb of sequences; length: length of sequences */
-};
+} list_dnaseq;
 
 
 
@@ -34,9 +34,9 @@ struct list_dnaseq{
   CONSTRUCTORS
   ============
 */
-struct dnaseq * create_dnaseq(int length);
+ dnaseq * create_dnaseq(int length);
 
-struct list_dnaseq * create_list_dnaseq(int n, int length);
+ list_dnaseq * create_list_dnaseq(int n, int length);
 
 
 
@@ -47,9 +47,9 @@ struct list_dnaseq * create_list_dnaseq(int n, int length);
   ===========
 */
 
-void free_dnaseq(struct dnaseq *in);
+void free_dnaseq(dnaseq *in);
 
-void free_list_dnaseq(struct list_dnaseq *in);
+void free_list_dnaseq(list_dnaseq *in);
 
 
 
@@ -60,9 +60,9 @@ void free_list_dnaseq(struct list_dnaseq *in);
   ===================
 */
 
-void print_dnaseq(struct dnaseq *in);
+void print_dnaseq(dnaseq *in);
 
-void print_list_dnaseq(struct list_dnaseq *in);
+void print_list_dnaseq(list_dnaseq *in);
 
 char DNAbin2char(unsigned char in);
 
@@ -76,7 +76,7 @@ char DNAbin2char(unsigned char in);
   ==================
 */
 
-struct list_dnaseq * DNAbin2list_dnaseq(unsigned char * in, int *n, int *length);
+list_dnaseq * DNAbin2list_dnaseq(unsigned char * in, int *n, int *length);
 
 
 #endif

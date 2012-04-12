@@ -5,6 +5,14 @@
 
   These functions are basic routines for simulating host populations.
 */
+#ifndef __MATVEC_H
+#include "matvec.h"
+#endif
+
+#ifndef __GENCLASSES_H
+#include "genclasses.h"
+#endif
+
 
 #ifndef __DISTANCES_H
 #define  __DISTANCES_H
@@ -16,10 +24,10 @@
 */
 
 
-struct dna_dist{
-	struct mat_int *transi, *transv, *nbcommon;
+typedef struct{
+	mat_int *transi, *transv, *nbcommon;
 	int n;
-};
+} dna_dist;
 
 
 
@@ -29,7 +37,7 @@ struct dna_dist{
    ====================
 */
 
-struct dna_dist * create_dna_dist(int n);
+dna_dist * create_dna_dist(int n);
 
 
 
@@ -39,7 +47,7 @@ struct dna_dist * create_dna_dist(int n);
    ===================
 */
 
-void free_dna_dist(struct dna_dist * in);
+void free_dna_dist(dna_dist * in);
 
 
 
@@ -53,11 +61,11 @@ void free_dna_dist(struct dna_dist * in);
 
 bool is_atgc(char in);
 
-int get_transi(struct dna_dist * in, int i, int j);
+int get_transi(dna_dist * in, int i, int j);
 
-int get_transv(struct dna_dist * in, int i, int j);
+int get_transv(dna_dist * in, int i, int j);
 
-int get_nbcommon(struct dna_dist * in, int i, int j);
+int get_nbcommon(dna_dist * in, int i, int j);
 
 
 
@@ -69,9 +77,9 @@ int get_nbcommon(struct dna_dist * in, int i, int j);
    ==========================
 */
 
-void print_dna_dist(struct dna_dist *in);
+void print_dna_dist(dna_dist *in);
 
-struct dna_dist * compute_dna_distances(struct list_dnaseq *in);
+dna_dist * compute_dna_distances(list_dnaseq *in);
 
 
 #endif
