@@ -8,7 +8,6 @@
 #include "alloc.h"
 #include "tuneVariances.h"
 
-/* extern gsl_rng * rng; */
 
 /******************************************************************************/
 /* Metropolis-Hastings                                                        */
@@ -60,7 +59,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 				    if(IsAcceptOKBeta(i,j,acceptOK)==0)
 					{
 					    updateMCMCSettingsBeta(i, j, nbProp,accept,acceptOK, MCMCSettings);
-					}else
+					} else
 					{
 					    gsl_matrix_set(isAcceptOKBeta,i,j,1);
 					    VarPropOK ++;
@@ -70,7 +69,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKBetaWardOut(acceptOK)==0)
 			{
 			    updateMCMCSettingsBetaWardOut(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKBetaWardOut=1;
 			    VarPropOK ++;
@@ -78,7 +77,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKBetaOutOut(acceptOK)==0)
 			{
 			    updateMCMCSettingsBetaOutOut(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKBetaOutOut=1;
 			    VarPropOK ++;
@@ -87,7 +86,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKMu(acceptOK)==0)
 			{
 			    updateMCMCSettingsMu(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKMu=1;
 			    VarPropOK ++;
@@ -95,7 +94,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKSigma(acceptOK)==0)
 			{
 			    updateMCMCSettingsSigma(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKSigma=1;
 			    VarPropOK ++;
@@ -104,7 +103,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKNu1(acceptOK)==0)
 			{
 			    updateMCMCSettingsNu1(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKNu1=1;
 			    VarPropOK ++;
@@ -112,7 +111,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKNu2(acceptOK)==0)
 			{
 			    updateMCMCSettingsNu2(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKNu2=1;
 			    VarPropOK ++;
@@ -121,7 +120,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKTau(acceptOK)==0)
 			{
 			    updateMCMCSettingsTau(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKTau=1;
 			    VarPropOK ++;
@@ -129,7 +128,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		    if(IsAcceptOKAlpha(acceptOK)==0)
 			{
 			    updateMCMCSettingsAlpha(nbProp,accept,acceptOK, MCMCSettings);
-			}else
+			} else
 			{
 			    isAcceptOKAlpha=1;
 			    VarPropOK ++;
@@ -141,7 +140,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 			    reInitiateNbProp(nbProp);
 			    printf("starting preliminary simulation %u \n",l);
 			    fflush(stdout);
-			}else
+			} else
 			{
 			    EndBurnIn++;
 			    l=0;
@@ -175,19 +174,19 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    /* moveTau(MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	    /* moveAlpha(MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
-	    gsl_ran_choose (param->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	    gsl_ran_choose (data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	    for(i=0 ; i<NbChangeAugData ; i++)
 		{
 		    moveC(AugDataToMove[i], MCMCSettings, param, data,nb, augData) ;
 		}
 
-	    gsl_ran_choose (param->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	    gsl_ran_choose (data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	    for(i=0 ; i<NbChangeAugData ; i++)
 		{
 		    moveE(AugDataToMove[i], MCMCSettings, param, data,nb, augData) ;
 		}
 
-	    gsl_ran_choose (param->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	    gsl_ran_choose (data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	    for(i=0 ; i<NbChangeAugData ; i++)
 		{
 		    moveCandE(AugDataToMove[i], MCMCSettings, param, data,nb, augData) ;

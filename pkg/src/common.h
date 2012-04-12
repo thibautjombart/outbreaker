@@ -61,6 +61,8 @@ typedef struct{
     gsl_vector ** N; /* times of positive swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] */
     /* gsl_vector *IsInHosp[NbPatients]; /\* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T *\/ */
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
+
+    gsl_rng * rng; /* random number generator - nice here since raw data don't change */
 } raw_data;
 
 
@@ -101,8 +103,6 @@ typedef struct{
     double tau; /* time to the most recent common ancestor */
     double alpha; /* probability that two sampled isolates belong to the same lineage */
     double weightNaGen; /* weight used to replace missing genetic likelihood */
-
-    gsl_rng * rng; /* random number generator */
 } parameters;
 
 

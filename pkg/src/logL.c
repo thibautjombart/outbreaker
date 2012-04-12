@@ -8,7 +8,6 @@
 #include "alloc.h"
 #include "tuneVariances.h"
 
-/* extern gsl_rng * rng; */
 
 /******************************************************************************/
 /* Loglikelihood                                                              */
@@ -28,7 +27,7 @@ double ObsLevelPerCase (int i, raw_data * data, nb_data *nb, aug_data *augData, 
     if(augData->C[i]>=augData->E[i])
 	{
 	    L = -100000.00;
-	}else
+	} else
 	{
 
 	    for(j=0 ; j<nb->NbPosSwabs[i] ; j++) /* positive swabs */
@@ -38,18 +37,18 @@ double ObsLevelPerCase (int i, raw_data * data, nb_data *nb, aug_data *augData, 
 			    /* if(1-param->Sp!=0) */
 			    /* { */
 			    /* 	logpFalsePos+=log(1-param->Sp); /\* false positives *\/ */
-			    /* }else */
+			    /* } else */
 			    /* { */
 			    logpFalsePos-=100000;
 			    /* } */
-			}else
+			} else
 			{
 			    if(gsl_vector_get(data->P[i],j)!=data->timeSeq[i])
 				{
 				    if(param->Se!=0)
 					{
 					    logpTruePos+=log(param->Se); /* true positives */
-					}else
+					} else
 					{
 					    logpTruePos-=100000;
 					}
@@ -64,16 +63,16 @@ double ObsLevelPerCase (int i, raw_data * data, nb_data *nb, aug_data *augData, 
 			    /* if(param->Sp!=0) */
 			    /* { */
 			    logpTrueNeg+=0;/*log(param->Sp); */ /* true negatives */
-			    /* }else */
+			    /* } else */
 			    /* { */
 			    /* 	logpTrueNeg-=100000; */
 			    /* } */
-			}else
+			} else
 			{
 			    if(1-param->Se!=0)
 				{
 				    logpFalseNeg+=log(1-param->Se); /* false negatives */
-				}else
+				} else
 				{
 				    logpFalseNeg-=100000;
 				}
@@ -118,7 +117,7 @@ double DurationColonPerCase (int i, aug_data *augData, parameters * param){
     if(like>0)
 	{
 	    L = log(like);
-	}else
+	} else
 	{
 	    L=-100000;
 	}
@@ -159,7 +158,7 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, para
     if(augData->C[i] < gsl_vector_get(data->A[i],0)) /* colonised at first admission */
 	{
 	    L+=log(param->Pi);
-	}else
+	} else
 	{
 	    L+=log(1-param->Pi);
 
@@ -227,7 +226,7 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, para
 			    Denom+=param->betaWardOut;
 			    L += log(Num) - log(Denom);
 
-			}else /* colonised between hospital stays or not colonised over the study period */
+			} else /* colonised between hospital stays or not colonised over the study period */
 			{
 			    /* finding l such that individual i is colonised after l^th hospital stay (numbered from zero) */
 			    l=-1;
