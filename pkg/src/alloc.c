@@ -211,7 +211,7 @@ void freeRawData(raw_data *data){
 	gsl_vector_free(data->P[i]);
 	gsl_vector_free(data->N[i]);
 	gsl_vector_free(data->IsInHosp[i]);
-	free(data->S);
+	free(data->S[i]);
     }
 
     free(data->ward);
