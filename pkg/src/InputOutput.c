@@ -16,7 +16,134 @@
 /* Reading data                                                               */
 /******************************************************************************/
 
+/*
+  Fill in a nb_data object using input form R.
+*/
+void importNbData(int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *nbPatients, int *duration, int *idxColPatients, int *nbSeqPat, nb_data *nb){
+    int i;
 
+    /* fill in simple values */
+    nb->NbPatients = *nbPatients;
+    nb->T = *duration;
+    nb->NbColonisedPatients = *nbColPatients;
+
+    /* fill in vectors values */
+    for(i=0;i<*nbPatients;i++){
+	nb->NbAdmissions[i] = nbAdmVec[i];
+	nb->NbPosSwabs[i] = nbPosSwab[i];
+	nb->NbNegSwabs[i] = nbNegSwab[i];
+	nb->M[i] = nbSeqPat[i];
+    }
+
+    for(i=0;i<*nbColPatients;i++){
+	nb->indexColonisedPatients[i] = idxColPatients[i];
+    }
+
+} /* end importNbData*/
+
+
+
+
+
+
+
+/*
+  Fill in a nb_data object using input form R.
+  == legend (all lists in R are given patient-wise) ==
+  - tAdmVec: result of unlisting of patients dates of admissions
+  - tDisVec: result of unlisting of patients dates of discharge
+  - tPosSwab: result of unlisting of patients dates of positive swabs
+  - tNegSwab: result of unlisting of patients dates of positive swabs
+  - tNegSwab: result of unlisting of hospital presence data
+*/
+void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, int *totNbSeq, double *tCollecVec, nb_data *nb, raw_data *data){
+    int i, k, counter;
+
+    /* FILL IN SIMPLE VALUES */
+    data->NbPatients = nb->NbPatients;
+    data->T = nb->T;
+
+    /* FILL IN VECTORS / ARRAYS */
+    /* wards */
+    for(i=0;i<nb->NbPatients;i++){
+	data->ward[i] = wardVec[i];
+    }
+
+    /* admission/discharge times */
+    counter = 0;
+    for(i=0;i<nb->NbPatients;i++){
+	for(k=0;k<nb->NbAdmissions[i];k++){
+	    /* data->A[i][k] = tAdmVec[counter]; */
+	    /* data->D[i][k] = tDisVec[counter++]; */
+	    gsl_vector_set(data->A[i], k, tAdmVec[counter]);
+	    gsl_vector_set(data->D[i], k, tDisVec[counter++]);
+	}
+    }
+
+    /* positive swab times */
+    counter = 0;
+    for(i=0;i<nb->NbPatients;i++){
+	for(k=0;k<nb->NbPosSwabs[i];k++){
+	    /* data->P[i][k] = tPosSwab[counter++]; */
+	    gsl_vector_set(data->P[i], k, tPosSwab[counter++]);
+	}
+    }
+
+    /* negative swab times */
+    counter = 0;
+    for(i=0;i<nb->NbPatients;i++){
+	for(k=0;k<nb->NbNegSwabs[i];k++){
+	    /* data->N[i][k] = tNegSwab[counter++]; */
+	    gsl_vector_set(data->N[i], k, tNegSwab[counter++]);
+	}
+    }
+
+    /* hospital presence across time */
+    counter = 0;
+    for(i=0;i<nb->NbPatients;i++){
+	for(k=0;k<nb->T;k++){
+	    /* data->IsInHosp[i][k] = hospPres[counter++]; */
+	    gsl_vector_set(data->IsInHosp[i], k, hospPres[counter++]);
+	}
+    }
+ 
+    /* indices of DNA sequences for each patient */
+    counter = 0;
+    for(i=0;i<nb->NbPatients;i++){
+	for(k=0;k<nb->M[i];k++){
+	    data->S[i][k] = idxSeqVec[counter++];
+	}
+    }
+
+    /* collection dates of DNA sequences */
+    for(i=0;i<*totNbSeq;i++){
+	data->Tcollec[i] = tCollecVec[i];
+    }
+
+    /* nb of sequences per patient */
+    for(i=0;i<nb->NbPatients;i++){
+	data->M[i] = nb->M[i];
+    }
+
+} /* end importRawData*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+  Old text-file based version.
+*/
 void readFakeNbData(nb_data *nb){
     int i, NbPatients = nb->NbPatients;
     FILE *fich;
@@ -68,6 +195,11 @@ void readFakeNbData(nb_data *nb){
 
 
 
+
+
+/*
+  Old text-file based version.
+*/
 void readFakeData(nb_data *nb, raw_data *data){
     FILE *fich;
     int i, k, NbPatients = nb->NbPatients;

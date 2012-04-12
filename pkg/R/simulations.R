@@ -66,6 +66,7 @@ sim.testrun.data <- function(n.patients=10, min.n.swab=0, max.n.swab=10,
     ## FORM RESULT AND RETURN ##
     res <- list(n.swab=n.swab, swab=swab, t.swab=t.swab, ward=ward, n.adm=n.adm, t.adm=t.adm, t.dis=t.dis,
                 hosp.pres=hosp.pres, n.seq=n.seq, dna=dna, t.dna=t.dna, idx.dna=idx.dna)
+    class(res) <- "outbreaker-data"
     return(res)
 
 } # end sim.testrun.data

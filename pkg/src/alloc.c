@@ -100,11 +100,11 @@ raw_data *createRawData(nb_data *nb){
 	exit(1);
     }
 
-    data->timeSeq = (int *) calloc(nb->NbPatients, sizeof(int));
-    if(data->timeSeq == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
+    /* data->timeSeq = (int *) calloc(nb->NbPatients, sizeof(int)); */
+    /* if(data->timeSeq == NULL){ */
+    /* 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n"); */
+    /* 	exit(1); */
+    /* } */
 
     data->A = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
     if(data->A == NULL){
@@ -136,7 +136,7 @@ raw_data *createRawData(nb_data *nb){
 	exit(1);
     }
 
-    for(i=0 ; i<nb->NbPatients; i++){
+    for(i=0;i<nb->NbPatients;i++){
 	data->A[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
 	data->D[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
 	if(nb->NbPosSwabs[i]>0)
@@ -146,7 +146,7 @@ raw_data *createRawData(nb_data *nb){
 		nb->NbColonisedPatients++;
 	    }
 	if(nb->NbNegSwabs[i]>0){data->N[i] = gsl_vector_calloc(nb->NbNegSwabs[i]);}
-	data->IsInHosp[i] = gsl_vector_calloc(nb->T);
+	data->IsInHosp[i] = gsl_vector_calloc(nb->T + 1); /* +1 because time goes from 0 to T */
     }
 
     /* simple integers */
@@ -216,7 +216,7 @@ void freeRawData(raw_data *data){
 
     free(data->ward);
     free(data->PatientIndex);
-    free(data->timeSeq);
+    /* free(data->timeSeq); */
     free(data->A);
     free(data->D);
     free(data->P);

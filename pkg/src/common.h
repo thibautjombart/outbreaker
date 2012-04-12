@@ -39,9 +39,9 @@ typedef short int bool;
 
 typedef struct{
     int NbPatients, T; /* T: number of time steps corresponding to the study period */
-    int * NbAdmissions;
-    int * NbPosSwabs;
-    int * NbNegSwabs;
+    int * NbAdmissions; /* vector of size NbPatients */
+    int * NbPosSwabs; /* vector of size NbPatients */
+    int * NbNegSwabs; /* vector of size NbPatients */
     int NbColonisedPatients; /* those who have at least one positive swab */
     int * indexColonisedPatients; /* those who have at least one positive swab */
     int * M; /* number of sequences in each patient */
@@ -55,8 +55,8 @@ typedef struct{
     /* EPI DATA */
     int NbPatients, T; /* T: number of time steps corresponding to the study period */
     int * ward; /* 0 for adult, 1 for pediatric */
-    int * timeSeq; /* time of sequence for each patient */
-    int * PatientIndex;
+    /* int * timeSeq; /\* time of sequence for each patient *\/ */
+    int * PatientIndex; /* !!! WHAT IS THIS ? !!!*/
     gsl_vector ** A; /* admission times. A[i] is a vector of size nb_data->NbAdmissions[i] */
     gsl_vector ** D; /* discharge times. D[i] is a vector of size nb_data->NbAdmissions[i] */
     gsl_vector ** P; /* times of positive swabs. P[i] is a vector of size nb_data->NbPosSwabs[i] */
