@@ -37,7 +37,7 @@
 double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *param){
     /* extract variables from input objects */
     int *s_i=data->S[i], *s_j=data->S[j], m_i=data->M[i], m_j=data->M[j];
-    double *t_i=data->Tcollec[s_i], double *t_j=data->Tcollec[s_j];
+    double t_i[m_i], t_j[m_j];
     double nu1=param->nu1, nu2=param->nu2, alpha=param->alpha, tau=param->tau;
 
     /* variables used in computations */
@@ -45,6 +45,15 @@ double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *p
     int k, q, r, transi, transv, common, nb_comp, nb_comp_k;
     bool tag=FALSE;
  
+    /* fill in vectors of collection dates */
+    for(k=0;k<m_i;k++){
+	t_i[k] = data->Tcollec[s_i[k]];
+    }
+    for(k=0;k<m_j;k++){
+	t_j[k] = data->Tcollec[s_j[k]];
+    }
+
+
     /* Compute Pk for each sequence 'k' in S_i */
     /* Pk = p(s_i^k| s_i^1, ..., s_i^{k-1}, S_j, i<-j) */
 
@@ -160,47 +169,47 @@ double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *p
   =========================
 */
 
-/* TESTING WITH R INTERFACE */
-void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int *s_j, double *t_i, double *t_j, int *m_i, int *m_j, double *nu1, double *nu2, double *alpha, double *tau, double *out){
+//* * TESTING WITH R INTERFACE *\/ */
+/* void test_genlike(unsigned char *DNAbinInput, int *n, int *length, int *s_i, int *s_j, double *t_i, double *t_j, int *m_i, int *m_j, double *nu1, double *nu2, double *alpha, double *tau, double *out){ */
 
 
-    /* CHECK THAT ARGUMENT ARE PASSED ALL RIGHT */
-    /* printf("\ns_i:"); */
-    /* for(i=0;i<*m_i;i++){ */
-    /* 	printf("%d ",s_i[i]); */
-    /* } */
-    /* printf("\ns_j:"); */
-    /* for(i=0;i<*m_j;i++){ */
-    /* 	printf("%d ",s_j[i]); */
-    /* } */
-    /* printf("\nt_i:"); */
-    /* for(i=0;i<*m_i;i++){ */
-    /* 	printf("%.4f ",t_i[i]); */
-    /* } */
-    /* printf("\nt_j:"); */
-    /* for(i=0;i<*m_j;i++){ */
-    /* 	printf("%.4f ",t_j[i]); */
-    /* } */
-    /* printf("\nnu1: %.4f nu2: %.4f alpha:%.4f tau: %.4f out:%.4f\n",*nu1,*nu2, *alpha, *tau, *out); */
+/*     /\* CHECK THAT ARGUMENT ARE PASSED ALL RIGHT *\/ */
+/*     /\* printf("\ns_i:"); *\/ */
+/*     /\* for(i=0;i<*m_i;i++){ *\/ */
+/*     /\* 	printf("%d ",s_i[i]); *\/ */
+/*     /\* } *\/ */
+/*     /\* printf("\ns_j:"); *\/ */
+/*     /\* for(i=0;i<*m_j;i++){ *\/ */
+/*     /\* 	printf("%d ",s_j[i]); *\/ */
+/*     /\* } *\/ */
+/*     /\* printf("\nt_i:"); *\/ */
+/*     /\* for(i=0;i<*m_i;i++){ *\/ */
+/*     /\* 	printf("%.4f ",t_i[i]); *\/ */
+/*     /\* } *\/ */
+/*     /\* printf("\nt_j:"); *\/ */
+/*     /\* for(i=0;i<*m_j;i++){ *\/ */
+/*     /\* 	printf("%.4f ",t_j[i]); *\/ */
+/*     /\* } *\/ */
+/*     /\* printf("\nnu1: %.4f nu2: %.4f alpha:%.4f tau: %.4f out:%.4f\n",*nu1,*nu2, *alpha, *tau, *out); *\/ */
 
 
-    /* MAKE DNAINFO AND PARAM */
-    parameters *param = createParam();
-    list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length);
-    /* print_list_dnaseq(dna); */
-    dna_dist *distinfo = compute_dna_distances(dna);
+/*     /\* MAKE DNAINFO AND PARAM *\/ */
+/*     parameters *param = createParam(); */
+/*     list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, n, length); */
+/*     /\* print_list_dnaseq(dna); *\/ */
+/*     dna_dist *distinfo = compute_dna_distances(dna); */
 
-    param->weightNaGen = 0.0000001; /* near zero if no data */
+/*     param->weightNaGen = 0.0000001; /\* near zero if no data *\/ */
 
-    /* COMPUTE LIKELIHOOD */
-    *out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, distinfo, param);
+/*     /\* COMPUTE LIKELIHOOD *\/ */
+/*     *out = genlike_ij(s_i, s_j, t_i, t_j, *m_i, *m_j, *nu1, *nu2, *alpha, *tau, distinfo, param); */
 
-    /* FREE STUFF */
-    free_list_dnaseq(dna);
-    free_dna_dist(distinfo);
-    freeParam(param);
+/*     /\* FREE STUFF *\/ */
+/*     free_list_dnaseq(dna); */
+/*     free_dna_dist(distinfo); */
+/*     freeParam(param); */
 
-}
+/* } */
 
 
 

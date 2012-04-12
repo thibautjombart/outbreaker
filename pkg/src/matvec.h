@@ -23,7 +23,7 @@ typedef struct{
 
 
 typedef struct{
-	struct vec_int ** rows;
+	vec_int ** rows;
 	int n;
 } mat_int;
 
