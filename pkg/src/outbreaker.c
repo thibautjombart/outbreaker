@@ -54,6 +54,7 @@ int main(int argc, char *argv[]){
 
     /*parameters */
     parameters *param = createParam();
+    param->weightNaGen = 0.01;
     /* printf("\ncreated param\n"); */
 
     /* Output files */
@@ -151,6 +152,9 @@ int main(int argc, char *argv[]){
 
    gcc -o outbreaker -Wall -g alloc.c matvec.c genclasses.c distances.c genlike.c logL.c prior.c moves.c mcmc.c init.c InputOutput.c tuneVariances.c outbreaker.c -lgsl -lgslcblas
 
+   valgrind --leak-check=full outbreaker 
+
    valgrind -v --leak-check=full --track-origins=yes --show-reachable=yes outbreaker 
+
 
 */
