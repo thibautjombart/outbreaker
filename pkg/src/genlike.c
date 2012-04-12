@@ -35,7 +35,6 @@
    - the various parameters needed
 */
 double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *param){
-    return 1.0;
 
     /* extract variables from input objects */
     int *s_i=data->S[i], *s_j=data->S[j], m_i=data->M[i], m_j=data->M[j];
@@ -46,7 +45,7 @@ double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *p
     double out, Tabs, Xi1, Xi2, Xi3, Xi4, Pk;
     int k, q, r, transi, transv, common, nb_comp, nb_comp_k;
     bool tag=FALSE;
- 
+
     /* fill in vectors of collection dates */
     for(k=0;k<m_i;k++){
 	t_i[k] = data->Tcollec[s_i[k]];
