@@ -19,40 +19,40 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     /* updating beta_{i,j} with Metropolis algorithm */
     /* proposal distribution = lognormal */
 
-    /* double * newVal, *curVal; */
-    /* double * nbAccept; */
-    /* double * nbPropos; */
-    /* double sigmaProp; */
-    /* double r,z; */
-    /* double pAccept = 0; */
-    /* parameters *newParam = createParam(); */
-    /* copyParam(newParam,curParam); */
+    double * newVal, *curVal;
+    double * nbAccept;
+    double * nbPropos;
+    double sigmaProp;
+    double r,z;
+    double pAccept = 0;
+    parameters *newParam = createParam();
+    copyParam(newParam,curParam);
 
-    /* curVal = gsl_matrix_ptr(curParam->beta,i,j); */
-    /* newVal = gsl_matrix_ptr(newParam->beta,i,j); */
+    curVal = gsl_matrix_ptr(curParam->beta,i,j);
+    newVal = gsl_matrix_ptr(newParam->beta,i,j);
 
-    /* sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j); */
-    /* nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j); */
-    /* nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j); */
+    sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j);
+    nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j);
+    nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j);
 
-    /* *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp); */
+    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
-    /* pAccept += Colon(data, nb, augData, newParam); */
-    /* pAccept -= Colon(data, nb, augData, curParam); */
+    pAccept += Colon(data, nb, augData, newParam);
+    pAccept -= Colon(data, nb, augData, curParam);
 
-    /* pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam); */
+    pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam);
 
-    /* pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
+    pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
-    /* if (pAccept>0) r=0; else r=pAccept; */
-    /* z=gsl_rng_uniform(curParam->rng); */
-    /* if (log(z)<=r) { */
-    /* 	*curVal = *newVal; */
-    /* 	*nbAccept +=1; */
-    /* } */
-    /* *nbPropos+=1; */
+    if (pAccept>0) r=0; else r=pAccept;
+    z=gsl_rng_uniform(data->rng);
+    if (log(z)<=r) {
+    	*curVal = *newVal;
+    	*nbAccept +=1;
+    }
+    *nbPropos+=1;
 
-    /* freeParam(newParam); */
+    freeParam(newParam);
 
 }
 
@@ -111,7 +111,7 @@ void moveBetaOut( char what, mcmcInternals * MCMCSettings, parameters * curParam
 	break;
     }
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp);
+    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
     pAccept += Colon(data, nb, augData, newParam);
     pAccept -= Colon(data, nb, augData, curParam);
@@ -121,7 +121,7 @@ void moveBetaOut( char what, mcmcInternals * MCMCSettings, parameters * curParam
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(curParam->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
@@ -161,7 +161,7 @@ void moveSp(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
 		}
 	}
 
-    /* curParam->Sp = gsl_ran_beta (curParam->rng, NbTrueNeg+1, NbFalsePos+1); */
+    /* curParam->Sp = gsl_ran_beta (data->rng, NbTrueNeg+1, NbFalsePos+1); */
 }
 
 
@@ -192,7 +192,7 @@ void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
 		}
 	}
 
-    curParam->Se = gsl_ran_beta (curParam->rng, NbTruePos+1, NbFalseNeg+1);
+    curParam->Se = gsl_ran_beta (data->rng, NbTruePos+1, NbFalseNeg+1);
 }
 
 
@@ -210,20 +210,20 @@ void movePi(parameters * curParam, raw_data * data, aug_data *augData, acceptanc
 	    if(augData->C[i]<gsl_vector_get(data->A[i],0))
 		{
 		    ColonisedAtFirstAdmission++;
-		}else
+		} else
 		{
 		    NonColonisedAtFirstAdmission++;
 		}
 	}
 
-    curParam->Pi = gsl_ran_beta (curParam->rng, ColonisedAtFirstAdmission+1, NonColonisedAtFirstAdmission+1);
+    curParam->Pi = gsl_ran_beta (data->rng, ColonisedAtFirstAdmission+1, NonColonisedAtFirstAdmission+1);
 }
 
 
 
 
 
-void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curParam, aug_data *augData, acceptance *accept, NbProposals *NbProp){
+void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curParam, raw_data *data, aug_data *augData, acceptance *accept, NbProposals *NbProp){
     /* what is one of "m" or "s" */
     /* updating mu ("m") or sigma ("s") with Metropolis algorithm */
     /* proposal distribution = lognormal */
@@ -256,7 +256,7 @@ void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curP
 	break;
     }
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp);
+    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
     pAccept += DurationColon(augData, newParam);
     pAccept -= DurationColon(augData, curParam);
@@ -266,7 +266,7 @@ void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curP
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(curParam->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
@@ -314,7 +314,7 @@ void moveMutationRate(int what, mcmcInternals * MCMCSettings, parameters * curPa
 	break;
     }
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp);
+    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
     pAccept += Colon(data, nb, augData, newParam);
     pAccept -= Colon(data, nb, augData, curParam);
@@ -324,7 +324,7 @@ void moveMutationRate(int what, mcmcInternals * MCMCSettings, parameters * curPa
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(curParam->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
@@ -358,7 +358,7 @@ void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * dat
     nbAccept = &accept->PourcAcc_tau;
     nbPropos = &NbProp->NbProp_tau;
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp);
+    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
     pAccept += Colon(data, nb, augData, newParam);
     pAccept -= Colon(data, nb, augData, curParam);
@@ -368,7 +368,7 @@ void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * dat
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(curParam->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
@@ -408,7 +408,7 @@ void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * d
 
     do
 	{
-	    *(newVal) = *(curVal)*gsl_ran_lognormal(curParam->rng,0,sigmaProp);
+	    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 	}while(*(newVal)>1);
 
     QCur = gsl_cdf_gaussian_P(-log(*(curVal)),sigmaProp);
@@ -423,7 +423,7 @@ void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * d
     pAccept +=   log(QCur) - log(QNew); /* correction for truncation (no values >1) */
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(curParam->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
@@ -466,12 +466,12 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     curMaxTime = GSL_MIN(*curVal + l,curAugData->E[i]-1);
     curNbPoss = curMaxTime-curMinTime;
 
-    random=gsl_rng_uniform_int (param->rng, curNbPoss);
+    random=gsl_rng_uniform_int (data->rng, curNbPoss);
 
     if(random<l)
 	{
 	    *newVal = curMinTime + random;
-	}else
+	} else
 	{
 	    *newVal = curMinTime + random + 1;
 	}
@@ -490,7 +490,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T))
 			{
@@ -503,7 +503,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 				}
 			}
 		}
-	}else
+	} else
 	{
 	    if(data->ward[i]==0)
 		{
@@ -517,7 +517,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T))
 			{
@@ -573,7 +573,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(param->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
     }
@@ -611,12 +611,12 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     curMaxTime = *curVal + l;
     curNbPoss = curMaxTime-curMinTime;
 
-    random=gsl_rng_uniform_int (param->rng, curNbPoss);
+    random=gsl_rng_uniform_int (data->rng, curNbPoss);
 
     if(random<l)
 	{
 	    *newVal = curMaxTime - random;
-	}else
+	} else
 	{
 	    *newVal = curMaxTime - random - 1;
 	}
@@ -635,7 +635,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T))
 			{
@@ -648,7 +648,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 				}
 			}
 		}
-	}else
+	} else
 	{
 	    if(data->ward[i]==0)
 		{
@@ -662,7 +662,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T))
 			{
@@ -699,7 +699,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     pAccept +=   log(QCur) - log(QNew); /* correction for truncation (E_i has to be > C_i) */
 
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(param->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
     }
@@ -733,13 +733,13 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
     curValE = &curAugData->E[i];
     newValE = &newAugData->E[i];
 
-    random=gsl_rng_uniform_int (param->rng, 2*l);
+    random=gsl_rng_uniform_int (data->rng, 2*l);
 
     if(random<l)
 	{
 	    *newValC = *curValC - l + random;
 	    *newValE = *curValE - l + random;
-	}else
+	} else
 	{
 	    *newValC = *curValC - l + random + 1;
 	    *newValE = *curValE - l + random + 1;
@@ -759,7 +759,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*newValC,0)<GSL_MIN(*curValC,T))
 			{
@@ -772,7 +772,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 				}
 			}
 		}
-	}else
+	} else
 	{
 	    if(data->ward[i]==0)
 		{
@@ -786,7 +786,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*curValC,0)<GSL_MIN(*newValC,T))
 			{
@@ -815,7 +815,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*newValE,0)<GSL_MIN(*curValE,T))
 			{
@@ -828,7 +828,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 				}
 			}
 		}
-	}else
+	} else
 	{
 	    if(data->ward[i]==0)
 		{
@@ -842,7 +842,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 					}
 				}
 			}
-		}else
+		} else
 		{
 		    if(GSL_MAX(*curValE,0)<GSL_MIN(*newValE,T))
 			{
@@ -866,7 +866,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 		}
 	} /* this loop should be equivalent to pAccept += Colon(data, nb, newAugData, param) - Colon (data, nb, curAugData, param); */
     if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(param->rng);
+    z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
     }

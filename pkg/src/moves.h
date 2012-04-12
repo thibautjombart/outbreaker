@@ -18,7 +18,7 @@ void moveSe(parameters * , raw_data * , nb_data *, aug_data *, acceptance *);
 
 void movePi(parameters * , raw_data * , aug_data *, acceptance *);
 
-void moveDurationColon(char, mcmcInternals * , parameters * , aug_data *, acceptance *, NbProposals *);
+void moveDurationColon(char, mcmcInternals * , parameters * , raw_data * , aug_data *, acceptance *, NbProposals *);
 
 void moveMutationRate(int , mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, acceptance *, NbProposals *);
 

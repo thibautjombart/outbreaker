@@ -8,9 +8,6 @@
 #include "alloc.h"
 #include "tuneVariances.h"
 
-/* extern gsl_rng * rng; */
-
-
 
 
 
@@ -141,8 +138,17 @@ raw_data *createRawData(nb_data *nb){
 	data->IsInHosp[i] = gsl_vector_calloc(nb->T);
     }
 
+    /* simple integers */
     data->NbPatients = nb->NbPatients;
     data->T = nb->T;
+
+    /* random number generator */
+    time_t t = time(NULL); // time in seconds, used to change the seed of the random generator
+    const gsl_rng_type *typ;
+    gsl_rng_env_setup();
+    typ = gsl_rng_default;
+    data->rng = gsl_rng_alloc(typ);
+    gsl_rng_set(data->rng,t); // changes the seed of the random generator
 
     return data;
 }
@@ -171,6 +177,7 @@ void freeRawData(raw_data *data){
     free(data->P);
     free(data->N);
     free(data->IsInHosp);
+    gsl_rng_free(data->rng);
     free(data);
 }
 
@@ -259,14 +266,6 @@ parameters *createParam(){
 
     param->beta = gsl_matrix_calloc(2,2);
 
-    /* random number generator */
-    time_t t = time(NULL); // time in seconds, used to change the seed of the random generator
-    const gsl_rng_type *typ;
-    gsl_rng_env_setup();
-    typ = gsl_rng_default;
-    param->rng = gsl_rng_alloc(typ);
-    gsl_rng_set(param->rng,t); // changes the seed of the random generator
-
     return param;
 }
 
@@ -276,7 +275,6 @@ parameters *createParam(){
 
 void freeParam(parameters *param){
     gsl_matrix_free(param->beta);
-    gsl_rng_free(param->rng);
     free(param);
 }
 
@@ -303,8 +301,6 @@ void copyParam(parameters * paramDest, parameters * paramSource){
     paramDest->tau = paramSource->tau;
     paramDest->alpha = paramSource->alpha;
     paramDest->weightNaGen = paramSource->weightNaGen;
-
-    paramDest->rng = paramSource->rng;
 }
 
 
