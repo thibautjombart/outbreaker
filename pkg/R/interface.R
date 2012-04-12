@@ -3,18 +3,35 @@
 ## auxiliary functions
 #######################
 
-## typedef struct{
-##     int NbPatients, T;
-##     int * NbAdmissions;
-##     int * NbPosSwabs;
-##     int * NbNegSwabs;
-##     int NbColonisedPatients; /* those who have at least one positive swab */
-##     int * indexColonisedPatients; /* those who have at least one positive swab */
-##     int * M; /* number of sequences in each patient */
-## } nb_data;
+outbreaker <- function(x, duration=100, weightNaGen=0.001){
+    if(!inherits(x, "outbreaker-data")) stop("x is not an outbreaker-data object.")
 
-.prep.nbdata <- function(){
-    
+    ## int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, double *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen
+    nbPatients <- as.integer(length(x$n.swab))
+    duration <- as.integer(duration)
+    nbAdmVec <- as.integer(unlist(x$n.adm))
+    nbPosSwab <- as.integer(sapply(x$swab, function(e) sum(e==1)))
+    nbNegSwab <- as.integer(sapply(x$swab, function(e) sum(e==0)))
+    nbColPatients <- as.integer(sum(nbPosSwab>0))
+    idxColPatients <- as.integer(which(nbPosSwab>0)-1) # -1 important!
+    nbSeqPat <- as.integer(x$n.seq)
+    wardVec <- as.integer(x$ward)
+    tAdmVec <- as.integer(unlist(x$t.adm))
+    tDisVec <- as.integer(unlist(x$t.dis))
+    tPosSwab <- as.integer(unlist(x$t.swab)[unlist(x$swab)==1])
+    tNegSwab <- as.integer(unlist(x$t.swab)[unlist(x$swab)==0])
+    hospPres <- as.integer(unlist(x$hosp.pres))
+    idxSeqVec <- as.integer(unlist(x$idx.dna)-1)
+    tCollecVec <- as.integer(unlist(x$t.dna))
+    DNAbinInput <- unlist(as.list(x$dna),use.names=FALSE)
+    totNbSeq <- as.integer(length(x$dna))
+    seqLength <- as.integer(length(x$dna[[1]]))
+    weightNaGen <- as.double(weightNaGen)
+
+    .C("R_outbreaker", nbPatients, duration, nbAdmVec, nbPosSwab, nbNegSwab, nbColPatients, idxColPatients, nbSeqPat, wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, tCollecVec, DNAbinInput, totNbSeq, seqLength, weightNaGen, PACKAGE="outbreaker")
+
+    cat("\nComputation finished.")
+    return(invisible())
 }
 
 #############

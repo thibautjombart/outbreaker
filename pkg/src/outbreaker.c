@@ -31,7 +31,7 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
     raw_data *data = createRawData(nb); /* epi data */
     importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
 
-    list_dnaseq * dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
+    list_dnaseq *dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
     dna_dist *dnainfo = compute_dna_distances(dna); /* genetic distances - all DNA info needed */
     aug_data *augData = createAugData(NbPatients, T); /* augmented data */
 
