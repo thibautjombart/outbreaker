@@ -241,13 +241,13 @@ void prepAllFiles(output_files * Files, int NbPatients){
 /* writing output files                                                  */
 /*************************************************************************/
 
-void writeAllFiles(output_files * Files, parameters * param, nb_data *nb, raw_data * data, aug_data *augData){
+void writeAllFiles(output_files * Files, parameters * param, nb_data *nb, raw_data * data, aug_data *augData, dna_dist *dnainfo){
     /* Writing results in the output files */
 
     double L;
     int i;
 
-    L = fullLoglikelihoodWithPrior(data, nb, augData, param);
+    L = fullLoglikelihoodWithPrior(data, nb, augData, dnainfo, param);
     fprintf(Files->LogL,"%lf\n",L);
     fflush(Files->LogL);
 

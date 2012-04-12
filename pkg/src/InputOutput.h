@@ -2,6 +2,10 @@
 #include "common.h"
 #endif
 
+#ifndef __DISTANCES_H
+#include "distances.h"
+#endif
+
 #ifndef __INPUTOUTPUT_H
 #define __INPUTOUTPUT_H
 
@@ -11,7 +15,7 @@ void readFakeData(nb_data *, raw_data *);
 
 void prepAllFiles(output_files *, int NbPatients);
 
-void writeAllFiles(output_files * ,parameters * , nb_data *, raw_data * , aug_data *);
+void writeAllFiles(output_files *, parameters *, nb_data *, raw_data *, aug_data *, dna_dist *);
 
 #endif
 

@@ -22,9 +22,9 @@ double Colon(raw_data *, nb_data *, aug_data *, dna_dist *, parameters *);
 
 double fullLoglikelihoodPerCase(int , raw_data * , nb_data *, aug_data *, dna_dist *, parameters *);
 
-double fullLoglikelihood(raw_data * , nb_data *, aug_data *, parameters *);
+double fullLoglikelihood(raw_data * , nb_data *, aug_data *, dna_dist *, parameters *);
 
-double fullLoglikelihoodWithPrior(raw_data * , nb_data *, aug_data *, parameters *);
+double fullLoglikelihoodWithPrior(raw_data * , nb_data *, aug_data *, dna_dist *, parameters *);
 
 #endif
 

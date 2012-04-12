@@ -65,6 +65,9 @@ int main(int argc, char *argv[]){
     NbProposals *nbProp = createNbProposals();
 
 
+    /* DNA DISTANCES */
+    dna_dist *dnainfo = NULL;
+
     /*****************************************************/
     /***         READ DATA AND MCMC SETTINGS           ***/
     /***        + INIT AUGDATA AND PARAMETERS          ***/
@@ -112,7 +115,7 @@ int main(int argc, char *argv[]){
 
     printf("Starting estimation\n");
     fflush(stdout);
-    metro(MCMCSettings, param, data, nb, augData, accept, acceptOK, nbProp, Files);
+    metro(MCMCSettings, param, data, nb, augData, dnainfo, accept, acceptOK, nbProp, Files);
 
 
     /*****************************************************/
@@ -146,7 +149,7 @@ int main(int argc, char *argv[]){
 
    Compilation instructions: 
 
-   gcc -o outbreaker -Wall -g alloc.c logL.c prior.c moves.c mcmc.c init.c InputOutput.c tuneVariances.c outbreaker.c -lgsl -lgslcblas
+   gcc -o outbreaker -Wall -g alloc.c matvec.c genclasses.c distances.c genlike.c logL.c prior.c moves.c mcmc.c init.c InputOutput.c tuneVariances.c outbreaker.c -lgsl -lgslcblas
 
    valgrind -v --leak-check=full --track-origins=yes --show-reachable=yes outbreaker 
 

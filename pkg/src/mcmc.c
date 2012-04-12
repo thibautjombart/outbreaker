@@ -14,7 +14,7 @@
 /******************************************************************************/
 
 
-void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept, isAcceptOK *acceptOK, NbProposals *nbProp, output_files * Files){
+void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, isAcceptOK *acceptOK, NbProposals *nbProp, output_files * Files){
     int i,j,l;
     int NbChangeAugData = 10; /* TO BE TUNED  */
     int *AugDataToMove = (int *) calloc(NbChangeAugData,sizeof(int));
@@ -133,7 +133,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
 	/*** Moves ***/
 
-	moveAllBeta(MCMCSettings , param, data, nb, augData, accept,nbProp);
+	moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp);
 	/* moveBetaOut('w', MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	/* moveBetaOut('o', MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
@@ -153,24 +153,24 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData) ;
+	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
 	}
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData) ;
+	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
 	}
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData) ;
+	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
 	}
 
 	/* Writing results in an output file */
 	if (l>=MCMCSettings->BurnIn && l%MCMCSettings->SubSample==0 && EndBurnIn==1)
 	    /* if (EndBurnIn==1) */
 	    {
-		writeAllFiles(Files, param, nb, data, augData);
+		writeAllFiles(Files, param, nb, data, augData, dnainfo);
 		/* printf("L = %lg\n",fullLoglikelihoodWithPrior(data, nb, augData, param)); */
 	    }
     }

@@ -16,8 +16,8 @@
 */
 
 /* CREATE A VECTOR OF INTEGERS OF SIZE N */
-struct vec_int * create_vec_int(int n){
-	struct vec_int *out = (struct vec_int *) malloc(sizeof(struct vec_int));
+vec_int * create_vec_int(int n){
+	vec_int *out = (vec_int *) malloc(sizeof(vec_int));
 	if(out == NULL){
 		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
 		exit(1);
@@ -42,8 +42,8 @@ struct vec_int * create_vec_int(int n){
 
 
 /* /\* CREATE A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO *\/ */
-/* struct vec_int * create_vec_int_zero(int n){ */
-/* 	struct vec_int *out = (struct vec_int *) malloc(sizeof(struct vec_int)); */
+/* vec_int * create_vec_int_zero(int n){ */
+/* 	vec_int *out = (vec_int *) malloc(sizeof(vec_int)); */
 /* 	if(out == NULL){ */
 /* 		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
 /* 		exit(1); */
@@ -67,19 +67,19 @@ struct vec_int * create_vec_int(int n){
 
 /* CREATE EMPTY MAT_INT BETWEEN N OBJECTS */
 /* (values initialized to 0) */
-struct mat_int * create_mat_int(int n){
+mat_int * create_mat_int(int n){
 	int i;
-	struct mat_int *out;
+	mat_int *out;
 
 	/* allocate output */
-	out = (struct mat_int *) malloc(sizeof(struct mat_int));
+	out = (mat_int *) malloc(sizeof(mat_int));
 	if(out == NULL){
 		fprintf(stderr, "\n[in: distances.c->create_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
 		exit(1);
 	}
 
 	/* fill in content */
-	out->rows = (struct vec_int **) calloc(n, sizeof(struct vec_int *));
+	out->rows = (vec_int **) calloc(n, sizeof(vec_int *));
 	if(out->rows == NULL){
 		fprintf(stderr, "\n[in: distances.c->create_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
 		exit(1);
@@ -108,13 +108,13 @@ struct mat_int * create_mat_int(int n){
 */
 
 
-void free_vec_int(struct vec_int *in){
+void free_vec_int(vec_int *in){
 	if(in->length > 0) free(in->values);
 	free(in);
 }
 
 
-void free_mat_int(struct mat_int *in){
+void free_mat_int(mat_int *in){
 	int i;
 	if(in->n > 0) {
 		for(i=0;i<in->n;i++)
@@ -135,7 +135,7 @@ void free_mat_int(struct mat_int *in){
    ===============================
 */
 
-int vecint_i(struct vec_int *in, int i){
+int vecint_i(vec_int *in, int i){
 	if(i >= in->length) {
 		fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length);
 		exit(1);
@@ -146,7 +146,7 @@ int vecint_i(struct vec_int *in, int i){
 
 
 
-int matint_ij(struct mat_int *in, int i, int j){
+int matint_ij(mat_int *in, int i, int j){
 	if(i >= in->n) {
 		fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n);
 		exit(1);
@@ -157,7 +157,7 @@ int matint_ij(struct mat_int *in, int i, int j){
 
 
 
-void print_vec_int(struct vec_int *in){
+void print_vec_int(vec_int *in){
 	int i;
 	printf("\nVector of %d values: ", in->length);
 	/* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
@@ -168,7 +168,7 @@ void print_vec_int(struct vec_int *in){
 
 
 
-void print_mat_int(struct mat_int *in){
+void print_mat_int(mat_int *in){
 	int i,j;
 
 	for(i=0;i<in->n;i++){
@@ -194,7 +194,7 @@ void print_mat_int(struct mat_int *in){
 
 /* int main(){ */
 /* 	int N = 10; */
-/* 	struct mat_int * test = create_mat_int(N); */
+/* 	mat_int * test = create_mat_int(N); */
 
 /* 	print_mat_int (test); */
 

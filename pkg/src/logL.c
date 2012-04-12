@@ -204,10 +204,9 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 			    L += log(1-exp(-gsl_matrix_get(param->beta,data->ward[i],0)*augData->I0[augData->C[i]] - gsl_matrix_get(param->beta,data->ward[i],1)*augData->I1[augData->C[i]] - param->betaWardOut));
 
 			    /* relative weights of each route of transmission incorporating genetic data : */
-			    for(j=0 ; j<NbPatients ; j++){
+			    for(j=0;j<NbPatients;j++){
 				    /* calculate fij */
-				    fij = genlike_ij(data, dnainfo, param);
-
+				fij = genlike_ij(i,j,data, dnainfo, param);
 
 				    /*****************/
 				    if(augData->C[i]>=0 && augData->C[i]<T && augData->C[j]<=augData->C[i] && augData->C[i]<augData->E[j] && gsl_vector_get(data->IsInHosp[j],augData->C[i])) /* individual j is colonised and in hospital at time C_i */
@@ -323,8 +322,8 @@ double fullLoglikelihood(raw_data * data, nb_data *nb, aug_data *augData, dna_di
 
 
 
-double fullLoglikelihoodWithPrior(raw_data * data, nb_data *nb, aug_data *augData, parameters * param){
-    double L = fullLoglikelihood(data, nb, augData, param) + logprior(param);
+double fullLoglikelihoodWithPrior(raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, parameters * param){
+    double L = fullLoglikelihood(data, nb, augData, dnainfo, param) + logprior(param);
     return(L);
 }
 
