@@ -27,21 +27,30 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
     /* allocate / fill in */
     nb_data *nb = createNbData(NbPatients, T, NbSeq); /* nb_data*/
     importNbData(nbAdmVec, nbPosSwab, nbNegSwab, nbColPatients, nbPatients, duration, idxColPatients, nbSeqPat, totNbSeq, nb);
+    printf("\n== Nb data ==\n");
     print_nbData(nb);
 
     raw_data *data = createRawData(nb); /* epi data */
+    printf("\ntPosSwab 10 first values:\n");
+    int i;
+    for(i=0;i<10;i++) printf("%d ", tPosSwab[i]);
     importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
+    printf("\n\n== Raw data ==\n");
     print_rawData(data);
 
     list_dnaseq *dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
     dna_dist *dnainfo = compute_dna_distances(dna); /* genetic distances - all DNA info needed */
+    printf("\n\n== Dna dist info ==\n");
     print_dna_dist(dnainfo);
-    
+
     aug_data *augData = createAugData(NbPatients, T); /* augmented data */
+    printf("\n\n== Augmented data ==\n");
     print_augData(augData);
 
     /* PARAMETERS */
     parameters *param = createParam();
+    printf("\n\n== Parameters ==\n");
+    print_param(param);
     param->weightNaGen = *weightNaGen;
 
 

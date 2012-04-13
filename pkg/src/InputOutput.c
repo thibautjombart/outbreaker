@@ -82,9 +82,12 @@ void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int 
 
     /* positive swab times */
     counter = 0;
+    printf("\nValues passed for positive swab dates:\n");
     for(i=0;i<nb->NbPatients;i++){
+	printf("\nPatient %d\n",i);
 	for(k=0;k<nb->NbPosSwabs[i];k++){
 	    /* data->P[i][k] = tPosSwab[counter++]; */
+	    printf("%d", tPosSwab[counter]);
 	    gsl_vector_set(data->P[i], k, tPosSwab[counter++]);
 	}
     }
