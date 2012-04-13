@@ -16,7 +16,7 @@
 
 void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, double *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen){
 
-    int NbPatients=*nbPatients, T = *duration;
+    int NbPatients=*nbPatients, T = *duration, NbSeq = *totNbSeq;
     char workspace[500]= "";
 
     /* === CREATE AND FILL OBJECTS === */
@@ -25,42 +25,54 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
 
     /* DATA */
     /* allocate / fill in */
-    nb_data *nb = createNbData(NbPatients, T); /* nb_data*/
-    importNbData(nbAdmVec, nbPosSwab, nbNegSwab, nbColPatients, nbPatients, duration, idxColPatients, nbSeqPat, nb);
+    nb_data *nb = createNbData(NbPatients, T, NbSeq); /* nb_data*/
+    importNbData(nbAdmVec, nbPosSwab, nbNegSwab, nbColPatients, nbPatients, duration, idxColPatients, nbSeqPat, totNbSeq, nb);
+    print_nbData(nb);
 
     raw_data *data = createRawData(nb); /* epi data */
     importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
+    print_rawData(data);
 
     list_dnaseq *dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
     dna_dist *dnainfo = compute_dna_distances(dna); /* genetic distances - all DNA info needed */
+    print_dna_dist(dnainfo);
+    
     aug_data *augData = createAugData(NbPatients, T); /* augmented data */
-
+    print_augData(augData);
 
     /* PARAMETERS */
     parameters *param = createParam();
     param->weightNaGen = *weightNaGen;
 
+
     /* OUTPUT FILES */
     output_files *Files = createFILES(workspace);
+
 
     /* ACCEPTANCE */
     acceptance *accept = createAcceptance(); /* accept is initialized to zero */
     isAcceptOK *acceptOK = createIsAcceptOK();
     NbProposals *nbProp = createNbProposals();
 
+    printf("\nAcceptance done.\n");
 
     /* AUGMENTED DATA AND PARAMETER INITIALIZATION */
     /* Initialize in MCMC settings */
     InitMCMCSettings(MCMCSettings);
+    printf("\nMCMC initialized\n");
+
     /* !!! TO WRITE !!! */
     InitParam(param);
+    printf("\nParam initialized\n");
 
     /* initialize augmented data */
     InitAugData(param, nb, data, augData);
+    printf("\nAugmented data initialized\n");
 
 
     /* OUTPUT FILE PREPARATION  */
     prepAllFiles(Files, NbPatients);
+    printf("\nOutput files prepared\n");
 
 
     /*****************************************************/
@@ -70,7 +82,7 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
     MCMCSettings->NbSimul = 100;
     MCMCSettings->SubSample = 10;
 
-    printf("Starting estimation\n");
+    printf("\nStarting estimation\n");
     fflush(stdout);
     metro(MCMCSettings, param, data, nb, augData, dnainfo, accept, acceptOK, nbProp, Files);
 
@@ -102,7 +114,7 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
 
 int main(int argc, char *argv[]){
     time_t start, end;
-    int TimeElapsed, NbPatients=142, T=100;
+    int TimeElapsed, NbPatients=142, T=100, NbSeq=10;
     char workspace[500];
 
     /* SET TIMER */
@@ -122,7 +134,7 @@ int main(int argc, char *argv[]){
     mcmcInternals *MCMCSettings = createMcmcInternals();
 
     /*RAW DATA*/
-    nb_data *nb = createNbData(NbPatients, T);
+    nb_data *nb = createNbData(NbPatients, T, NbSeq);
     /* printf("\ncreated nb data\n"); */
 
     /* reading Nbdata */

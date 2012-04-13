@@ -21,7 +21,7 @@ outbreaker <- function(x, duration=100, weightNaGen=0.001){
     tPosSwab <- as.integer(unlist(x$t.swab)[unlist(x$swab)==1])
     tNegSwab <- as.integer(unlist(x$t.swab)[unlist(x$swab)==0])
     hospPres <- as.integer(unlist(x$hosp.pres))
-    idxSeqVec <- as.integer(unlist(x$idx.dna)-1)
+    idxSeqVec <- as.integer(unlist(x$idx.dna)-1) # -1 important!
     tCollecVec <- as.integer(unlist(x$t.dna))
     DNAbinInput <- unlist(as.list(x$dna),use.names=FALSE)
     totNbSeq <- as.integer(length(x$dna))

@@ -15,7 +15,7 @@
 
 
 /**************** nb_data ****************/
-nb_data * createNbData(int NbPatients, int T){
+nb_data * createNbData(int NbPatients, int T, int NbSequences){
     nb_data *nb = (nb_data *) malloc(sizeof(nb_data));
     if(nb == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
@@ -55,6 +55,7 @@ nb_data * createNbData(int NbPatients, int T){
     nb->NbColonisedPatients = 0;
     nb->NbPatients = NbPatients;
     nb->T = T;
+    nb->NbSequences = NbSequences;
 
     return nb;
 }
@@ -74,6 +75,24 @@ void freeNbData(nb_data *nb){
 
 
 
+
+
+void print_nbData(nb_data *nb){
+    int i;
+    printf("\nNb of patients: %d, time span 0-%d", nb->NbPatients, nb->T);
+    printf("\nNb of colonized patients: %d", nb->NbColonisedPatients);
+    printf("\nNb of Admissions:\n");
+    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->NbAdmissions[i]);
+    printf("\nNb of positive swabs:\n");
+    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->NbPosSwabs[i]);
+    printf("\nNb of negative swabs:\n");
+    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->NbNegSwabs[i]);
+    printf("\nIndices of colonized patients:\n");
+    for(i=0;i<nb->NbColonisedPatients;i++) printf("%d ",nb->indexColonisedPatients[i]);
+    printf("\nNb of sequences in each patient:\n");
+    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->M[i]);
+    fflush(stdout);
+}
 
 
 
@@ -185,6 +204,7 @@ raw_data *createRawData(nb_data *nb){
     for(i=0;i<nb->NbPatients;i++){
 	data->M[i] = nb->M[i];
     }
+    data->NbSequences = nb->NbSequences;
 
 
     /* RANDOM NUMBER GENERATOR */
@@ -228,6 +248,55 @@ void freeRawData(raw_data *data){
     gsl_rng_free(data->rng);
     free(data);
 }
+
+
+
+
+void print_rawData(raw_data *data){
+    int i,j;
+    printf("\nNb of patients: %d, time span 0-%d", data->NbPatients, data->T);
+    printf("\nWard data:\n");
+    for(i=0;i<data->NbPatients;i++) printf("%d ", data->ward[i]);
+    printf("\nAdmission data:\n");
+    for(i=0;i<data->NbPatients;i++){
+	printf("\nPatient %d:\n",i);
+	gsl_vector_fprintf(stdout, data->A[i], "%d");
+    }
+    printf("\nDischarge data:\n");
+    for(i=0;i<data->NbPatients;i++){
+	printf("\nPatient %d:\n",i);
+	gsl_vector_fprintf(stdout, data->D[i], "%d");
+    }
+    printf("\nPositive swabs:\n");
+    for(i=0;i<data->NbPatients;i++){
+	printf("\nPatient %d:\n",i);
+	gsl_vector_fprintf(stdout, data->P[i], "%d");
+    }
+    printf("\nNegative swabs:\n");
+    for(i=0;i<data->NbPatients;i++){
+	printf("\nPatient %d:\n",i);
+	gsl_vector_fprintf(stdout, data->N[i], "%d");
+    }
+    printf("\nHospital presence:\n");
+    for(i=0;i<data->NbPatients;i++){
+	printf("\nPatient %d:\n",i);
+	gsl_vector_fprintf(stdout, data->IsInHosp[i], "%d");
+    }
+    printf("\nIndices of sequences for each patient:\n");
+    for(i=0;i<data->NbPatients;i++){
+	printf("\nPatient %d\n",i);
+	for(j=0;j<data->M[i];j++){
+	    printf("%d ", data->S[i][j]);
+	}
+    }
+    printf("\nCollection times:\n");
+    for(i=0;i<data->NbSequences;i++){
+	printf("%.1f ", data->Tcollec[i]);
+    }
+    printf("\nNb of sequences per patient:\n");
+    for(i=0;i<data->NbPatients;i++) printf("%d ", data->M[i]);
+}
+
 
 
 
@@ -285,6 +354,21 @@ void freeAugData(aug_data *augData){
     free(augData);
 }
 
+
+
+
+void print_augData(aug_data *augData){
+    int i;
+    printf("\nNb of patients: %d, time span 0-%d", augData->NbPatients, augData->T);
+    printf("\nColonisation times: \n");
+    for(i=0;i<augData->NbPatients;i++) printf("%d ", augData->C[i]);
+    printf("\nClearance times: \n");
+    for(i=0;i<augData->NbPatients;i++) printf("%d ", augData->E[i]);
+    printf("\nNb of colonised individuals at each time step, ward 0: \n");
+    for(i=0;i<augData->T;i++) printf("%d ", augData->I0[i]);
+    printf("\nNb of colonised individuals at each time step, ward 1: \n");
+    for(i=0;i<augData->T;i++) printf("%d ", augData->I1[i]);
+}
 
 
 
@@ -352,6 +436,23 @@ void copyParam(parameters * paramDest, parameters * paramSource){
 }
 
 
+
+
+
+
+void print_param(parameters *param){
+    printf("\nBeta matrix:\n");
+    gsl_matrix_fprintf(stdout, param->beta, "%.3f");
+    printf("\nBeta ward<-out: %.3f", param->betaWardOut);
+    printf("\nBeta out<-out: %.3f", param->betaOutOut);
+    printf("\nsensibility of the test: %.3f", param->Se);
+    printf("\nprobability of being colonized at first admission: %.3f", param->Pi);
+    printf("\nmu/sigma - duration of colonisation: %.3f %.3f", param->mu, param->sigma);
+    printf("\nnu1: %.3f   nu2: %.3f", param->nu1, param->nu2);
+    printf("\ntau: %.3f", param->tau);
+    printf("\nalpha: %.3f", param->alpha);
+    printf("\nweightNaGen: %.3f", param->weightNaGen);
+}
 
 
 

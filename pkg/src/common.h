@@ -38,7 +38,7 @@ typedef short int bool;
 
 
 typedef struct{
-    int NbPatients, T; /* T: number of time steps corresponding to the study period */
+    int NbPatients, T, NbSequences; /* T: number of time steps corresponding to the study period */
     int * NbAdmissions; /* vector of size NbPatients */
     int * NbPosSwabs; /* vector of size NbPatients */
     int * NbNegSwabs; /* vector of size NbPatients */
@@ -53,7 +53,7 @@ typedef struct{
 
 typedef struct{
     /* EPI DATA */
-    int NbPatients, T; /* T: number of time steps corresponding to the study period */
+    int NbPatients, T, NbSequences; /* T: number of time steps corresponding to the study period */
     int * ward; /* 0 for adult, 1 for pediatric */
     /* int * timeSeq; /\* time of sequence for each patient *\/ */
     int * PatientIndex; /* !!! WHAT IS THIS ? !!!*/
@@ -65,8 +65,8 @@ typedef struct{
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
 
     /* GENETIC DATA */
-    int ** S; /* indices of sequences collected for each patient S->patient->vec of indices */
-    double * Tcollec; /* collection times of the sequences */
+    int ** S; /* indices of sequences collected for each patient; S[i] has length M[i] */
+    double * Tcollec; /* collection times of the sequences; length: NbSequences*/
     int * M; /* number of sequences collected for each patient */
 
     /* RANDOM NUMBER GENERATOR */
