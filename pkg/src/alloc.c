@@ -267,12 +267,12 @@ void print_rawData(raw_data *data){
 	printf("\nPatient %d:\n",i);
 	gsl_vector_fprintf(stdout, data->D[i], "%d");
     }
-    printf("\nPositive swabs:\n");
+    printf("\nDates of positive swabs:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("\nPatient %d:\n",i);
 	gsl_vector_fprintf(stdout, data->P[i], "%d");
     }
-    printf("\nNegative swabs:\n");
+    printf("\nDates of negative swabs:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("\nPatient %d:\n",i);
 	gsl_vector_fprintf(stdout, data->N[i], "%d");
