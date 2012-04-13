@@ -9,7 +9,6 @@
 #include "tuneVariances.h"
 
 
-/* extern gsl_rng * rng; */
 
 
 /******************************************************************************/
@@ -19,13 +18,14 @@
 /*
   Fill in a nb_data object using input form R.
 */
-void importNbData(int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *nbPatients, int *duration, int *idxColPatients, int *nbSeqPat, nb_data *nb){
+void importNbData(int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *nbPatients, int *duration, int *idxColPatients, int *nbSeqPat, int *nbSeq, nb_data *nb){
     int i;
 
     /* fill in simple values */
     nb->NbPatients = *nbPatients;
     nb->T = *duration;
     nb->NbColonisedPatients = *nbColPatients;
+    nb->NbSequences = *nbSeq;
 
     /* fill in vectors values */
     for(i=0;i<*nbPatients;i++){

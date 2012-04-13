@@ -37,41 +37,38 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     int EndBurnIn=0;
     int NbParamToBeTuned = 12;
 
-    /* printf("Starting metro (p=%d)\n",p); */
-    /* fflush(stdout); */
+    printf("Starting metro\n");
+    fflush(stdout);
 
     /* writeAllFiles(Files, param, nb, data, augData); */
 
     for(l=0;l<MCMCSettings->NbSimul;l++){
-	/*printf("%d\n",l);
-	  fflush(stdout);*/
+	printf("%d\n",l);
+	fflush(stdout);
 
 	/* Updates the std of proposal distributions if needed */
 
 	if(l>0&&(l%nbStepsVar)==0&&EndBurnIn==0){
 	    VarPropOK = 0;
-	    for (i=0; i<2;i++)
-		{
-		    for(j=0;j<2;j++)
-			{
-			    if(IsAcceptOKBeta(i,j,acceptOK)==0){
-				updateMCMCSettingsBeta(i, j, nbProp,accept,acceptOK, MCMCSettings);
-			    } else {
-				gsl_matrix_set(isAcceptOKBeta,i,j,1);
-				VarPropOK ++;
-			    }
-			}
+	    for (i=0; i<2;i++){
+		for(j=0;j<2;j++){
+		    if(IsAcceptOKBeta(i,j,acceptOK)==0){
+			updateMCMCSettingsBeta(i, j, nbProp,accept,acceptOK, MCMCSettings);
+		    } else {
+			gsl_matrix_set(isAcceptOKBeta,i,j,1);
+			VarPropOK ++;
+		    }
 		}
+	    }
 	    if(IsAcceptOKBetaWardOut(acceptOK)==0){
 		updateMCMCSettingsBetaWardOut(nbProp,accept,acceptOK, MCMCSettings);
 	    } else {
 		isAcceptOKBetaWardOut=1;
 		VarPropOK ++;
 	    }
-	    if(IsAcceptOKBetaOutOut(acceptOK)==0)
-		{
-		    updateMCMCSettingsBetaOutOut(nbProp,accept,acceptOK, MCMCSettings);
-		} else {
+	    if(IsAcceptOKBetaOutOut(acceptOK)==0){
+		updateMCMCSettingsBetaOutOut(nbProp,accept,acceptOK, MCMCSettings);
+	    } else {
 		isAcceptOKBetaOutOut=1;
 		VarPropOK ++;
 	    }
@@ -126,14 +123,20 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    }
 	}
 
+	printf("\nstep A\n");
+
 	if(EndBurnIn==1 && (l%nbStepsVar)==0){
 	    printf("starting simulation %u \n",l);
 	    fflush(stdout);
 	}
 
+	printf("\nstep B\n");
+
 	/*** Moves ***/
 
 	moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp);
+	printf("\nstep C\n");
+
 	/* moveBetaOut('w', MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	/* moveBetaOut('o', MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
@@ -156,15 +159,23 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
 	}
 
+	printf("\nstep D\n");
+
+
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
 	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
 	}
 
+	printf("\nstep E\n");
+
+
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
 	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
 	}
+
+	printf("\nstep F\n");
 
 	/* Writing results in an output file */
 	if (l>=MCMCSettings->BurnIn && l%MCMCSettings->SubSample==0 && EndBurnIn==1)
@@ -174,12 +185,17 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		/* printf("L = %lg\n",fullLoglikelihoodWithPrior(data, nb, augData, param)); */
 	    }
     }
+    printf("\nstep G\n");
 
     /* PRINT ACCESPTANCE RATE */
     printAcceptance(accept,nbProp);
+    printf("\nstep H\n");
 
     /* FREE ALLOCATED MEMORY */
     free(AugDataToMove);
+    printf("\nstep I\n");
+
     gsl_matrix_free(isAcceptOKBeta);
+    printf("\nstep J\n");
 
 }
