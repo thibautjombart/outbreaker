@@ -13,7 +13,8 @@
 /* import functions R -> C */
 void importNbData(int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *nbPatients, int *duration, int *idxColPatients, int *nbSeqPat, int *nbSeq, nb_data *nb);
 
-void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, int *totNbSeq, double *tCollecVec, nb_data *nb, raw_data *data);
+void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosSwab, double *tNegSwab, double *hospPres, int *idxSeqVec, int *totNbSeq, double *tCollecVec, nb_data *nb, raw_data *data);
+
 
 
 /* output functions */

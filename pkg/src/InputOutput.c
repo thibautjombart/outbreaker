@@ -56,7 +56,7 @@ void importNbData(int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatie
   - tNegSwab: result of unlisting of patients dates of positive swabs
   - tNegSwab: result of unlisting of hospital presence data
 */
-void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, int *totNbSeq, double *tCollecVec, nb_data *nb, raw_data *data){
+void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosSwab, double *tNegSwab, double *hospPres, int *idxSeqVec, int *totNbSeq, double *tCollecVec, nb_data *nb, raw_data *data){
     int i, k, counter;
 
     /* FILL IN SIMPLE VALUES */
@@ -75,20 +75,20 @@ void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int 
 	for(k=0;k<nb->NbAdmissions[i];k++){
 	    /* data->A[i][k] = tAdmVec[counter]; */
 	    /* data->D[i][k] = tDisVec[counter++]; */
-	    gsl_vector_set(data->A[i], k, tAdmVec[counter]);
-	    gsl_vector_set(data->D[i], k, tDisVec[counter++]);
+	    gsl_vector_set(data->A[i], k, (double) tAdmVec[counter]);
+	    gsl_vector_set(data->D[i], k, (double) tDisVec[counter++]);
 	}
     }
 
     /* positive swab times */
     counter = 0;
-    printf("\nValues passed for positive swab dates:\n");
+    /* printf("\nValues passed for positive swab dates:\n"); */
     for(i=0;i<nb->NbPatients;i++){
-	printf("\nPatient %d\n",i);
+	/* printf("\nPatient %d\n",i); */
 	for(k=0;k<nb->NbPosSwabs[i];k++){
 	    /* data->P[i][k] = tPosSwab[counter++]; */
-	    printf("%d", tPosSwab[counter]);
-	    gsl_vector_set(data->P[i], k, tPosSwab[counter++]);
+	    /* printf("%.1f ", tPosSwab[counter]); */
+	    gsl_vector_set(data->P[i], k, (double) tPosSwab[counter++]);
 	}
     }
 
@@ -97,7 +97,7 @@ void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int 
     for(i=0;i<nb->NbPatients;i++){
 	for(k=0;k<nb->NbNegSwabs[i];k++){
 	    /* data->N[i][k] = tNegSwab[counter++]; */
-	    gsl_vector_set(data->N[i], k, tNegSwab[counter++]);
+	    gsl_vector_set(data->N[i], k, (double) tNegSwab[counter++]);
 	}
     }
 
@@ -106,7 +106,7 @@ void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int 
     for(i=0;i<nb->NbPatients;i++){
 	for(k=0;k<nb->T;k++){
 	    /* data->IsInHosp[i][k] = hospPres[counter++]; */
-	    gsl_vector_set(data->IsInHosp[i], k, hospPres[counter++]);
+	    gsl_vector_set(data->IsInHosp[i], k, (double) hospPres[counter++]);
 	}
     }
  
@@ -224,7 +224,7 @@ void readFakeData(nb_data *nb, raw_data *data){
 			fflush(stdout);
 			break;
 		    }
-		gsl_vector_set(data->A[i],k,V);
+		gsl_vector_set(data->A[i],k, (double) V);
 	    }
     }
     fclose(fich);
@@ -245,7 +245,7 @@ void readFakeData(nb_data *nb, raw_data *data){
 			fflush(stdout);
 			break;
 		    }
-		gsl_vector_set(data->D[i],k,V);
+		gsl_vector_set(data->D[i],k, (double) V);
 	    }
     }
     fclose(fich);
@@ -266,7 +266,7 @@ void readFakeData(nb_data *nb, raw_data *data){
 			fflush(stdout);
 			break;
 		    }
-		gsl_vector_set(data->P[i],k,V);
+		gsl_vector_set(data->P[i],k, (double) V);
 	    }
     }
     fclose(fich);
@@ -287,7 +287,7 @@ void readFakeData(nb_data *nb, raw_data *data){
 			fflush(stdout);
 			break;
 		    }
-		gsl_vector_set(data->N[i],k,V);
+		gsl_vector_set(data->N[i],k, (double) V);
 	    }
     }
     fclose(fich);
