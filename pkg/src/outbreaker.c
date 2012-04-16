@@ -37,12 +37,17 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
     print_nbData(nb);
 
     raw_data *data = createRawData(nb); /* epi data */
+    printf("\n== Test rng before Import ==\n");
+    printf("random number: %.5f", gsl_rng_uniform (data->rng));
     importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
     /* printf("\ntPosSwab 10 first values:\n"); */
     /* int i; */
     /* for(i=0;i<10;i++) printf("%.1f ", tPosSwab[i]); */
-    printf("\n\n== Raw data ==\n");
-    print_rawData(data);
+    /* printf("\n\n== Raw data ==\n"); */
+    /* print_rawData(data); */
+
+    printf("\n== Test rng after import ==\n");
+    printf("random number: %.5f", gsl_rng_uniform (data->rng));
 
     list_dnaseq *dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
     dna_dist *dnainfo = compute_dna_distances(dna); /* genetic distances - all DNA info needed */

@@ -38,9 +38,13 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     printf("\n - step iii");
     nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j);
     printf("\n - step iv");
-
-    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); /* THIS IS THE ERROR */
-    printf("\n - step v");
+    
+    /* printf("\nValue of sigmaProp: %.5f", sigmaProp); */
+    /* printf("\nValue of newVal: %.5f", *newVal); */
+    /* printf("\nValue of curVal: %.5f", *curVal); */
+    /* printf("\nRandom value: %.5f", gsl_ran_flat (data->rng, 0.0, 100.0)); */
+    *newVal = *curVal * gsl_ran_lognormal(data->rng,0.0,sigmaProp); /* THIS IS THE ERROR */
+    printf("\n - step v ");
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);

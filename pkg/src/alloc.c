@@ -213,12 +213,13 @@ raw_data *createRawData(nb_data *nb){
 
 
     /* RANDOM NUMBER GENERATOR */
-    time_t t = time(NULL); // time in seconds, used to change the seed of the random generator
+    time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
     const gsl_rng_type *typ;
     gsl_rng_env_setup();
-    typ = gsl_rng_default;
-    data->rng = gsl_rng_alloc(typ);
-    gsl_rng_set(data->rng,t); // changes the seed of the random generator
+    typ=gsl_rng_default;
+    gsl_rng * rng=gsl_rng_alloc(typ);
+    gsl_rng_set(rng,t); /* changes the seed of the random generator */
+    data->rng = rng;
 
     return data;
 }
