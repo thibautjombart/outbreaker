@@ -58,7 +58,7 @@ void importNbData(int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatie
 */
 void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosSwab, double *tNegSwab, double *hospPres, int *idxSeqVec, int *totNbSeq, double *tCollecVec, nb_data *nb, raw_data *data){
     int i, k, counter;
-
+ 
     /* FILL IN SIMPLE VALUES */
     data->NbPatients = nb->NbPatients;
     data->T = nb->T;
@@ -79,7 +79,7 @@ void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosS
 	    gsl_vector_set(data->D[i], k, (double) tDisVec[counter++]);
 	}
     }
-
+ 
     /* positive swab times */
     counter = 0;
     /* printf("\nValues passed for positive swab dates:\n"); */
@@ -100,7 +100,7 @@ void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosS
 	    gsl_vector_set(data->N[i], k, (double) tNegSwab[counter++]);
 	}
     }
-
+  
     /* hospital presence across time */
     counter = 0;
     for(i=0;i<nb->NbPatients;i++){
@@ -109,7 +109,7 @@ void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosS
 	    gsl_vector_set(data->IsInHosp[i], k, (double) hospPres[counter++]);
 	}
     }
- 
+
     /* indices of DNA sequences for each patient */
     counter = 0;
     for(i=0;i<nb->NbPatients;i++){
@@ -117,17 +117,20 @@ void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosS
 	    data->S[i][k] = idxSeqVec[counter++];
 	}
     }
-
+    
     /* collection dates of DNA sequences */
+    printf("\nprintf totNbSeq: %d", *totNbSeq);
     for(i=0;i<*totNbSeq;i++){
-	data->Tcollec[i] = tCollecVec[i];
+    	data->Tcollec[i] = tCollecVec[i];
+	/* printf("\n== Test rng i=%d ==\n",i); */
+	/* printf("random number: %.5f", gsl_rng_uniform (data->rng)); */
     }
 
     /* nb of sequences per patient */
     for(i=0;i<nb->NbPatients;i++){
 	data->M[i] = nb->M[i];
     }
-
+ 
 } /* end importRawData*/
 
 
