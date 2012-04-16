@@ -14,10 +14,16 @@
 /* MAIN                                                                       */
 /******************************************************************************/
 
-void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, double *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen){
+void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, double *tAdmVec, double *tDisVec, double *tPosSwab, double *tNegSwab, double *hospPres, int *idxSeqVec, double *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen){
 
     int NbPatients=*nbPatients, T = *duration, NbSeq = *totNbSeq;
     char workspace[500]= "";
+
+    /* printf("\nTEST gsl vector length zero\n"); */
+    /* gsl_vector *toto = (gsl_vector *) gsl_vector_calloc(0); */
+    /* if(toto==NULL) printf("\nToto is null"); else printf("\ntoto is NOT null"); */
+    /* printf("\nTrying to print toto"); */
+    /* gsl_vector_fprintf(stdout, toto, "%.1f"); */
 
     /* === CREATE AND FILL OBJECTS === */
     /* MCMC */
@@ -31,10 +37,10 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
     print_nbData(nb);
 
     raw_data *data = createRawData(nb); /* epi data */
-    printf("\ntPosSwab 10 first values:\n");
-    int i;
-    for(i=0;i<10;i++) printf("%d ", tPosSwab[i]);
     importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
+    /* printf("\ntPosSwab 10 first values:\n"); */
+    /* int i; */
+    /* for(i=0;i<10;i++) printf("%.1f ", tPosSwab[i]); */
     printf("\n\n== Raw data ==\n");
     print_rawData(data);
 

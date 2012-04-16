@@ -158,13 +158,18 @@ raw_data *createRawData(nb_data *nb){
     for(i=0;i<nb->NbPatients;i++){
 	data->A[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
 	data->D[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
-	if(nb->NbPosSwabs[i]>0)
-	    {
+	if(nb->NbPosSwabs[i]>0){
 		data->P[i] = gsl_vector_calloc(nb->NbPosSwabs[i]);
-		nb->indexColonisedPatients[nb->NbColonisedPatients] = i;
-		nb->NbColonisedPatients++;
-	    }
-	if(nb->NbNegSwabs[i]>0){data->N[i] = gsl_vector_calloc(nb->NbNegSwabs[i]);}
+		/* nb->indexColonisedPatients[nb->NbColonisedPatients] = i; */
+		/* nb->NbColonisedPatients++; */
+	} else {
+	    data->P[i] = NULL;
+	}
+	if(nb->NbNegSwabs[i]>0){
+	    data->N[i] = gsl_vector_calloc(nb->NbNegSwabs[i]);
+	} else {
+	    data->N[i] = NULL;
+	}
 	data->IsInHosp[i] = gsl_vector_calloc(nb->T + 1); /* +1 because time goes from 0 to T */
     }
 
@@ -257,30 +262,30 @@ void print_rawData(raw_data *data){
     printf("\nNb of patients: %d, time span 0-%d", data->NbPatients, data->T);
     printf("\nWard data:\n");
     for(i=0;i<data->NbPatients;i++) printf("%d ", data->ward[i]);
-    printf("\nAdmission data:\n");
+    printf("\nAdmission dates:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("\nPatient %d:\n",i);
-	gsl_vector_fprintf(stdout, data->A[i], "%d");
+	if(data->A[i]!=NULL) gsl_vector_fprintf(stdout, data->A[i], "%.1f"); else printf("NULL\n");
     }
-    printf("\nDischarge data:\n");
+    printf("\nDischarge dates:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("\nPatient %d:\n",i);
-	gsl_vector_fprintf(stdout, data->D[i], "%d");
+	if(data->D[i]!=NULL) gsl_vector_fprintf(stdout, data->D[i], "%.1f"); else printf("NULL\n");
     }
     printf("\nDates of positive swabs:\n");
     for(i=0;i<data->NbPatients;i++){
-	printf("\nPatient %d:\n",i);
-	gsl_vector_fprintf(stdout, data->P[i], "%d");
+	printf("Patient %d:\n",i);
+	if(data->P[i]!=NULL) gsl_vector_fprintf(stdout, data->P[i], "%.1f"); else printf("NULL\n");
     }
     printf("\nDates of negative swabs:\n");
     for(i=0;i<data->NbPatients;i++){
-	printf("\nPatient %d:\n",i);
-	gsl_vector_fprintf(stdout, data->N[i], "%d");
+	printf("Patient %d:\n",i);
+	if(data->N[i]!=NULL) gsl_vector_fprintf(stdout, data->N[i], "%.1f"); else printf("NULL\n");
     }
     printf("\nHospital presence:\n");
     for(i=0;i<data->NbPatients;i++){
-	printf("\nPatient %d:\n",i);
-	gsl_vector_fprintf(stdout, data->IsInHosp[i], "%d");
+	printf("Patient %d:\n",i);
+	gsl_vector_fprintf(stdout, data->IsInHosp[i], "%.0f");
     }
     printf("\nIndices of sequences for each patient:\n");
     for(i=0;i<data->NbPatients;i++){
@@ -397,6 +402,17 @@ parameters *createParam(){
     }
 
     param->beta = gsl_matrix_calloc(2,2);
+    param->betaWardOut = 0.0;
+    param->betaOutOut = 0.0;
+    param->Se = 0.0;
+    param->Pi = 0.0;
+    param->mu = 0.0;
+    param->sigma = 0.0;
+    param->nu1 = 0.0;
+    param->nu2 = 0.0;
+    param->tau = 0.0;
+    param->alpha = 0.0;
+    param->weightNaGen = 0.0;
 
     return param;
 }
