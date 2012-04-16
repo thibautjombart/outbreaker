@@ -66,7 +66,7 @@ typedef struct{
 
     /* GENETIC DATA */
     int ** S; /* indices of sequences collected for each patient; S[i] has length M[i] */
-    double * Tcollec; /* collection times of the sequences; length: NbSequences*/
+    int * Tcollec; /* collection times of the sequences; length: NbSequences*/
     int * M; /* number of sequences collected for each patient */
 
     /* RANDOM NUMBER GENERATOR */

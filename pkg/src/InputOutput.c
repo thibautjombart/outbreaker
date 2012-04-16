@@ -121,7 +121,7 @@ void importRawData(int *wardVec, double *tAdmVec, double *tDisVec, double *tPosS
     /* collection dates of DNA sequences */
     printf("\nprintf totNbSeq: %d", *totNbSeq);
     for(i=0;i<*totNbSeq;i++){
-    	data->Tcollec[i] = tCollecVec[i];
+    	data->Tcollec[i] = (int) tCollecVec[i];
 	/* printf("\n== Test rng i=%d ==\n",i); */
 	/* printf("random number: %.5f", gsl_rng_uniform (data->rng)); */
     }
