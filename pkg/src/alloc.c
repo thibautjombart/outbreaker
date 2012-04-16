@@ -194,7 +194,7 @@ raw_data *createRawData(nb_data *nb){
     }
 
     /* Tcollec: collection times for each sequence */
-    data->Tcollec = (double *) calloc(nb->NbPatients, sizeof(double));
+    data->Tcollec = (int *) calloc(nb->NbPatients, sizeof(int));
     if(data->Tcollec == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
@@ -297,7 +297,7 @@ void print_rawData(raw_data *data){
     }
     printf("\nCollection times:\n");
     for(i=0;i<data->NbSequences;i++){
-	printf("%.1f ", data->Tcollec[i]);
+	printf("%d ", data->Tcollec[i]);
     }
     printf("\nNb of sequences per patient:\n");
     for(i=0;i<data->NbPatients;i++) printf("%d ", data->M[i]);
@@ -553,14 +553,14 @@ acceptance *createAcceptance(){
     }
 
     accept->PourcAcc_beta = gsl_matrix_calloc(2,2);
-    accept->PourcAcc_betaWardOut=0;
-    accept->PourcAcc_betaOutOut=0;
-    accept->PourcAcc_mu=0;
-    accept->PourcAcc_sigma=0;
-    accept->PourcAcc_nu1=0;
-    accept->PourcAcc_nu2=0;
-    accept->PourcAcc_tau=0;
-    accept->PourcAcc_alpha=0;
+    accept->PourcAcc_betaWardOut=0.0;
+    accept->PourcAcc_betaOutOut=0.0;
+    accept->PourcAcc_mu=0.0;
+    accept->PourcAcc_sigma=0.0;
+    accept->PourcAcc_nu1=0.0;
+    accept->PourcAcc_nu2=0.0;
+    accept->PourcAcc_tau=0.0;
+    accept->PourcAcc_alpha=0.0;
 
     return accept;
 }
@@ -573,18 +573,18 @@ void reInitiateAcceptance(acceptance *accept){
     int i,j;
     for(i=0;i<2;i++){
 	for(j=0;j<2;j++){
-	    gsl_matrix_set(accept->PourcAcc_beta,i,j,0);
+	    gsl_matrix_set(accept->PourcAcc_beta,i,j,0.0);
 	}
     }
 
-    accept->PourcAcc_betaWardOut=0;
-    accept->PourcAcc_betaOutOut=0;
-    accept->PourcAcc_mu=0;
-    accept->PourcAcc_sigma=0;
-    accept->PourcAcc_nu1=0;
-    accept->PourcAcc_nu2=0;
-    accept->PourcAcc_tau=0;
-    accept->PourcAcc_alpha=0;
+    accept->PourcAcc_betaWardOut=0.0;
+    accept->PourcAcc_betaOutOut=0.0;
+    accept->PourcAcc_mu=0.0;
+    accept->PourcAcc_sigma=0.0;
+    accept->PourcAcc_nu1=0.0;
+    accept->PourcAcc_nu2=0.0;
+    accept->PourcAcc_tau=0.0;
+    accept->PourcAcc_alpha=0.0;
 
 }
 
@@ -645,14 +645,14 @@ isAcceptOK *createIsAcceptOK(){
 
     acceptOK->IsAccOK_beta = gsl_matrix_calloc(2,2);
 
-    acceptOK->IsAccOK_betaWardOut=0;
-    acceptOK->IsAccOK_betaOutOut=0;
-    acceptOK->IsAccOK_mu=0;
-    acceptOK->IsAccOK_sigma=0;
-    acceptOK->IsAccOK_nu1=0;
-    acceptOK->IsAccOK_nu2=0;
-    acceptOK->IsAccOK_tau=0;
-    acceptOK->IsAccOK_alpha=0;
+    acceptOK->IsAccOK_betaWardOut=0.0;
+    acceptOK->IsAccOK_betaOutOut=0.0;
+    acceptOK->IsAccOK_mu=0.0;
+    acceptOK->IsAccOK_sigma=0.0;
+    acceptOK->IsAccOK_nu1=0.0;
+    acceptOK->IsAccOK_nu2=0.0;
+    acceptOK->IsAccOK_tau=0.0;
+    acceptOK->IsAccOK_alpha=0.0;
 
     return acceptOK;
 }
@@ -684,14 +684,14 @@ NbProposals *createNbProposals(){
 
     NbProp->NbProp_beta = gsl_matrix_calloc(2,2);
 
-    NbProp->NbProp_betaWardOut=0;
-    NbProp->NbProp_betaOutOut=0;
-    NbProp->NbProp_mu=0;
-    NbProp->NbProp_sigma=0;
-    NbProp->NbProp_nu1=0;
-    NbProp->NbProp_nu2=0;
-    NbProp->NbProp_tau=0;
-    NbProp->NbProp_alpha=0;
+    NbProp->NbProp_betaWardOut=0.0;
+    NbProp->NbProp_betaOutOut=0.0;
+    NbProp->NbProp_mu=0.0;
+    NbProp->NbProp_sigma=0.0;
+    NbProp->NbProp_nu1=0.0;
+    NbProp->NbProp_nu2=0.0;
+    NbProp->NbProp_tau=0.0;
+    NbProp->NbProp_alpha=0.0;
 
     return NbProp;
 }
@@ -707,18 +707,18 @@ void reInitiateNbProp(NbProposals * NbProp){
 	{
 	    for(j=0 ; j<2 ; j++)
 		{
-		    gsl_matrix_set(NbProp->NbProp_beta,i,j,0);
+		    gsl_matrix_set(NbProp->NbProp_beta,i,j,0.0);
 		}
 	}
 
-    NbProp->NbProp_betaWardOut=0;
-    NbProp->NbProp_betaOutOut=0;
-    NbProp->NbProp_mu=0;
-    NbProp->NbProp_sigma=0;
-    NbProp->NbProp_nu1=0;
-    NbProp->NbProp_nu2=0;
-    NbProp->NbProp_tau=0;
-    NbProp->NbProp_alpha=0;
+    NbProp->NbProp_betaWardOut=0.0;
+    NbProp->NbProp_betaOutOut=0.0;
+    NbProp->NbProp_mu=0.0;
+    NbProp->NbProp_sigma=0.0;
+    NbProp->NbProp_nu1=0.0;
+    NbProp->NbProp_nu2=0.0;
+    NbProp->NbProp_tau=0.0;
+    NbProp->NbProp_alpha=0.0;
 
 }
 
