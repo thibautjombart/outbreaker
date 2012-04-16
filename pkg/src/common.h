@@ -95,7 +95,7 @@ typedef struct{
     double betaWardOut; /* force of transmission from outside applied to patients in the wards */
     double betaOutOut; /* force of transmission applied to individuals outside the wards */
 
-    // double Sp; /* specificity of the test */ assumed = 100%
+    /* double Sp; /\* specificity of the test *\/ assumed = 100% */
     double Se; /* sensibility of the test */
 
     double Pi; /* probability of being colonized at first admission */

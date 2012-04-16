@@ -402,8 +402,8 @@ parameters *createParam(){
     }
 
     param->beta = gsl_matrix_calloc(2,2);
-    param->betaWardOut = 0.0;
-    param->betaOutOut = 0.0;
+    param->betaWardOut = 0.1;
+    param->betaOutOut = 0.1;
     param->Se = 0.0;
     param->Pi = 0.0;
     param->mu = 0.0;
@@ -483,6 +483,22 @@ mcmcInternals *createMcmcInternals(){
     }
 
     MCMCSettings->Sigma_beta = gsl_matrix_calloc(2,2);
+    if(MCMCSettings->Sigma_beta == NULL){
+	fprintf(stderr, "\n[in: alloc.c->createMcmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
+	exit(1);
+    }
+
+    MCMCSettings->NbSimul = 10000;
+    MCMCSettings->SubSample = 200;
+    MCMCSettings->BurnIn = 5000;
+    MCMCSettings->Sigma_betaWardOut = 0.1;
+    MCMCSettings->Sigma_betaOutOut = 0.1;
+    MCMCSettings->Sigma_mu = 0.1;
+    MCMCSettings->Sigma_sigma = 0.1;
+    MCMCSettings->Sigma_nu1 = 0.1;
+    MCMCSettings->Sigma_nu2 = 0.1;
+    MCMCSettings->Sigma_tau = 0.1;
+    MCMCSettings->Sigma_alpha = 0.1;
 
     return MCMCSettings;
 }

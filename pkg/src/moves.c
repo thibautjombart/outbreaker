@@ -27,19 +27,27 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     parameters *newParam = createParam();
     copyParam(newParam,curParam);
 
+    printf("\nMove beta: i = %d, j = %d", i, j);
     curVal = gsl_matrix_ptr(curParam->beta,i,j);
     newVal = gsl_matrix_ptr(newParam->beta,i,j);
+    printf("\n - step i");
 
     sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j);
+    printf("\n - step ii");
     nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j);
+    printf("\n - step iii");
     nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j);
+    printf("\n - step iv");
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
+    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); /* THIS IS THE ERROR */
+    printf("\n - step v");
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);
 
+    printf("\n - step vi");
     pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam);
+    printf("\n - step viii");
 
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
