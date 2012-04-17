@@ -14,7 +14,7 @@
 /* MAIN                                                                       */
 /******************************************************************************/
 
-void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, double *tAdmVec, double *tDisVec, double *tPosSwab, double *tNegSwab, double *hospPres, int *idxSeqVec, double *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen){
+void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab, int *nbNegSwab, int *nbColPatients, int *idxColPatients, int *nbSeqPat, int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int *tNegSwab, int *hospPres, int *idxSeqVec, int *tCollecVec, unsigned char *DNAbinInput, int *totNbSeq, int *seqLength, double *weightNaGen){
 
     int NbPatients=*nbPatients, T = *duration, NbSeq = *totNbSeq;
     char workspace[500]= "";
@@ -31,36 +31,31 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
 
     /* DATA */
     /* allocate / fill in */
-    nb_data *nb = createNbData(NbPatients, T, NbSeq); /* nb_data*/
+    nb_data *nb = createNbData(NbPatients, T, NbSeq, *nbColPatients); /* nb_data*/
     importNbData(nbAdmVec, nbPosSwab, nbNegSwab, nbColPatients, nbPatients, duration, idxColPatients, nbSeqPat, totNbSeq, nb);
     printf("\n== Nb data ==\n");
     print_nbData(nb);
 
     raw_data *data = createRawData(nb); /* epi data */
-    printf("\n== Test rng before Import ==\n");
-    printf("random number: %.5f", gsl_rng_uniform (data->rng));
     importRawData(wardVec, tAdmVec, tDisVec, tPosSwab, tNegSwab, hospPres, idxSeqVec, totNbSeq, tCollecVec, nb, data);
-    /* printf("\ntPosSwab 10 first values:\n"); */
-    /* int i; */
-    /* for(i=0;i<10;i++) printf("%.1f ", tPosSwab[i]); */
-    /* printf("\n\n== Raw data ==\n"); */
-    /* print_rawData(data); */
 
     printf("\n== Test rng after import ==\n");
     printf("random number: %.5f", gsl_rng_uniform (data->rng));
+    printf("\nrng address: %p\n", data->rng);
+    fflush(stdout);
 
     list_dnaseq *dna = DNAbin2list_dnaseq(DNAbinInput, totNbSeq, seqLength); /* DNA sequences */
     dna_dist *dnainfo = compute_dna_distances(dna); /* genetic distances - all DNA info needed */
-    printf("\n\n== Dna dist info ==\n");
+    printf("\n\n== Dna dist info ==\n"); fflush(stdout);
     print_dna_dist(dnainfo);
 
     aug_data *augData = createAugData(NbPatients, T); /* augmented data */
-    printf("\n\n== Augmented data ==\n");
+    printf("\n\n== Augmented data ==\n"); fflush(stdout);
     print_augData(augData);
 
     /* PARAMETERS */
     parameters *param = createParam();
-    printf("\n\n== Parameters ==\n");
+    printf("\n\n== Parameters ==\n"); fflush(stdout);
     print_param(param);
     param->weightNaGen = *weightNaGen;
 
@@ -132,132 +127,132 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
 /* MAIN                                                                       */
 /******************************************************************************/
 
-int main(int argc, char *argv[]){
-    time_t start, end;
-    int TimeElapsed, NbPatients=142, T=100, NbSeq=10;
-    char workspace[500];
+/* int main(int argc, char *argv[]){ */
+/*     time_t start, end; */
+/*     int TimeElapsed, NbPatients=142, T=100, NbSeq=10; */
+/*     char workspace[500]; */
 
-    /* SET TIMER */
-    time(&start);
+/*     /\* SET TIMER *\/ */
+/*     time(&start); */
 
-    /**********************************/
-    /***      SET THE WORKSPACE     ***/
-    /**********************************/
-    strcpy(workspace, "");
-
-
-    /*****************************************************/
-    /***           DECLARE ALL STRUCTURES              ***/
-    /*****************************************************/
-
-    /*MCMC */
-    mcmcInternals *MCMCSettings = createMcmcInternals();
-
-    /*RAW DATA*/
-    nb_data *nb = createNbData(NbPatients, T, NbSeq);
-    /* printf("\ncreated nb data\n"); */
-
-    /* reading Nbdata */
-    readFakeNbData(nb);
-    /* printf("\nread fake nb data\n"); */
-
-    raw_data *data = createRawData(nb);
-    /* printf("\ncreated raw data\n"); */
-
-    /*AUG DATA*/
-    aug_data *augData = createAugData(NbPatients, T);
-    /* printf("\ncreated aug data\n"); */
-
-    /*parameters */
-    parameters *param = createParam();
-    param->weightNaGen = 0.01;
-    /* printf("\ncreated param\n"); */
-
-    /* Output files */
-    output_files *Files = createFILES(workspace);
-
-    /* Acceptance */
-    acceptance *accept = createAcceptance(); /* accept is initialized to zero */
-    isAcceptOK *acceptOK = createIsAcceptOK();
-    NbProposals *nbProp = createNbProposals();
+/*     /\**********************************\/ */
+/*     /\***      SET THE WORKSPACE     ***\/ */
+/*     /\**********************************\/ */
+/*     strcpy(workspace, ""); */
 
 
-    /* DNA DISTANCES */
-    dna_dist *dnainfo = NULL;
+/*     /\*****************************************************\/ */
+/*     /\***           DECLARE ALL STRUCTURES              ***\/ */
+/*     /\*****************************************************\/ */
 
-    /*****************************************************/
-    /***         READ DATA AND MCMC SETTINGS           ***/
-    /***        + INIT AUGDATA AND PARAMETERS          ***/
-    /*****************************************************/
+/*     /\*MCMC *\/ */
+/*     mcmcInternals *MCMCSettings = createMcmcInternals(); */
 
-    /* reading data */
-    /***************************************
-     *************** TO WRITE ***************
-     ****************************************/
-    readFakeData(nb, data);
+/*     /\*RAW DATA*\/ */
+/*     nb_data *nb = createNbData(NbPatients, T, NbSeq); */
+/*     /\* printf("\ncreated nb data\n"); *\/ */
 
-    /* filling in data->IsInHosp */
-    CalculIsInHosp(nb, data);
+/*     /\* reading Nbdata *\/ */
+/*     readFakeNbData(nb); */
+/*     /\* printf("\nread fake nb data\n"); *\/ */
 
-    /* fill in MCMC settings */
-    InitMCMCSettings(MCMCSettings);
+/*     raw_data *data = createRawData(nb); */
+/*     /\* printf("\ncreated raw data\n"); *\/ */
 
-    /* initialize parameters */
-    /***************************************
-     *************** TO WRITE ***************
-     ****************************************/
-    InitParam(param);
+/*     /\*AUG DATA*\/ */
+/*     aug_data *augData = createAugData(NbPatients, T); */
+/*     /\* printf("\ncreated aug data\n"); *\/ */
 
-    /* initialize augmented data */
-    InitAugData(param, nb, data, augData);
+/*     /\*parameters *\/ */
+/*     parameters *param = createParam(); */
+/*     param->weightNaGen = 0.01; */
+/*     /\* printf("\ncreated param\n"); *\/ */
 
-    /*****************************************************/
+/*     /\* Output files *\/ */
+/*     output_files *Files = createFILES(workspace); */
 
-
-
-    /*****************************************************/
-    /***   Preparing output files (writing headers)    ***/
-    /*****************************************************/
-
-    prepAllFiles(Files, NbPatients);
-
-    /*****************************************************/
-
-    /*****************************************************/
-    /***                 Launch MCMC                   ***/
-    /*****************************************************/
-    MCMCSettings->BurnIn = 100;
-    MCMCSettings->NbSimul = 100;
-    MCMCSettings->SubSample = 10;
-
-    printf("Starting estimation\n");
-    fflush(stdout);
-    metro(MCMCSettings, param, data, nb, augData, dnainfo, accept, acceptOK, nbProp, Files);
+/*     /\* Acceptance *\/ */
+/*     acceptance *accept = createAcceptance(); /\* accept is initialized to zero *\/ */
+/*     isAcceptOK *acceptOK = createIsAcceptOK(); */
+/*     NbProposals *nbProp = createNbProposals(); */
 
 
-    /*****************************************************/
-    /***        Close files and Free memory            ***/
-    /*****************************************************/
+/*     /\* DNA DISTANCES *\/ */
+/*     dna_dist *dnainfo = NULL; */
 
-    freeMcmcInternals(MCMCSettings);
-    freeNbData(nb);
-    freeRawData(data);
-    freeAugData(augData);
-    freeParam(param);
-    freeFILES(Files);
-    freeAcceptance(accept);
-    freeIsAcceptOK(acceptOK);
-    freeNbProposals(nbProp);
+/*     /\*****************************************************\/ */
+/*     /\***         READ DATA AND MCMC SETTINGS           ***\/ */
+/*     /\***        + INIT AUGDATA AND PARAMETERS          ***\/ */
+/*     /\*****************************************************\/ */
 
-    time(&end);
-    TimeElapsed = (int) end - (int) start;
+/*     /\* reading data *\/ */
+/*     /\*************************************** */
+/*      *************** TO WRITE *************** */
+/*      ****************************************\/ */
+/*     readFakeData(nb, data); */
 
-    printf("Computing time: %i seconds\n",TimeElapsed);
+/*     /\* filling in data->IsInHosp *\/ */
+/*     CalculIsInHosp(nb, data); */
 
-    /* getchar(); */
-    return 0;
+/*     /\* fill in MCMC settings *\/ */
+/*     InitMCMCSettings(MCMCSettings); */
 
-}
+/*     /\* initialize parameters *\/ */
+/*     /\*************************************** */
+/*      *************** TO WRITE *************** */
+/*      ****************************************\/ */
+/*     InitParam(param); */
+
+/*     /\* initialize augmented data *\/ */
+/*     InitAugData(param, nb, data, augData); */
+
+/*     /\*****************************************************\/ */
+
+
+
+/*     /\*****************************************************\/ */
+/*     /\***   Preparing output files (writing headers)    ***\/ */
+/*     /\*****************************************************\/ */
+
+/*     prepAllFiles(Files, NbPatients); */
+
+/*     /\*****************************************************\/ */
+
+/*     /\*****************************************************\/ */
+/*     /\***                 Launch MCMC                   ***\/ */
+/*     /\*****************************************************\/ */
+/*     MCMCSettings->BurnIn = 100; */
+/*     MCMCSettings->NbSimul = 100; */
+/*     MCMCSettings->SubSample = 10; */
+
+/*     printf("Starting estimation\n"); */
+/*     fflush(stdout); */
+/*     metro(MCMCSettings, param, data, nb, augData, dnainfo, accept, acceptOK, nbProp, Files); */
+
+
+/*     /\*****************************************************\/ */
+/*     /\***        Close files and Free memory            ***\/ */
+/*     /\*****************************************************\/ */
+
+/*     freeMcmcInternals(MCMCSettings); */
+/*     freeNbData(nb); */
+/*     freeRawData(data); */
+/*     freeAugData(augData); */
+/*     freeParam(param); */
+/*     freeFILES(Files); */
+/*     freeAcceptance(accept); */
+/*     freeIsAcceptOK(acceptOK); */
+/*     freeNbProposals(nbProp); */
+
+/*     time(&end); */
+/*     TimeElapsed = (int) end - (int) start; */
+
+/*     printf("Computing time: %i seconds\n",TimeElapsed); */
+
+/*     /\* getchar(); *\/ */
+/*     return 0; */
+
+/* } */
 
 
 

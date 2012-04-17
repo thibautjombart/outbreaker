@@ -15,7 +15,7 @@
 
 
 /**************** nb_data ****************/
-nb_data * createNbData(int NbPatients, int T, int NbSequences){
+nb_data * createNbData(int NbPatients, int T, int NbSequences, int NbColonisedPatients){
     nb_data *nb = (nb_data *) malloc(sizeof(nb_data));
     if(nb == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
@@ -40,7 +40,7 @@ nb_data * createNbData(int NbPatients, int T, int NbSequences){
 	exit(1);
     }
 
-    nb->indexColonisedPatients = (int *) calloc(NbPatients, sizeof(int));
+    nb->indexColonisedPatients = (int *) calloc(NbColonisedPatients, sizeof(int));
     if(nb->indexColonisedPatients == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
 	exit(1);
@@ -52,7 +52,7 @@ nb_data * createNbData(int NbPatients, int T, int NbSequences){
 	exit(1);
     }
 
-    nb->NbColonisedPatients = 0;
+    nb->NbColonisedPatients = NbColonisedPatients;
     nb->NbPatients = NbPatients;
     nb->T = T;
     nb->NbSequences = NbSequences;
@@ -113,11 +113,11 @@ raw_data *createRawData(nb_data *nb){
 	exit(1);
     }
 
-    data->PatientIndex = (int *) calloc(nb->NbPatients, sizeof(int));
-    if(data->PatientIndex == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
+    /* data->PatientIndex = (int *) calloc(nb->NbPatients, sizeof(int)); */
+    /* if(data->PatientIndex == NULL){ */
+    /* 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n"); */
+    /* 	exit(1); */
+    /* } */
 
     /* data->timeSeq = (int *) calloc(nb->NbPatients, sizeof(int)); */
     /* if(data->timeSeq == NULL){ */
@@ -170,7 +170,7 @@ raw_data *createRawData(nb_data *nb){
 	} else {
 	    data->N[i] = NULL;
 	}
-	data->IsInHosp[i] = gsl_vector_calloc(nb->T + 1); /* +1 because time goes from 0 to T */
+	data->IsInHosp[i] = gsl_vector_calloc(nb->T);
     }
 
     /* simple integers */
@@ -194,7 +194,7 @@ raw_data *createRawData(nb_data *nb){
     }
 
     /* Tcollec: collection times for each sequence */
-    data->Tcollec = (int *) calloc(nb->NbPatients, sizeof(int));
+    data->Tcollec = (int *) calloc(nb->NbSequences, sizeof(int));
     if(data->Tcollec == NULL){
 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
 	exit(1);
@@ -213,7 +213,8 @@ raw_data *createRawData(nb_data *nb){
 
 
     /* RANDOM NUMBER GENERATOR */
-    time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
+    /* time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
+    time_t t = 1; /* time in seconds, used to change the seed of the random generator */
     const gsl_rng_type *typ;
     gsl_rng_env_setup();
     typ=gsl_rng_default;
@@ -232,16 +233,16 @@ void freeRawData(raw_data *data){
     int i;
 
     for(i=0 ; i<data->NbPatients ; i++){
-	gsl_vector_free(data->A[i]);
-	gsl_vector_free(data->D[i]);
-	gsl_vector_free(data->P[i]);
-	gsl_vector_free(data->N[i]);
-	gsl_vector_free(data->IsInHosp[i]);
+	if(data->A[i] != NULL) gsl_vector_free(data->A[i]);
+	if(data->D[i] != NULL) gsl_vector_free(data->D[i]);
+	if(data->P[i] != NULL) gsl_vector_free(data->P[i]);
+	if(data->N[i] != NULL) gsl_vector_free(data->N[i]);
+	if(data->IsInHosp[i] != NULL) gsl_vector_free(data->IsInHosp[i]);
 	free(data->S[i]);
     }
 
     free(data->ward);
-    free(data->PatientIndex);
+    /* free(data->PatientIndex); */
     /* free(data->timeSeq); */
     free(data->A);
     free(data->D);
@@ -374,6 +375,7 @@ void print_augData(aug_data *augData){
     for(i=0;i<augData->T;i++) printf("%d ", augData->I0[i]);
     printf("\nNb of colonised individuals at each time step, ward 1: \n");
     for(i=0;i<augData->T;i++) printf("%d ", augData->I1[i]);
+    fflush(stdout);
 }
 
 
@@ -469,6 +471,7 @@ void print_param(parameters *param){
     printf("\ntau: %.3f", param->tau);
     printf("\nalpha: %.3f", param->alpha);
     printf("\nweightNaGen: %.3f", param->weightNaGen);
+    fflush(stdout);
 }
 
 

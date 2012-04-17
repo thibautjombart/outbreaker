@@ -54,13 +54,13 @@ typedef struct{
 typedef struct{
     /* EPI DATA */
     int NbPatients, T, NbSequences; /* T: number of time steps corresponding to the study period */
-    int * ward; /* 0 for adult, 1 for pediatric */
+    int * ward; /* vector of length NbPatients, 0 for adult, 1 for pediatric */
     /* int * timeSeq; /\* time of sequence for each patient *\/ */
-    int * PatientIndex; /* !!! WHAT IS THIS ? !!!*/
+    /* int * PatientIndex; /\* vector from 0 to (NbPatients-1) *\/ */
     gsl_vector ** A; /* admission times. A[i] is a vector of size nb_data->NbAdmissions[i] */
     gsl_vector ** D; /* discharge times. D[i] is a vector of size nb_data->NbAdmissions[i] */
     gsl_vector ** P; /* times of positive swabs. P[i] is a vector of size nb_data->NbPosSwabs[i] */
-    gsl_vector ** N; /* times of positive swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] */
+    gsl_vector ** N; /* times of negative swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] */
     /* gsl_vector *IsInHosp[NbPatients]; /\* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T *\/ */
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
 

@@ -4,13 +4,13 @@
 ##
 ## simple function to simulate data to test R/C interface
 sim.testrun.data <- function(n.patients=10, min.n.swab=0, max.n.swab=10,
-                             min.n.seq=0, max.n.seq=10, time.span=100,
+                             min.n.seq=0, max.n.seq=10, duration=100,
                              seq.length=30){
 
     ## CHECKS ##
     if(!require(ape)) stop("The ape package is required.")
     if(max.n.seq>max.n.swab) max.n.seq <- max.n.swab
-
+    time.span <- as.integer(duration-1)
 
     ## EPI DATA ##
     ## nb of swab per patient
@@ -28,14 +28,12 @@ sim.testrun.data <- function(n.patients=10, min.n.swab=0, max.n.swab=10,
 
     t.adm <- sapply(t.swab, function(e) ifelse(all(is.na(e)), 0, min(e)-1) )
     t.adm[t.adm<0] <- 0
-    t.adm <- as.double(t.adm)
 
     t.dis <- sapply(t.swab, function(e) ifelse(all(is.na(e)), time.span, max(e)+1) )
     t.dis[t.dis>time.span] <- time.span
-    t.dis <- as.double(t.dis)
 
     ## presence in hospital (0:no, 1:yes)
-    hosp.pres <- lapply(1:n.patients, function(i) sapply(0:time.span, function(t) ifelse(t<t.adm[i] | t>t.dis[i],0,1)))
+    hosp.pres <- lapply(1:n.patients, function(i) sapply(0:time.span, function(t) ifelse(t<t.adm[i] | t>=t.dis[i],0,1)))
 
 
     ## GENETIC DATA ##

@@ -6,7 +6,7 @@
 #ifndef __ALLOC_H
 #define __ALLOC_H
 
-nb_data *createNbData(int NbPatients, int T, int NbSequences);
+nb_data *createNbData(int NbPatients, int T, int NbSequences, int NbColonisedPatients);
 void freeNbData(nb_data *);
 void print_nbData(nb_data *);
 
