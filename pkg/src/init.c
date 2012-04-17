@@ -15,19 +15,15 @@
 
 void CalculIsInHosp(nb_data * nbData, raw_data *data){
     int i,k,t, T=data->T;
-    for(i=0 ; i<nbData->NbPatients ; i++)
-	{
-	    for(k = 0 ; k<nbData->NbAdmissions[i] ; k++)
-		{
-		    if(GSL_MAX(0,gsl_vector_get(data->A[i],k))<GSL_MIN(T,gsl_vector_get(data->D[i],k)))
-			{
-			    for(t=GSL_MAX(0,gsl_vector_get(data->A[i],k)) ; t<GSL_MIN(T,gsl_vector_get(data->D[i],k)) ; t++)
-				{
-				    gsl_vector_set(data->IsInHosp[i],t,1);
-				}
-			}
+    for(i=0 ; i<nbData->NbPatients ; i++){
+	for(k = 0 ; k<nbData->NbAdmissions[i] ; k++){
+	    if(GSL_MAX(0,gsl_vector_get(data->A[i],k))<GSL_MIN(T,gsl_vector_get(data->D[i],k))){
+		for(t=GSL_MAX(0,gsl_vector_get(data->A[i],k)) ; t<GSL_MIN(T,gsl_vector_get(data->D[i],k)) ; t++){
+		    gsl_vector_set(data->IsInHosp[i],t,1);
 		}
+	    }
 	}
+    }
 }
 
 
@@ -41,86 +37,71 @@ void InitAugData(parameters *param, nb_data * nbData, raw_data *data, aug_data *
     FILE *fichC, *fichE;
     int V;
 
-    for(t=0 ; t<T ; t++)
-	{
-	    augData->I0[t]=0;
-	    augData->I1[t]=0;
-	}
+    for(t=0 ; t<T ; t++){
+	augData->I0[t]=0;
+	augData->I1[t]=0;
+    }
 
     /*fichC = fopen("TrueC.txt","r");
-      if ( fichC == NULL )
-      {
+      if ( fichC == NULL ){
       printf("A problem occurred while opening TrueC.txt. Check that the file exists and is not opened.\n");
       fflush(stdout);
       exit(1);
       }
 
       fichE = fopen("TrueE.txt","r");
-      if ( fichE == NULL )
-      {
+      if ( fichE == NULL ){
       printf("A problem occurred while opening TrueE.txt. Check that the file exists and is not opened.\n");
       fflush(stdout);
       exit(1);
       }*/
 
-    for(i=0 ; i<NbPatients ; i++)
-	{
-	    if(nbData->NbPosSwabs[i]>0)
-		{
-		    augData->C[i] = gsl_vector_get(data->P[i],0);
-		    /* augData->E[i] = GSL_MAX(augData->C[i]+ceil(gsl_ran_gamma (param->rng, a, b)),1+gsl_vector_get(data->P[i],nbData->NbPosSwabs[i]-1)); */
-		    augData->E[i] = augData->C[i]+ceil(param->mu);
-		}else
-		{
-		    augData->C[i] = -100;
-		    /* augData->E[i] = augData->C[i]+ceil(gsl_ran_gamma (param->rng, a, b)); */
-		    augData->E[i] = augData->C[i]+ceil(param->mu);
+    for(i=0 ; i<NbPatients ; i++){
+	if(nbData->NbPosSwabs[i]>0){
+	    augData->C[i] = gsl_vector_get(data->P[i],0);
+	    /* augData->E[i] = GSL_MAX(augData->C[i]+ceil(gsl_ran_gamma (param->rng, a, b)),1+gsl_vector_get(data->P[i],nbData->NbPosSwabs[i]-1)); */
+	    augData->E[i] = augData->C[i]+ceil(param->mu);
+	}else
+	    {
+		augData->C[i] = -100;
+		/* augData->E[i] = augData->C[i]+ceil(gsl_ran_gamma (param->rng, a, b)); */
+		augData->E[i] = augData->C[i]+ceil(param->mu);
+	    }
+
+	/*if( fscanf(fichC,"%d",&V) != 1){
+	  printf("A problem occurred while reading the file\n");
+	  fflush(stdout);
+	  break;
+	  }
+	  augData->C[i] = V;
+
+	  if( fscanf(fichE,"%d",&V) != 1){
+	  printf("A problem occurred while reading the file\n");
+	  fflush(stdout);
+	  break;
+	  }
+	  augData->E[i] = V;*/
+
+
+	if(data->ward[i]==0){
+	    if(GSL_MAX(0,augData->C[i])<GSL_MIN(T,augData->E[i])){
+		for(t=GSL_MAX(0,augData->C[i]) ; t<GSL_MIN(T,augData->E[i]) ; t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			augData->I0[t]++;
+		    }
 		}
-
-	    /*if( fscanf(fichC,"%d",&V) != 1)
-	      {
-	      printf("A problem occurred while reading the file\n");
-	      fflush(stdout);
-	      break;
-	      }
-	      augData->C[i] = V;
-
-	      if( fscanf(fichE,"%d",&V) != 1)
-	      {
-	      printf("A problem occurred while reading the file\n");
-	      fflush(stdout);
-	      break;
-	      }
-	      augData->E[i] = V;*/
-
-
-	    if(data->ward[i]==0)
-		{
-		    if(GSL_MAX(0,augData->C[i])<GSL_MIN(T,augData->E[i]))
-			{
-			    for(t=GSL_MAX(0,augData->C[i]) ; t<GSL_MIN(T,augData->E[i]) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    augData->I0[t]++;
-					}
-				}
-			}
-		}
-	    if(data->ward[i]==1)
-		{
-		    if(GSL_MAX(0,augData->C[i])<GSL_MIN(T,augData->E[i]))
-			{
-			    for(t=GSL_MAX(0,augData->C[i]) ; t<GSL_MIN(T,augData->E[i]) ; t++)
-				{
-				    if(gsl_vector_get(data->IsInHosp[i],t)==1)
-					{
-					    augData->I1[t]++;
-					}
-				}
-			}
-		}
+	    }
 	}
+	if(data->ward[i]==1){
+	    if(GSL_MAX(0,augData->C[i])<GSL_MIN(T,augData->E[i])){
+		for(t=GSL_MAX(0,augData->C[i]) ; t<GSL_MIN(T,augData->E[i]) ; t++){
+		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			augData->I1[t]++;
+		    }
+		}
+	    }
+	}
+    }
 
     /* fclose(fichC); */
     /* fclose(fichE); */
@@ -157,13 +138,11 @@ void InitMCMCSettings(mcmcInternals *MCMCSettings){
 void InitParam(parameters *param){
     int i,j;
 
-    for(i=0 ; i<2 ; i++)
-	{
-	    for(j=0 ; j<2 ; j++)
-		{
-		    gsl_matrix_set(param->beta,i,j,0.1);
-		}
+    for(i=0 ; i<2 ; i++){
+	for(j=0 ; j<2 ; j++){
+	    gsl_matrix_set(param->beta,i,j,0.1);
 	}
+    }
 
     param->betaWardOut=0.1;
     param->betaOutOut=0.1;

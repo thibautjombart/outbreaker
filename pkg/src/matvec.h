@@ -6,9 +6,12 @@
   These functions are basic routines for simulating host populations.
 */
 
+#ifndef NAN
+#define NAN log(0)
+#endif
+
 #ifndef __MATVEC_H
 #define __MATVEC_H
-
 
 /*
    ==================

@@ -16,7 +16,7 @@
 
 void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, isAcceptOK *acceptOK, NbProposals *nbProp, output_files * Files){
     int i,j,l;
-    int NbChangeAugData = 10; /* TO BE TUNED  */
+    int NbChangeAugData = 1; /* TO BE TUNED  */
     int *AugDataToMove = (int *) calloc(NbChangeAugData,sizeof(int));
     if(AugDataToMove == NULL){
 	fprintf(stderr, "\n[in: mcmc.c->metro]\nNo memory left for creating AugDataToMove. Exiting.\n");
