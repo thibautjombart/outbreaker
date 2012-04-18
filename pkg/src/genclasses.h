@@ -78,5 +78,7 @@ char DNAbin2char(unsigned char in);
 
 list_dnaseq * DNAbin2list_dnaseq(unsigned char * in, int *n, int *length);
 
+void copy_dnaseq(dnaseq *in, dnaseq *out);
+
 
 #endif

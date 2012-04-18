@@ -81,6 +81,64 @@ dnaseq *create_haplo(int length, gsl_rng *rng){
 
 
 
+/* Make an existing haplotype evolve using :
+   - nu1: rate of transitions 
+   - nu2: rate of transversions 
+   - double t: time of evolution between in and out
+*/
+void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
+    int i, nbtransi, nbtransver, posi=0;
+
+    /* handle transitions */
+    nbtransi = gsl_ran_poisson(rng, nu1 * t * (double) in->length);
+    for(i=0;i<nbtransi;i++){
+	posi = gsl_rng_uniform_int(rng, in->length);
+	in->seq[posi] = transi(in->seq[posi]);
+    }
+
+    /* handle transversions */
+    nbtransver = gsl_ran_poisson(rng, nu2 * t * (double) in->length);
+    for(i=0;i<nbtransver;i++){
+	posi = gsl_rng_uniform_int(rng, in->length);
+	in->seq[posi] = transv(in->seq[posi], rng);
+    }
+} /* end evolve_haplo */
+
+
+
+
+
+
+/* Replicate an haplotype, creating a new sequence, using:
+   - nu1: rate of transitions 
+   - nu2: rate of transversions 
+   - double t: time of evolution between in and out
+*/
+dnaseq *replicate_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
+    dnaseq *out = create_dnaseq(in->length);
+
+    /* copy haplotype */
+    copy_dnaseq(in, out);
+
+    /* evolve haplotype */
+    evolve_haplo(out, nu1, nu2, t, rng);
+
+    return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -101,7 +159,7 @@ int main(){
 
     int i;
 
-    dnaseq *seq;
+    dnaseq *seq1, *seq2, *seq3;
 
     /* transitions */
     printf("\n== Transitions ==");
@@ -122,11 +180,32 @@ int main(){
 
 
     printf("\n== Haplotype creation ==\n");
-    seq = create_haplo(30, rng);
-    print_dnaseq(seq);
+    seq1 = create_haplo(30, rng);
+    print_dnaseq(seq1);
+    
+    printf("\n== Haplotype copy ==\n");
+    seq2 = create_dnaseq(30);
+    copy_dnaseq(seq1, seq2);
+    print_dnaseq(seq2);
 
+    printf("\n== Haplotype replication ==\n");
+    printf("\nref:");
+    seq3 = replicate_haplo(seq1, 0.1, 0.2, 1.0, rng);
+    printf("\nref:"); 
+    print_dnaseq(seq2);
+    printf("\nnew:"); 
+    print_dnaseq(seq3);
 
-    free_dnaseq(seq);
+    printf("\n== Evolution across several time steps ==\n");
+    copy_dnaseq(seq1, seq3);
+    for(i=0;i<20;i++){
+	evolve_haplo(seq3, 0.05, 0.1, 1.0, rng);
+	print_dnaseq(seq3);
+    }
+
+    free_dnaseq(seq1);
+    free_dnaseq(seq2);
+    free_dnaseq(seq3);
     gsl_rng_free(rng);
     return 0;
 }

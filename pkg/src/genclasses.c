@@ -174,6 +174,21 @@ list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 
 
 
+/* copy a dnaseq object */
+void copy_dnaseq(dnaseq *in, dnaseq *out){
+    if(out->length!=in->length){
+	fprintf(stderr, "\n[in: genclasses.c->copy_dnaseq]\n.Input and output length mismatch (in:%d, out:%d)\n", in->length, out->length);
+	exit(1);
+	}
+
+    int i;
+    for(i=0;i<in->length;i++){
+	out->seq[i] = in->seq[i];
+    }
+}
+
+
+
 
 /*
   =======
