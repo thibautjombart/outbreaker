@@ -17,6 +17,7 @@
 typedef struct{
     int nbPatients; /* nb of patients */
     int length; /* haplotype length */
+    int maxNbLineages;
     /* int *nbLineages; /\* nb of lineages in each patient; vector of size nPatients*\/ */
     list_dnaseq **dna; /* haplotypes in each patient; vector of size nPatients*/
 } epid_dna;
