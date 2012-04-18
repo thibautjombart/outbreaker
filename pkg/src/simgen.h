@@ -10,12 +10,16 @@
 #define __SIMGEN_H
 
 
+
 /*
-   =================
-   === AUXILIARY ===
-   =================
+  ===================
+  AUXILIARY FUNCTIONS
+  ===================
 */
 
+char transi(char in);
+
+char transv(char in, gsl_rng *rng);
 
 
 
@@ -26,9 +30,11 @@
    ==========================
 */
 
+dnaseq *create_haplo(int length, gsl_rng *rng);
 
+void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng);
 
-
+dnaseq *replicate_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng);
 
 
 

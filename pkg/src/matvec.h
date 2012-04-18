@@ -75,6 +75,15 @@ void print_vec_int(vec_int *in);
 
 void print_mat_int(mat_int *in);
 
+int max_vec_int(vec_int *vec);
+
+int min_vec_int(vec_int *vec);
+
+void permut_vec_int(vec_int *in, gsl_rng * rng);
+
+void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
+
+
 
 
 #endif

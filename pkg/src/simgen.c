@@ -211,10 +211,11 @@ int main(){
 }
 
 
-/* gcc instructions:
+/* 
+
+gcc instructions:
 
 gcc -o simgen genclasses.c simgen.c -lgsl -lgslcblas && ./simgen
-
 
 valgrind --leak-check=full simgen
 
