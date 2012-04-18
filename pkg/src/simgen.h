@@ -66,6 +66,6 @@ void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double 
 void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist, double lambda_nlin, double nu1, double nu2, int *dates, gsl_rng *rng);
 
 
-
+list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, double nu2, int colDate, int swabDate, gsl_rng *rng);
 
 #endif
