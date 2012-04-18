@@ -27,11 +27,11 @@ epid_dna * create_epid_dna(int nbPatients, int maxNlineages, int haploLength){
 	}
 
 	/* FILL/ALLOCATE CONTENT */
-	out->nbLineages = (int *) calloc(nbPatients, sizeof(int));
-	if(out->nbLineages==NULL){
-		fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n");
-		exit(1);
-	}
+	/* out->nbLineages = (int *) calloc(nbPatients, sizeof(int)); */
+	/* if(out->nbLineages==NULL){ */
+	/* 	fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n"); */
+	/* 	exit(1); */
+	/* } */
 
 	out->dna = (list_dnaseq **) calloc(nbPatients, sizeof(list_dnaseq *));
 	for(i=0;i<nbPatients;i++){
@@ -55,7 +55,7 @@ epid_dna * create_epid_dna(int nbPatients, int maxNlineages, int haploLength){
 
 void free_epid_dna(epid_dna *in){
     int i;
-    free(in->nbLineages);
+    /* free(in->nbLineages); */
     for(i=0;i<in->nbPatients;i++){
 	free_list_dnaseq(in->dna[i]);
     }
@@ -111,7 +111,31 @@ char transv(char in, gsl_rng *rng){
 }
 
 
+/* PRINT */
+void print_epid_dna(epid_dna *in){
+    int i;
+    printf("\n== Epidemic DNA info==\n");
+    printf("\n%d patients   haplotype length:%d\n", in->nbPatients, in->length);
+    printf("\nnb of lineages per patient:\n");
+    for(i=0;i<in->nbPatients;i++) printf("%d ", in->dna[i]->n);
+    printf("\n");
 
+    for(i=0;i<in->nbPatients;i++){
+	printf("\nPatient %d:", i);
+	print_list_dnaseq(in->dna[i]);
+    }
+
+    printf("\n");
+    fflush(stdout);
+}
+
+
+
+/*
+  ==================
+  EXTERNAL FUNCTIONS
+  ==================
+*/
 
 /* create a new haplotype of a given length */
 dnaseq *create_haplo(int length, gsl_rng *rng){
@@ -295,7 +319,9 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 	}
     }
 
-}
+    /* free local pointers */
+    free_dnaseq(ref);
+} /* end evolve_epid_dna */
 
 
 
@@ -310,7 +336,73 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
   =======
 */
 
+/* /\* TESTS OF BASIC ROUTINES *\/ */
+/* int main(){ */
+/*     time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
+/*     const gsl_rng_type *typ; */
+/*     gsl_rng_env_setup(); */
+/*     typ=gsl_rng_default; */
+/*     gsl_rng * rng=gsl_rng_alloc(typ); */
+/*     gsl_rng_set(rng,t); /\* changes the seed of the random generator *\/ */
 
+/*     int i; */
+
+/*     dnaseq *seq1, *seq2, *seq3; */
+
+/*     /\* transitions *\/ */
+/*     printf("\n== Transitions =="); */
+/*     printf("\na:%c", transi('a')); */
+/*     printf("\ng:%c", transi('g')); */
+/*     printf("\nt:%c", transi('t')); */
+/*     printf("\nc:%c", transi('c')); */
+
+/*     printf("\n\n== Transversions =="); */
+/*     for(i=0;i<5;i++) printf("\na:%c", transv('a',rng)); */
+/*     printf("\n"); */
+/*     for(i=0;i<5;i++) printf("\ng:%c", transv('g',rng)); */
+/*     printf("\n"); */
+/*     for(i=0;i<5;i++) printf("\nt:%c", transv('t',rng)); */
+/*     printf("\n"); */
+/*      for(i=0;i<5;i++) printf("\nc:%c", transv('c',rng)); */
+/*     printf("\n"); */
+
+
+/*     printf("\n== Haplotype creation ==\n"); */
+/*     seq1 = create_haplo(30, rng); */
+/*     print_dnaseq(seq1); */
+    
+/*     printf("\n== Haplotype copy ==\n"); */
+/*     seq2 = create_dnaseq(30); */
+/*     copy_dnaseq(seq1, seq2); */
+/*     print_dnaseq(seq2); */
+
+/*     printf("\n== Haplotype replication ==\n"); */
+/*     printf("\nref:"); */
+/*     seq3 = create_dnaseq(30); */
+/*     replicate_haplo(seq1, seq3, 0.1, 0.2, 1.0, rng); */
+/*     printf("\nref:");  */
+/*     print_dnaseq(seq2); */
+/*     printf("\nnew:");  */
+/*     print_dnaseq(seq3); */
+
+/*     printf("\n== Evolution across several time steps ==\n"); */
+/*     copy_dnaseq(seq1, seq3); */
+/*     for(i=0;i<20;i++){ */
+/* 	evolve_haplo(seq3, 0.05, 0.1, 1.0, rng); */
+/* 	print_dnaseq(seq3); */
+/*     } */
+
+/*     free_dnaseq(seq1); */
+/*     free_dnaseq(seq2); */
+/*     free_dnaseq(seq3); */
+/*     gsl_rng_free(rng); */
+/*     return 0; */
+/* } */
+
+
+
+
+/* TESTS OF EVOLVE_EPID_DNA */
 int main(){
     time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
     const gsl_rng_type *typ;
@@ -319,59 +411,25 @@ int main(){
     gsl_rng * rng=gsl_rng_alloc(typ);
     gsl_rng_set(rng,t); /* changes the seed of the random generator */
 
-    int i;
+    epid_dna *out = create_epid_dna(10, 5, 50); /* nb patients, max nb lineages, haplo length */
 
-    dnaseq *seq1, *seq2, *seq3;
+    int ances[10] = {-1, -1, 1, 1, 2, 3, 3, 2, 6, 6};
+    int dates[10] = {0, 0, 1, 1, 1, 2, 2, 2, 4, 50};
+    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=0.5;
+    double nu1=0.02, nu2=0.05;
 
-    /* transitions */
-    printf("\n== Transitions ==");
-    printf("\na:%c", transi('a'));
-    printf("\ng:%c", transi('g'));
-    printf("\nt:%c", transi('t'));
-    printf("\nc:%c", transi('c'));
+    evolve_epid_dna(out, ances, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, dates, rng);
 
-    printf("\n\n== Transversions ==");
-    for(i=0;i<5;i++) printf("\na:%c", transv('a',rng));
-    printf("\n");
-    for(i=0;i<5;i++) printf("\ng:%c", transv('g',rng));
-    printf("\n");
-    for(i=0;i<5;i++) printf("\nt:%c", transv('t',rng));
-    printf("\n");
-     for(i=0;i<5;i++) printf("\nc:%c", transv('c',rng));
-    printf("\n");
+    print_epid_dna(out);
 
-
-    printf("\n== Haplotype creation ==\n");
-    seq1 = create_haplo(30, rng);
-    print_dnaseq(seq1);
-    
-    printf("\n== Haplotype copy ==\n");
-    seq2 = create_dnaseq(30);
-    copy_dnaseq(seq1, seq2);
-    print_dnaseq(seq2);
-
-    printf("\n== Haplotype replication ==\n");
-    printf("\nref:");
-    seq3 = create_dnaseq(30);
-    replicate_haplo(seq1, seq3, 0.1, 0.2, 1.0, rng);
-    printf("\nref:"); 
-    print_dnaseq(seq2);
-    printf("\nnew:"); 
-    print_dnaseq(seq3);
-
-    printf("\n== Evolution across several time steps ==\n");
-    copy_dnaseq(seq1, seq3);
-    for(i=0;i<20;i++){
-	evolve_haplo(seq3, 0.05, 0.1, 1.0, rng);
-	print_dnaseq(seq3);
-    }
-
-    free_dnaseq(seq1);
-    free_dnaseq(seq2);
-    free_dnaseq(seq3);
+    free_epid_dna(out);
     gsl_rng_free(rng);
     return 0;
 }
+
+
+
+
 
 
 /* 

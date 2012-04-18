@@ -17,7 +17,7 @@
 typedef struct{
     int nbPatients; /* nb of patients */
     int length; /* haplotype length */
-    int *nbLineages; /* nb of lineages in each patient; vector of size nPatients*/
+    /* int *nbLineages; /\* nb of lineages in each patient; vector of size nPatients*\/ */
     list_dnaseq **dna; /* haplotypes in each patient; vector of size nPatients*/
 } epid_dna;
 
@@ -61,5 +61,10 @@ void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng);
 void replicate_haplo(dnaseq *in, dnaseq *out,double nu1, double nu2, double t, gsl_rng *rng);
 
 void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double nu2, gsl_rng *rng);
+
+void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist, double lambda_nlin, double nu1, double nu2, int *dates, gsl_rng *rng);
+
+
+
 
 #endif
