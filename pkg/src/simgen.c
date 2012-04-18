@@ -40,6 +40,7 @@ epid_dna * create_epid_dna(int nbPatients, int maxNlineages, int haploLength){
 
 	out->nbPatients = nbPatients;
 	out->length = haploLength;
+	out->maxNbLineages = maxNlineages;
 	return out;
 }
 
@@ -286,6 +287,11 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 
 	    /* update the number of sequences in patient */
 	    in->dna[i]->n = nlin;
+
+	    /* free unused sequences */
+	    for(j=nlin;j<in->maxNbLineages;j++){
+		free_dnaseq(in->dna[i]->list[j]);
+	    }
 	}
     }
 
@@ -301,21 +307,26 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 	    /* determine the number of lineages */
 	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
 
-	    /* make sure not to exceed the max number of sequences in infecting patient */
-	    if(nlin>in->dna[ances[i]]->n) nlin = in->dna[ances[i]]->n;
+	    /* make sure not to exceed the max number of sequences */
+	    if(nlin>in->maxNbLineages) nlin = in->maxNbLineages;
 	    if(nlin==0){
 		printf("\nLikely issue: patient %d infects patient %d but has no know pathogen sequence.\n", ances[i], i);
 	    }
 
 	    /* replicate haplotypes */
+	    deltaT = dates[i] - dates[ances[i]];
 	    for(j=0;j<nlin;j++){
 		seqIdx = gsl_rng_uniform_int(rng, in->dna[ances[i]]->n);
-		deltaT = dates[i] - dates[ances[i]];
 		replicate_haplo(in->dna[ances[i]]->list[seqIdx], in->dna[i]->list[j], nu1, nu2, deltaT, rng);
 	    }
 
-	    /* update the number of sequences in patient */
+	    /* update the number of sequences in patient i */
 	    in->dna[i]->n = nlin;
+
+	    /* free unused sequences */
+	    for(j=nlin;j<in->maxNbLineages;j++){
+		free_dnaseq(in->dna[i]->list[j]);
+	    }
 	}
     }
 
@@ -415,7 +426,7 @@ int main(){
 
     int ances[10] = {-1, -1, 1, 1, 2, 3, 3, 2, 6, 6};
     int dates[10] = {0, 0, 1, 1, 1, 2, 2, 2, 4, 50};
-    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=0.5;
+    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2;
     double nu1=0.02, nu2=0.05;
 
     evolve_epid_dna(out, ances, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, dates, rng);
