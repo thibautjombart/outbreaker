@@ -10,6 +10,62 @@
 
 
 
+/*
+  ============
+  CONSTRUCTORS
+  ============
+*/
+
+epid_dna * create_epid_dna(int nbPatients, int maxNlineages, int haploLength){
+	int i;
+
+	/* ALLOCATE OUTPUT */
+	epid_dna *out = (epid_dna *) malloc(sizeof(epid_dna));
+	if(out==NULL){
+		fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+		exit(1);
+	}
+
+	/* FILL/ALLOCATE CONTENT */
+	out->nbLineages = (int *) calloc(nbPatients, sizeof(int));
+	if(out->nbLineages==NULL){
+		fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+		exit(1);
+	}
+
+	out->dna = (list_dnaseq **) calloc(nbPatients, sizeof(list_dnaseq *));
+	for(i=0;i<nbPatients;i++){
+	    out->dna[i] = create_list_dnaseq(maxNlineages, haploLength);
+	}
+
+	out->nbPatients = nbPatients;
+	out->length = haploLength;
+	return out;
+}
+
+
+
+
+
+/*
+  ===========
+  DESTRUCTORS
+  ===========
+*/
+
+void free_epid_dna(epid_dna *in){
+    int i;
+    free(in->nbLineages);
+    for(i=0;i<in->nbPatients;i++){
+	free_list_dnaseq(in->dna[i]);
+    }
+    free(in->dna);
+    free(in);
+}
+
+
+
+
 
 /*
   ===================
@@ -17,6 +73,7 @@
   ===================
 */
 
+/* find one transition */
 char transi(char in){
     switch(in){
     case 'a':
@@ -35,7 +92,7 @@ char transi(char in){
 
 
 
-
+/* find one transversion */
 char transv(char in, gsl_rng *rng){
     double x = gsl_ran_flat(rng, 0.0, 1.0);
     switch(in){
@@ -56,7 +113,7 @@ char transv(char in, gsl_rng *rng){
 
 
 
-
+/* create a new haplotype of a given length */
 dnaseq *create_haplo(int length, gsl_rng *rng){
     int i;
     double x;
@@ -109,31 +166,136 @@ void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
 
 
 
-/* Replicate an haplotype, creating a new sequence, using:
+/* Replicate an haplotype using:
    - nu1: rate of transitions 
    - nu2: rate of transversions 
    - double t: time of evolution between in and out
 */
-dnaseq *replicate_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
-    dnaseq *out = create_dnaseq(in->length);
-
+void replicate_haplo(dnaseq *in, dnaseq *out, double nu1, double nu2, double t, gsl_rng *rng){
     /* copy haplotype */
     copy_dnaseq(in, out);
 
     /* evolve haplotype */
     evolve_haplo(out, nu1, nu2, t, rng);
-
-    return out;
 }
 
 
 
 
 
+/* Create a new lineage at a given distance from an existing haplotype, using:
+   - in: a reference haplotype
+   - dist: the distance in nb of mutations from the reference
+   - nu1: rate of transitions
+   - nu2: rate of transversions
+   - double t: time of evolution between in and out
+*/
+void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double nu2, gsl_rng *rng){
+    int i, posi, nbTransiTransver[2];
+    double p[2];
+    p[0] = nu1;
+    p[1] = nu2;
+
+    /* COPY HAPLOTYPE */
+    copy_dnaseq(in, out);
+
+    /* EVOLVE HAPLOTYPE */
+    /* find nb of transitions / transversions */
+    gsl_ran_multinomial (rng, 2, dist, p, nbTransiTransver);
+
+  
+    /* handle transitions */
+    for(i=0;i<nbTransiTransver[0];i++){
+	posi = gsl_rng_uniform_int(rng, out->length);
+	out->seq[posi] = transi(out->seq[posi]);
+    }
+
+    /* handle transversions */
+    for(i=0;i<nbTransiTransver[1];i++){
+	posi = gsl_rng_uniform_int(rng, out->length);
+	out->seq[posi] = transv(out->seq[posi], rng);
+    }
+
+} /* end make_distant_lineage */
 
 
 
 
+
+/*
+  Simulate the evolution of pathogens in a set of patients, given:
+  - ances: a vector of ancestries (values indicate 'infecting' patient; -1=external)
+  - mu_dist,sigma_dist: the mean/sd for the distance between lineages (lognormal)
+  - lambda_nlin: lambda for the number of lineages in a external infection (nlin ~ pois(lambda)+1)
+  - nu1: rate of transitions
+  - nu2: rate of transversions
+  - dates: dates at which patients are infected; ordered by increasing dates (forward-time)
+
+  Sensible values:
+  - mu_dist,sigma_dist: ([3,4] , 0.1)
+  - lambda_nlin: [0,1]
+
+*/
+
+void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist, double lambda_nlin, double nu1, double nu2, int *dates, gsl_rng *rng){
+    int i, j, N = in->nbPatients, L=in->length, nlin, deltaT, dist, seqIdx;
+    double temp;
+
+    /* REFERENCE HAPLOTYPE */
+    dnaseq *ref = create_haplo(L, rng);
+
+
+    /* OUTSIDE TRANSMISSIONS FIRST */
+    for(i=0;i<N;i++){
+	if(ances[i]<0){ /* i.e. colonization from outside */
+	    /* determine the number of lineages */
+	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
+
+	    /* make sure not to exceed the max number of sequences per patient */
+	    if(nlin>in->dna[i]->n) nlin = in->dna[i]->n;
+
+	    /* draw haplotypes */
+	    for(j=0;j<nlin;j++){
+		dist = (int) gsl_ran_lognormal(rng, mu_dist, sigma_dist);
+		make_distant_lineage(ref, in->dna[i]->list[j], dist, nu1, nu2, rng);
+	    }
+
+	    /* update the number of sequences in patient */
+	    in->dna[i]->n = nlin;
+	}
+    }
+
+
+   /* PATIENT->PATIENT TRANSMISSIONS */
+    for(i=0;i<N;i++){
+	/* make sure the ancestor is known */
+	if(ances[i]>=N){
+	    fprintf(stderr, "\n[in: simgen.c->evolve_epid_dna]\nUnknown ancestor index %d (%d patients)\n", ances[i], N);
+	    exit(1);
+	}
+	if(ances[i]>=0){ /* i.e. infection from a known patient */
+	    /* determine the number of lineages */
+	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
+
+	    /* make sure not to exceed the max number of sequences in infecting patient */
+	    if(nlin>in->dna[ances[i]]->n) nlin = in->dna[ances[i]]->n;
+	    if(nlin==0){
+		printf("\nLikely issue: patient %d infects patient %d but has no know pathogen sequence.\n", ances[i], i);
+	    }
+
+	    /* replicate haplotypes */
+	    for(j=0;j<nlin;j++){
+		seqIdx = gsl_rng_uniform_int(rng, in->dna[ances[i]]->n);
+		deltaT = dates[i] - dates[ances[i]];
+		replicate_haplo(in->dna[ances[i]]->list[seqIdx], in->dna[i]->list[j], nu1, nu2, deltaT, rng);
+	    }
+
+	    /* update the number of sequences in patient */
+	    in->dna[i]->n = nlin;
+	}
+    }
+
+}
 
 
 
@@ -190,7 +352,8 @@ int main(){
 
     printf("\n== Haplotype replication ==\n");
     printf("\nref:");
-    seq3 = replicate_haplo(seq1, 0.1, 0.2, 1.0, rng);
+    seq3 = create_dnaseq(30);
+    replicate_haplo(seq1, seq3, 0.1, 0.2, 1.0, rng);
     printf("\nref:"); 
     print_dnaseq(seq2);
     printf("\nnew:"); 
