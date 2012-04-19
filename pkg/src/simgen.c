@@ -567,6 +567,8 @@ void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq
 
 /* TESTS OF EVOLVE_EPID_DNA */
 int main(){
+    int i,j;
+
     time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
     const gsl_rng_type *typ;
     gsl_rng_env_setup();
@@ -589,16 +591,22 @@ int main(){
 
 
     /* SAMPLING PROCEDURE */
+
+    /* make nb_data and raw_data */
     /* 10 indiv in outbreak, 5 with positive swabs */
     nb_data *nb = createNbData(10, 100, 0, 5);
-    raw_data *data = createRawData(nb);
-    list_dnaseq *dna;
-    nb->NbColonisedPatients = 5;
-    int i,j;
-    /* get nb of positive swabs per patients */
-    for(i=0;i<10;i++){
-	nb->NbPosSwabs[i] = i < 5 ? i: 0;
+    for(i=0;i<10;i++) nb->NbAdmissions[i] = 1;
 
+    nb->NbColonisedPatients = 5;
+ 
+   /* get nb of positive swabs per patients */
+    for(i=0;i<10;i++){
+	nb->NbPosSwabs[i] = i < 5 ? i+1: 0;
+    }
+
+    raw_data *data = createRawData(nb);
+
+    for(i=0;i<10;i++){
 	/* resize the vector of positive swab dates */
 	if(data->P[i] != NULL) {
 	    gsl_vector_free(data->P[i]);
@@ -612,6 +620,10 @@ int main(){
 	    }
 	}
     }
+
+    
+    list_dnaseq *dna;
+
 
     sample_epid_dna(out, nb, data, dna, lambdaNseq, nu1, nu2, dates, rng);
 /* void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq *dna_data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng) */
