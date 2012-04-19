@@ -391,11 +391,11 @@ list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, doub
   - colonDates: vector of colonisation dates for each patient, length nbData->NbPatients
 
 */
-void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq *dna_data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng){
-    int i, j, counter=0, lastSeqIdx=0;
+list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng){
+    int i, j, counter=0;
     int nbPatients=data->NbPatients;
     int *swabDates; /* temporary vector storing positive swab dates */
-    char *msg; /* only used for realloc */
+    list_dnaseq *out;
 
     int **listCollecDates = (int **) calloc(nbPatients, sizeof(int *)); /* temporary list of vectors storing collection dates */
 
@@ -461,19 +461,30 @@ void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq
     /* allocate output for dna sequences */
     /* dna_data must not have been allocated before */
     printf("\n\nCreation of global list of %d sequences of size %d", data->NbSequences, in->length);
-    dna_data = create_list_dnaseq(data->NbSequences, in->length);
+    out = create_list_dnaseq(data->NbSequences, in->length);
 
     /* reallocate vector of collection times */
     /* msg = realloc(data->Tcollec, data->NbSequences*sizeof(int)); */
+    free(data->Tcollec);
+    data->Tcollec = (int *) calloc(data->NbSequences,sizeof(int)) ;
+    if(data->Tcollec == NULL){
+	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating swabDates. Exiting.\n");
+	exit(1);
+    }
 
-    
 
     for(i=0;i<nbPatients;i++) printf("\nM[i]:%d", data->M[i]);
     printf("\nnumber of sequences: %d\n", data->NbSequences);
     counter = 0;
     for(i=0;i<nbPatients;i++){
 	/* realloc S vectors (S[i]: indices of sequences sampled in patient i */
-	msg = realloc(data->S[i], data->M[i]*sizeof(int));
+	/* msg = realloc(data->S[i], data->M[i]*sizeof(int)); */
+	free(data->S[i]);
+	data->S[i] = (int *) calloc(data->M[i],sizeof(int));
+	if(data->S[i] == NULL){
+	    fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating swabDates. Exiting.\n");
+	    exit(1);
+	}
 
 	/* fill in data */
 	printf("\nM[i]:%d, i=%d\n", data->M[i], i);
@@ -484,17 +495,17 @@ void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq
 
 	    /* copy DNA sequences */
 	    printf("\nAttenpting to copy sequence %d/%d (i:%d , j:%d)\n", counter, data->NbSequences-1, i, j);
-	    copy_dnaseq(listSwabSeq[i]->list[j],dna_data->list[counter]);
+	    copy_dnaseq(listSwabSeq[i]->list[j],out->list[counter]);
 	    printf("\nCopied sequence %d/%d (i:%d , j:%d)\n", counter, data->NbSequences-1, i, j);
 	    printf("\nIn:\n");
 	    print_dnaseq(listSwabSeq[i]->list[j]);
 	    printf("\nOut:\n");
-	    print_dnaseq(dna_data->list[counter++]);
+	    print_dnaseq(out->list[counter]);
 	    fflush(stdout);
 
 	    /* copy collection times */
-	    /* printf("\nCollection time %d: %d\n", counter, data->Tcollec[counter]); */
-	    /* data->Tcollec[counter++] = listCollecDates[i][j]; */
+	    printf("\nCollection time %d: %d\n", counter, data->Tcollec[counter]);
+	    data->Tcollec[counter++] = listCollecDates[i][j];
 	}
     }
 
@@ -508,8 +519,11 @@ void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq
     free(listCollecDates);
 
     printf("\nglobal list of dna sequences when leaving sampling procedure\n");
-    print_list_dnaseq(dna_data);
-}
+    print_list_dnaseq(out);
+    printf("\ndna address: %p\n", out);
+
+    return out;
+} /* end sample_epid_dna */
 
 
 
@@ -655,14 +669,14 @@ int main(){
    
     list_dnaseq *dna;
 
-
-    sample_epid_dna(out, nb, data, dna, lambdaNseq, nu1, nu2, dates, rng);
+    dna = sample_epid_dna(out, nb, data, lambdaNseq, nu1, nu2, dates, rng);
 /* void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq *dna_data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng) */
 
     printf("\nSampling done. \n");
     fflush(stdout);
 
     printf("\nFinal sample of DNA sequences: \n");
+    printf("\ndna address: %p\n", dna);
     print_list_dnaseq(dna);
 
     printf("\nFinal data: \n");
