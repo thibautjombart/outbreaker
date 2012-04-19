@@ -272,27 +272,27 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 
     /* OUTSIDE TRANSMISSIONS FIRST */
     for(i=0;i<N;i++){
-	if(ances[i]<0){ /* i.e. colonization from outside */
-	    /* determine the number of lineages */
-	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
+		if(ances[i]<0){ /* i.e. colonization from outside */
+			/* determine the number of lineages */
+			nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
 
-	    /* make sure not to exceed the max number of sequences per patient */
-	    if(nlin>in->dna[i]->n) nlin = in->dna[i]->n;
+			/* make sure not to exceed the max number of sequences per patient */
+			if(nlin>in->dna[i]->n) nlin = in->dna[i]->n;
 
-	    /* draw haplotypes */
-	    for(j=0;j<nlin;j++){
-		dist = (int) gsl_ran_lognormal(rng, mu_dist, sigma_dist);
-		make_distant_lineage(ref, in->dna[i]->list[j], dist, nu1, nu2, rng);
-	    }
+			/* draw haplotypes */
+			for(j=0;j<nlin;j++){
+			dist = (int) gsl_ran_lognormal(rng, mu_dist, sigma_dist);
+			make_distant_lineage(ref, in->dna[i]->list[j], dist, nu1, nu2, rng);
+			}
 
-	    /* update the number of sequences in patient */
-	    in->dna[i]->n = nlin;
+			/* update the number of sequences in patient */
+			in->dna[i]->n = nlin;
 
-	    /* free unused sequences */
-	    for(j=nlin;j<in->maxNbLineages;j++){
-		free_dnaseq(in->dna[i]->list[j]);
-	    }
-	}
+			/* free unused sequences */
+			for(j=nlin;j<in->maxNbLineages;j++){
+			free_dnaseq(in->dna[i]->list[j]);
+			}
+		}
     }
 
 
