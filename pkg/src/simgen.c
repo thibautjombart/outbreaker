@@ -5,6 +5,7 @@
 */
 
 #include "common.h"
+#include "alloc.h"
 #include "genclasses.h"
 #include "simgen.h"
 
@@ -339,29 +340,32 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 
 
 /*
-  get N sequences from a patient 'patient' at time t
+  get N sequences from a patient 'patient' at times collecDates
+  - evolution of the sequences occurs between colDate and collecDates
+  - 'patient': index of the patient (from 0 to NbPatients-1)
+  - 'N': nb of sequences sampled; length of vector 'collecDates'
 */
-list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, double nu2, int colDate, int *swabDates, gsl_rng *rng){
+list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, double nu2, int colonDate, int *collecDates, gsl_rng *rng){
     int i, ancesSeqId, deltaT;
 
     /* CHECKS */
-    if(patient>=in->nbPatients){
+    if(patient>=in->nbPatients || patient<0){
 	fprintf(stderr, "\n[in: simgen.c->get_swab_patient]\nSwabbed patient index %d unknown (there are %d patients).\n", patient, in->nbPatients);
 	exit(1);
     }
-  
+
 
     /* CREATE OUTPUT AND FILL IT IN  */
     list_dnaseq *out = create_list_dnaseq(N, in->length);
 
     for(i=0;i<N;i++){
-	if(swabDates[i]<colDate){
-	    fprintf(stderr, "\n[in: simgen.c->get_swab_patient]\nSwab date (%d) before colonisation data (%d).\n", swabDates[i], colDate);
-	exit(1);
-    }
+	if(collecDates[i]<colonDate){
+	    fprintf(stderr, "\n[in: simgen.c->get_swab_patient]\nSwab date (%d) before colonisation data (%d).\n", collecDates[i], colonDate);
+	    exit(1);
+	}
 
 	/* find deltaT */
-	deltaT = swabDates[i] - colDate;
+	deltaT = collecDates[i] - colonDate;
 
 	/* select ancestral strain at random */
 	ancesSeqId = gsl_rng_uniform_int(rng, in->dna[patient]->n);
@@ -380,22 +384,28 @@ list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, doub
 
 
 /*
-  Sample genetic data from outbreak and fill in raw_data and dnainfo:
+  Sample genetic data from outbreak and fill in epid and dna data
+  - 'dna_data': list_dnaseq used to output the dna sequences; must not have been allocated before!
+  - lambda_nseq: parameter of the Poisson distribution giving the number of sequences for a given positive swab
+  - nu1, nu2: transitions, transversions
+  - colonDates: vector of colonisation dates for each patient, length nbData->NbPatients
 
 */
 void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq *dna_data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng){
-    int i, j, nbSeqCurSwab, totNseq=0, lastSeqId=0, counter=0;
-    int Npat=data->NbPatients, Nswab=nb_data->NbColonisedPatients;
+    int i, j, counter=0;
+    int nbPatients=data->NbPatients;
     int *swabDates; /* temporary vector storing positive swab dates */
-    char *msg;
-    int **listCollecDates = (int **) calloc(Npat, sizeof(int *)); /* temporary list of vectors storing collection dates */
+    char *msg; /* only used for realloc */
+
+    int **listCollecDates = (int **) calloc(nbPatients, sizeof(int *)); /* temporary list of vectors storing collection dates */
+
     if(listCollecDates == NULL){
 	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating listCollecDates. Exiting.\n");
 	exit(1);
     }
 
     /* create temporary list storing swab results */
-    list_dnaseq **listSwabSeq = (list_dnaseq **) malloc(Npat*sizeof(list_dnaseq *));
+    list_dnaseq **listSwabSeq = (list_dnaseq **) malloc(nbPatients*sizeof(list_dnaseq *));
     if(listSwabSeq == NULL){
 	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating listSwabSeq. Exiting.\n");
 	exit(1);
@@ -403,76 +413,75 @@ void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq
 
 
     /* INITIALIZE NB OF SEQUENCES PER PATIENTS */
-    for(i=0;i<Npat;i++) data->M[i] = 0;
+    for(i=0;i<nbPatients;i++) data->M[i] = 0;
     data->NbSequences = 0;
 
 
     /* FOR EACH PATIENT, GET SEQUENCES FROM SWABS */
-    for(i=0;i<Npat;i++){
+    for(i=0;i<nbPatients;i++){
 	/* create temporary vector storing positive swab dates for i */
+	/* (sampling procedure does not handle gsl_vectors) */
 	swabDates = calloc(nb_data->NbPosSwabs[i], sizeof(int));
 	if(swabDates == NULL){
 	    fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating swabDates. Exiting.\n");
 	    exit(1);
 	}
 
+	/* fill swab dates in temporary vector */
 	for(j=0;j<nb_data->NbPosSwabs[i];j++){
 	    swabDates[j] = (int) gsl_vector_get(data->P[i], j);
 	}
 
-	/* update number of sequences for patient i */
+	/* determine the total number of sequences for patient i */
 	data->M[i] = gsl_ran_poisson(rng, nb_data->NbPosSwabs[i]*lambda_nseq);
 	data->NbSequences = data->NbSequences + data->M[i];
 
-	/* get collection dates */
+	/* determine the collection dates for these sequences  */
 	listCollecDates[i] = calloc(data->M[i], sizeof(int));
 	for(j=0;j<data->M[i];j++){
 	    /* vector used locally */
 	    listCollecDates[i][j] = swabDates[gsl_rng_uniform_int(rng, nb_data->NbPosSwabs[i])];
 	}
 
-	/* update total number of sequences */
-	totNseq += nbSeqCurSwab;
 
 	/* get DNA sequences from swabs */
 	listSwabSeq[i] = swab_dna_patient(in, i, data->M[i], nu1, nu2, colonDates[i], listCollecDates[i], rng);
 
-	/* free local (i-specific) pointers */
+	/* free local (patient-specific) pointers */
 	free(swabDates);
     } /* end for patient i */
 
 
     /* BUILD FINAL LIST_DNASEQ FROM THE LIST OF SAMPLES */
-    dna_data = create_list_dnaseq(totNseq, in->length);
-    for(i=0;i<Npat;i++){
-	/* realloc S vectors */
-	msg = realloc(data->S[i], data->M[i]);
+    
+    /* allocate output for dna sequences */
+    /* dna_data must not have been allocated before */
+    dna_data = create_list_dnaseq(data->NbSequences, in->length);
+    
+    /* reallocate vector of collection times */
+    msg = realloc(data->Tcollec, data->NbSequences);
 
-	/* copy DNA sequences */
-	for(j=0;j<data->M[i];j++){
-	    copy_dnaseq(listSwabSeq[i]->list[j],dna_data->list[counter++]);
-	}
-    }
-
-    /* FILL IN PATIENT-WISE SEQUENCE INDICES AND COLLECTION TIMES */
-    /* realloc collection time vector */
-    msg = realloc(data->Tcollec, totNseq);
-
-    counter=0;
-    for(i=0;i<Npat;i++){
-	/* realloc vectors in S (indices of sequences for each patient) */
+    counter = 0;
+    for(i=0;i<nbPatients;i++){
+	/* realloc S vectors (S[i]: indices of sequences sampled in patient i */
 	msg = realloc(data->S[i], data->M[i]);
 
 	/* fill in data */
 	for(j=0;j<data->M[i];j++){
+	    /* fill in sequence index data */
 	    data->S[i][j] = counter;
+
+	    /* copy DNA sequences */
+	    copy_dnaseq(listSwabSeq[i]->list[j],dna_data->list[counter]);
+
+	    /* copy collection times */
 	    data->Tcollec[counter++] = listCollecDates[i][j];
 	}
     }
 
-
+  
     /* FREE LOCAL VARIABLES */
-    for(i=0;i<Npat;i++) {
+    for(i=0;i<nbPatients;i++) {
 	free_list_dnaseq(listSwabSeq[i]);
 	free(listCollecDates[i]);
     }
@@ -567,16 +576,56 @@ int main(){
 
     epid_dna *out = create_epid_dna(10, 5, 50); /* nb patients, max nb lineages, haplo length */
 
-    int ances[10] = {-1, -1, 1, 1, 2, 3, 3, 2, 6, 6};
-    int dates[10] = {0, 0, 1, 1, 1, 2, 2, 2, 4, 50};
+    int ances[10] = {-1, -1, 1, 1, 2, 3, 3, 2, 6, 6}; /* vector indicating ancestries */
+    int dates[10] = {0, 0, 1, 1, 1, 2, 2, 2, 4, 50}; /* collonisation dates */
     double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2;
     double nu1=0.02, nu2=0.05;
+    double lambdaNseq=1.0;
 
+    /* OUTBREAK SIMULATION */
     evolve_epid_dna(out, ances, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, dates, rng);
 
     print_epid_dna(out);
 
+
+    /* SAMPLING PROCEDURE */
+    /* 10 indiv in outbreak, 5 with positive swabs */
+    nb_data *nb = createNbData(10, 100, 0, 5);
+    raw_data *data = createRawData(nb);
+    list_dnaseq *dna;
+    nb->NbColonisedPatients = 5;
+    int i,j;
+    /* get nb of positive swabs per patients */
+    for(i=0;i<10;i++){
+	nb->NbPosSwabs[i] = i < 5 ? i: 0;
+
+	/* resize the vector of positive swab dates */
+	if(data->P[i] != NULL) {
+	    gsl_vector_free(data->P[i]);
+	    data->P[i] = gsl_vector_alloc(nb->NbPosSwabs[i]);
+	}
+
+	/* fill in positive swab dates */
+	if(i<5){
+	    for(j=0;j<nb->NbPosSwabs[i];j++){
+		gsl_vector_set(data->P[i], j, gsl_ran_flat(rng, 5.0, 20.0));
+	    }
+	}
+    }
+
+    sample_epid_dna(out, nb, data, dna, lambdaNseq, nu1, nu2, dates, rng);
+/* void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq *dna_data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng) */
+
+    printf("\nFinal data: \n");
+    print_rawData(data);
+   
+    printf("\nFinal sample of DNA sequences: \n");
+    print_list_dnaseq(dna);
+
     free_epid_dna(out);
+    freeNbData(nb);
+    freeRawData(data);
+    free_list_dnaseq(dna);
     gsl_rng_free(rng);
     return 0;
 }
