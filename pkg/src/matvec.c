@@ -185,6 +185,18 @@ void print_mat_int(mat_int *in){
 
 
 
+/* alternative print method for gsl vectors */
+void print_gsl_vector(gsl_vector *in, char format[256]){
+    int i;
+    for(i=0;i<in->size;i++){
+	printf(format, in->data[i]);
+    }
+    printf("\n");
+    fflush(stdout);
+}
+
+
+
 /* check if an integer 'x' is in a vector of integers, and returns the matching position */
 int in_vec_int(int x, vec_int *vec){
     int i=0;

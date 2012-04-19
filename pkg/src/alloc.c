@@ -267,27 +267,29 @@ void print_rawData(raw_data *data){
     printf("\nAdmission dates:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("\nPatient %d:\n",i);
-	if(data->A[i]!=NULL) gsl_vector_fprintf(stdout, data->A[i], "%.1f"); else printf("NULL\n");
+	/* if(data->A[i]!=NULL) gsl_vector_fprintf(stdout, data->A[i], "%.1f"); else printf("NULL\n"); */
+	if(data->A[i]!=NULL) print_gsl_vector(data->A[i], "%.1f "); else printf("NULL\n");
+
     }
     printf("\nDischarge dates:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("\nPatient %d:\n",i);
-	if(data->D[i]!=NULL) gsl_vector_fprintf(stdout, data->D[i], "%.1f"); else printf("NULL\n");
+	if(data->D[i]!=NULL) print_gsl_vector(data->D[i], "%.1f "); else printf("NULL\n");
     }
     printf("\nDates of positive swabs:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("Patient %d:\n",i);
-	if(data->P[i]!=NULL) gsl_vector_fprintf(stdout, data->P[i], "%.1f"); else printf("NULL\n");
+	if(data->P[i]!=NULL) print_gsl_vector(data->P[i], "%.1f "); else printf("NULL\n");
     }
     printf("\nDates of negative swabs:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("Patient %d:\n",i);
-	if(data->N[i]!=NULL) gsl_vector_fprintf(stdout, data->N[i], "%.1f"); else printf("NULL\n");
+	if(data->N[i]!=NULL) print_gsl_vector(data->N[i], "%.1f "); else printf("NULL\n");
     }
     printf("\nHospital presence:\n");
     for(i=0;i<data->NbPatients;i++){
 	printf("Patient %d:\n",i);
-	gsl_vector_fprintf(stdout, data->IsInHosp[i], "%.0f");
+	print_gsl_vector(data->IsInHosp[i], "%.0f ");
     }
     printf("\nIndices of sequences for each patient:\n");
     for(i=0;i<data->NbPatients;i++){
