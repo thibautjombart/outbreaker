@@ -18,31 +18,31 @@
 */
 
 epid_dna * create_epid_dna(int nbPatients, int maxNlineages, int haploLength){
-	int i;
+    int i;
 
-	/* ALLOCATE OUTPUT */
-	epid_dna *out = (epid_dna *) malloc(sizeof(epid_dna));
-	if(out==NULL){
-		fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n");
-		exit(1);
-	}
+    /* ALLOCATE OUTPUT */
+    epid_dna *out = (epid_dna *) malloc(sizeof(epid_dna));
+    if(out==NULL){
+	fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+	exit(1);
+    }
 
-	/* FILL/ALLOCATE CONTENT */
-	/* out->nbLineages = (int *) calloc(nbPatients, sizeof(int)); */
-	/* if(out->nbLineages==NULL){ */
-	/* 	fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n"); */
-	/* 	exit(1); */
-	/* } */
+    /* FILL/ALLOCATE CONTENT */
+    /* out->nbLineages = (int *) calloc(nbPatients, sizeof(int)); */
+    /* if(out->nbLineages==NULL){ */
+    /* 	fprintf(stderr, "\n[in: simgen.c->create_epid_dna]\nNo memory left for creating list of DNA sequences. Exiting.\n"); */
+    /* 	exit(1); */
+    /* } */
 
-	out->dna = (list_dnaseq **) calloc(nbPatients, sizeof(list_dnaseq *));
-	for(i=0;i<nbPatients;i++){
-	    out->dna[i] = create_list_dnaseq(maxNlineages, haploLength);
-	}
+    out->dna = (list_dnaseq **) calloc(nbPatients, sizeof(list_dnaseq *));
+    for(i=0;i<nbPatients;i++){
+	out->dna[i] = create_list_dnaseq(maxNlineages, haploLength);
+    }
 
-	out->nbPatients = nbPatients;
-	out->length = haploLength;
-	out->maxNbLineages = maxNlineages;
-	return out;
+    out->nbPatients = nbPatients;
+    out->length = haploLength;
+    out->maxNbLineages = maxNlineages;
+    return out;
 }
 
 
@@ -296,7 +296,7 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
     }
 
 
-   /* PATIENT->PATIENT TRANSMISSIONS */
+    /* PATIENT->PATIENT TRANSMISSIONS */
     for(i=0;i<N;i++){
 	/* make sure the ancestor is known */
 	if(ances[i]>=N){
@@ -614,7 +614,7 @@ int main(){
 
     nb->NbColonisedPatients = 5;
  
-   /* get nb of positive swabs per patients */
+    /* get nb of positive swabs per patients */
     for(i=0;i<10;i++){
 	nb->NbPosSwabs[i] = i < 5 ? i+1: 0;
     }
@@ -673,11 +673,11 @@ int main(){
 
 /* 
 
-gcc instructions:
+   gcc instructions:
 
-gcc -o simgen alloc.c matvec.c genclasses.c simgen.c -lgsl -lgslcblas -g -Wall && ./simgen
+   gcc -o simgen alloc.c matvec.c genclasses.c simgen.c -lgsl -lgslcblas -g -Wall && ./simgen
 
-valgrind --leak-check=full simgen
+   valgrind --leak-check=full simgen
 
 
 */
