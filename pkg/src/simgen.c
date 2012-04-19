@@ -265,7 +265,6 @@ void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double 
 
 void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist, double lambda_nlin, double nu1, double nu2, int *dates, gsl_rng *rng){
     int i, j, N = in->nbPatients, L=in->length, nlin, deltaT, dist, seqIdx;
-    double temp;
 
     /* REFERENCE HAPLOTYPE */
     dnaseq *ref = create_haplo(L, rng);
@@ -435,8 +434,6 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 	/* determine the total number of sequences for patient i */
 	data->M[i] = gsl_ran_poisson(rng, (double) nb_data->NbPosSwabs[i]*lambda_nseq);
 	data->NbSequences = data->NbSequences + data->M[i];
-	printf("\npatient %d, %d swabs, %d sequences to be drawn\n", i, nb_data->NbPosSwabs[i], data->M[i]);
-	printf("\ncummulated number of sequences: %d\n", data->NbSequences);
 
 	/* determine the collection dates for these sequences  */
 	listCollecDates[i] = calloc(data->M[i], sizeof(int));
@@ -448,8 +445,6 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 
 	/* get DNA sequences from swabs */
 	listSwabSeq[i] = swab_dna_patient(in, i, data->M[i], nu1, nu2, colonDates[i], listCollecDates[i], rng);
-	printf("\nlist dna seq from swabs in patient %d\n",i);
-	print_list_dnaseq(listSwabSeq[i]);
 
 	/* free local (patient-specific) pointers */
 	free(swabDates);
@@ -460,7 +455,6 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 
     /* allocate output for dna sequences */
     /* dna_data must not have been allocated before */
-    printf("\n\nCreation of global list of %d sequences of size %d", data->NbSequences, in->length);
     out = create_list_dnaseq(data->NbSequences, in->length);
 
     /* reallocate vector of collection times */
@@ -473,8 +467,6 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
     }
 
 
-    for(i=0;i<nbPatients;i++) printf("\nM[i]:%d", data->M[i]);
-    printf("\nnumber of sequences: %d\n", data->NbSequences);
     counter = 0;
     for(i=0;i<nbPatients;i++){
 	/* realloc S vectors (S[i]: indices of sequences sampled in patient i */
@@ -487,40 +479,26 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 	}
 
 	/* fill in data */
-	printf("\nM[i]:%d, i=%d\n", data->M[i], i);
 	for(j=0;j<data->M[i];j++){
-	    printf("\n=== i:%d j:%d M[i]:%d \n", i, j,data->M[i]);
 	    /* fill in sequence index data */
 	    data->S[i][j] = counter;
 
 	    /* copy DNA sequences */
-	    printf("\nAttenpting to copy sequence %d/%d (i:%d , j:%d)\n", counter, data->NbSequences-1, i, j);
 	    copy_dnaseq(listSwabSeq[i]->list[j],out->list[counter]);
-	    printf("\nCopied sequence %d/%d (i:%d , j:%d)\n", counter, data->NbSequences-1, i, j);
-	    printf("\nIn:\n");
-	    print_dnaseq(listSwabSeq[i]->list[j]);
-	    printf("\nOut:\n");
-	    print_dnaseq(out->list[counter]);
-	    fflush(stdout);
 
 	    /* copy collection times */
-	    printf("\nCollection time %d: %d\n", counter, data->Tcollec[counter]);
 	    data->Tcollec[counter++] = listCollecDates[i][j];
 	}
     }
 
 
-    /* FREE LOCAL VARIABLES */
+    /* FREE LOCAL VARIABLES AND RETURN */
     for(i=0;i<nbPatients;i++) {
     	free_list_dnaseq(listSwabSeq[i]);
     	free(listCollecDates[i]);
     }
     free(listSwabSeq);
     free(listCollecDates);
-
-    printf("\nglobal list of dna sequences when leaving sampling procedure\n");
-    print_list_dnaseq(out);
-    printf("\ndna address: %p\n", out);
 
     return out;
 } /* end sample_epid_dna */
@@ -659,30 +637,27 @@ int main(){
 	}
     }
 
-    printf("\nInitial nb data: \n");
-    print_nbData(nb);
-    fflush(stdout);
+    /* printf("\nInitial nb data: \n"); */
+    /* print_nbData(nb); */
+    /* fflush(stdout); */
 
-    printf("\n\nInitial raw data: \n");
-    print_rawData(data);
-    fflush(stdout);
-   
+    /* printf("\n\nInitial raw data: \n"); */
+    /* print_rawData(data); */
+    /* fflush(stdout); */
+
     list_dnaseq *dna;
 
     dna = sample_epid_dna(out, nb, data, lambdaNseq, nu1, nu2, dates, rng);
-/* void sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, list_dnaseq *dna_data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng) */
 
     printf("\nSampling done. \n");
     fflush(stdout);
 
-    printf("\nFinal sample of DNA sequences: \n");
-    printf("\ndna address: %p\n", dna);
+    printf("\n\n= Final data = \n");
+    print_rawData(data);
+
+    printf("\n\n= Final sample of DNA sequences = \n");
     print_list_dnaseq(dna);
 
-    printf("\nFinal data: \n");
-    print_rawData(data);
-   
-  
     free_epid_dna(out);
     freeNbData(nb);
     freeRawData(data);
@@ -700,7 +675,7 @@ int main(){
 
 gcc instructions:
 
-gcc -o simgen alloc.c genclasses.c simgen.c -lgsl -lgslcblas && ./simgen
+gcc -o simgen alloc.c matvec.c genclasses.c simgen.c -lgsl -lgslcblas -g -Wall && ./simgen
 
 valgrind --leak-check=full simgen
 
