@@ -75,6 +75,8 @@ void print_vec_int(vec_int *in);
 
 void print_mat_int(mat_int *in);
 
+void print_gsl_vector(gsl_vector *in, char format[256]);
+
 int max_vec_int(vec_int *vec);
 
 int min_vec_int(vec_int *vec);
