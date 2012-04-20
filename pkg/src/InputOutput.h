@@ -17,9 +17,13 @@ void importRawData(int *wardVec, int *tAdmVec, int *tDisVec, int *tPosSwab, int 
 
 
 /* output functions */
+
+	/* for estimation */
 void prepAllFiles(output_files *, int NbPatients);
 void writeAllFiles(output_files *, parameters *, nb_data *, raw_data *, aug_data *, dna_dist *);
 
+	/* for simulation */
+void writeData(int, char *, nb_data *, raw_data *, aug_data *, int *);
 
 
 /* deprecated */
