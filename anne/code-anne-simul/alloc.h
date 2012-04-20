@@ -27,5 +27,8 @@ void print_param(parameters *);
 hospDurationParam *createHospDurationParam();
 void print_HospDurationParam(hospDurationParam *);
 
+void freeHospDurationParam(hospDurationParam *in);
+
+
 #endif
 
