@@ -105,8 +105,8 @@ typedef struct{
 } parameters;
 
 typedef struct{
-	double mu;  //mean duration of hospitalisation
-	double sigma;  //std of the duration of hospitalisation
+    double mu;  //mean duration of hospitalisation
+    double sigma;  //std of the duration of hospitalisation
 } hospDurationParam;
 
 

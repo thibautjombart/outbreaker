@@ -514,3 +514,7 @@ void print_HospDurationParam(hospDurationParam *param){
 }
 
 
+
+void freeHospDurationParam(hospDurationParam *in){
+    free(in);
+}
