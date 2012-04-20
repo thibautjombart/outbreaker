@@ -4,7 +4,6 @@ beta10	0.1
 beta11	0.1
 betaWardOut	0.1
 betaOutOut	0.1
-Sp	1.0
 Se	0.9
 Pi	0.1
 muHosp	15

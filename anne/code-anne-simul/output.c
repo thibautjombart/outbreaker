@@ -18,10 +18,10 @@
 #include "alloc.h"
 #include "output.h"
 
-void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data)
+void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data, aug_data *augData, int *indexInfector)
 {
 	char file[200];
-	FILE *Ward, *Admission, *Discharge, *ColonDate, *EndColonDate, *PosSwabDates, *NegSwabDates, *NbAdmissions, *NbPosSwabs, *NbNegSwabs;
+	FILE *Ward, *Admission, *Discharge, *ColonDate, *EndColonDate, *PosSwabDates, *NegSwabDates, *NbAdmissions, *NbPosSwabs, *NbNegSwabs, *IndexInfector;
 	int i,k;
 
 	strcpy(file, workspace);
@@ -77,7 +77,7 @@ void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data)
 	}
 	for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(ColonDate,"%d\n",data->C[i]);
+	  	fprintf(ColonDate,"%d\n",augData->C[i]);
 	   	fflush(ColonDate);
 	}
 
@@ -90,7 +90,7 @@ void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data)
 	}
 	for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(EndColonDate,"%d\n",data->E[i]);
+	  	fprintf(EndColonDate,"%d\n",augData->E[i]);
 	   	fflush(EndColonDate);
 	}
 
@@ -176,6 +176,19 @@ void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data)
 		fflush(NegSwabDates);
 	}
 
+	strcpy(file, workspace);
+	strcat(file,"IndexInfector.txt");
+	if ((IndexInfector=fopen(file,"w"))==NULL)
+	{
+		printf("Cannot open IndexInfector.txt");
+		exit(2);
+	}
+	for (i=0 ; i<NbCases ; i++)
+	{
+	  	fprintf(IndexInfector,"%d\n",indexInfector[i]);
+	   	fflush(IndexInfector);
+	}
+
 	fclose(Ward);
 	fclose(Admission);
 	fclose(Discharge);
@@ -186,6 +199,7 @@ void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data)
 	fclose(NbAdmissions);
 	fclose(NbPosSwabs);
 	fclose(NbNegSwabs);
+	fclose(IndexInfector);
 }
 
 extern gsl_rng * rng;

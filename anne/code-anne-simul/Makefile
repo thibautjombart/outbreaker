@@ -1,5 +1,5 @@
-SRCS = alloc.c output.c main.c
-OBJS = alloc.o output.o main.o
+SRCS = matvec.c alloc.c output.c main.c
+OBJS = matvec.o alloc.o output.o main.o
 EXE = simulation
 
 .c.o: 
