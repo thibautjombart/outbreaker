@@ -30,6 +30,9 @@
 #define NEARZERO 0.0000000001
 #define TRUE 1
 #define FALSE 0
+
+#define SizeWard0 8
+#define SizeWard1 12
 /* #define NbPatients 142 */
 /* #define T 100 /\* number of time steps corresponding to the study period *\/ */
 
@@ -46,10 +49,6 @@ typedef struct{
     int * indexColonisedPatients; /* those who have at least one positive swab */
     int * M; /* number of sequences in each patient */
 } nb_data;
-
-
-
-
 
 typedef struct{
     /* EPI DATA */
@@ -76,7 +75,6 @@ typedef struct{
 
 
 
-
 typedef struct{
     int NbPatients, T;
     int *C; /* colonisation times */
@@ -84,8 +82,6 @@ typedef struct{
     int *I0; /* number of colonised individuals in ward 0 at each time step */
     int *I1; /* number of colonised individuals in ward 1 at each time step */
 } aug_data;
-
-
 
 
 
@@ -113,6 +109,11 @@ typedef struct{
     double weightNaGen; /* weight used to replace missing genetic likelihood */
 } parameters;
 
+
+typedef struct{
+    double mu;  //mean duration of hospitalisation
+    double sigma;  //std of the duration of hospitalisation
+} hospDurationParam;
 
 
 

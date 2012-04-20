@@ -22,7 +22,12 @@ void print_augData(aug_data *);
 parameters *createParam();
 void freeParam(parameters *);
 void copyParam(parameters * , parameters * );
+void readParameters(char* workspace, parameters * param, hospDurationParam *paramHosp);
 void print_param(parameters *);
+
+hospDurationParam *createHospDurationParam();
+void print_HospDurationParam(hospDurationParam *);
+void freeHospDurationParam(hospDurationParam *in);
 
 mcmcInternals *createMcmcInternals();
 void printStdProp(mcmcInternals *);
