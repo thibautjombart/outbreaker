@@ -50,10 +50,24 @@ epid_dna * create_epid_dna(int nPatients, int maxNlineages, int haploLength);
 
 
 /*
+  ===========
+  DESTRUCTORS
+  ===========
+*/
+
+void free_epid_dna(epid_dna *in);
+
+
+
+
+
+/*
    ==========================
    === EXTERNAL FUNCTIONS ===
    ==========================
 */
+
+void print_epid_dna(epid_dna *in);
 
 dnaseq *create_haplo(int length, gsl_rng *rng);
 

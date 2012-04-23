@@ -532,78 +532,81 @@ int SimulEpid(parameters *param, hospDurationParam *paramHosp, nb_data *nbData, 
 
 
 
-/* TEST OF SIMULEPID */
-int main(){
-    /* time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
-    time_t t = 1; /* time in seconds, used to change the seed of the random generator */
-    const gsl_rng_type *typ;
-    gsl_rng_env_setup();
-    typ=gsl_rng_default;
-    gsl_rng * rng=gsl_rng_alloc(typ);
-    gsl_rng_set(rng,t); /* changes the seed of the random generator */
 
-    int where = 1;
-    int i;
 
-    char workspace[500];
-    if(where==1)
-	{
-	    strcpy(workspace, "");
-	}else
-	{
-	    strcpy(workspace, "\\\\fi--san01\\homes\\acori\\workspace\\SimulateStaphEpid\\");
-	}
 
-    /* for(i=0;i<115;i++)
-       {
-       printf("%c", workspace[i]);
-       fflush(stdout);
-       }
-       printf("\n");
-       fflush(stdout); */
+/* /\* TEST OF SIMULEPID *\/ */
+/* int main(){ */
+/*     /\* time_t t = time(NULL); /\\* time in seconds, used to change the seed of the random generator *\\/ *\/ */
+/*     time_t t = 1; /\* time in seconds, used to change the seed of the random generator *\/ */
+/*     const gsl_rng_type *typ; */
+/*     gsl_rng_env_setup(); */
+/*     typ=gsl_rng_default; */
+/*     gsl_rng * rng=gsl_rng_alloc(typ); */
+/*     gsl_rng_set(rng,t); /\* changes the seed of the random generator *\/ */
 
-    /* parameters */
-    parameters *param = createParam();
-    hospDurationParam *paramHosp = createHospDurationParam();
-    readParameters(workspace,param,paramHosp);
+/*     int where = 1; */
+/*     int i; */
 
-    /* data */
-    int Tmax=100;
-    int NbPatientsMax = Tmax*(SizeWard0+SizeWard1);
-    int NbColonisedPatients = 0;
-    int NbSequences = 0;
-    nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbColonisedPatients);
-    for(i=0 ; i<NbPatientsMax ; i++)
-	{
-	    nbData->NbAdmissions[i]=1;
-	    nbData->NbPosSwabs[i]=Tmax;
-	    nbData->NbNegSwabs[i]=Tmax;
-	}
-    raw_data *data = createRawData(nbData);
-    for(i=0 ; i<NbPatientsMax ; i++)
-	{
-	    nbData->NbPosSwabs[i]=0;
-	    nbData->NbNegSwabs[i]=0;
-	}
-    aug_data *augData = createAugData(NbPatientsMax, Tmax);
-    int *indexInfector = (int *) calloc(nbData->NbPatients, sizeof(int)); /* -1 if infected from outside ; -100 never infected */
+/*     char workspace[500]; */
+/*     if(where==1) */
+/* 	{ */
+/* 	    strcpy(workspace, ""); */
+/* 	}else */
+/* 	{ */
+/* 	    strcpy(workspace, "\\\\fi--san01\\homes\\acori\\workspace\\SimulateStaphEpid\\"); */
+/* 	} */
 
-    /* Simulation algorithm */
-    int NbCases = SimulEpid(param, paramHosp, nbData, data, augData,indexInfector);
-    writeData(NbCases, workspace, nbData, data, augData,indexInfector);
+/*     /\* for(i=0;i<115;i++) */
+/*        { */
+/*        printf("%c", workspace[i]); */
+/*        fflush(stdout); */
+/*        } */
+/*        printf("\n"); */
+/*        fflush(stdout); *\/ */
 
-    /* Closing files and freeing memory */
-    freeParam(param);
-    freeAugData(augData);
-    freeNbData(nbData);
-    freeRawData(data);
-    freeHospDurationParam(paramHosp);
-    gsl_rng_free(rng);
-    free(indexInfector);
+/*     /\* parameters *\/ */
+/*     parameters *param = createParam(); */
+/*     hospDurationParam *paramHosp = createHospDurationParam(); */
+/*     readParameters(workspace,param,paramHosp); */
 
-    //getchar();
-    return 0;
-}
+/*     /\* data *\/ */
+/*     int Tmax=100; */
+/*     int NbPatientsMax = Tmax*(SizeWard0+SizeWard1); */
+/*     int NbColonisedPatients = 0; */
+/*     int NbSequences = 0; */
+/*     nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbColonisedPatients); */
+/*     for(i=0 ; i<NbPatientsMax ; i++) */
+/* 	{ */
+/* 	    nbData->NbAdmissions[i]=1; */
+/* 	    nbData->NbPosSwabs[i]=Tmax; */
+/* 	    nbData->NbNegSwabs[i]=Tmax; */
+/* 	} */
+/*     raw_data *data = createRawData(nbData); */
+/*     for(i=0 ; i<NbPatientsMax ; i++) */
+/* 	{ */
+/* 	    nbData->NbPosSwabs[i]=0; */
+/* 	    nbData->NbNegSwabs[i]=0; */
+/* 	} */
+/*     aug_data *augData = createAugData(NbPatientsMax, Tmax); */
+/*     int *indexInfector = (int *) calloc(nbData->NbPatients, sizeof(int)); /\* -1 if infected from outside ; -100 never infected *\/ */
+
+/*     /\* Simulation algorithm *\/ */
+/*     int NbCases = SimulEpid(param, paramHosp, nbData, data, augData,indexInfector); */
+/*     writeData(NbCases, workspace, nbData, data, augData,indexInfector); */
+
+/*     /\* Closing files and freeing memory *\/ */
+/*     freeParam(param); */
+/*     freeAugData(augData); */
+/*     freeNbData(nbData); */
+/*     freeRawData(data); */
+/*     freeHospDurationParam(paramHosp); */
+/*     gsl_rng_free(rng); */
+/*     free(indexInfector); */
+
+/*     //getchar(); */
+/*     return 0; */
+/* } */
 
 
 
