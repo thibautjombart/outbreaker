@@ -87,7 +87,7 @@ char transi(char in){
     case 't':
 	return 'c';
     default:
-	fprintf(stderr, "\n[in: simgen.c->transi]\nUnknown character %c.\n", in);
+	fprintf(stderr, "\n[in: simgen.c->transi]\nUnknown character '%c'.\n", in);
 	exit(1);
     }
 }
@@ -107,7 +107,7 @@ char transv(char in, gsl_rng *rng){
     case 't':
     	return x<0.5 ? 'a': 'g';
     default:
-	fprintf(stderr, "\n[in: simgen.c->transv]\nUnknown character %c.\n", in);
+	fprintf(stderr, "\n[in: simgen.c->transv]\nUnknown character '%c'.\n", in);
 	exit(1);
     }
 }
@@ -579,92 +579,92 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 
 
 
-/* TESTS OF EVOLVE_EPID_DNA */
-int main(){
-    int i,j;
+/* /\* TESTS OF EVOLVE_EPID_DNA *\/ */
+/* int main(){ */
+/*     int i,j; */
 
-    /* time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
-    time_t t = 1; /* time in seconds, used to change the seed of the random generator */
-    const gsl_rng_type *typ;
-    gsl_rng_env_setup();
-    typ=gsl_rng_default;
-    gsl_rng * rng=gsl_rng_alloc(typ);
-    gsl_rng_set(rng,t); /* changes the seed of the random generator */
+/*     /\* time_t t = time(NULL); /\\* time in seconds, used to change the seed of the random generator *\\/ *\/ */
+/*     time_t t = 1; /\* time in seconds, used to change the seed of the random generator *\/ */
+/*     const gsl_rng_type *typ; */
+/*     gsl_rng_env_setup(); */
+/*     typ=gsl_rng_default; */
+/*     gsl_rng * rng=gsl_rng_alloc(typ); */
+/*     gsl_rng_set(rng,t); /\* changes the seed of the random generator *\/ */
 
-    epid_dna *out = create_epid_dna(10, 5, 50); /* nb patients, max nb lineages, haplo length */
+/*     epid_dna *out = create_epid_dna(10, 5, 50); /\* nb patients, max nb lineages, haplo length *\/ */
 
-    int ances[10] = {-1, -1, 1, 1, 2, 3, 3, 2, 6, 6}; /* vector indicating ancestries */
-    int dates[10] = {0, 0, 1, 1, 1, 2, 2, 2, 4, 50}; /* collonisation dates */
-    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2;
-    double nu1=0.02, nu2=0.05;
-    double lambdaNseq=1.0;
+/*     int ances[10] = {-1, -1, 1, 1, 2, 3, 3, 2, 6, 6}; /\* vector indicating ancestries *\/ */
+/*     int dates[10] = {0, 0, 1, 1, 1, 2, 2, 2, 4, 50}; /\* collonisation dates *\/ */
+/*     double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2; */
+/*     double nu1=0.02, nu2=0.05; */
+/*     double lambdaNseq=1.0; */
 
-    /* OUTBREAK SIMULATION */
-    evolve_epid_dna(out, ances, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, dates, rng);
+/*     /\* OUTBREAK SIMULATION *\/ */
+/*     evolve_epid_dna(out, ances, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, dates, rng); */
 
-    print_epid_dna(out);
+/*     print_epid_dna(out); */
 
 
-    /* SAMPLING PROCEDURE */
+/*     /\* SAMPLING PROCEDURE *\/ */
 
-    /* make nb_data and raw_data */
-    /* 10 indiv in outbreak, 5 with positive swabs */
-    nb_data *nb = createNbData(10, 100, 0, 5);
-    for(i=0;i<10;i++) nb->NbAdmissions[i] = 1;
+/*     /\* make nb_data and raw_data *\/ */
+/*     /\* 10 indiv in outbreak, 5 with positive swabs *\/ */
+/*     nb_data *nb = createNbData(10, 100, 0, 5); */
+/*     for(i=0;i<10;i++) nb->NbAdmissions[i] = 1; */
 
-    nb->NbColonisedPatients = 5;
+/*     nb->NbColonisedPatients = 5; */
  
-    /* get nb of positive swabs per patients */
-    for(i=0;i<10;i++){
-	nb->NbPosSwabs[i] = i < 5 ? i+1: 0;
-    }
+/*     /\* get nb of positive swabs per patients *\/ */
+/*     for(i=0;i<10;i++){ */
+/* 	nb->NbPosSwabs[i] = i < 5 ? i+1: 0; */
+/*     } */
 
-    raw_data *data = createRawData(nb);
+/*     raw_data *data = createRawData(nb); */
 
-    for(i=0;i<10;i++){
-	/* resize the vector of positive swab dates */
-	if(data->P[i] != NULL) {
-	    gsl_vector_free(data->P[i]);
-	    data->P[i] = gsl_vector_alloc(nb->NbPosSwabs[i]);
-	}
+/*     for(i=0;i<10;i++){ */
+/* 	/\* resize the vector of positive swab dates *\/ */
+/* 	if(data->P[i] != NULL) { */
+/* 	    gsl_vector_free(data->P[i]); */
+/* 	    data->P[i] = gsl_vector_alloc(nb->NbPosSwabs[i]); */
+/* 	} */
 
-	/* fill in positive swab dates */
-	if(i<5){
-	    for(j=0;j<nb->NbPosSwabs[i];j++){
-		gsl_vector_set(data->P[i], j, gsl_ran_flat(rng, 5.0, 20.0));
-		nb->indexColonisedPatients[i]=i;
-	    }
-	}
-    }
+/* 	/\* fill in positive swab dates *\/ */
+/* 	if(i<5){ */
+/* 	    for(j=0;j<nb->NbPosSwabs[i];j++){ */
+/* 		gsl_vector_set(data->P[i], j, gsl_ran_flat(rng, 5.0, 20.0)); */
+/* 		nb->indexColonisedPatients[i]=i; */
+/* 	    } */
+/* 	} */
+/*     } */
 
-    /* printf("\nInitial nb data: \n"); */
-    /* print_nbData(nb); */
-    /* fflush(stdout); */
+/*     /\* printf("\nInitial nb data: \n"); *\/ */
+/*     /\* print_nbData(nb); *\/ */
+/*     /\* fflush(stdout); *\/ */
 
-    /* printf("\n\nInitial raw data: \n"); */
-    /* print_rawData(data); */
-    /* fflush(stdout); */
+/*     /\* printf("\n\nInitial raw data: \n"); *\/ */
+/*     /\* print_rawData(data); *\/ */
+/*     /\* fflush(stdout); *\/ */
 
-    list_dnaseq *dna;
+/*     list_dnaseq *dna; */
 
-    dna = sample_epid_dna(out, nb, data, lambdaNseq, nu1, nu2, dates, rng);
+/*     dna = sample_epid_dna(out, nb, data, lambdaNseq, nu1, nu2, dates, rng); */
 
-    printf("\nSampling done. \n");
-    fflush(stdout);
+/*     printf("\nSampling done. \n"); */
+/*     fflush(stdout); */
 
-    printf("\n\n= Final data = \n");
-    print_rawData(data);
+/*     printf("\n\n= Final data = \n"); */
+/*     print_rawData(data); */
 
-    printf("\n\n= Final sample of DNA sequences = \n");
-    print_list_dnaseq(dna);
+/*     printf("\n\n= Final sample of DNA sequences = \n"); */
+/*     print_list_dnaseq(dna); */
 
-    free_epid_dna(out);
-    freeNbData(nb);
-    freeRawData(data);
-    free_list_dnaseq(dna);
-    gsl_rng_free(rng);
-    return 0;
-}
+/*     free_epid_dna(out); */
+/*     freeNbData(nb); */
+/*     freeRawData(data); */
+/*     free_list_dnaseq(dna); */
+/*     gsl_rng_free(rng); */
+/*     return 0; */
+/* } */
 
 
 
