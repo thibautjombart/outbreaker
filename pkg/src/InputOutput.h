@@ -26,9 +26,9 @@ void writeAllFiles(output_files *, parameters *, nb_data *, raw_data *, aug_data
 void writeData(int, char *, nb_data *, raw_data *, aug_data *, int *);
 
 
-/* deprecated */
-void readFakeNbData(nb_data *);
-void readFakeData(nb_data *, raw_data *);
+/* /\* deprecated *\/ */
+/* void readFakeNbData(nb_data *); */
+/* void readFakeData(nb_data *, raw_data *); */
 
 #endif
 

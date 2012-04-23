@@ -612,6 +612,9 @@ int main(){
 
   gcc -o simepid matvec.c alloc.c InputOutput.c simepid.c -Wall -g -lgsl -lgslcblas
 
+  gcc -o simepid matvec.c alloc.c genclasses.c genlike.c init.c logL.c prior.c tuneVariances.c mcmc.c moves.c InputOutput.c simepid.c -Wall -g -lgsl -lgslcblas
+
+
   valgrind --leak-check=full -v simepid
 
 */
