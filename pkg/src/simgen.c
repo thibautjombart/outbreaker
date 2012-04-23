@@ -8,6 +8,7 @@
 #include "alloc.h"
 #include "genclasses.h"
 #include "simgen.h"
+#include "matvec.h"
 
 
 
@@ -264,35 +265,47 @@ void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double 
 */
 
 void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist, double lambda_nlin, double nu1, double nu2, int *dates, gsl_rng *rng){
-    int i, j, N = in->nbPatients, L=in->length, nlin, deltaT, dist, seqIdx;
+    int i, j, k, N = in->nbPatients, L=in->length, nlin, deltaT, dist, seqIdx;
 
     /* REFERENCE HAPLOTYPE */
     dnaseq *ref = create_haplo(L, rng);
 
+    /* FIND ORDER IN THE COLONIZATION DATES */
+    /* define auxiliary vectors */
+    vec_int *inDates, *sortedDates, *datesIdx;
+    inDates = create_vec_int(N);
+    sortedDates = create_vec_int(N);
+    datesIdx = create_vec_int(N);
+    for(i=0;i<N;i++){
+	inDates->values[i] = dates[i];
+    }
+    sort_vec_int(inDates, sortedDates, datesIdx);
+
 
     /* OUTSIDE TRANSMISSIONS FIRST */
-    for(i=0;i<N;i++){
-		if(ances[i]<0){ /* i.e. colonization from outside */
+    for(k=0;k<N;k++){
+	i = vecint_i(datesIdx, k);
+	if(ances[i]<0){ /* i.e. colonization from outside */
 			/* determine the number of lineages */
-			nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
+	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
 
-			/* make sure not to exceed the max number of sequences per patient */
-			if(nlin>in->dna[i]->n) nlin = in->dna[i]->n;
+	    /* make sure not to exceed the max number of sequences per patient */
+	    if(nlin>in->dna[i]->n) nlin = in->dna[i]->n;
 
-			/* draw haplotypes */
-			for(j=0;j<nlin;j++){
-			dist = (int) gsl_ran_lognormal(rng, mu_dist, sigma_dist);
-			make_distant_lineage(ref, in->dna[i]->list[j], dist, nu1, nu2, rng);
-			}
+	    /* draw haplotypes */
+	    for(j=0;j<nlin;j++){
+		dist = (int) gsl_ran_lognormal(rng, mu_dist, sigma_dist);
+		make_distant_lineage(ref, in->dna[i]->list[j], dist, nu1, nu2, rng);
+	    }
 
-			/* update the number of sequences in patient */
-			in->dna[i]->n = nlin;
+	    /* update the number of sequences in patient */
+	    in->dna[i]->n = nlin;
 
-			/* free unused sequences */
-			for(j=nlin;j<in->maxNbLineages;j++){
-			free_dnaseq(in->dna[i]->list[j]);
-			}
-		}
+	    /* free unused sequences */
+	    for(j=nlin;j<in->maxNbLineages;j++){
+		free_dnaseq(in->dna[i]->list[j]);
+	    }
+	}
     }
 
 
@@ -332,6 +345,9 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 
     /* free local pointers */
     free_dnaseq(ref);
+    free_vec_int(sortedDates);
+    free_vec_int(datesIdx);
+    free_vec_int(inDates);
 } /* end evolve_epid_dna */
 
 
