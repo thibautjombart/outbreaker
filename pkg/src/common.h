@@ -26,6 +26,7 @@
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_vector.h>
+#include <gsl/gsl_sort.h>
 
 #define NEARZERO 0.0000000001
 #define TRUE 1

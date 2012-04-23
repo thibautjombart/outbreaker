@@ -260,6 +260,55 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
 
 
 
+
+/* sort a vector of integers (ascending order)
+   - in: input vector
+   - out: vector of sorted values
+   - idx: vector of indices (using R notation: out = in[idx])
+*/
+void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
+    if(out->length > in->length){
+	fprintf(stderr, "\n[in: matvec.c->sort_vec_int_index]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+    	exit(1);
+    }
+
+    int i, j, curMin, curMinIdx;
+    idx->length=0;
+
+    for(j=0;j<in->length;j++){
+	/* printf("\n- sorting value %d\n",j); */
+	/* find minimal value and its index, discarding already sorted indices */
+	curMin=max_vec_int(in);
+	curMinIdx=0;
+
+	for(i=0;i<in->length;i++){
+	    /* if(in_vec_int(i, idx)>=0){ */
+	    /* 	printf("\nindex %d found in array idx (position:%d)", i, in_vec_int(i, idx)); */
+	    /* } */
+	    if(in_vec_int(i, idx)<0 && curMin>=vecint_i(in,i)) {
+		/* printf("\nentering the loop, i=%d\n",i); */
+		/* printf("\nidx:"); print_vec_int(idx); */
+		/* printf("\nmatch i in idx: %d\n", in_vec_int(i, idx)); */
+		curMin=vecint_i(in,i);
+		curMinIdx = i;
+	    }
+	}
+
+	/* printf("\n- minimum %d found at index %d",curMin,curMinIdx); */
+
+	/* update vectors */
+	out->values[j] = curMin;
+	idx->values[j] = curMinIdx;
+	idx->length = idx->length + 1;
+    }
+
+} /* end sort_vec_int */
+
+
+
+
+
+
 /*
    =========================
    === TESTING FUNCTIONS ===
@@ -316,8 +365,31 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
 /*     printf("\nanother permutation of the vector myVec \n"); */
 /*     print_vec_int(myVec); */
     
+/*     printf("\n== sorting a vector ==\n"); */
+/*     vec_int *idx, *sortedVec; */
+/*     idx = create_vec_int(30); */
+/*     sortedVec = create_vec_int(30); */
+/*     sort_vec_int(myVec, sortedVec, idx); */
+/*     printf("\nvector to sort:"); */
+/*     print_vec_int(myVec); */
+/*     printf("\nsorted vector:"); */
+/*     print_vec_int(sortedVec); */
+/*     printf("\nindices:"); */
+/*     print_vec_int(idx); */
+
+/*     /\* vec_int *a = create_vec_int(10); *\/ */
+/*     /\* for(i=0;i<10;i++){ *\/ */
+/*     /\* 	a->values[i] = i; *\/ */
+/*     /\* } *\/ */
+/*     /\* printf("\nvector a: \n"); *\/ */
+/*     /\* print_vec_int(a); *\/ */
+/*     /\* for(i=0;i<10;i++){ *\/ */
+/*     /\* 	printf("\n%d matches in a at position %d", i, in_vec_int(i,a)); *\/ */
+/*     /\* } *\/ */
+
 /*     free_vec_int(toto); */
 /*     free_vec_int(myVec); */
+/*     free_vec_int(idx); */
 /*     gsl_rng_free(rng); */
 /*     return 0; */
 /* } */

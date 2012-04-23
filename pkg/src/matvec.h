@@ -85,7 +85,7 @@ void permut_vec_int(vec_int *in, gsl_rng * rng);
 
 void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
 
-
+void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx);
 
 
 #endif
