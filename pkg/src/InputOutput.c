@@ -208,120 +208,120 @@ void readFakeNbData(nb_data *nb){
 /*
   Old text-file based version.
 */
-void readFakeData(nb_data *nb, raw_data *data){
-    FILE *fich;
-    int i, k, NbPatients = nb->NbPatients;
-    int V;
+/* void readFakeData(nb_data *nb, raw_data *data){ */
+/*     FILE *fich; */
+/*     int i, k, NbPatients = nb->NbPatients; */
+/*     int V; */
 
-    fich = fopen("Admission.txt","r");
-    if ( fich == NULL ){
-	printf("A problem occurred while opening Admission.txt. Check that the file exists and is not opened.\n");
-	fflush(stdout);
-	exit(1);
-    }
+/*     fich = fopen("Admission.txt","r"); */
+/*     if ( fich == NULL ){ */
+/* 	printf("A problem occurred while opening Admission.txt. Check that the file exists and is not opened.\n"); */
+/* 	fflush(stdout); */
+/* 	exit(1); */
+/*     } */
 
-    for (i=0;i<NbPatients;i++){
-	for (k=0 ; k<nb->NbAdmissions[i] ; k++)
-	    {
-		if( fscanf(fich,"%d",&V) != 1)
-		    {
-			printf("A problem occurred while reading the file\n");
-			fflush(stdout);
-			break;
-		    }
-		gsl_vector_set(data->A[i],k, (double) V);
-	    }
-    }
-    fclose(fich);
+/*     for (i=0;i<NbPatients;i++){ */
+/* 	for (k=0 ; k<nb->NbAdmissions[i] ; k++) */
+/* 	    { */
+/* 		if( fscanf(fich,"%d",&V) != 1) */
+/* 		    { */
+/* 			printf("A problem occurred while reading the file\n"); */
+/* 			fflush(stdout); */
+/* 			break; */
+/* 		    } */
+/* 		gsl_vector_set(data->A[i],k, (double) V); */
+/* 	    } */
+/*     } */
+/*     fclose(fich); */
 
-    fich = fopen("Discharge.txt","r");
-    if ( fich == NULL ){
-	printf("A problem occurred while opening Discharge.txt. Check that the file exists and is not opened.\n");
-	fflush(stdout);
-	exit(1);
-    }
+/*     fich = fopen("Discharge.txt","r"); */
+/*     if ( fich == NULL ){ */
+/* 	printf("A problem occurred while opening Discharge.txt. Check that the file exists and is not opened.\n"); */
+/* 	fflush(stdout); */
+/* 	exit(1); */
+/*     } */
 
-    for (i=0;i<NbPatients;i++){
-	for (k=0 ; k<nb->NbAdmissions[i] ; k++)
-	    {
-		if( fscanf(fich,"%d",&V) != 1)
-		    {
-			printf("A problem occurred while reading the file\n");
-			fflush(stdout);
-			break;
-		    }
-		gsl_vector_set(data->D[i],k, (double) V);
-	    }
-    }
-    fclose(fich);
+/*     for (i=0;i<NbPatients;i++){ */
+/* 	for (k=0 ; k<nb->NbAdmissions[i] ; k++) */
+/* 	    { */
+/* 		if( fscanf(fich,"%d",&V) != 1) */
+/* 		    { */
+/* 			printf("A problem occurred while reading the file\n"); */
+/* 			fflush(stdout); */
+/* 			break; */
+/* 		    } */
+/* 		gsl_vector_set(data->D[i],k, (double) V); */
+/* 	    } */
+/*     } */
+/*     fclose(fich); */
 
-    fich = fopen("PositiveSwabDates.txt","r");
-    if ( fich == NULL ){
-	printf("A problem occurred while opening PositiveSwabDates.txt. Check that the file exists and is not opened.\n");
-	fflush(stdout);
-	exit(1);
-    }
+/*     fich = fopen("PositiveSwabDates.txt","r"); */
+/*     if ( fich == NULL ){ */
+/* 	printf("A problem occurred while opening PositiveSwabDates.txt. Check that the file exists and is not opened.\n"); */
+/* 	fflush(stdout); */
+/* 	exit(1); */
+/*     } */
 
-    for (i=0;i<NbPatients;i++){
-	for (k=0 ; k<nb->NbPosSwabs[i] ; k++)
-	    {
-		if( fscanf(fich,"%d",&V) != 1)
-		    {
-			printf("A problem occurred while reading the file\n");
-			fflush(stdout);
-			break;
-		    }
-		gsl_vector_set(data->P[i],k, (double) V);
-	    }
-    }
-    fclose(fich);
+/*     for (i=0;i<NbPatients;i++){ */
+/* 	for (k=0 ; k<nb->NbPosSwabs[i] ; k++) */
+/* 	    { */
+/* 		if( fscanf(fich,"%d",&V) != 1) */
+/* 		    { */
+/* 			printf("A problem occurred while reading the file\n"); */
+/* 			fflush(stdout); */
+/* 			break; */
+/* 		    } */
+/* 		gsl_vector_set(data->P[i],k, (double) V); */
+/* 	    } */
+/*     } */
+/*     fclose(fich); */
 
-    fich = fopen("NegativeSwabDates.txt","r");
-    if ( fich == NULL ){
-	printf("A problem occurred while opening NegativeSwabDates.txt. Check that the file exists and is not opened.\n");
-	fflush(stdout);
-	exit(1);
-    }
+/*     fich = fopen("NegativeSwabDates.txt","r"); */
+/*     if ( fich == NULL ){ */
+/* 	printf("A problem occurred while opening NegativeSwabDates.txt. Check that the file exists and is not opened.\n"); */
+/* 	fflush(stdout); */
+/* 	exit(1); */
+/*     } */
 
-    for (i=0;i<NbPatients;i++){
-	for (k=0 ; k<nb->NbNegSwabs[i] ; k++)
-	    {
-		if( fscanf(fich,"%d",&V) != 1)
-		    {
-			printf("A problem occurred while reading the file\n");
-			fflush(stdout);
-			break;
-		    }
-		gsl_vector_set(data->N[i],k, (double) V);
-	    }
-    }
-    fclose(fich);
+/*     for (i=0;i<NbPatients;i++){ */
+/* 	for (k=0 ; k<nb->NbNegSwabs[i] ; k++) */
+/* 	    { */
+/* 		if( fscanf(fich,"%d",&V) != 1) */
+/* 		    { */
+/* 			printf("A problem occurred while reading the file\n"); */
+/* 			fflush(stdout); */
+/* 			break; */
+/* 		    } */
+/* 		gsl_vector_set(data->N[i],k, (double) V); */
+/* 	    } */
+/*     } */
+/*     fclose(fich); */
 
-    fich = fopen("Ward.txt","r");
-    if ( fich == NULL ){
-	printf("A problem occurred while opening Ward.txt. Check that the file exists and is not opened.\n");
-	fflush(stdout);
-	exit(1);
-    }
+/*     fich = fopen("Ward.txt","r"); */
+/*     if ( fich == NULL ){ */
+/* 	printf("A problem occurred while opening Ward.txt. Check that the file exists and is not opened.\n"); */
+/* 	fflush(stdout); */
+/* 	exit(1); */
+/*     } */
 
-    for (i=0;i<NbPatients;i++){
-	if( fscanf(fich,"%d",&V) != 1)
-	    {
-		printf("A problem occurred while reading the file\n");
-		fflush(stdout);
-		break;
-	    }
-	data->ward[i]=V;
-    }
-    fclose(fich);
+/*     for (i=0;i<NbPatients;i++){ */
+/* 	if( fscanf(fich,"%d",&V) != 1) */
+/* 	    { */
+/* 		printf("A problem occurred while reading the file\n"); */
+/* 		fflush(stdout); */
+/* 		break; */
+/* 	    } */
+/* 	data->ward[i]=V; */
+/*     } */
+/*     fclose(fich); */
 
-    /* for (i=0;i<NbPatients;i++){ */
-    /* 	data->PatientIndex[i]=i; */
-    /* } */
+/*     /\* for (i=0;i<NbPatients;i++){ *\/ */
+/*     /\* 	data->PatientIndex[i]=i; *\/ */
+/*     /\* } *\/ */
 
-    CalculIsInHosp(nb, data);
+/*     CalculIsInHosp(nb, data); */
 
-}
+/* } */
 
 
 
@@ -431,184 +431,184 @@ void writeAllFiles(output_files * Files, parameters * param, nb_data *nb, raw_da
 /********** writing simulated data ************/
 void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data, aug_data *augData, int *indexInfector)
 {
-	char file[200];
-	FILE *Ward, *Admission, *Discharge, *ColonDate, *EndColonDate, *PosSwabDates, *NegSwabDates, *NbAdmissions, *NbPosSwabs, *NbNegSwabs, *IndexInfector;
-	int i,k;
+    char file[200];
+    FILE *Ward, *Admission, *Discharge, *ColonDate, *EndColonDate, *PosSwabDates, *NegSwabDates, *NbAdmissions, *NbPosSwabs, *NbNegSwabs, *IndexInfector;
+    int i,k;
 
-	strcpy(file, workspace);
-	strcat(file,"Ward.txt");
-	if ((Ward=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"Ward.txt");
+    if ((Ward=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open Ward.txt");
-		exit(2);
+	    printf("Cannot open Ward.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(Ward,"%d\n",data->ward[i]);
-	   	fflush(Ward);
+	    fprintf(Ward,"%d\n",data->ward[i]);
+	    fflush(Ward);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"Admission.txt");
-	if ((Admission=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"Admission.txt");
+    if ((Admission=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open Admission.txt");
-		exit(2);
+	    printf("Cannot open Admission.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-		for(k=0 ; k<nbData->NbAdmissions[i] ; k++)
+	    for(k=0 ; k<nbData->NbAdmissions[i] ; k++)
 		{
-			fprintf(Admission,"%d\t",(int)gsl_vector_get(data->A[i],k));
-			fflush(Admission);
+		    fprintf(Admission,"%d\t",(int)gsl_vector_get(data->A[i],k));
+		    fflush(Admission);
 		}
-		fprintf(Admission,"\n");
-		fflush(Admission);
+	    fprintf(Admission,"\n");
+	    fflush(Admission);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"Discharge.txt");
-	if ((Discharge=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"Discharge.txt");
+    if ((Discharge=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open Discharge.txt");
-		exit(2);
+	    printf("Cannot open Discharge.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(Discharge,"%d\n",(int)gsl_vector_get(data->D[i],0));
-	   	fflush(Discharge);
-	}
-
-	strcpy(file, workspace);
-	strcat(file,"ColonDate.txt");
-	if ((ColonDate=fopen(file,"w"))==NULL)
-	{
-		printf("Cannot open ColonDate.txt");
-		exit(2);
-	}
-	for (i=0 ; i<NbCases ; i++)
-	{
-	  	fprintf(ColonDate,"%d\n",augData->C[i]);
-	   	fflush(ColonDate);
+	    fprintf(Discharge,"%d\n",(int)gsl_vector_get(data->D[i],0));
+	    fflush(Discharge);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"EndColonDate.txt");
-	if ((EndColonDate=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"ColonDate.txt");
+    if ((ColonDate=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open EndColonDate.txt");
-		exit(2);
+	    printf("Cannot open ColonDate.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(EndColonDate,"%d\n",augData->E[i]);
-	   	fflush(EndColonDate);
+	    fprintf(ColonDate,"%d\n",augData->C[i]);
+	    fflush(ColonDate);
+	}
+
+    strcpy(file, workspace);
+    strcat(file,"EndColonDate.txt");
+    if ((EndColonDate=fopen(file,"w"))==NULL)
+	{
+	    printf("Cannot open EndColonDate.txt");
+	    exit(2);
+	}
+    for (i=0 ; i<NbCases ; i++)
+	{
+	    fprintf(EndColonDate,"%d\n",augData->E[i]);
+	    fflush(EndColonDate);
 	}
 
 
-	strcpy(file, workspace);
-	strcat(file,"NbAdmissions.txt");
-	if ((NbAdmissions=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"NbAdmissions.txt");
+    if ((NbAdmissions=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open NbAdmissions.txt");
-		exit(2);
+	    printf("Cannot open NbAdmissions.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(NbAdmissions,"%d\n",nbData->NbAdmissions[i]);
-	   	fflush(NbAdmissions);
-	}
-
-	strcpy(file, workspace);
-	strcat(file,"nbPos.txt");
-	if ((NbPosSwabs=fopen(file,"w"))==NULL)
-	{
-		printf("Cannot open nbPos.txt");
-		exit(2);
-	}
-	for (i=0 ; i<NbCases ; i++)
-	{
-	  	fprintf(NbPosSwabs,"%d\n",nbData->NbPosSwabs[i]);
-	   	fflush(NbPosSwabs);
+	    fprintf(NbAdmissions,"%d\n",nbData->NbAdmissions[i]);
+	    fflush(NbAdmissions);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"nbNeg.txt");
-	if ((NbNegSwabs=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"nbPos.txt");
+    if ((NbPosSwabs=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open nbNeg.txt");
-		exit(2);
+	    printf("Cannot open nbPos.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(NbNegSwabs,"%d\n",nbData->NbNegSwabs[i]);
-	   	fflush(NbNegSwabs);
+	    fprintf(NbPosSwabs,"%d\n",nbData->NbPosSwabs[i]);
+	    fflush(NbPosSwabs);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"PositiveSwabDates.txt");
-	if ((PosSwabDates=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"nbNeg.txt");
+    if ((NbNegSwabs=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open PositiveSwabDates.txt");
-		exit(2);
+	    printf("Cannot open nbNeg.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-		if(nbData->NbPosSwabs[i]>0)
+	    fprintf(NbNegSwabs,"%d\n",nbData->NbNegSwabs[i]);
+	    fflush(NbNegSwabs);
+	}
+
+    strcpy(file, workspace);
+    strcat(file,"PositiveSwabDates.txt");
+    if ((PosSwabDates=fopen(file,"w"))==NULL)
+	{
+	    printf("Cannot open PositiveSwabDates.txt");
+	    exit(2);
+	}
+    for (i=0 ; i<NbCases ; i++)
+	{
+	    if(nbData->NbPosSwabs[i]>0)
 		{
-			for(k=0 ; k<nbData->NbPosSwabs[i] ; k++)
+		    for(k=0 ; k<nbData->NbPosSwabs[i] ; k++)
 			{
-				fprintf(PosSwabDates,"%d\t",(int)gsl_vector_get(data->P[i],k));
-				fflush(PosSwabDates);
+			    fprintf(PosSwabDates,"%d\t",(int)gsl_vector_get(data->P[i],k));
+			    fflush(PosSwabDates);
 			}
 		}
-		fprintf(PosSwabDates,"\n");
-		fflush(PosSwabDates);
+	    fprintf(PosSwabDates,"\n");
+	    fflush(PosSwabDates);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"NegativeSwabDates.txt");
-	if ((NegSwabDates=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"NegativeSwabDates.txt");
+    if ((NegSwabDates=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open NegativeSwabDates.txt");
-		exit(2);
+	    printf("Cannot open NegativeSwabDates.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-		if(nbData->NbNegSwabs[i]>0)
+	    if(nbData->NbNegSwabs[i]>0)
 		{
-			for(k=0 ; k<nbData->NbNegSwabs[i] ; k++)
+		    for(k=0 ; k<nbData->NbNegSwabs[i] ; k++)
 			{
-				fprintf(NegSwabDates,"%d\t",(int)gsl_vector_get(data->N[i],k));
-				fflush(NegSwabDates);
+			    fprintf(NegSwabDates,"%d\t",(int)gsl_vector_get(data->N[i],k));
+			    fflush(NegSwabDates);
 			}
 		}
-		fprintf(NegSwabDates,"\n");
-		fflush(NegSwabDates);
+	    fprintf(NegSwabDates,"\n");
+	    fflush(NegSwabDates);
 	}
 
-	strcpy(file, workspace);
-	strcat(file,"IndexInfector.txt");
-	if ((IndexInfector=fopen(file,"w"))==NULL)
+    strcpy(file, workspace);
+    strcat(file,"IndexInfector.txt");
+    if ((IndexInfector=fopen(file,"w"))==NULL)
 	{
-		printf("Cannot open IndexInfector.txt");
-		exit(2);
+	    printf("Cannot open IndexInfector.txt");
+	    exit(2);
 	}
-	for (i=0 ; i<NbCases ; i++)
+    for (i=0 ; i<NbCases ; i++)
 	{
-	  	fprintf(IndexInfector,"%d\n",indexInfector[i]);
-	   	fflush(IndexInfector);
+	    fprintf(IndexInfector,"%d\n",indexInfector[i]);
+	    fflush(IndexInfector);
 	}
 
-	fclose(Ward);
-	fclose(Admission);
-	fclose(Discharge);
-	fclose(ColonDate);
-	fclose(EndColonDate);
-	fclose(PosSwabDates);
-	fclose(NegSwabDates);
-	fclose(NbAdmissions);
-	fclose(NbPosSwabs);
-	fclose(NbNegSwabs);
-	fclose(IndexInfector);
+    fclose(Ward);
+    fclose(Admission);
+    fclose(Discharge);
+    fclose(ColonDate);
+    fclose(EndColonDate);
+    fclose(PosSwabDates);
+    fclose(NegSwabDates);
+    fclose(NbAdmissions);
+    fclose(NbPosSwabs);
+    fclose(NbNegSwabs);
+    fclose(IndexInfector);
 }
