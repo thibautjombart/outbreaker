@@ -733,3 +733,165 @@ void freeFILES(output_files *fich){
 
 	free(fich);
 }
+
+
+
+/* to check */
+
+
+
+/************ MCMC internals **************/
+mcmcInternals *createMcmcInternals(){
+	mcmcInternals *MCMCSettings = (mcmcInternals *) malloc(sizeof(mcmcInternals));
+	if(MCMCSettings == NULL){
+		fprintf(stderr, "\n[in: alloc.c->createMcmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
+		exit(1);
+	}
+
+	MCMCSettings->Sigma_beta = gsl_matrix_calloc(2,2);
+	if(MCMCSettings->Sigma_beta == NULL){
+		fprintf(stderr, "\n[in: alloc.c->createMcmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
+		exit(1);
+	}
+
+	MCMCSettings->NbSimul = 10000;
+	MCMCSettings->SubSample = 200;
+	MCMCSettings->BurnIn = 5000;
+	MCMCSettings->Sigma_betaWardOut = 0.1;
+	MCMCSettings->Sigma_betaOutOut = 0.1;
+	MCMCSettings->Sigma_mu = 0.1;
+	MCMCSettings->Sigma_sigma = 0.1;
+	MCMCSettings->Sigma_nu1 = 0.1;
+	MCMCSettings->Sigma_nu2 = 0.1;
+	MCMCSettings->Sigma_tau = 0.1;
+	MCMCSettings->Sigma_alpha = 0.1;
+
+	return MCMCSettings;
+}
+
+
+
+
+
+void printStdProp(mcmcInternals *MCMCSettings){
+	int i,j;
+
+	for (i=0;i<2;i++){
+		for (j=0;j<2;j++){
+			printf("Std proposal for beta_%d,%d: %lg\n",i,j,gsl_matrix_get(MCMCSettings->Sigma_beta,i,j));
+		}
+	}
+	printf("Std proposal for betaWardOut: %lg\n",MCMCSettings->Sigma_betaWardOut);
+	printf("Std proposal for betaOutOut: %lg\n",MCMCSettings->Sigma_betaOutOut);
+	printf("Std proposal for mu: %lg\n",MCMCSettings->Sigma_mu);
+	printf("Std proposal for sigma: %lg\n",MCMCSettings->Sigma_sigma);
+	printf("Std proposal for nu1: %lg\n",MCMCSettings->Sigma_nu1);
+	printf("Std proposal for nu2: %lg\n",MCMCSettings->Sigma_nu2);
+	printf("Std proposal for tau: %lg\n",MCMCSettings->Sigma_tau);
+	printf("Std proposal for alpha: %lg\n",MCMCSettings->Sigma_alpha);
+
+	fflush(stdout);
+}
+
+
+
+
+
+void freeMcmcInternals(mcmcInternals *MCMCSettings){
+	gsl_matrix_free(MCMCSettings->Sigma_beta);
+
+	free(MCMCSettings);
+}
+
+
+
+
+
+
+
+/************ Acceptance ***************/
+acceptance *createAcceptance(){
+	acceptance *accept = (acceptance *) malloc(sizeof(acceptance));
+	if(accept == NULL){
+		fprintf(stderr, "\n[in: alloc.c->createAcceptance]\nNo memory left for creating accept. Exiting.\n");
+		exit(1);
+	}
+
+	accept->PourcAcc_beta = gsl_matrix_calloc(2,2);
+	accept->PourcAcc_betaWardOut=0.0;
+	accept->PourcAcc_betaOutOut=0.0;
+	accept->PourcAcc_mu=0.0;
+	accept->PourcAcc_sigma=0.0;
+	accept->PourcAcc_nu1=0.0;
+	accept->PourcAcc_nu2=0.0;
+	accept->PourcAcc_tau=0.0;
+	accept->PourcAcc_alpha=0.0;
+
+	return accept;
+}
+
+
+
+
+
+void reInitiateAcceptance(acceptance *accept){
+	int i,j;
+	for(i=0;i<2;i++){
+		for(j=0;j<2;j++){
+			gsl_matrix_set(accept->PourcAcc_beta,i,j,0.0);
+		}
+	}
+
+	accept->PourcAcc_betaWardOut=0.0;
+	accept->PourcAcc_betaOutOut=0.0;
+	accept->PourcAcc_mu=0.0;
+	accept->PourcAcc_sigma=0.0;
+	accept->PourcAcc_nu1=0.0;
+	accept->PourcAcc_nu2=0.0;
+	accept->PourcAcc_tau=0.0;
+	accept->PourcAcc_alpha=0.0;
+
+}
+
+
+
+
+
+void printAcceptance(acceptance *accept, NbProposals *NbProp){
+	int i,j;
+
+	for(i=0;i<2;i++){
+		for(j=0;j<2;j++){
+			printf("Prob accept beta_%d,%d\t%lg\n",i,j,gsl_matrix_get(accept->PourcAcc_beta,i,j)/gsl_matrix_get(NbProp->NbProp_beta,i,j));
+			fflush(stdout);
+		}
+	}
+
+	printf("Prob accept betaWardOut\t%lg\n",accept->PourcAcc_betaWardOut/NbProp->NbProp_betaWardOut);
+	fflush(stdout);
+	printf("Prob accept betaOutOut\t%lg\n",accept->PourcAcc_betaOutOut/NbProp->NbProp_betaOutOut);
+	fflush(stdout);
+	printf("Prob accept mu\t%lg\n",accept->PourcAcc_mu/NbProp->NbProp_mu);
+	fflush(stdout);
+	printf("Prob accept sigma\t%lg\n",accept->PourcAcc_sigma/NbProp->NbProp_sigma);
+	fflush(stdout);
+	printf("Prob accept nu1\t%lg\n",accept->PourcAcc_nu1/NbProp->NbProp_nu1);
+	fflush(stdout);
+	printf("Prob accept nu2\t%lg\n",accept->PourcAcc_nu2/NbProp->NbProp_nu2);
+	fflush(stdout);
+	printf("Prob accept tau\t%lg\n",accept->PourcAcc_tau/NbProp->NbProp_tau);
+	fflush(stdout);
+	printf("Prob accept alpha\t%lg\n",accept->PourcAcc_alpha/NbProp->NbProp_alpha);
+	fflush(stdout);
+
+}
+
+
+
+
+
+void freeAcceptance(acceptance *accept){
+	gsl_matrix_free(accept->PourcAcc_beta);
+	free(accept);
+}
+
