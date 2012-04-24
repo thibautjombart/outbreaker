@@ -45,13 +45,14 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     /* printf("\nRandom value: %.5f", gsl_ran_flat (data->rng, 0.0, 100.0)); */
     *newVal = *curVal * gsl_ran_lognormal(data->rng,0.0,sigmaProp); /* THIS IS THE ERROR */
     printf("\n - step v ");
+    fflush(stdout);
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);
 
-    printf("\n - step vi");
+    printf("\n - step vi");fflush(stdout);
     pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam);
-    printf("\n - step viii");
+    printf("\n - step viii");fflush(stdout);
 
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 

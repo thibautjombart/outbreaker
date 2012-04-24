@@ -496,6 +496,36 @@ int SimulEpid(parameters *param, hospDurationParam *paramHosp, nb_data *nbData, 
 
     SimulColonisationInBeds(param, nbData, data, augData, indexInfector, indexOfPatientsInWard0, indexOfPatientsInWard1, AlreadyColonised, isColonised, indexI0, indexI1, indexS0, indexS1, 	indexIncid0, 	indexIncid1);
 
+    /* filling augData->IsInHosp */
+    CalculIsInHosp(nbData, data);
+ 
+    /* filling augData->I0 and I1 */
+    for(t=0 ; t<nbData->T ; t++){
+	augData->I0[t]=0;
+	augData->I1[t]=0;
+    }
+    for(i=0 ; i<nbData->NbPatients ; i++){
+	    if(data->ward[i]==0){
+		if(GSL_MAX(0,augData->C[i])<GSL_MIN(nbData->T,augData->E[i])){
+		    for(t=GSL_MAX(0,augData->C[i]) ; t<GSL_MIN(nbData->T,augData->E[i]) ; t++){
+			if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			    augData->I0[t]++;
+			}
+		    }
+		}
+	    }
+	    if(data->ward[i]==1){
+		if(GSL_MAX(0,augData->C[i])<GSL_MIN(nbData->T,augData->E[i])){
+		    for(t=GSL_MAX(0,augData->C[i]) ; t<GSL_MIN(nbData->T,augData->E[i]) ; t++){
+			if(gsl_vector_get(data->IsInHosp[i],t)==1){
+			    augData->I1[t]++;
+			}
+		    }
+		}
+	    }
+	}
+
+
     /* simulate the testing */
 
     SimulTesting(param, nbData, data, indexOfPatientsInWard0, indexOfPatientsInWard1, isColonised);

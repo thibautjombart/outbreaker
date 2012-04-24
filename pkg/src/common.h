@@ -61,7 +61,6 @@ typedef struct{
     gsl_vector ** D; /* discharge times. D[i] is a vector of size nb_data->NbAdmissions[i] */
     gsl_vector ** P; /* times of positive swabs. P[i] is a vector of size nb_data->NbPosSwabs[i] */
     gsl_vector ** N; /* times of negative swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] */
-    /* gsl_vector *IsInHosp[NbPatients]; /\* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T *\/ */
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
 
     /* GENETIC DATA */

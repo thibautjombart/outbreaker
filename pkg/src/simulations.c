@@ -4,7 +4,12 @@
 #include "InputOutput.h"
 #include "simepid.h"
 #include "simgen.h"
-
+#include "init.h"
+#include "logL.h"
+#include "mcmc.h"
+#include "moves.h"
+#include "prior.h"
+#include "tuneVariances.h"
 
 
 
@@ -85,8 +90,8 @@ int main(){
     /* print_augData(augData); */
     /* fflush(stdout); */
 
-    int max_nb_lineages=5, haplo_length=10000;
-    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2;
+    int max_nb_lineages=5, haplo_length=100;
+    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=1;
     double nu1=5e-5, nu2=1e-4, lambdaNseq=1.0;
 
     epid_dna *alldna = create_epid_dna(NbCases, max_nb_lineages, haplo_length);
@@ -101,8 +106,53 @@ int main(){
     /* printf("\n>>> Sampled DNA:\n"); */
     /* print_list_dnaseq(dnasample); */
 
+    /* GET GENETIC DISTANCES */
+    dna_dist *dnainfo = compute_dna_distances(dnasample); /* genetic distances - all DNA info needed */
+
+    /* ESTIMATION */
+    mcmcInternals *MCMCSettings = createMcmcInternals();
+    param->weightNaGen = 0.001;
+
+    /* OUTPUT FILES */
+    output_files *Files = createFILES(workspace);
+
+    /* ACCEPTANCE */
+    acceptance *accept = createAcceptance(); /* accept is initialized to zero */
+    isAcceptOK *acceptOK = createIsAcceptOK();
+    NbProposals *nbProp = createNbProposals();
+
+    /* INITIALIZE IN MCMC SETTINGS */
+    InitMCMCSettings(MCMCSettings);
+    /* printf("\nMCMC initialized\n"); */
+
+    /* INITIALIZE PARAMETERS */
+    InitParam(param);
+    /* printf("\nParam initialized\n"); */
+
+    /* INITIALIZE AUGMENTED DATA */
+    InitAugData(param, nbData, data, augData);
+    /* printf("\nAugmented data initialized\n"); */
+
+
+    /* OUTPUT FILE PREPARATION  */
+    prepAllFiles(Files, data->NbPatients);
+    /* printf("\nOutput files prepared\n"); */
+
+
+    /*****************************************************/
+    /***                 Launch MCMC                   ***/
+    /*****************************************************/
+    MCMCSettings->BurnIn = 100;
+    MCMCSettings->NbSimul = 100;
+    MCMCSettings->SubSample = 10;
+
+    printf("\nStarting estimation\n");
+    fflush(stdout);
+    metro(MCMCSettings, param, data, nbData, augData, dnainfo, accept, acceptOK, nbProp, Files);
+
 
     /* Closing files and freeing memory */
+    freeMcmcInternals(MCMCSettings);
     freeParam(param);
     freeAugData(augData);
     freeNbData(nbData);
@@ -122,7 +172,7 @@ int main(){
 /*
   gcc instructions:
 
-  gcc -o simulation matvec.c alloc.c genclasses.c InputOutput.c prior.c genlike.c logL.c simepid.c simgen.c simulations.c -Wall -g -lgsl -lgslcblas
+  gcc -o simulation matvec.c alloc.c genclasses.c distances.c InputOutput.c init.c prior.c genlike.c logL.c moves.c mcmc.c tuneVariances.c simepid.c simgen.c simulations.c -Wall -g -lgsl -lgslcblas
 
   ./simulation
 
