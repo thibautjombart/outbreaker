@@ -164,6 +164,7 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 				if(rand<param->Pi) /* colonised before admission */
 						{
 					AlreadyColonised[*NbCases]=1;
+					indexInfector[*NbCases]=-1;
 					augData->C[*NbCases]=gsl_vector_get(data->A[*NbCases],0)-1;
 					augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 					if(GSL_MAX(0,augData->C[*NbCases])<GSL_MIN(nbData->T,augData->E[*NbCases]))
@@ -210,6 +211,7 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 				if(rand<param->Pi) /* colonised before admission */
 						{
 					AlreadyColonised[*NbCases]=1;
+					indexInfector[*NbCases]=-1;
 					augData->C[*NbCases]=gsl_vector_get(data->A[*NbCases],0)-1;
 					augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 					if(GSL_MAX(0,augData->C[*NbCases])<GSL_MIN(nbData->T,augData->E[*NbCases]))
