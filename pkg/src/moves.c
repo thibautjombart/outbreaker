@@ -27,32 +27,32 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     parameters *newParam = createParam();
     copyParam(newParam,curParam);
 
-    printf("\nMove beta: i = %d, j = %d", i, j);
+    /* printf("\nMove beta: i = %d, j = %d", i, j); */
     curVal = gsl_matrix_ptr(curParam->beta,i,j);
     newVal = gsl_matrix_ptr(newParam->beta,i,j);
-    printf("\n - step i");
+    /* printf("\n - step i"); */
 
     sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j);
-    printf("\n - step ii");
+    /* printf("\n - step ii"); */
     nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j);
-    printf("\n - step iii");
+    /* printf("\n - step iii"); */
     nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j);
-    printf("\n - step iv");
-    
+    /* printf("\n - step iv"); */
+
     /* printf("\nValue of sigmaProp: %.5f", sigmaProp); */
     /* printf("\nValue of newVal: %.5f", *newVal); */
     /* printf("\nValue of curVal: %.5f", *curVal); */
     /* printf("\nRandom value: %.5f", gsl_ran_flat (data->rng, 0.0, 100.0)); */
-    *newVal = *curVal * gsl_ran_lognormal(data->rng,0.0,sigmaProp); /* THIS IS THE ERROR */
-    printf("\n - step v ");
-    fflush(stdout);
+    *newVal = *curVal * gsl_ran_lognormal(data->rng,0.0,sigmaProp);
+    /* printf("\n - step v "); */
+    /* fflush(stdout); */
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);
 
-    printf("\n - step vi");fflush(stdout);
+    /* printf("\n - step vi");fflush(stdout); */
     pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam);
-    printf("\n - step viii");fflush(stdout);
+    /* printf("\n - step viii");fflush(stdout); */
 
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
@@ -585,6 +585,8 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     aug_data *newAugData = createAugData(NbPatients, T);
     copyAugData(newAugData,curAugData);
 
+    printf("\naaa\n");fflush(stdout);
+
     curVal = &curAugData->E[i];
     newVal = &newAugData->E[i];
 
@@ -593,54 +595,69 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     curNbPoss = curMaxTime-curMinTime;
 
     random=gsl_rng_uniform_int (data->rng, curNbPoss);
+    printf("\nbbb\n");fflush(stdout);
 
     if(random<l){
 	*newVal = curMaxTime - random;
     } else {
 	*newVal = curMaxTime - random - 1;
     }
+    printf("\nbbba\n");fflush(stdout);
 
     if(*newVal < *curVal){
 	if(data->ward[i]==0){
 	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
 		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I0[t]--;
+			newAugData->I0[t] = newAugData->I0[t]-1;
 		    }
 		}
-	    }
+	    }   
+	    printf("\nbbbb\n");fflush(stdout);
+
 	} else {
 	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
 		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I1[t]--;
+			newAugData->I1[t] = newAugData->I1[t] -1;
 		    }
 		}
 	    }
 	}
     } else {
 	if(data->ward[i]==0){
+	    printf("\nbbbc\n");fflush(stdout);
 	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
+	    printf("\nbite\n");fflush(stdout);
+
 		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
+	    printf("\npoil\n");fflush(stdout);
+	    printf("\nt:%d i=%d\n", t, i);
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I0[t]++;
+	    printf("\nzob\n");fflush(stdout);
+			printf("\nt:%d\n", t);
+			newAugData->I0[t] = newAugData->I0[t]+1;
 		    }
 		}
 	    }
 	} else {
+	    printf("\nbbbd\n");fflush(stdout);
+
 	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
 		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I1[t]++;
+			newAugData->I1[t] = newAugData->I1[t]+1;
 		    }
 		}
 	    }
 	}
     }
+	    printf("\nbbbe\n");fflush(stdout);
 
     newMinTime = GSL_MAX(*newVal - l,curAugData->C[i]+1);
     newMaxTime = *newVal + l;
     newNbPoss = newMaxTime-newMinTime;
+    printf("\nccc\n");fflush(stdout);
 
     QCur = 1.0/newNbPoss;
     QNew = 1.0/curNbPoss;
@@ -648,6 +665,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     pAccept += ObsLevelPerCase(i, data, nb, newAugData, param) - ObsLevelPerCase(i, data, nb, curAugData, param);
 
     pAccept += DurationColonPerCase (i, newAugData, param) - DurationColonPerCase (i, curAugData, param);
+    printf("\nddd\n");fflush(stdout);
 
     for(j=0;j<NbPatients;j++) /* only patients who are colonised after E_i are affected by the change in E_i */
 	{
@@ -660,12 +678,15 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     if (pAccept>0) r=0; else r=pAccept;
     z=gsl_rng_uniform(data->rng);
+    printf("\neee\n");fflush(stdout);
+
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
     }
+    printf("\nfff\n");fflush(stdout);
 
     freeAugData(newAugData);
-
+    printf("\nggg\n");fflush(stdout);
 }
 
 

@@ -99,6 +99,10 @@ int main(){
     evolve_epid_dna(alldna, indexInfector, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, augData->C, rng);
     /* print_epid_dna(alldna); */
 
+    printf("\n>>> Initial nb data: \n");
+    print_nbData(nbData);
+    fflush(stdout);
+
     /* SAMPLING PROCEDURE */
     list_dnaseq *dnasample;
     dnasample = sample_epid_dna(alldna, nbData, data, lambdaNseq, nu1, nu2, augData->C, rng);

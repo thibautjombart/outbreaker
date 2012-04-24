@@ -143,9 +143,9 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
     double fiWardOut;
     double fiOutOut;
 
-    printf("\ndata->IsInHosp[i]:\n");
-    print_gsl_vector(data->IsInHosp[i], "%.0f ");
-    fflush(stdout);
+    /* printf("\ndata->IsInHosp[i]:\n"); */
+    /* print_gsl_vector(data->IsInHosp[i], "%.0f "); */
+    /* fflush(stdout); */
 
     /* printf("\nColonPerCase i=%d - step 1", i); */
     if(augData->C[i] < gsl_vector_get(data->A[i],0)) /* colonised at first admission */
@@ -155,18 +155,18 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 	L+=log(1-param->Pi);
 
 	if(augData->C[i]>=0 && augData->C[i]<T){
-	    printf("\ngsl_vector_get(data->IsInHosp[i],augData->C[i]): %.0f\n", gsl_vector_get(data->IsInHosp[i],augData->C[i]));
+	    /* printf("\ngsl_vector_get(data->IsInHosp[i],augData->C[i]): %.0f\n", gsl_vector_get(data->IsInHosp[i],augData->C[i])); */
 	    if(augData->C[i]>=0 && augData->C[i]<T && gsl_vector_get(data->IsInHosp[i],augData->C[i])==1){ /* colonised whilst in hospital */
-		printf("\nColonPerCase i=%d - step 2", i);
-		fflush(stdout);
+		/* printf("\nColonPerCase i=%d - step 2", i); */
+		/* fflush(stdout); */
     
 		/* finding l such that individual i is colonised during l^th hospital stay (numbered from zero) */
 		l=-1;
 		while(l<nb->NbAdmissions[i]-1 && augData->C[i]>=gsl_vector_get(data->A[i],l+1)){
 		    l++;
 		}
-		printf("\nColonPerCase i=%d - step 3", i);
-		fflush(stdout);
+		/* printf("\nColonPerCase i=%d - step 3", i); */
+		/* fflush(stdout); */
 
 		if(l>0) /* need to escape transmission during at least 1 whole hospital stay and one whole period outside hospital */
 		    {
@@ -182,8 +182,8 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 				L -= param->betaOutOut*(gsl_vector_get(data->A[i],s+1)-gsl_vector_get(data->D[i],s));
 			    }
 		    }
-		printf("\nColonPerCase i=%d - step 4", i);
-		fflush(stdout);
+		/* printf("\nColonPerCase i=%d - step 4", i); */
+		/* fflush(stdout); */
 
 		/* escaping transmission in hospital during the l^th stay, before being colonised : */
 		for(t=GSL_MAX(0,gsl_vector_get(data->A[i],l));t<GSL_MIN(T,augData->C[i]);t++){
@@ -194,15 +194,15 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 		/* infection at time step C_i : */
 		L += log(1-exp(-gsl_matrix_get(param->beta,data->ward[i],0)*augData->I0[augData->C[i]] - gsl_matrix_get(param->beta,data->ward[i],1)*augData->I1[augData->C[i]] - param->betaWardOut));
 
-		printf("\nColonPerCase i=%d - step 5", i);
-		fflush(stdout);
+		/* printf("\nColonPerCase i=%d - step 5", i); */
+		/* fflush(stdout); */
 
 		/* relative weights of each route of transmission incorporating genetic data : */
 		for(j=0;j<NbPatients;j++){
 		    /* calculate fij */
 		    fij = genlike_ij(i,j,data, dnainfo, param);
-		    printf("\nColonPerCase i=%d - step 6", i);
-		    fflush(stdout);
+		    /* printf("\nColonPerCase i=%d - step 6", i); */
+		    /* fflush(stdout); */
 
 		    /*****************/
 		    if(augData->C[i]>=0 && augData->C[i]<T && augData->C[j]<=augData->C[i] && augData->C[i]<augData->E[j] && gsl_vector_get(data->IsInHosp[j],augData->C[i])) /* individual j is colonised and in hospital at time C_i */
@@ -216,8 +216,8 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 			}
 		}
 
-		printf("\nColonPerCase i=%d - step 7", i);
-		fflush(stdout);
+		/* printf("\nColonPerCase i=%d - step 7", i); */
+		/* fflush(stdout); */
 
 		/* calculate fiWardOut */
 		/**************** Here need to incorporate Thibaut's genetic likelihood ****************/
@@ -231,32 +231,32 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 
 		/* finding l such that individual i is colonised after l^th hospital stay (numbered from zero) */
 		l=-1;
-		printf("nb->NbAdmissions[i]-1: %d   \naugData->C[i]: %d  \naugData->E[i]: %d gsl_vector_get(data->A[i],l+1): %.0f gsl_vector_get(data->D[i],l+1): %.0f\n", nb->NbAdmissions[i]-1, augData->C[i], augData->E[i], gsl_vector_get(data->A[i],l+1), gsl_vector_get(data->D[i],l+1));
-		fflush(stdout);
+		/* printf("nb->NbAdmissions[i]-1: %d   \naugData->C[i]: %d  \naugData->E[i]: %d gsl_vector_get(data->A[i],l+1): %.0f gsl_vector_get(data->D[i],l+1): %.0f\n", nb->NbAdmissions[i]-1, augData->C[i], augData->E[i], gsl_vector_get(data->A[i],l+1), gsl_vector_get(data->D[i],l+1)); */
+		/* fflush(stdout); */
 
 		while(l<nb->NbAdmissions[i]-1 && augData->C[i]>=gsl_vector_get(data->D[i],l+1)){
 		    l++;
 		}
-		printf("\ni = %d  l = %d\n", i, l);
-		printf("\nColonPerCase i=%d - step 8", i);
-		fflush(stdout);
+		/* printf("\ni = %d  l = %d\n", i, l); */
+		/* printf("\nColonPerCase i=%d - step 8", i); */
+		/* fflush(stdout); */
 
 		if(l<nb->NbAdmissions[i]){ /* colonised before the end of the period study */
-		    printf("\nColonPerCase i=%d - step 8bis", i);
+		    /* printf("\nColonPerCase i=%d - step 8bis", i); */
 		    /* printf("\ni = %d   s = %d   l = %d\n", i, s, l); */
-		    fflush(stdout);
+		    /* fflush(stdout); */
 		    for(s=0;s<l;s++) /* for each previous hospital stay */
 			{
 			    /* escaping transmission in hospital: */
 			    for(t=GSL_MAX(0,gsl_vector_get(data->A[i],s)) ; t<GSL_MIN(T,gsl_vector_get(data->D[i],s)) ; t++){
 				L -= gsl_matrix_get(param->beta,data->ward[i],0)*augData->I0[t] + gsl_matrix_get(param->beta,data->ward[i],1)*augData->I1[t];
 			    }
-			    printf("\nColonPerCase i=%d - step 9", i);
-			    fflush(stdout);
+			    /* printf("\nColonPerCase i=%d - step 9", i); */
+			    /* fflush(stdout); */
 
 			    L -= param->betaWardOut*(gsl_vector_get(data->D[i],s)-gsl_vector_get(data->A[i],s));
-			    printf("\nColonPerCase i=%d - step 10", i);
-			    fflush(stdout);
+			    /* printf("\nColonPerCase i=%d - step 10", i); */
+			    /* fflush(stdout); */
 			}
 		    if(l>0) /* need to escape transmission during at least 1 whole period inbetween hospital stays */
 			{
@@ -265,8 +265,8 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 				    /* escaping transmission outside hospital: */
 				    L -= param->betaOutOut*(gsl_vector_get(data->A[i],s+1)-gsl_vector_get(data->D[i],s));
 				}
-			    printf("\nColonPerCase i=%d - step 11", i);
-			    fflush(stdout);
+			    /* printf("\nColonPerCase i=%d - step 11", i); */
+			    /* fflush(stdout); */
 
 			}
 
@@ -301,8 +301,8 @@ double Colon(raw_data *data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, 
     double L = 0;
 
     for(i=0;i<data->NbPatients;i++){
-	printf("\ni: %d\n",i);
-	fflush(stdout);
+	/* printf("\ni: %d\n",i); */
+	/* fflush(stdout); */
 	L+=ColonPerCase (i, data, nb, augData, dnainfo, param);
     }
 
