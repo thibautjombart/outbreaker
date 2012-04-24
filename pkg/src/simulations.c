@@ -73,17 +73,17 @@ int main(){
 
     /* === SIMULATE GENETIC DATA === */
 
-    printf("\nInitial nb data: \n");
-    print_nbData(nbData);
-    fflush(stdout);
+    /* printf("\n>>> Initial nb data: \n"); */
+    /* print_nbData(nbData); */
+    /* fflush(stdout); */
 
-    printf("\n\nInitial raw data: \n");
-    print_rawData(data);
-    fflush(stdout);
+    /* printf("\n\n>>> Initial raw data: \n"); */
+    /* print_rawData(data); */
+    /* fflush(stdout); */
 
-    printf("\n\nInitial augmented data: \n");
-    print_augData(augData);
-    fflush(stdout);
+    /* printf("\n\n>>> Initial augmented data: \n"); */
+    /* print_augData(augData); */
+    /* fflush(stdout); */
 
     int max_nb_lineages=5, haplo_length=10000;
     double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2;
@@ -92,14 +92,14 @@ int main(){
     epid_dna *alldna = create_epid_dna(NbCases, max_nb_lineages, haplo_length);
 
     evolve_epid_dna(alldna, indexInfector, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, augData->C, rng);
-    print_epid_dna(alldna);
-
-    return 0;
+    /* print_epid_dna(alldna); */
 
     /* SAMPLING PROCEDURE */
     list_dnaseq *dnasample;
     dnasample = sample_epid_dna(alldna, nbData, data, lambdaNseq, nu1, nu2, augData->C, rng);
 
+    /* printf("\n>>> Sampled DNA:\n"); */
+    /* print_list_dnaseq(dnasample); */
 
 
     /* Closing files and freeing memory */

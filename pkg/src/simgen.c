@@ -285,6 +285,7 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
     /* OUTSIDE TRANSMISSIONS FIRST */
     for(k=0;k<N;k++){
 	i = vecint_i(datesIdx, k);
+	/* printf("\nSimulating outside haplotype %d - date:%d\n",k, dates[i]); */
 	if(ances[i]<0){ /* i.e. colonization from outside */
 			/* determine the number of lineages */
 	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
@@ -310,7 +311,9 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 
 
     /* PATIENT->PATIENT TRANSMISSIONS */
-    for(i=0;i<N;i++){
+    for(k=0;k<N;k++){
+	i = vecint_i(datesIdx, k);
+	/* printf("\nSimulating transmitted haplotype %d - date:%d\n",k, dates[i]); */
 	/* make sure the ancestor is known */
 	if(ances[i]>=N){
 	    fprintf(stderr, "\n[in: simgen.c->evolve_epid_dna]\nUnknown ancestor index %d (%d patients)\n", ances[i], N);
