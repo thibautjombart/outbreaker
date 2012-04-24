@@ -43,7 +43,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     /* writeAllFiles(Files, param, nb, data, augData); */
 
     for(l=0;l<MCMCSettings->NbSimul;l++){
-	printf("%d\n",l);
+	printf("iteration: %d\n",l);
 	fflush(stdout);
 
 	/* Updates the std of proposal distributions if needed */
@@ -123,19 +123,20 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    }
 	}
 
-	printf("\nstep A\n");
+	/* printf("\nstep A\n"); */
 
 	if(EndBurnIn==1 && (l%nbStepsVar)==0){
 	    printf("starting simulation %u \n",l);
 	    fflush(stdout);
 	}
 
-	printf("\nstep B\n");
+	/* printf("\nstep B\n"); */
 
 	/*** Moves ***/
 
-	moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp);
-	printf("\nstep C\n");
+	/* moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp); */
+	/* printf("\nstep C\n"); */
+	/* fflush(stdout); */
 
 	/* moveBetaOut('w', MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	/* moveBetaOut('o', MCMCSettings, param, data, nb, augData, accept,nbProp); */
@@ -154,28 +155,36 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	/* moveTau(MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	/* moveAlpha(MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
-	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
-	for(i=0;i<NbChangeAugData;i++){
-	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
-	}
+	/* printf("\nNbChangeAugData:%d, nb->NbColonisedPatients=%d\n", NbChangeAugData, nb->NbColonisedPatients); */
+	/* fflush(stdout); */
 
-	printf("\nstep D\n");
+	/* gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int)); */
+	/* for(i=0;i<NbChangeAugData;i++){ */
+	/*     moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ; */
+	/* } */
 
+	/* printf("\nstep D\n"); */
+	/* fflush(stdout); */
 
-	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
-	for(i=0;i<NbChangeAugData;i++){
-	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
-	}
+	/* gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int)); */
 
-	printf("\nstep E\n");
+	/* printf("\nstep Dbis\n"); */
+	/* fflush(stdout); */
 
+	/* for(i=0;i<NbChangeAugData;i++){ */
+	/*     printf("\nAugDataToMove[i]:%d \n", AugDataToMove[i]);fflush(stdout); */
+	/*     moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ; */
+	/* } */
 
-	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
-	for(i=0;i<NbChangeAugData;i++){
-	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
-	}
+	/* printf("\nstep E\n"); */
+	/* fflush(stdout); */
 
-	printf("\nstep F\n");
+	/* gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int)); */
+	/* for(i=0;i<NbChangeAugData;i++){ */
+	/*     moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ; */
+	/* } */
+
+	/* printf("\nstep F\n"); */
 
 	/* Writing results in an output file */
 	if (l>=MCMCSettings->BurnIn && l%MCMCSettings->SubSample==0 && EndBurnIn==1)
@@ -185,17 +194,21 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		/* printf("L = %lg\n",fullLoglikelihoodWithPrior(data, nb, augData, param)); */
 	    }
     }
-    printf("\nstep G\n");
+    /* printf("\nstep G\n"); */
+    /* fflush(stdout); */
 
     /* PRINT ACCESPTANCE RATE */
     printAcceptance(accept,nbProp);
-    printf("\nstep H\n");
+    /* printf("\nstep H\n"); */
+    /* fflush(stdout); */
 
     /* FREE ALLOCATED MEMORY */
     free(AugDataToMove);
-    printf("\nstep I\n");
+    /* printf("\nstep I\n"); */
+    /* fflush(stdout); */
 
     gsl_matrix_free(isAcceptOKBeta);
-    printf("\nstep J\n");
+    /* printf("\nstep J\n"); */
+    /* fflush(stdout); */
 
 }
