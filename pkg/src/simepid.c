@@ -15,10 +15,10 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 		data->ward[*NbCases]=0;
 		bedNb[*NbCases]=i;
 		nbData->NbAdmissions[*NbCases]=1;
-		gsl_vector_set(data->A[*NbCases],0,-ceil(gsl_ran_gamma (rng, (paramHosp->mu/2)*(paramHosp->mu/2)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu/2))));
+		gsl_vector_set(data->A[*NbCases],0,-ceil(gsl_ran_gamma (data->rng, (paramHosp->mu/2)*(paramHosp->mu/2)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu/2))));
 		do
 		{
-			gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
+			gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (data->rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
 		}while(gsl_vector_get(data->D[*NbCases],0)<=0);
 		if(gsl_vector_get(data->D[*NbCases],0)<nbData->T)
 		{
@@ -34,13 +34,13 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 				gsl_matrix_set(indexOfPatientsInWard0,i,u,*NbCases);
 			}
 		}
-		rand=gsl_ran_flat (rng, 0.0, 1.0);
+		rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 		if(rand<param->Pi) /* colonised before admission */
 				{
 			AlreadyColonised[*NbCases]=1;
 			indexInfector[*NbCases]=-1;
 			augData->C[*NbCases]=gsl_vector_get(data->A[*NbCases],0)-1;
-			augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
+			augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (data->rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 			if(GSL_MAX(0,augData->C[*NbCases])<GSL_MIN(nbData->T,augData->E[*NbCases]))
 			{
 				for(u=GSL_MAX(0,augData->C[*NbCases]) ; u<GSL_MIN(nbData->T,augData->E[*NbCases]) ; u++)
@@ -61,10 +61,10 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 		data->ward[*NbCases]=1;
 		bedNb[*NbCases]=i;
 		nbData->NbAdmissions[*NbCases]=1;
-		gsl_vector_set(data->A[*NbCases],0,-ceil(gsl_ran_gamma (rng, (paramHosp->mu/2)*(paramHosp->mu/2)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu/2))));
+		gsl_vector_set(data->A[*NbCases],0,-ceil(gsl_ran_gamma (data->rng, (paramHosp->mu/2)*(paramHosp->mu/2)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu/2))));
 		do
 		{
-			gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
+			gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (data->rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
 		}while(gsl_vector_get(data->D[*NbCases],0)<=0);
 		if(gsl_vector_get(data->D[*NbCases],0)<nbData->T)
 		{
@@ -80,13 +80,13 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 				gsl_matrix_set(indexOfPatientsInWard1,i,u,*NbCases);
 			}
 		}
-		rand=gsl_ran_flat (rng, 0.0, 1.0);
+		rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 		if(rand<param->Pi) /* colonised before admission */
 				{
 			AlreadyColonised[*NbCases]=1;
 			indexInfector[*NbCases]=-1;
 			augData->C[*NbCases]=gsl_vector_get(data->A[*NbCases],0)-1;
-			augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
+			augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (data->rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 			if(GSL_MAX(0,augData->C[*NbCases])<GSL_MIN(nbData->T,augData->E[*NbCases]))
 			{
 				for(u=GSL_MAX(0,augData->C[*NbCases]) ; u<GSL_MIN(nbData->T,augData->E[*NbCases]) ; u++)
@@ -115,7 +115,7 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 				bedNb[*NbCases]=i;
 				nbData->NbAdmissions[*NbCases]=1;
 				gsl_vector_set(data->A[*NbCases],0,t);
-				gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
+				gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (data->rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
 				if(gsl_vector_get(data->D[*NbCases],0)<nbData->T)
 				{
 					prov =gsl_matrix_get(NbDischarges0,bedNb[*NbCases],gsl_vector_get(data->D[*NbCases],0));
@@ -130,13 +130,13 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 						gsl_matrix_set(indexOfPatientsInWard0,i,u,*NbCases);
 					}
 				}
-				rand=gsl_ran_flat (rng, 0.0, 1.0);
+				rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 				if(rand<param->Pi) /* colonised before admission */
 						{
 					AlreadyColonised[*NbCases]=1;
 					indexInfector[*NbCases]=-1;
 					augData->C[*NbCases]=gsl_vector_get(data->A[*NbCases],0)-1;
-					augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
+					augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (data->rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 					if(GSL_MAX(0,augData->C[*NbCases])<GSL_MIN(nbData->T,augData->E[*NbCases]))
 					{
 						for(u=GSL_MAX(0,augData->C[*NbCases]) ; u<GSL_MIN(nbData->T,augData->E[*NbCases]) ; u++)
@@ -162,7 +162,7 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 				bedNb[*NbCases]=i;
 				nbData->NbAdmissions[*NbCases]=1;
 				gsl_vector_set(data->A[*NbCases],0,t);
-				gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
+				gsl_vector_set(data->D[*NbCases],0,ceil(gsl_vector_get(data->A[*NbCases],0) + gsl_ran_gamma (data->rng, (paramHosp->mu)*(paramHosp->mu)/(paramHosp->sigma*paramHosp->sigma), paramHosp->sigma*paramHosp->sigma/(paramHosp->mu))));
 				if(gsl_vector_get(data->D[*NbCases],0)<nbData->T)
 				{
 					prov =gsl_matrix_get(NbDischarges1,bedNb[*NbCases],gsl_vector_get(data->D[*NbCases],0));
@@ -177,13 +177,13 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 						gsl_matrix_set(indexOfPatientsInWard1,i,u,*NbCases);
 					}
 				}
-				rand=gsl_ran_flat (rng, 0.0, 1.0);
+				rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 				if(rand<param->Pi) /* colonised before admission */
 						{
 					AlreadyColonised[*NbCases]=1;
 					indexInfector[*NbCases]=-1;
 					augData->C[*NbCases]=gsl_vector_get(data->A[*NbCases],0)-1;
-					augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
+					augData->E[*NbCases]=augData->C[*NbCases]+ceil(gsl_ran_gamma (data->rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 					if(GSL_MAX(0,augData->C[*NbCases])<GSL_MIN(nbData->T,augData->E[*NbCases]))
 					{
 						for(u=GSL_MAX(0,augData->C[*NbCases]) ; u<GSL_MIN(nbData->T,augData->E[*NbCases]) ; u++)
@@ -203,7 +203,7 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 	}
 }
 
-void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augData, int *indexInfector, gsl_matrix * indexOfPatientsInWard0, gsl_matrix * indexOfPatientsInWard1, int *AlreadyColonised, gsl_vector ** isColonised, int *indexI0, int *indexI1, int *indexS0, int *indexS1, 	int *indexIncid0, 	int *indexIncid1)
+void SimulColonisationInBeds(parameters *param, nb_data *nbData, raw_data *data, aug_data *augData, int *indexInfector, gsl_matrix * indexOfPatientsInWard0, gsl_matrix * indexOfPatientsInWard1, int *AlreadyColonised, gsl_vector ** isColonised, int *indexI0, int *indexI1, int *indexS0, int *indexS1, 	int *indexIncid0, 	int *indexIncid1)
 {
 	int t,k,i,u;
 	double rand;
@@ -256,12 +256,12 @@ void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augDa
 
 		lambda = gsl_matrix_get(param->beta,0,0)*augData->I0[t-1] + gsl_matrix_get(param->beta,0,1)*augData->I1[t-1] + param->betaWardOut;
 		prob = 1-exp(-lambda);
-		Incid0=gsl_ran_binomial (rng, prob, S0);
+		Incid0=gsl_ran_binomial (data->rng, prob, S0);
 
 		if(Incid0>0)
 		{
 			/* Choose them */
-			gsl_ran_choose (rng, indexIncid0, Incid0, indexS0, S0, sizeof(int));
+			gsl_ran_choose (data->rng, indexIncid0, Incid0, indexS0, S0, sizeof(int));
 
 			/* draw their infector */
 
@@ -270,15 +270,15 @@ void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augDa
 
 			for(i=0 ; i<Incid0 ; i++)
 			{
-				rand = gsl_rng_uniform(rng);
+				rand = gsl_rng_uniform(data->rng);
 				if(rand<probaInfectedPerWard0) /* infected by someone in ward 0 */
 				{
-					indexInfector[indexIncid0[i]]= indexI0[gsl_rng_uniform_int (rng, augData->I0[t-1])];
+					indexInfector[indexIncid0[i]]= indexI0[gsl_rng_uniform_int (data->rng, augData->I0[t-1])];
 				}else
 				{
 					if(rand<probaInfectedPerWard0+probaInfectedPerWard1) /* infected by someone in ward 1 */
 					{
-						indexInfector[indexIncid0[i]]= indexI1[gsl_rng_uniform_int (rng, augData->I1[t-1])];
+						indexInfector[indexIncid0[i]]= indexI1[gsl_rng_uniform_int (data->rng, augData->I1[t-1])];
 					}else /* infected by outside */
 					{
 						indexInfector[indexIncid0[i]]= -1;
@@ -291,7 +291,7 @@ void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augDa
 			for(i=0 ; i<Incid0 ; i++)
 			{
 				augData->C[indexIncid0[i]]=t-1;
-				augData->E[indexIncid0[i]]=augData->C[indexIncid0[i]]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
+				augData->E[indexIncid0[i]]=augData->C[indexIncid0[i]]+ceil(gsl_ran_gamma (data->rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 
 				/* Change isColonised and AlreadyColonised for those individuals */
 
@@ -311,12 +311,12 @@ void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augDa
 
 		lambda = gsl_matrix_get(param->beta,1,0)*augData->I0[t-1] + gsl_matrix_get(param->beta,1,1)*augData->I1[t-1] + param->betaWardOut;
 		prob = 1-exp(-lambda);
-		Incid1=gsl_ran_binomial (rng, prob, S1);
+		Incid1=gsl_ran_binomial (data->rng, prob, S1);
 
 		if(Incid1>0)
 		{
 			/* Choose them */
-			gsl_ran_choose (rng, indexIncid1, Incid1, indexS1, S1, sizeof(int));
+			gsl_ran_choose (data->rng, indexIncid1, Incid1, indexS1, S1, sizeof(int));
 
 			/* draw their infector */
 			probaInfectedPerWard0 = gsl_matrix_get(param->beta,1,0)*augData->I0[t-1]/lambda;
@@ -324,15 +324,15 @@ void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augDa
 
 			for(i=0 ; i<Incid1 ; i++)
 			{
-				rand = gsl_rng_uniform(rng);
+				rand = gsl_rng_uniform(data->rng);
 				if(rand<probaInfectedPerWard0) /* infected by someone in ward 0 */
 				{
-					indexInfector[indexIncid1[i]]= indexI0[gsl_rng_uniform_int (rng, augData->I0[t-1])];
+					indexInfector[indexIncid1[i]]= indexI0[gsl_rng_uniform_int (data->rng, augData->I0[t-1])];
 				}else
 				{
 					if(rand<probaInfectedPerWard0+probaInfectedPerWard1) /* infected by someone in ward 1 */
 					{
-						indexInfector[indexIncid1[i]]= indexI1[gsl_rng_uniform_int (rng, augData->I1[t-1])];
+						indexInfector[indexIncid1[i]]= indexI1[gsl_rng_uniform_int (data->rng, augData->I1[t-1])];
 					}else /* infected by outside */
 					{
 						indexInfector[indexIncid1[i]]= -1;
@@ -345,7 +345,7 @@ void SimulColonisationInBeds(parameters *param, nb_data *nbData, aug_data *augDa
 			for(i=0 ; i<Incid1 ; i++)
 			{
 				augData->C[indexIncid1[i]]=t-1;
-				augData->E[indexIncid1[i]]=augData->C[indexIncid1[i]]+ceil(gsl_ran_gamma (rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
+				augData->E[indexIncid1[i]]=augData->C[indexIncid1[i]]+ceil(gsl_ran_gamma (data->rng, (param->mu)*(param->mu)/(param->sigma*param->sigma), param->sigma*param->sigma/(param->mu)));
 			}
 
 			/* Change isColonised and AlreadyColonised for those individuals */
@@ -379,7 +379,7 @@ void SimulTesting(parameters *param, nb_data *nbData, raw_data *data, gsl_matrix
 
 			if(gsl_vector_get(isColonised[i],t)==1) /* colonised */
 			{
-				rand=gsl_ran_flat (rng, 0.0, 1.0);
+				rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 				if(rand<param->Se) /* test positive */
 				{
 					gsl_vector_set(data->P[i],nbData->NbPosSwabs[i],t);
@@ -391,7 +391,7 @@ void SimulTesting(parameters *param, nb_data *nbData, raw_data *data, gsl_matrix
 				}
 			}else /* not colonised */
 			{
-				//rand=gsl_ran_flat (rng, 0.0, 1.0);
+				//rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 				/* here Sp = 100% */
 				// if(rand<param->Sp) /* test negative */
 				//{
@@ -410,7 +410,7 @@ void SimulTesting(parameters *param, nb_data *nbData, raw_data *data, gsl_matrix
 			i=gsl_matrix_get(indexOfPatientsInWard1,k,t);
 			if(gsl_vector_get(isColonised[i],t)==1) /* colonised */
 			{
-				rand=gsl_ran_flat (rng, 0.0, 1.0);
+				rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 				if(rand<param->Se) /* test positive */
 				{
 					gsl_vector_set(data->P[i],nbData->NbPosSwabs[i],t);
@@ -422,7 +422,7 @@ void SimulTesting(parameters *param, nb_data *nbData, raw_data *data, gsl_matrix
 				}
 			}else /* not colonised */
 			{
-				//rand=gsl_ran_flat (rng, 0.0, 1.0);
+				//rand=gsl_ran_flat (data->rng, 0.0, 1.0);
 				/* here Sp = 100% */
 				//if(rand<param->Sp) /* test negative */
 				//{
