@@ -53,8 +53,8 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 					AlreadyColonised[*NbCases]=0;
 				}
 		(*NbCases)++;
-		printf("NbCases\t %d\n",*NbCases);
-		fflush(stdout);
+		/* printf("NbCases\t %d\n",*NbCases); */
+		/* fflush(stdout); */
 	}
 	for(i=0 ; i<SizeWard1 ; i++) /* patients initially present in ward 1 */
 	{
@@ -99,8 +99,8 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 					AlreadyColonised[*NbCases]=0;
 				}
 		(*NbCases)++;
-		printf("NbCases\t %d\n",*NbCases);
-		fflush(stdout);
+		/* printf("NbCases\t %d\n",*NbCases); */
+		/* fflush(stdout); */
 	}
 
 	/* simulate the admissions/discharges up to nbData->T */
@@ -149,8 +149,8 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 							AlreadyColonised[*NbCases]=0;
 						}
 				(*NbCases)++;
-				printf("NbCases\t %d\n",*NbCases);
-				fflush(stdout);
+				/* printf("NbCases\t %d\n",*NbCases); */
+				/* fflush(stdout); */
 			}
 		}
 
@@ -196,8 +196,8 @@ void fillingBeds(parameters *param, hospDurationParam *paramHosp, nb_data *nbDat
 							AlreadyColonised[*NbCases]=0;
 						}
 				(*NbCases)++;
-				printf("NbCases\t %d\n",*NbCases);
-				fflush(stdout);
+				/* printf("NbCases\t %d\n",*NbCases); */
+				/* fflush(stdout); */
 			}
 		}
 	}
@@ -443,6 +443,7 @@ int SimulEpid(parameters *param, hospDurationParam *paramHosp, nb_data *nbData, 
 {
     int t,i;
     int NbCases=0;
+    int MaxNbCases=data->NbPatients;
 
     int *bedNb = (int *) calloc(nbData->NbPatients, sizeof(int));
 
@@ -499,9 +500,23 @@ int SimulEpid(parameters *param, hospDurationParam *paramHosp, nb_data *nbData, 
 
     SimulTesting(param, nbData, data, indexOfPatientsInWard0, indexOfPatientsInWard1, isColonised);
 
+    /* free excess memory */
+    /* note: NbCases=actual nb of cases, MaxNbCases=max nb of cases in the simulation */
+    for(i=NbCases;i<MaxNbCases;i++){
+	if(data->A[i] != NULL) gsl_vector_free(data->A[i]);
+	if(data->D[i] != NULL) gsl_vector_free(data->D[i]);
+	if(data->P[i] != NULL) gsl_vector_free(data->P[i]);
+	if(data->N[i] != NULL) gsl_vector_free(data->N[i]);
+	if(data->IsInHosp[i] != NULL) gsl_vector_free(data->IsInHosp[i]);
+	free(data->S[i]);
+    }
+
+    /* update number of patients */
+    nbData->NbPatients = NbCases;
+    data->NbPatients = NbCases;
+    augData->NbPatients = NbCases;
 
     /* Freeing memory */
-
     free(bedNb);
     free(indexI0);
     free(indexI1);
@@ -511,13 +526,9 @@ int SimulEpid(parameters *param, hospDurationParam *paramHosp, nb_data *nbData, 
     free(indexIncid1);
     free(AlreadyColonised);
 
-    for(i=0 ; i<nbData->NbPatients ; i++)
+    for(i=0 ; i<MaxNbCases ; i++)
 	{
 	    gsl_vector_free(isColonised[i]);
-	}
-
-    for(i=0 ; i<nbData->NbPatients ; i++)
-	{
 	    gsl_vector_free(isInHosp[i]);
 	}
 
