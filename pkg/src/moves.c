@@ -585,7 +585,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     aug_data *newAugData = createAugData(NbPatients, T);
     copyAugData(newAugData,curAugData);
 
-    printf("\naaa\n");fflush(stdout);
+    /* printf("\naaa\n");fflush(stdout); */
 
     curVal = &curAugData->E[i];
     newVal = &newAugData->E[i];
@@ -595,14 +595,14 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     curNbPoss = curMaxTime-curMinTime;
 
     random=gsl_rng_uniform_int (data->rng, curNbPoss);
-    printf("\nbbb\n");fflush(stdout);
+    /* printf("\nbbb\n");fflush(stdout); */
 
     if(random<l){
 	*newVal = curMaxTime - random;
     } else {
 	*newVal = curMaxTime - random - 1;
     }
-    printf("\nbbba\n");fflush(stdout);
+    /* printf("\nbbba\n");fflush(stdout); */
 
     if(*newVal < *curVal){
 	if(data->ward[i]==0){
@@ -613,7 +613,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 		    }
 		}
 	    }   
-	    printf("\nbbbb\n");fflush(stdout);
+	    /* printf("\nbbbb\n");fflush(stdout); */
 
 	} else {
 	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
@@ -626,22 +626,22 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 	}
     } else {
 	if(data->ward[i]==0){
-	    printf("\nbbbc\n");fflush(stdout);
+	    /* printf("\nbbbc\n");fflush(stdout); */
 	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
-	    printf("\nbite\n");fflush(stdout);
+	    /* printf("\nbite\n");fflush(stdout); */
 
 		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
-	    printf("\npoil\n");fflush(stdout);
-	    printf("\nt:%d i=%d\n", t, i);
+	    /* printf("\npoil\n");fflush(stdout); */
+	    /* printf("\nt:%d i=%d\n", t, i); */
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-	    printf("\nzob\n");fflush(stdout);
-			printf("\nt:%d\n", t);
+	    /* printf("\nzob\n");fflush(stdout); */
+	    /* 		printf("\nt:%d\n", t); */
 			newAugData->I0[t] = newAugData->I0[t]+1;
 		    }
 		}
 	    }
 	} else {
-	    printf("\nbbbd\n");fflush(stdout);
+	    /* printf("\nbbbd\n");fflush(stdout); */
 
 	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
 		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
@@ -652,12 +652,12 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 	    }
 	}
     }
-	    printf("\nbbbe\n");fflush(stdout);
+	    /* printf("\nbbbe\n");fflush(stdout); */
 
     newMinTime = GSL_MAX(*newVal - l,curAugData->C[i]+1);
     newMaxTime = *newVal + l;
     newNbPoss = newMaxTime-newMinTime;
-    printf("\nccc\n");fflush(stdout);
+    /* printf("\nccc\n");fflush(stdout); */
 
     QCur = 1.0/newNbPoss;
     QNew = 1.0/curNbPoss;
@@ -665,7 +665,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     pAccept += ObsLevelPerCase(i, data, nb, newAugData, param) - ObsLevelPerCase(i, data, nb, curAugData, param);
 
     pAccept += DurationColonPerCase (i, newAugData, param) - DurationColonPerCase (i, curAugData, param);
-    printf("\nddd\n");fflush(stdout);
+    /* printf("\nddd\n");fflush(stdout); */
 
     for(j=0;j<NbPatients;j++) /* only patients who are colonised after E_i are affected by the change in E_i */
 	{
@@ -678,15 +678,15 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     if (pAccept>0) r=0; else r=pAccept;
     z=gsl_rng_uniform(data->rng);
-    printf("\neee\n");fflush(stdout);
+    /* printf("\neee\n");fflush(stdout); */
 
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
     }
-    printf("\nfff\n");fflush(stdout);
+    /* printf("\nfff\n");fflush(stdout); */
 
     freeAugData(newAugData);
-    printf("\nggg\n");fflush(stdout);
+    /* printf("\nggg\n");fflush(stdout); */
 }
 
 
