@@ -55,7 +55,11 @@ int main(){
     int NbPatientsMax = 150;
     int NbColonisedPatients = 0;
     int NbSequences = 0;
-    nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbColonisedPatients);
+    /* nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbColonisedPatients); */
+    nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbPatientsMax);
+    /* the vector of indices of col. pat. has been allocated the biggest size */
+    /* but the nb of colonised patients is actually zero */
+    nbData->NbColonisedPatients = NbColonisedPatients;
     for(i=0 ; i<NbPatientsMax ; i++)
 	{
 	    nbData->NbAdmissions[i]=1;
@@ -95,15 +99,11 @@ int main(){
     double nu1=5e-5, nu2=1e-4, lambdaNseq=1.0;
 
     epid_dna *alldna = create_epid_dna(NbCases, max_nb_lineages, haplo_length);
-
+ 
     evolve_epid_dna(alldna, indexInfector, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, augData->C, rng);
     /* print_epid_dna(alldna); */
 
-    printf("\n>>> Initial nb data: \n");
-    print_nbData(nbData);
-    fflush(stdout);
-
-    /* SAMPLING PROCEDURE */
+     /* SAMPLING PROCEDURE */
     list_dnaseq *dnasample;
     dnasample = sample_epid_dna(alldna, nbData, data, lambdaNseq, nu1, nu2, augData->C, rng);
 
@@ -165,6 +165,11 @@ int main(){
     free_epid_dna(alldna);
     free_list_dnaseq(dnasample);
     free(indexInfector);
+    freeFILES(Files);
+    freeAcceptance(accept);
+    freeIsAcceptOK(acceptOK);
+    freeNbProposals(nbProp);
+    free_dna_dist(dnainfo);
     gsl_rng_free(rng);
 
     //getchar();

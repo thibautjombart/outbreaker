@@ -44,7 +44,6 @@ double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *p
     /* variables used in computations */
     double out, Tabs, Xi1, Xi2, Xi3, Xi4, Pk;
     int k, q, r, transi, transv, common, nb_comp, nb_comp_k;
-    bool tag=FALSE;
 
     /* fill in vectors of collection dates */
     for(k=0;k<m_i;k++){
@@ -62,7 +61,6 @@ double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *p
     out=0.0; /* important initialization here */
 
     if((m_i > 0 && m_j > 0) || m_i>1){ /* likelihood tractable if at least a pair is available */
-	tag=TRUE;
 	for(k=0;k<m_i;k++){
 	    /* initialize k-specific variables */
 	    Pk = 0.0;
