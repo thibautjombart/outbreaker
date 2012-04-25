@@ -83,7 +83,7 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, double nu2, int colDate, int *swabDates, gsl_rng *rng);
 
 
-list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng);
+list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, aug_data *augData, double lambda_nseq, double nu1, double nu2, gsl_rng *rng);
 
 
 #endif

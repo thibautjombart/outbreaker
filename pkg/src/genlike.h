@@ -25,7 +25,7 @@
    === EXTERNAL FUNCTIONS ===
    ==========================
 */
-double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *param);
+double genlike_ij(int i, int j, raw_data *data, aug_data *augData, dna_dist *dnainfo, parameters *param);
 
 
 

@@ -76,11 +76,13 @@ typedef struct{
 
 
 typedef struct{
-    int NbPatients, T;
+    int NbPatients, T, NbSequences;
     int *C; /* colonisation times */
     int *E; /* times of end of colonisation */
     int *I0; /* number of colonised individuals in ward 0 at each time step */
     int *I1; /* number of colonised individuals in ward 1 at each time step */
+    gsl_matrix *alpha; /* proba of direct ancestry between any 2 sequences; square matrix of dim NbSequences */
+    gsl_matrix *tau; /* TMRCA offset between any 2 sequences; square matrix of dim NbSequences */
 } aug_data;
 
 
@@ -104,8 +106,8 @@ typedef struct{
     double nu2; /* rate of tranversions */
     /*************** MAYBE NEED TO REPARAMETERIZE NU1, NU2 INTO NU1, coeff de proportionalite *************/
 
-    double tau; /* time to the most recent common ancestor */
-    double alpha; /* probability that two sampled isolates belong to the same lineage */
+    /* double tau; /\* time to the most recent common ancestor *\/ */
+    /* double alpha; /\* probability that two sampled isolates belong to the same lineage *\/ */
     double weightNaGen; /* weight used to replace missing genetic likelihood */
 } parameters;
 

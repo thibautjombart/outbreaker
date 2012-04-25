@@ -409,8 +409,9 @@ list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, doub
   - colonDates: vector of colonisation dates for each patient, length nbData->NbPatients
 
 */
-list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng){
+list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, aug_data *augData, double lambda_nseq, double nu1, double nu2, gsl_rng *rng){
     int i, j, counter=0;
+    int *colonDates=augData->C;
     int nbPatients=data->NbPatients;
     int *swabDates; /* temporary vector storing positive swab dates */
     list_dnaseq *out;
@@ -508,6 +509,21 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 	    /* copy collection times */
 	    data->Tcollec[counter++] = listCollecDates[i][j];
 	}
+    }
+
+    /* REALLOCATE MATRICES OF LAMBDA AND TAU IN AUGDATA */
+    gsl_matrix_free(augData->alpha);
+    gsl_matrix_free(augData->tau);
+    augData->alpha = gsl_matrix_calloc(data->NbSequences, data->NbSequences);
+    if(augData->alpha == NULL){
+	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating matrix of alpha_kq in augData. Exiting.\n");
+	exit(1);
+    }
+
+    augData->tau = gsl_matrix_calloc(data->NbSequences, data->NbSequences);
+    if(augData->tau == NULL){
+	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating matrix of tau_kq in augData. Exiting.\n");
+	exit(1);
     }
 
 

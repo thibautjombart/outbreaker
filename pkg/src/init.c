@@ -158,7 +158,4 @@ void InitParam(parameters *param){
     param->nu1=1e-6;
     param->nu2=1e-6;
 
-    param->tau = 10;
-    param->alpha=0.5;
-
 }

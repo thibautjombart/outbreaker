@@ -14,7 +14,7 @@ raw_data *createRawData(nb_data *);
 void freeRawData(raw_data *);
 void print_rawData(raw_data *);
 
-aug_data *createAugData(int NbPatients, int T);
+aug_data *createAugData(int NbPatients, int T, int NbSequences);
 void freeAugData(aug_data *);
 void copyAugData(aug_data *, aug_data *);
 void print_augData(aug_data *);

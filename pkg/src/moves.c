@@ -343,43 +343,45 @@ void moveMutationRate(int what, mcmcInternals * MCMCSettings, parameters * curPa
 
 
 
+/* !!! This needs to be checked. !!! */
 void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
-    /* updating tau with Metropolis algorithm */
-    /* proposal distribution = lognormal */
-    double *newVal, *curVal;
-    double * nbAccept;
-    double * nbPropos;
-    double sigmaProp;
-    double r,z;
-    double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
 
-    curVal = &curParam->tau;
-    newVal = &newParam->tau;
+    /* /\* updating tau with Metropolis algorithm *\/ */
+    /* /\* proposal distribution = lognormal *\/ */
+    /* double *newVal, *curVal; */
+    /* double * nbAccept; */
+    /* double * nbPropos; */
+    /* double sigmaProp; */
+    /* double r,z; */
+    /* double pAccept = 0; */
+    /* parameters *newParam = createParam(); */
+    /* copyParam(newParam,curParam); */
 
-    sigmaProp = MCMCSettings->Sigma_tau;
-    nbAccept = &accept->PourcAcc_tau;
-    nbPropos = &NbProp->NbProp_tau;
+    /* curVal = &curParam->tau; */
+    /* newVal = &newParam->tau; */
 
-    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
+    /* sigmaProp = MCMCSettings->Sigma_tau; */
+    /* nbAccept = &accept->PourcAcc_tau; */
+    /* nbPropos = &NbProp->NbProp_tau; */
 
-    pAccept += Colon(data, nb, augData, dnainfo, newParam);
-    pAccept -= Colon(data, nb, augData, dnainfo, curParam);
+    /* *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); */
 
-    pAccept +=  logpriorTau(newParam) - logpriorTau(curParam);
+    /* pAccept += Colon(data, nb, augData, dnainfo, newParam); */
+    /* pAccept -= Colon(data, nb, augData, dnainfo, curParam); */
 
-    pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
+    /* pAccept +=  logpriorTau(newParam) - logpriorTau(curParam); */
 
-    if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(data->rng);
-    if (log(z)<=r) {
-	*curVal = *newVal;
-	*nbAccept +=1;
-    }
-    *nbPropos+=1;
+    /* pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
 
-    freeParam(newParam);
+    /* if (pAccept>0) r=0; else r=pAccept; */
+    /* z=gsl_rng_uniform(data->rng); */
+    /* if (log(z)<=r) { */
+    /* 	*curVal = *newVal; */
+    /* 	*nbAccept +=1; */
+    /* } */
+    /* *nbPropos+=1; */
+
+    /* freeParam(newParam); */
 
 }
 
@@ -387,54 +389,54 @@ void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * dat
 
 
 
-
+/* !!! This needs to be checked. !!! */
 void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
-    /* updating alpha with Metropolis algorithm */
-    /* proposal distribution = truncated lognormal (no values >1) */
+    /* /\* updating alpha with Metropolis algorithm *\/ */
+    /* /\* proposal distribution = truncated lognormal (no values >1) *\/ */
 
 
-    double QCur, QNew;
-    double *newVal, *curVal;
-    double * nbAccept;
-    double * nbPropos;
-    double sigmaProp;
-    double r,z;
-    double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
+    /* double QCur, QNew; */
+    /* double *newVal, *curVal; */
+    /* double * nbAccept; */
+    /* double * nbPropos; */
+    /* double sigmaProp; */
+    /* double r,z; */
+    /* double pAccept = 0; */
+    /* parameters *newParam = createParam(); */
+    /* copyParam(newParam,curParam); */
 
-    curVal = &curParam->alpha;
-    newVal = &newParam->alpha;
+    /* curVal = &curParam->alpha; */
+    /* newVal = &newParam->alpha; */
 
-    sigmaProp = MCMCSettings->Sigma_alpha;
-    nbAccept = &accept->PourcAcc_alpha;
-    nbPropos = &NbProp->NbProp_alpha;
+    /* sigmaProp = MCMCSettings->Sigma_alpha; */
+    /* nbAccept = &accept->PourcAcc_alpha; */
+    /* nbPropos = &NbProp->NbProp_alpha; */
 
-    do
-	{
-	    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
-	}while(*(newVal)>1);
+    /* do */
+    /* 	{ */
+    /* 	    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); */
+    /* 	}while(*(newVal)>1); */
 
-    QCur = gsl_cdf_gaussian_P(-log(*(curVal)),sigmaProp);
-    QNew = gsl_cdf_gaussian_P(-log(*(newVal)),sigmaProp);
+    /* QCur = gsl_cdf_gaussian_P(-log(*(curVal)),sigmaProp); */
+    /* QNew = gsl_cdf_gaussian_P(-log(*(newVal)),sigmaProp); */
 
-    pAccept += Colon(data, nb, augData, dnainfo, newParam);
-    pAccept -= Colon(data, nb, augData, dnainfo, curParam);
+    /* pAccept += Colon(data, nb, augData, dnainfo, newParam); */
+    /* pAccept -= Colon(data, nb, augData, dnainfo, curParam); */
 
-    pAccept +=  logpriorAlpha(newParam) - logpriorAlpha(curParam);
+    /* pAccept +=  logpriorAlpha(newParam) - logpriorAlpha(curParam); */
 
-    pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
-    pAccept +=   log(QCur) - log(QNew); /* correction for truncation (no values >1) */
+    /* pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
+    /* pAccept +=   log(QCur) - log(QNew); /\* correction for truncation (no values >1) *\/ */
 
-    if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(data->rng);
-    if (log(z)<=r) {
-	*curVal = *newVal;
-	*nbAccept +=1;
-    }
-    *nbPropos+=1;
+    /* if (pAccept>0) r=0; else r=pAccept; */
+    /* z=gsl_rng_uniform(data->rng); */
+    /* if (log(z)<=r) { */
+    /* 	*curVal = *newVal; */
+    /* 	*nbAccept +=1; */
+    /* } */
+    /* *nbPropos+=1; */
 
-    freeParam(newParam);
+    /* freeParam(newParam); */
 
 }
 
@@ -460,7 +462,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     double r,z;
     double pAccept = 0;
     double pAccept2;
-    aug_data *newAugData = createAugData(NbPatients, T);
+    aug_data *newAugData = createAugData(NbPatients, T, data->NbSequences);
     copyAugData(newAugData,curAugData);
 
     curVal = &curAugData->C[i];
@@ -582,7 +584,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     int *newVal, *curVal;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData(NbPatients, T);
+    aug_data *newAugData = createAugData(NbPatients, T, data->NbSequences);
     copyAugData(newAugData,curAugData);
 
     /* printf("\naaa\n");fflush(stdout); */
@@ -705,7 +707,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
     int *newValE, *curValE;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData(NbPatients, T);
+    aug_data *newAugData = createAugData(NbPatients, T, data->NbSequences);
     copyAugData(newAugData,curAugData);
 
     curValC = &curAugData->C[i];
