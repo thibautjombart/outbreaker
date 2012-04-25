@@ -134,7 +134,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
 	/*** Moves ***/
 
-	/* moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp); */
+	moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp);
 	/* printf("\nstep C\n"); */
 	/* fflush(stdout); */
 
@@ -142,14 +142,14 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	/* moveBetaOut('o', MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
 	/* moveSp(param, data, nb, augData, accept); /\*  to remove if we assume Sp = 100% *\/ */
-	/* moveSe(param, data, nb, augData, accept); */
+	moveSe(param, data, nb, augData, accept);
 
-	/* movePi(param, data, augData, accept); */
+	movePi(param, data, augData, accept);
 
 	/* moveDurationColon('m',MCMCSettings, param, augData, accept,nbProp); */
 	/* moveDurationColon('s',MCMCSettings, param, augData, accept,nbProp); */
 
-	/* moveMutationRate(1, MCMCSettings, param, data, nb, augData, accept,nbProp);*/
+	/* moveMutationRate(1, MCMCSettings, param, data, nb, augData, accept,nbProp); */
 	/* moveMutationRate(2, MCMCSettings, param, data, nb, augData, accept,nbProp); */
 
 	/* moveTau(MCMCSettings, param, data, nb, augData, accept,nbProp); */
@@ -158,37 +158,36 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	/* printf("\nNbChangeAugData:%d, nb->NbColonisedPatients=%d\n", NbChangeAugData, nb->NbColonisedPatients); */
 	/* fflush(stdout); */
 
-	/* gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int)); */
-	/* for(i=0;i<NbChangeAugData;i++){ */
-	/*     moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ; */
-	/* } */
+	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	for(i=0;i<NbChangeAugData;i++){
+	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	}
 
 	/* printf("\nstep D\n"); */
 	/* fflush(stdout); */
 
-	/* gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int)); */
+	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 
 	/* printf("\nstep Dbis\n"); */
 	/* fflush(stdout); */
 
-	/* for(i=0;i<NbChangeAugData;i++){ */
-	/*     printf("\nAugDataToMove[i]:%d \n", AugDataToMove[i]);fflush(stdout); */
-	/*     moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ; */
-	/* } */
+	for(i=0;i<NbChangeAugData;i++){
+	    /* printf("\nAugDataToMove[i]:%d \n", AugDataToMove[i]);fflush(stdout); */
+	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	}
 
 	/* printf("\nstep E\n"); */
 	/* fflush(stdout); */
 
-	/* gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int)); */
-	/* for(i=0;i<NbChangeAugData;i++){ */
-	/*     moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ; */
-	/* } */
+	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+	for(i=0;i<NbChangeAugData;i++){
+	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	}
 
 	/* printf("\nstep F\n"); */
 
 	/* Writing results in an output file */
 	if (l>=MCMCSettings->BurnIn && l%MCMCSettings->SubSample==0 && EndBurnIn==1)
-	    /* if (EndBurnIn==1) */
 	    {
 		writeAllFiles(Files, param, nb, data, augData, dnainfo);
 		/* printf("L = %lg\n",fullLoglikelihoodWithPrior(data, nb, augData, param)); */

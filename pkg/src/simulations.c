@@ -146,8 +146,8 @@ int main(){
     /*****************************************************/
     /***                 Launch MCMC                   ***/
     /*****************************************************/
-    MCMCSettings->BurnIn = 100;
-    MCMCSettings->NbSimul = 100;
+    MCMCSettings->BurnIn = 10;
+    MCMCSettings->NbSimul = 10;
     MCMCSettings->SubSample = 10;
 
     printf("\nStarting estimation\n");
