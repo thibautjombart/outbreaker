@@ -12,5 +12,3 @@ mu	5
 sigma 1
 nu1	1
 nu2	1
-tau	0.5
-alpha	1

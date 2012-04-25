@@ -19,9 +19,9 @@ int IsAcceptOKNu1(isAcceptOK * );
 
 int IsAcceptOKNu2(isAcceptOK * );
 
-int IsAcceptOKTau(isAcceptOK * );
+/* int IsAcceptOKTau(isAcceptOK * ); */
 
-int IsAcceptOKAlpha(isAcceptOK * );
+/* int IsAcceptOKAlpha(isAcceptOK * ); */
 
 void updateAccept(NbProposals * , acceptance * );
 
@@ -40,9 +40,9 @@ void updateMCMCSettingsNu1(NbProposals * ,acceptance * ,isAcceptOK *, mcmcIntern
 
 void updateMCMCSettingsNu2(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
 
-void updateMCMCSettingsTau(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
+/* void updateMCMCSettingsTau(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *); */
 
-void updateMCMCSettingsAlpha(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
+/* void updateMCMCSettingsAlpha(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *); */
 
 #endif
 

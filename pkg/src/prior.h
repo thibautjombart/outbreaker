@@ -25,9 +25,9 @@ double logpriorNu1(parameters * param);
 
 double logpriorNu2(parameters * param);
 
-double logpriorAlpha(parameters * param);
+/* double logpriorAlpha(parameters * param); */
 
-double logpriorTau(parameters * param);
+/* double logpriorTau(parameters * param); */
 
 double logprior (parameters * );
 

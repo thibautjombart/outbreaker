@@ -32,8 +32,6 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     double isAcceptOKSigma;
     double isAcceptOKNu1;
     double isAcceptOKNu2;
-    double isAcceptOKAlpha;
-    double isAcceptOKTau;
     int EndBurnIn=0;
     int NbParamToBeTuned = 12;
 
@@ -98,18 +96,18 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 		VarPropOK ++;
 	    }
 
-	    if(IsAcceptOKTau(acceptOK)==0){
-		updateMCMCSettingsTau(nbProp,accept,acceptOK, MCMCSettings);
-	    } else {
-		isAcceptOKTau=1;
-		VarPropOK ++;
-	    }
-	    if(IsAcceptOKAlpha(acceptOK)==0){
-		updateMCMCSettingsAlpha(nbProp,accept,acceptOK, MCMCSettings);
-	    } else {
-		isAcceptOKAlpha=1;
-		VarPropOK ++;
-	    }
+	    /* if(IsAcceptOKTau(acceptOK)==0){ */
+	    /* 	updateMCMCSettingsTau(nbProp,accept,acceptOK, MCMCSettings); */
+	    /* } else { */
+	    /* 	isAcceptOKTau=1; */
+	    /* 	VarPropOK ++; */
+	    /* } */
+	    /* if(IsAcceptOKAlpha(acceptOK)==0){ */
+	    /* 	updateMCMCSettingsAlpha(nbProp,accept,acceptOK, MCMCSettings); */
+	    /* } else { */
+	    /* 	isAcceptOKAlpha=1; */
+	    /* 	VarPropOK ++; */
+	    /* } */
 
 	    if(VarPropOK<NbParamToBeTuned){
 		reInitiateAcceptance(accept);

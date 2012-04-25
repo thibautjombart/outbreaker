@@ -200,7 +200,7 @@ double ColonPerCase (int i, raw_data *data, nb_data *nb, aug_data *augData, dna_
 		/* relative weights of each route of transmission incorporating genetic data : */
 		for(j=0;j<NbPatients;j++){
 		    /* calculate fij */
-		    fij = genlike_ij(i,j,data, dnainfo, param);
+		    fij = genlike_ij(i,j,data, augData, dnainfo, param);
 		    /* printf("\nColonPerCase i=%d - step 6", i); */
 		    /* fflush(stdout); */
 

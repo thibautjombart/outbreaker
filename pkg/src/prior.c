@@ -137,11 +137,11 @@ double logpriorNu2(parameters * param){
 /******************************************************************************/
 /* Tau                                                                        */
 /******************************************************************************/
-double logpriorTau(parameters * param){
+/* double logpriorTau(parameters * param){ */
 
-    double h = log(gsl_ran_exponential_pdf(param->tau, 1000));
-    return h;
-}
+/*     double h = log(gsl_ran_exponential_pdf(param->tau, 1000)); */
+/*     return h; */
+/* } */
 
 
 
@@ -153,11 +153,11 @@ double logpriorTau(parameters * param){
 /* Alpha                                                                        */
 /******************************************************************************/
 /* uniform prior */
-double logpriorAlpha(parameters * param){
+/* double logpriorAlpha(parameters * param){ */
 
-    double h = 0;
-    return h;
-}
+/*     double h = 0; */
+/*     return h; */
+/* } */
 
 
 
@@ -188,7 +188,7 @@ double logprior (parameters * param){
 
     h+=logpriorNu1(param)+logpriorNu2(param);
 
-    h+=logpriorTau(param)+logpriorAlpha(param);
+    /* h+=logpriorTau(param)+logpriorAlpha(param); */
 
     return h;
 }

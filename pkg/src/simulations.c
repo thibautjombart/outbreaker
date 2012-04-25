@@ -72,7 +72,7 @@ int main(){
 	    nbData->NbPosSwabs[i]=0;
 	    nbData->NbNegSwabs[i]=0;
 	}
-    aug_data *augData = createAugData(NbPatientsMax, Tmax);
+    aug_data *augData = createAugData(NbPatientsMax, Tmax, 1);
     int *indexInfector = (int *) calloc(nbData->NbPatients, sizeof(int)); /* -1 if infected from outside ; -100 never infected */
 
     /* SIMULATION ALGORITHM */
@@ -105,7 +105,7 @@ int main(){
 
      /* SAMPLING PROCEDURE */
     list_dnaseq *dnasample;
-    dnasample = sample_epid_dna(alldna, nbData, data, lambdaNseq, nu1, nu2, augData->C, rng);
+    dnasample = sample_epid_dna(alldna, nbData, data, augData, lambdaNseq, nu1, nu2, rng);
 
     /* printf("\n>>> Sampled DNA:\n"); */
     /* print_list_dnaseq(dnasample); */
