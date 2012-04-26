@@ -167,7 +167,7 @@ dnaseq *create_haplo(int length, gsl_rng *rng){
 
 /* Make an existing haplotype evolve using :
    - nu1: rate of transitions 
-   - nu2: rate of transversions 
+   - nu2: rate of transversions; nu2=kappa*nu1
    - double t: time of evolution between in and out
 */
 void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
@@ -195,7 +195,7 @@ void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
 
 /* Replicate an haplotype using:
    - nu1: rate of transitions 
-   - nu2: rate of transversions 
+   - nu2: rate of transversions; nu2=kappa*nu1
    - double t: time of evolution between in and out
 */
 void replicate_haplo(dnaseq *in, dnaseq *out, double nu1, double nu2, double t, gsl_rng *rng){
@@ -214,7 +214,7 @@ void replicate_haplo(dnaseq *in, dnaseq *out, double nu1, double nu2, double t, 
    - in: a reference haplotype
    - dist: the distance in nb of mutations from the reference
    - nu1: rate of transitions
-   - nu2: rate of transversions
+   - nu2: rate of transversions; nu2=kappa*nu1
    - double t: time of evolution between in and out
 */
 void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double nu2, gsl_rng *rng){
@@ -255,7 +255,7 @@ void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double 
   - mu_dist,sigma_dist: the mean/sd for the distance between lineages (lognormal)
   - lambda_nlin: lambda for the number of lineages in a external infection (nlin ~ pois(lambda)+1)
   - nu1: rate of transitions
-  - nu2: rate of transversions
+  - nu2: rate of transversions; nu2=kappa*nu1
   - dates: dates at which patients are infected; ordered by increasing dates (forward-time)
 
   Sensible values:

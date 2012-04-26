@@ -5,31 +5,31 @@
 #ifndef __MOVES_H
 #define __MOVES_H
 
-void moveBeta(int, int, mcmcInternals *, parameters *, raw_data *, nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
+void moveBeta(int, int, mcmcInternals *, parameters *, parameters *, raw_data *, nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
 
-void moveAllBeta(mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
+void moveAllBeta(mcmcInternals * , parameters *, parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
 
-void moveBetaOut(char, mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
+void moveBetaOut(char, mcmcInternals * , parameters *, parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
 
-void moveSp(parameters * , raw_data * , nb_data *, aug_data *, acceptance *);
+void moveSe(parameters * , parameters *, raw_data * , nb_data *, aug_data *, acceptance *);
 
-void moveSe(parameters * , raw_data * , nb_data *, aug_data *, acceptance *);
+void movePi(parameters * , parameters *, raw_data * , aug_data *, acceptance *);
 
-void movePi(parameters * , raw_data * , aug_data *, acceptance *);
+void moveDurationColon(char, mcmcInternals * , parameters *, parameters * , raw_data * , aug_data *, acceptance *, NbProposals *);
 
-void moveDurationColon(char, mcmcInternals * , parameters * , raw_data * , aug_data *, acceptance *, NbProposals *);
+void moveNu(mcmcInternals * MCMCSettings, parameters *, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp);
 
-void moveMutationRate(int , mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
+void moveKappa(mcmcInternals * MCMCSettings, parameters *, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp);
 
-void moveTau(mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
+void moveTau(mcmcInternals * , parameters *, parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
 
-void moveAlpha(mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
+void moveAlpha(mcmcInternals * , parameters *, parameters * , raw_data * , nb_data *, aug_data *, dna_dist *, acceptance *, NbProposals *);
 
-void moveC(int, mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *);
+void moveC(int, mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, aug_data *, dna_dist *);
 
-void moveE(int, mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *);
+void moveE(int, mcmcInternals * , parameters *, raw_data * , nb_data *, aug_data *, aug_data *, dna_dist *);
 
-void moveCandE(int, mcmcInternals * , parameters * , raw_data * , nb_data *, aug_data *, dna_dist *);
+void moveCandE(int, mcmcInternals * , parameters *, raw_data * , nb_data *, aug_data *, aug_data *, dna_dist *);
 
 
 #endif
