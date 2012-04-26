@@ -432,7 +432,7 @@ parameters *createParam(){
     param->mu = 0.0;
     param->sigma = 0.0;
     param->nu1 = 0.0;
-    param->nu2 = 0.0;
+    param->kappa = 0.0;
     param->weightNaGen = 0.0;
 
     return param;
@@ -465,7 +465,7 @@ void copyParam(parameters * paramDest, parameters * paramSource){
     paramDest->sigma = paramSource->sigma;
 
     paramDest->nu1 = paramSource->nu1;
-    paramDest->nu2 = paramSource->nu2;
+    paramDest->kappa = paramSource->kappa;
 
     paramDest->weightNaGen = paramSource->weightNaGen;
 }
@@ -483,7 +483,7 @@ void print_param(parameters *param){
     printf("\nsensibility of the test: %.3f", param->Se);
     printf("\nprobability of being colonized at first admission: %.3f", param->Pi);
     printf("\nmu/sigma - duration of colonisation: %.3f %.3f", param->mu, param->sigma);
-    printf("\nnu1: %.3f   nu2: %.3f", param->nu1, param->nu2);
+    printf("\nnu1: %.3f   kappa: %3f   nu2: %.3f", param->nu1, param->kappa, param->nu1*param->kappa);
     printf("\nweightNaGen: %.3f", param->weightNaGen);
     fflush(stdout);
 }
@@ -545,8 +545,8 @@ void readParameters(char* workspace, parameters * param, hospDurationParam *para
     fscanf(paramInit,"%s %lf",val,&param->nu1);
     printf("%s %g\n",val,param->nu1);
 
-    fscanf(paramInit,"%s %lf",val,&param->nu2);
-    printf("%s %g\n",val,param->nu2);
+    fscanf(paramInit,"%s %lf",val,&param->kappa);
+    printf("%s %g\n",val,param->kappa);
 
     fclose(paramInit);
 
@@ -593,7 +593,7 @@ isAcceptOK *createIsAcceptOK(){
     acceptOK->IsAccOK_mu=0.0;
     acceptOK->IsAccOK_sigma=0.0;
     acceptOK->IsAccOK_nu1=0.0;
-    acceptOK->IsAccOK_nu2=0.0;
+    acceptOK->IsAccOK_kappa=0.0;
    
     return acceptOK;
 }
@@ -630,7 +630,7 @@ NbProposals *createNbProposals(){
     NbProp->NbProp_mu=0.0;
     NbProp->NbProp_sigma=0.0;
     NbProp->NbProp_nu1=0.0;
-    NbProp->NbProp_nu2=0.0;
+    NbProp->NbProp_kappa=0.0;
 
     return NbProp;
 }
@@ -655,7 +655,7 @@ void reInitiateNbProp(NbProposals * NbProp){
     NbProp->NbProp_mu=0.0;
     NbProp->NbProp_sigma=0.0;
     NbProp->NbProp_nu1=0.0;
-    NbProp->NbProp_nu2=0.0;
+    NbProp->NbProp_kappa=0.0;
 
 }
 
@@ -766,7 +766,7 @@ mcmcInternals *createMcmcInternals(){
     MCMCSettings->Sigma_mu = 0.1;
     MCMCSettings->Sigma_sigma = 0.1;
     MCMCSettings->Sigma_nu1 = 0.1;
-    MCMCSettings->Sigma_nu2 = 0.1;
+    MCMCSettings->Sigma_kappa = 0.1;
     MCMCSettings->Sigma_tau = 0.1;
     MCMCSettings->Sigma_alpha = 0.1;
 
@@ -790,7 +790,7 @@ void printStdProp(mcmcInternals *MCMCSettings){
     printf("Std proposal for mu: %lg\n",MCMCSettings->Sigma_mu);
     printf("Std proposal for sigma: %lg\n",MCMCSettings->Sigma_sigma);
     printf("Std proposal for nu1: %lg\n",MCMCSettings->Sigma_nu1);
-    printf("Std proposal for nu2: %lg\n",MCMCSettings->Sigma_nu2);
+    printf("Std proposal for kappa: %lg\n",MCMCSettings->Sigma_kappa);
     printf("Std proposal for tau: %lg\n",MCMCSettings->Sigma_tau);
     printf("Std proposal for alpha: %lg\n",MCMCSettings->Sigma_alpha);
 
@@ -827,7 +827,7 @@ acceptance *createAcceptance(){
     accept->PourcAcc_mu=0.0;
     accept->PourcAcc_sigma=0.0;
     accept->PourcAcc_nu1=0.0;
-    accept->PourcAcc_nu2=0.0;
+    accept->PourcAcc_kappa=0.0;
 
     return accept;
 }
@@ -849,7 +849,7 @@ void reInitiateAcceptance(acceptance *accept){
     accept->PourcAcc_mu=0.0;
     accept->PourcAcc_sigma=0.0;
     accept->PourcAcc_nu1=0.0;
-    accept->PourcAcc_nu2=0.0;
+    accept->PourcAcc_kappa=0.0;
 
 }
 
@@ -877,7 +877,7 @@ void printAcceptance(acceptance *accept, NbProposals *NbProp){
     fflush(stdout);
     printf("Prob accept nu1\t%lg\n",accept->PourcAcc_nu1/NbProp->NbProp_nu1);
     fflush(stdout);
-    printf("Prob accept nu2\t%lg\n",accept->PourcAcc_nu2/NbProp->NbProp_nu2);
+    printf("Prob accept kappa\t%lg\n",accept->PourcAcc_kappa/NbProp->NbProp_kappa);
     fflush(stdout);
 
 }

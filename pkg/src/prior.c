@@ -121,9 +121,9 @@ double logpriorNu1(parameters * param){
 
 
 
-double logpriorNu2(parameters * param){
+double logpriorKappa(parameters * param){
 
-    double h = log(gsl_ran_exponential_pdf(param->nu2, 1000));
+    double h = log(gsl_ran_exponential_pdf(param->kappa, 1000));
     return h;
 }
 
@@ -182,11 +182,12 @@ double logprior (parameters * param){
 
     h+=logpriorBetaWardOut(param)+logpriorBetaOutOut(param);
 
-    h+=logpriorSp(param)+logpriorSe(param);
+    /* h+=logpriorSp(param)+logpriorSe(param); */
+    h+=logpriorSe(param);
 
     h+=logpriorMu(param)+logpriorSigma(param);
 
-    h+=logpriorNu1(param)+logpriorNu2(param);
+    h+=logpriorNu1(param)+logpriorKappa(param);
 
     /* h+=logpriorTau(param)+logpriorAlpha(param); */
 

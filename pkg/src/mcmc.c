@@ -31,9 +31,17 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     double isAcceptOKMu;
     double isAcceptOKSigma;
     double isAcceptOKNu1;
-    double isAcceptOKNu2;
+    double isAcceptOKKappa;
     int EndBurnIn=0;
-    int NbParamToBeTuned = 12;
+    int NbParamToBeTuned = 12; /* TO UPDATE: tau and alpha have been removed*/
+
+    /* used for moving parameters */
+    parameters *newParam = createParam();
+    copyParam(newParam,param);
+
+    /* used for moving augData */
+    aug_data *newAugData = createAugData(data->NbPatients, data->T, data->NbSequences);
+    copyAugData(newAugData,augData);
 
     printf("Starting metro\n");
     fflush(stdout);
@@ -89,10 +97,10 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    } else {
 		isAcceptOKNu1=1;
 		VarPropOK ++;
-	    }		    if(IsAcceptOKNu2(acceptOK)==0){
-		updateMCMCSettingsNu2(nbProp,accept,acceptOK, MCMCSettings);
+	    }		    if(IsAcceptOKKappa(acceptOK)==0){
+		updateMCMCSettingsKappa(nbProp,accept,acceptOK, MCMCSettings);
 	    } else {
-		isAcceptOKNu2=1;
+		isAcceptOKKappa=1;
 		VarPropOK ++;
 	    }
 
@@ -132,33 +140,28 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
 	/*** Moves ***/
 
-	moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp);
+	moveAllBeta(MCMCSettings , param, newParam, data, nb, augData, dnainfo, accept,nbProp);
 	/* printf("\nstep C\n"); */
 	/* fflush(stdout); */
 
-	/* moveBetaOut('w', MCMCSettings, param, data, nb, augData, accept,nbProp); */
-	/* moveBetaOut('o', MCMCSettings, param, data, nb, augData, accept,nbProp); */
+	/* moveBetaOut('w', MCMCSettings, param, newParam,data, nb, augData, accept,nbProp); */
+	/* moveBetaOut('o', MCMCSettings, param, newParam,data, nb, augData, accept,nbProp); */
 
-	/* moveSp(param, data, nb, augData, accept); /\*  to remove if we assume Sp = 100% *\/ */
-	moveSe(param, data, nb, augData, accept);
+	moveSe(param, newParam,data, nb, augData, accept);
 
-	movePi(param, data, augData, accept);
+	movePi(param, newParam,data, augData, accept);
 
-	/* moveDurationColon('m',MCMCSettings, param, augData, accept,nbProp); */
-	/* moveDurationColon('s',MCMCSettings, param, augData, accept,nbProp); */
+	/* moveDurationColon('m',MCMCSettings, param, newParam,augData, accept,nbProp); */
+	/* moveDurationColon('s',MCMCSettings, param, newParam,augData, accept,nbProp); */
 
-	/* moveMutationRate(1, MCMCSettings, param, data, nb, augData, accept,nbProp); */
-	/* moveMutationRate(2, MCMCSettings, param, data, nb, augData, accept,nbProp); */
-
-	/* moveTau(MCMCSettings, param, data, nb, augData, accept,nbProp); */
-	/* moveAlpha(MCMCSettings, param, data, nb, augData, accept,nbProp); */
+	moveNu(MCMCSettings, param, newParam,data, nb, augData, dnainfo, accept, nbProp);
 
 	/* printf("\nNbChangeAugData:%d, nb->NbColonisedPatients=%d\n", NbChangeAugData, nb->NbColonisedPatients); */
 	/* fflush(stdout); */
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, newAugData, dnainfo) ;
 	}
 
 	/* printf("\nstep D\n"); */
@@ -171,7 +174,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
 	for(i=0;i<NbChangeAugData;i++){
 	    /* printf("\nAugDataToMove[i]:%d \n", AugDataToMove[i]);fflush(stdout); */
-	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, newAugData, dnainfo) ;
 	}
 
 	/* printf("\nstep E\n"); */
@@ -179,7 +182,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, newAugData, dnainfo) ;
 	}
 
 	/* printf("\nstep F\n"); */
@@ -201,6 +204,8 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 
     /* FREE ALLOCATED MEMORY */
     free(AugDataToMove);
+    freeParam(newParam);
+    freeAugData(newAugData);
     /* printf("\nstep I\n"); */
     /* fflush(stdout); */
 

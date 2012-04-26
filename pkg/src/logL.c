@@ -31,48 +31,45 @@ double ObsLevelPerCase (int i, raw_data * data, nb_data *nb, aug_data *augData, 
 	L = -100000.00;
     } else {
 
-	for(j=0;j<nb->NbPosSwabs[i];j++) /* positive swabs */
-	    {
-		if(gsl_vector_get(data->P[i],j)<augData->C[i] || gsl_vector_get(data->P[i],j)>=augData->E[i]){
-		    /* if(1-param->Sp!=0) */
-		    /* { */
-		    /* 	logpFalsePos+=log(1-param->Sp); /\* false positives *\/ */
-		    /* } else */
-		    /* { */
-		    logpFalsePos-=100000;
-		    /* } */
-		} else {
-		    /* !!! THIS NEEDS TO BE CHANGED; TIMESEQ IS NO LONGER USED !!! */
-		    /* if(gsl_vector_get(data->P[i],j)!=data->timeSeq[i]){ */
-		    /* 	if(param->Se!=0){ */
-		    /* 	    logpTruePos+=log(param->Se); /\* true positives *\/ */
-		    /* 	} else { */
-		    /* 	    logpTruePos-=100000; */
-		    /* 	} */
-		    /* }< */
-		}
-	    }
+	for(j=0;j<nb->NbPosSwabs[i];j++){/* positive swabs */
 
-	for(k=0;k<nb->NbNegSwabs[i];k++){ /* positive swabs */
-	    if(gsl_vector_get(data->N[i],k)<augData->C[i] || gsl_vector_get(data->N[i],k)>=augData->E[i]){
-		/* if(param->Sp!=0) */
+	    if(gsl_vector_get(data->P[i],j)<augData->C[i] || gsl_vector_get(data->P[i],j)>=augData->E[i]){
+		/* if(1-param->Sp!=0) */
 		/* { */
-		logpTrueNeg+=0;/*log(param->Sp); */ /* true negatives */
+		/* 	logpFalsePos+=log(1-param->Sp); /\* false positives *\/ */
 		/* } else */
 		/* { */
-		/* 	logpTrueNeg-=100000; */
+		logpFalsePos-=100000;
 		/* } */
 	    } else {
-		if(1-param->Se!=0){
-		    logpFalseNeg+=log(1-param->Se); /* false negatives */
+		if(param->Se!=0){ 
+		    logpTruePos+=log(param->Se); /* true positives */
 		} else {
-		    logpFalseNeg-=100000;
+		    logpTruePos-=100000;
 		}
 	    }
 	}
-
-	L=logpFalsePos+logpTruePos+logpTrueNeg+logpFalseNeg;
     }
+
+    for(k=0;k<nb->NbNegSwabs[i];k++){ /* positive swabs */
+	if(gsl_vector_get(data->N[i],k)<augData->C[i] || gsl_vector_get(data->N[i],k)>=augData->E[i]){
+	    /* if(param->Sp!=0) */
+	    /* { */
+	    logpTrueNeg+=0;/*log(param->Sp); */ /* true negatives */
+	    /* } else */
+	    /* { */
+	    /* 	logpTrueNeg-=100000; */
+	    /* } */
+	} else {
+	    if(1-param->Se!=0){
+		logpFalseNeg+=log(1-param->Se); /* false negatives */
+	    } else {
+		logpFalseNeg-=100000;
+	    }
+	}
+    }
+
+    L=logpFalsePos+logpTruePos+logpTrueNeg+logpFalseNeg;
 
     return L;
 }

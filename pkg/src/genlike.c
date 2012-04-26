@@ -40,7 +40,7 @@ double genlike_ij(int i, int j, raw_data *data, aug_data *augData, dna_dist *dna
     /* extract variables from input objects */
     int *s_i=data->S[i], *s_j=data->S[j], m_i=data->M[i], m_j=data->M[j];
     double t_i[m_i], t_j[m_j];
-    double nu1=param->nu1, nu2=param->nu2, alpha, tau;
+    double nu1=param->nu1, nu2=param->nu1*param->kappa, alpha, tau;
 
     /* get alpha and tau */
     alpha = gsl_matrix_get(augData->alpha,i,j);

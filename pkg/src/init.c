@@ -1,3 +1,4 @@
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -126,7 +127,7 @@ void InitMCMCSettings(mcmcInternals *MCMCSettings){
     MCMCSettings->Sigma_mu=5;
     MCMCSettings->Sigma_sigma=1;
     MCMCSettings->Sigma_nu1=0.005;
-    MCMCSettings->Sigma_nu2=0.005;
+    MCMCSettings->Sigma_kappa=0.005;
     MCMCSettings->Sigma_tau=10;
     MCMCSettings->Sigma_alpha=0.1;
 }
@@ -156,6 +157,6 @@ void InitParam(parameters *param){
     param->sigma=1;
 
     param->nu1=1e-6;
-    param->nu2=1e-6;
+    param->kappa=1.0;
 
 }
