@@ -96,8 +96,8 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 
 For each pair of sequences $s_i^k$ and $s_j^q$ in patients $i$ and $j$, we denote
 \begin{itemize}
-	\item $\tau_{s_i^k,s_j^q}$ the time to the most recent common ancestor (tMRCA) (before the earliest collection date).
-	\item $\alpha_{s_i^k,s_j^q}$ an indicator function with value 1 if one of the sequences is directly ancestral to the other (i.e. both sequences belong to the same lineage), and 0 otherwise.
+% 	\item $\tau_{s_i^k,s_j^q}$ the time to the most recent common ancestor (tMRCA) (before the earliest collection date).
+	\item $b_{s_i^k,j}$ an indicator function with value 1 if a direct ancestor to sequence $s_i^k$ has been sampled in patients $i$ or $j$ and 0 otherwise.
 \end{itemize}
 
 
@@ -207,29 +207,31 @@ $f_{i,j}$ is the probability of observing sequences $s_i$ and $s_j$ at respectiv
 
 %%%%%%%%
 
+The genetic likelihood given the infection $i \leftarrow j$ relies on how likely it is that a sequence in $S_i$ has its closest direct ancestor in $S_i$ or $S_j$.
 The probability of observing the sequence $s_i^k$ given that patient $j$ infected patient $i$ is:
 \begin{eqnarray*}
-p(s_i^k | s_i^1, \ldots, s_i^{k-1}, S_j, i \leftarrow j) & = & \Xi_{s_i^k}^{(1)} + \Xi_{s_i^k}^{(2)} + \Xi_{s_i^k}^{(3)} + \Xi_{s_i^k}^{(4)}\\
-% p(s_i^k | s_i^1, \ldots, s_i^{k-1}, S_j, i \leftarrow j) & = & \Xi_{s_i^k}^{(1)} + \Xi_{s_i^k}^{(2)} \\
+% p(s_i^k | s_i^1, \ldots, s_i^{k-1}, S_j, i \leftarrow j) & = & \Xi_{s_i^k}^{(1)} + \Xi_{s_i^k}^{(2)} + \Xi_{s_i^k}^{(3)} + \Xi_{s_i^k}^{(4)}\\
+p(s_i^k | s_i^1, \ldots, s_i^{k-1}, S_j, i \leftarrow j) & = & b_{s_i^k, j} (\Xi_{s_i^k}^{(j)} + \Xi_{s_i^k}^{(i)}) + (1-b_{s_i^k, j}) \\
 \end{eqnarray*}
 with:
 \begin{itemize}
- \item $\Xi_{s_i^k}^{(1)}$: direct ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$)
- \item $\Xi_{s_i^k}^{(2)}$: direct ancestries to $s_i^k$ from sequences in patient $i$ ($S_i$)
- \item $\Xi_{s_i^k}^{(3)}$: indirect ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$)
- \item $\Xi_{s_i^k}^{(4)}$: indirect ancestries to $s_i^k$ from sequences in patient $i$ ($S_i$)
+%  \item $b_{s_i^k,j}$: equals 1 if a direct ancestor to sequence $s_i^k$ exists among $(S_i,S_j)$, and 0 otherwise; 
+ \item $\Xi_{s_i^k}^{(j)}$: direct ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$)
+ \item $\Xi_{s_i^k}^{(i)}$: direct ancestries to $s_i^k$ from sequences in patient $i$ ($S_i$)
+%  \item $\Xi_{s_i^k}^{(3)}$: indirect ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$)
+%  \item $\Xi_{s_i^k}^{(4)}$: indirect ancestries to $s_i^k$ from sequences in patient $i$ ($S_i$)
 \end{itemize}
 
 These are given by:
 \begin{eqnarray*}
-\Xi_{s_i^k}^{(1)} & = & \sum_{q=1}^{m_j} \alpha_{s_i^k,s_j^q} \left(\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 \mathbf{1}_{\{t_i^k > t_j^q\}}(t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)
-+ \mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 \mathbf{1}_{\{t_i^k > t_j^q\}}(t_i^k - t_j^q) l_{s_i^k,s_j^q}\right) \right) \\
-\Xi_{s_i^k}^{(2)} & = & \sum_{r=1}^{k-1} \alpha_{s_i^k,s_i^r} \left(\mathcal{P}\left(d_{s_i^k,s_i^r} | \nu_1 \mathbf{1}_{\{t_i^k > t_i^r\}}(t_i^k - t_i^r) l_{s_i^k,s_i^r}\right)
-+ \mathcal{P}\left(g_{s_i^k,s_i^r} | \nu_2 \mathbf{1}_{\{t_i^k > t_i^r\}}(t_i^k - t_i^r) l_{s_i^k,s_i^r}\right) \right) \\
-\Xi_{s_i^k}^{(3)} & = & \sum_{q=1}^{m_j} (1-\alpha_{s_i^k,s_j^q}) \left(\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 (|t_i^k - t_j^q| + 2\tau_{s_i^k,s_j^q}) l_{s_i^k,s_j^q}\right)
-+ \mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 (|t_i^k - t_j^q| + 2\tau_{s_i^k,s_j^q}) l_{s_i^k,s_j^q}\right) \right) \\
-\Xi_{s_i^k}^{(4)} & = & \sum_{r=1}^{k-1} (1-\alpha_{s_i^k,s_i^r}) \left(\mathcal{P}\left(d_{s_i^k,s_i^r} | \nu_1 (|t_i^k - t_i^r| + 2\tau_{s_i^k,s_i^r}) l_{s_i^k,s_i^r}\right)
-+ \mathcal{P}\left(g_{s_i^k,s_i^r} | \nu_2 (|t_i^k - t_i^r| + 2\tau_{s_i^k,s_i^r}) l_{s_i^k,s_i^r}\right) \right)\\
+\Xi_{s_i^k}^{(j)} & = & \sum_{q=1}^{m_j} \left(\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 \mathbf{1}_{\{t_i^k \geq t_j^q\}}(t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)
++ \mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 \mathbf{1}_{\{t_i^k \geq t_j^q\}}(t_i^k - t_j^q) l_{s_i^k,s_j^q}\right) \right) \\
+\Xi_{s_i^k}^{(i)} & = & \sum_{r=1}^{k-1} \left(\mathcal{P}\left(d_{s_i^k,s_i^r} | \nu_1 (t_i^k - t_i^r) l_{s_i^k,s_i^r}\right)
++ \mathcal{P}\left(g_{s_i^k,s_i^r} | \nu_2 (t_i^k - t_i^r) l_{s_i^k,s_i^r}\right) \right) \\
+% \Xi_{s_i^k}^{(3)} & = & \sum_{q=1}^{m_j} (1-\alpha_{s_i^k,s_j^q}) \left(\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 (|t_i^k - t_j^q| + 2\tau_{s_i^k,s_j^q}) l_{s_i^k,s_j^q}\right)
+% + \mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 (|t_i^k - t_j^q| + 2\tau_{s_i^k,s_j^q}) l_{s_i^k,s_j^q}\right) \right) \\
+% \Xi_{s_i^k}^{(4)} & = & \sum_{r=1}^{k-1} (1-\alpha_{s_i^k,s_i^r}) \left(\mathcal{P}\left(d_{s_i^k,s_i^r} | \nu_1 (|t_i^k - t_i^r| + 2\tau_{s_i^k,s_i^r}) l_{s_i^k,s_i^r}\right)
+% + \mathcal{P}\left(g_{s_i^k,s_i^r} | \nu_2 (|t_i^k - t_i^r| + 2\tau_{s_i^k,s_i^r}) l_{s_i^k,s_i^r}\right) \right)\\
 \end{eqnarray*}
 where $\mathcal{P}(.|\lambda)$ is the probability mass function of a Poisson distribution with parameter $\lambda$. Left-hand terms correspond to transitions, while right-hand terms correspond to transversions.
 \\
@@ -240,17 +242,19 @@ p(S_i | S_j, i \leftarrow j) & = & \prod_{k=1}^{m_i} p(s_i^k | s_i^1, \ldots, s_
 \end{eqnarray*}
 \\
 
+Note that in the absence of genetic information ($m_i<1$ and $m_j=0$), $b_{s_i^k,j}$ is automatically set to 0.
 % The genetic likelihood only makes sense when there are sequences to be compared between $i$ and $j$, that is, when $m_i$ and $m_j$ are greater than 0.
 % We cannot simply ommit the genetic term in the global likelihood computation and implicitely assume $p(S_i | S_j, i \leftarrow j) = 1$, as this would give stronger weight to cases without genetic data.
 % Data augmentation is not possible either, as the space of possible sequences is huge unless we make very strong assumptions (on the number of clusters and the distributions of distances within and between clusters).
 
 % One practical alternative is to define a weight $g$ for cases with missing DNA information.
 % We then define the genetic pseudo-likelihood function $f_{i \leftarrow j} $ as:
-
-\begin{eqnarray*}
-f_{i \leftarrow j} & = & \mathbf{1}_{\{ m_i m_j > 0 \}} p(S_i | S_j, i \leftarrow j)
-+ \mathbf{1}_{\{ m_i m_j = 0 \}}\\
-\end{eqnarray*}
+% 
+% The likelihood incorporating missing DNA informaiton ($m_i m_j =0$) is given by:
+% \begin{eqnarray*}
+% f_{i \leftarrow j} & = & \mathbf{1}_{\{ m_i m_j > 0 \}} p(S_i | S_j, i \leftarrow j)
+% + \mathbf{1}_{\{ m_i m_j = 0 \}}\\
+% \end{eqnarray*}
 
 % Different strategies can be used to define $g$.
 % The simplest would be fixed weight, $g(x) = cst$.
