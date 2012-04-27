@@ -1,3 +1,4 @@
+
 /*
   Coded by Thibaut Jombart (t.jombart@imperial.ac.uk), January 2012.
   Licence: GPL >=2.
@@ -34,17 +35,20 @@
    == in 'param' ==
    - the various parameters needed
 */
-double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *param){
+double genlike_ij(int i, int j, raw_data *data, aug_data *augData, dna_dist *dnainfo, parameters *param){
 
     /* extract variables from input objects */
     int *s_i=data->S[i], *s_j=data->S[j], m_i=data->M[i], m_j=data->M[j];
     double t_i[m_i], t_j[m_j];
-    double nu1=param->nu1, nu2=param->nu2, alpha=param->alpha, tau=param->tau;
+    double nu1=param->nu1, nu2=param->nu1*param->kappa, alpha, tau;
+
+    /* get alpha and tau */
+    alpha = gsl_matrix_get(augData->alpha,i,j);
+    tau = gsl_matrix_get(augData->tau,i,j);
 
     /* variables used in computations */
     double out, Tabs, Xi1, Xi2, Xi3, Xi4, Pk;
     int k, q, r, transi, transv, common, nb_comp, nb_comp_k;
-    bool tag=FALSE;
 
     /* fill in vectors of collection dates */
     for(k=0;k<m_i;k++){
@@ -62,7 +66,6 @@ double genlike_ij(int i, int j, raw_data *data, dna_dist *dnainfo, parameters *p
     out=0.0; /* important initialization here */
 
     if((m_i > 0 && m_j > 0) || m_i>1){ /* likelihood tractable if at least a pair is available */
-	tag=TRUE;
 	for(k=0;k<m_i;k++){
 	    /* initialize k-specific variables */
 	    Pk = 0.0;

@@ -31,11 +31,17 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     double isAcceptOKMu;
     double isAcceptOKSigma;
     double isAcceptOKNu1;
-    double isAcceptOKNu2;
-    double isAcceptOKAlpha;
-    double isAcceptOKTau;
+    double isAcceptOKKappa;
     int EndBurnIn=0;
-    int NbParamToBeTuned = 12;
+    int NbParamToBeTuned = 12; /* TO UPDATE: tau and alpha have been removed*/
+
+    /* used for moving parameters */
+    parameters *newParam = createParam();
+    copyParam(newParam,param);
+
+    /* used for moving augData */
+    aug_data *newAugData = createAugData(data->NbPatients, data->T, data->NbSequences);
+    copyAugData(newAugData,augData);
 
     printf("Starting metro\n");
     fflush(stdout);
@@ -43,7 +49,7 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     /* writeAllFiles(Files, param, nb, data, augData); */
 
     for(l=0;l<MCMCSettings->NbSimul;l++){
-	printf("%d\n",l);
+	printf("iteration: %d\n",l);
 	fflush(stdout);
 
 	/* Updates the std of proposal distributions if needed */
@@ -91,25 +97,25 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    } else {
 		isAcceptOKNu1=1;
 		VarPropOK ++;
-	    }		    if(IsAcceptOKNu2(acceptOK)==0){
-		updateMCMCSettingsNu2(nbProp,accept,acceptOK, MCMCSettings);
+	    }		    if(IsAcceptOKKappa(acceptOK)==0){
+		updateMCMCSettingsKappa(nbProp,accept,acceptOK, MCMCSettings);
 	    } else {
-		isAcceptOKNu2=1;
+		isAcceptOKKappa=1;
 		VarPropOK ++;
 	    }
 
-	    if(IsAcceptOKTau(acceptOK)==0){
-		updateMCMCSettingsTau(nbProp,accept,acceptOK, MCMCSettings);
-	    } else {
-		isAcceptOKTau=1;
-		VarPropOK ++;
-	    }
-	    if(IsAcceptOKAlpha(acceptOK)==0){
-		updateMCMCSettingsAlpha(nbProp,accept,acceptOK, MCMCSettings);
-	    } else {
-		isAcceptOKAlpha=1;
-		VarPropOK ++;
-	    }
+	    /* if(IsAcceptOKTau(acceptOK)==0){ */
+	    /* 	updateMCMCSettingsTau(nbProp,accept,acceptOK, MCMCSettings); */
+	    /* } else { */
+	    /* 	isAcceptOKTau=1; */
+	    /* 	VarPropOK ++; */
+	    /* } */
+	    /* if(IsAcceptOKAlpha(acceptOK)==0){ */
+	    /* 	updateMCMCSettingsAlpha(nbProp,accept,acceptOK, MCMCSettings); */
+	    /* } else { */
+	    /* 	isAcceptOKAlpha=1; */
+	    /* 	VarPropOK ++; */
+	    /* } */
 
 	    if(VarPropOK<NbParamToBeTuned){
 		reInitiateAcceptance(accept);
@@ -123,79 +129,88 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
 	    }
 	}
 
-	printf("\nstep A\n");
+	/* printf("\nstep A\n"); */
 
 	if(EndBurnIn==1 && (l%nbStepsVar)==0){
 	    printf("starting simulation %u \n",l);
 	    fflush(stdout);
 	}
 
-	printf("\nstep B\n");
+	/* printf("\nstep B\n"); */
 
 	/*** Moves ***/
 
-	moveAllBeta(MCMCSettings , param, data, nb, augData, dnainfo, accept,nbProp);
-	printf("\nstep C\n");
+	moveAllBeta(MCMCSettings , param, newParam, data, nb, augData, dnainfo, accept,nbProp);
+	/* printf("\nstep C\n"); */
+	/* fflush(stdout); */
 
-	/* moveBetaOut('w', MCMCSettings, param, data, nb, augData, accept,nbProp); */
-	/* moveBetaOut('o', MCMCSettings, param, data, nb, augData, accept,nbProp); */
+	/* moveBetaOut('w', MCMCSettings, param, newParam,data, nb, augData, accept,nbProp); */
+	/* moveBetaOut('o', MCMCSettings, param, newParam,data, nb, augData, accept,nbProp); */
 
-	/* moveSp(param, data, nb, augData, accept); /\*  to remove if we assume Sp = 100% *\/ */
-	/* moveSe(param, data, nb, augData, accept); */
+	moveSe(param, newParam,data, nb, augData, accept);
 
-	/* movePi(param, data, augData, accept); */
+	movePi(param, newParam,data, augData, accept);
 
-	/* moveDurationColon('m',MCMCSettings, param, augData, accept,nbProp); */
-	/* moveDurationColon('s',MCMCSettings, param, augData, accept,nbProp); */
+	/* moveDurationColon('m',MCMCSettings, param, newParam,augData, accept,nbProp); */
+	/* moveDurationColon('s',MCMCSettings, param, newParam,augData, accept,nbProp); */
 
-	/* moveMutationRate(1, MCMCSettings, param, data, nb, augData, accept,nbProp);*/
-	/* moveMutationRate(2, MCMCSettings, param, data, nb, augData, accept,nbProp); */
+	moveNu(MCMCSettings, param, newParam,data, nb, augData, dnainfo, accept, nbProp);
 
-	/* moveTau(MCMCSettings, param, data, nb, augData, accept,nbProp); */
-	/* moveAlpha(MCMCSettings, param, data, nb, augData, accept,nbProp); */
-
-	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
-	for(i=0;i<NbChangeAugData;i++){
-	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
-	}
-
-	printf("\nstep D\n");
-
+	/* printf("\nNbChangeAugData:%d, nb->NbColonisedPatients=%d\n", NbChangeAugData, nb->NbColonisedPatients); */
+	/* fflush(stdout); */
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	    moveC(AugDataToMove[i], MCMCSettings, param, data, nb, augData, newAugData, dnainfo) ;
 	}
 
-	printf("\nstep E\n");
+	/* printf("\nstep D\n"); */
+	/* fflush(stdout); */
 
+	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
+
+	/* printf("\nstep Dbis\n"); */
+	/* fflush(stdout); */
+
+	for(i=0;i<NbChangeAugData;i++){
+	    /* printf("\nAugDataToMove[i]:%d \n", AugDataToMove[i]);fflush(stdout); */
+	    moveE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, newAugData, dnainfo) ;
+	}
+
+	/* printf("\nstep E\n"); */
+	/* fflush(stdout); */
 
 	gsl_ran_choose(data->rng, AugDataToMove, NbChangeAugData, nb->indexColonisedPatients, nb->NbColonisedPatients, sizeof(int));
 	for(i=0;i<NbChangeAugData;i++){
-	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, dnainfo) ;
+	    moveCandE(AugDataToMove[i], MCMCSettings, param, data, nb, augData, newAugData, dnainfo) ;
 	}
 
-	printf("\nstep F\n");
+	/* printf("\nstep F\n"); */
 
 	/* Writing results in an output file */
 	if (l>=MCMCSettings->BurnIn && l%MCMCSettings->SubSample==0 && EndBurnIn==1)
-	    /* if (EndBurnIn==1) */
 	    {
 		writeAllFiles(Files, param, nb, data, augData, dnainfo);
 		/* printf("L = %lg\n",fullLoglikelihoodWithPrior(data, nb, augData, param)); */
 	    }
     }
-    printf("\nstep G\n");
+    /* printf("\nstep G\n"); */
+    /* fflush(stdout); */
 
     /* PRINT ACCESPTANCE RATE */
     printAcceptance(accept,nbProp);
-    printf("\nstep H\n");
+    /* printf("\nstep H\n"); */
+    /* fflush(stdout); */
 
     /* FREE ALLOCATED MEMORY */
     free(AugDataToMove);
-    printf("\nstep I\n");
+    freeParam(newParam);
+    freeAugData(newAugData);
+    /* printf("\nstep I\n"); */
+    /* fflush(stdout); */
 
     gsl_matrix_free(isAcceptOKBeta);
-    printf("\nstep J\n");
+    /* printf("\nstep J\n"); */
+    /* fflush(stdout); */
 
 }

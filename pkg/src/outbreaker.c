@@ -1,3 +1,4 @@
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -49,7 +50,7 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
     printf("\n\n== Dna dist info ==\n"); fflush(stdout);
     print_dna_dist(dnainfo);
 
-    aug_data *augData = createAugData(NbPatients, T); /* augmented data */
+    aug_data *augData = createAugData(NbPatients, T, totNbSeq); /* augmented data */
     printf("\n\n== Augmented data ==\n"); fflush(stdout);
     print_augData(augData);
 

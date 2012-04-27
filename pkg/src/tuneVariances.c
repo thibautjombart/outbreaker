@@ -76,9 +76,9 @@ int IsAcceptOKNu1(isAcceptOK * acceptOK){
 
 
 
-int IsAcceptOKNu2(isAcceptOK * acceptOK){
+int IsAcceptOKKappa(isAcceptOK * acceptOK){
     int res=1;
-    if(acceptOK->IsAccOK_nu2 < 3){res=0;}
+    if(acceptOK->IsAccOK_kappa < 3){res=0;}
     return res;
 }
 
@@ -87,22 +87,22 @@ int IsAcceptOKNu2(isAcceptOK * acceptOK){
 
 
 
-int IsAcceptOKTau(isAcceptOK * acceptOK){
-    int res=1;
-    if(acceptOK->IsAccOK_tau < 3){res=0;}
-    return res;
-}
+/* int IsAcceptOKTau(isAcceptOK * acceptOK){ */
+/*     int res=1; */
+/*     if(acceptOK->IsAccOK_tau < 3){res=0;} */
+/*     return res; */
+/* } */
 
 
 
 
 
 
-int IsAcceptOKAlpha(isAcceptOK * acceptOK){
-    int res=1;
-    if(acceptOK->IsAccOK_alpha < 3){res=0;}
-    return res;
-}
+/* int IsAcceptOKAlpha(isAcceptOK * acceptOK){ */
+/*     int res=1; */
+/*     if(acceptOK->IsAccOK_alpha < 3){res=0;} */
+/*     return res; */
+/* } */
 
 
 
@@ -129,11 +129,7 @@ void updateAccept(NbProposals * nbProp, acceptance * accept){
     accept->PourcAcc_sigma/=nbProp->NbProp_sigma;
 
     accept->PourcAcc_nu1/=nbProp->NbProp_nu1;
-    accept->PourcAcc_nu2/=nbProp->NbProp_nu2;
-
-    accept->PourcAcc_tau/=nbProp->NbProp_tau;
-    accept->PourcAcc_alpha/=nbProp->NbProp_alpha;
-
+    accept->PourcAcc_kappa/=nbProp->NbProp_kappa;
 }
 
 
@@ -256,17 +252,17 @@ void updateMCMCSettingsNu1(NbProposals * nbProp,acceptance * accept,isAcceptOK *
 
 
 
-void updateMCMCSettingsNu2(NbProposals * nbProp,acceptance * accept,isAcceptOK *acceptOK, mcmcInternals *MCMCSettings){
+void updateMCMCSettingsKappa(NbProposals * nbProp,acceptance * accept,isAcceptOK *acceptOK, mcmcInternals *MCMCSettings){
     double perc;
 
-    perc=accept->PourcAcc_nu2/nbProp->NbProp_nu2;
+    perc=accept->PourcAcc_kappa/nbProp->NbProp_kappa;
     if(perc<0.1 || perc>0.4)
 	{
-	    MCMCSettings->Sigma_nu2*=perc/0.25;
-	    acceptOK->IsAccOK_nu2=0;
+	    MCMCSettings->Sigma_kappa*=perc/0.25;
+	    acceptOK->IsAccOK_kappa=0;
 	}else
 	{
-	    acceptOK->IsAccOK_nu2+=1;
+	    acceptOK->IsAccOK_kappa+=1;
 	}
 }
 
@@ -275,34 +271,34 @@ void updateMCMCSettingsNu2(NbProposals * nbProp,acceptance * accept,isAcceptOK *
 
 
 
-void updateMCMCSettingsTau(NbProposals * nbProp,acceptance * accept,isAcceptOK *acceptOK, mcmcInternals *MCMCSettings){
-    double perc;
+/* void updateMCMCSettingsTau(NbProposals * nbProp,acceptance * accept,isAcceptOK *acceptOK, mcmcInternals *MCMCSettings){ */
+/*     double perc; */
 
-    perc=accept->PourcAcc_tau/nbProp->NbProp_tau;
-    if(perc<0.1 || perc>0.4)
-	{
-	    MCMCSettings->Sigma_tau*=perc/0.25;
-	    acceptOK->IsAccOK_tau=0;
-	}else
-	{
-	    acceptOK->IsAccOK_tau+=1;
-	}
-}
-
-
+/*     perc=accept->PourcAcc_tau/nbProp->NbProp_tau; */
+/*     if(perc<0.1 || perc>0.4) */
+/* 	{ */
+/* 	    MCMCSettings->Sigma_tau*=perc/0.25; */
+/* 	    acceptOK->IsAccOK_tau=0; */
+/* 	}else */
+/* 	{ */
+/* 	    acceptOK->IsAccOK_tau+=1; */
+/* 	} */
+/* } */
 
 
 
-void updateMCMCSettingsAlpha(NbProposals * nbProp,acceptance * accept,isAcceptOK *acceptOK, mcmcInternals *MCMCSettings){
-    double perc;
 
-    perc=accept->PourcAcc_alpha/nbProp->NbProp_alpha;
-    if(perc<0.1 || perc>0.4)
-	{
-	    MCMCSettings->Sigma_alpha*=perc/0.25;
-	    acceptOK->IsAccOK_alpha=0;
-	}else
-	{
-	    acceptOK->IsAccOK_alpha+=1;
-	}
-}
+
+/* void updateMCMCSettingsAlpha(NbProposals * nbProp,acceptance * accept,isAcceptOK *acceptOK, mcmcInternals *MCMCSettings){ */
+/*     double perc; */
+
+/*     perc=accept->PourcAcc_alpha/nbProp->NbProp_alpha; */
+/*     if(perc<0.1 || perc>0.4) */
+/* 	{ */
+/* 	    MCMCSettings->Sigma_alpha*=perc/0.25; */
+/* 	    acceptOK->IsAccOK_alpha=0; */
+/* 	}else */
+/* 	{ */
+/* 	    acceptOK->IsAccOK_alpha+=1; */
+/* 	} */
+/* } */

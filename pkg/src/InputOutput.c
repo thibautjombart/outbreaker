@@ -356,8 +356,7 @@ void prepAllFiles(output_files * Files, int NbPatients){
     fprintf(Files->Parameters,"sigma\t");
     fprintf(Files->Parameters,"nu1\t");
     fprintf(Files->Parameters,"nu2\t");
-    fprintf(Files->Parameters,"tau\t");
-    fprintf(Files->Parameters,"alpha\n");
+    fprintf(Files->Parameters,"kappa\t");
     fflush(Files->Parameters);
 
     for(i=0;i<NbPatients;i++){
@@ -403,9 +402,8 @@ void writeAllFiles(output_files * Files, parameters * param, nb_data *nb, raw_da
     fprintf(Files->Parameters,"%lf\t",param->mu);
     fprintf(Files->Parameters,"%lf\t",param->sigma);
     fprintf(Files->Parameters,"%lf\t",param->nu1);
-    fprintf(Files->Parameters,"%lf\t",param->nu2);
-    fprintf(Files->Parameters,"%lf\t",param->tau);
-    fprintf(Files->Parameters,"%lf\n",param->alpha);
+    fprintf(Files->Parameters,"%lf\t",param->nu1 * param->kappa);
+    fprintf(Files->Parameters,"%lf\t",param->kappa);
     fflush(Files->Parameters);
 
     for(i=0 ; i<nb->NbPatients ; i++){

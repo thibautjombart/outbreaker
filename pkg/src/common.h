@@ -61,7 +61,6 @@ typedef struct{
     gsl_vector ** D; /* discharge times. D[i] is a vector of size nb_data->NbAdmissions[i] */
     gsl_vector ** P; /* times of positive swabs. P[i] is a vector of size nb_data->NbPosSwabs[i] */
     gsl_vector ** N; /* times of negative swabs. N[i] is a vector of size nb_data->NbNegSwabs[i] */
-    /* gsl_vector *IsInHosp[NbPatients]; /\* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T *\/ */
     gsl_vector ** IsInHosp; /* 0 when patient is outside hospital, 1 when inside. IsInHosp[i] is a vector of size T */
 
     /* GENETIC DATA */
@@ -77,11 +76,13 @@ typedef struct{
 
 
 typedef struct{
-    int NbPatients, T;
+    int NbPatients, T, NbSequences;
     int *C; /* colonisation times */
     int *E; /* times of end of colonisation */
     int *I0; /* number of colonised individuals in ward 0 at each time step */
     int *I1; /* number of colonised individuals in ward 1 at each time step */
+    gsl_matrix *alpha; /* proba of direct ancestry between any 2 sequences; square matrix of dim NbSequences */
+    gsl_matrix *tau; /* TMRCA offset between any 2 sequences; square matrix of dim NbSequences */
 } aug_data;
 
 
@@ -102,11 +103,11 @@ typedef struct{
     /* *************** MAYBE NEED TO REPARAMETERIZE MU, SIGMA INTO MU, CV *************** */
 
     double nu1; /* rate of transitions */
-    double nu2; /* rate of tranversions */
-    /*************** MAYBE NEED TO REPARAMETERIZE NU1, NU2 INTO NU1, coeff de proportionalite *************/
+    /* double nu2; /\* rate of tranversions *\/ */
+    double kappa; /* nu2 = kappa*nu1 */
 
-    double tau; /* time to the most recent common ancestor */
-    double alpha; /* probability that two sampled isolates belong to the same lineage */
+    /* double tau; /\* time to the most recent common ancestor *\/ */
+    /* double alpha; /\* probability that two sampled isolates belong to the same lineage *\/ */
     double weightNaGen; /* weight used to replace missing genetic likelihood */
 } parameters;
 
@@ -132,7 +133,7 @@ typedef struct{
     double Sigma_mu;
     double Sigma_sigma;
     double Sigma_nu1;
-    double Sigma_nu2;
+    double Sigma_kappa;
     double Sigma_tau;
     double Sigma_alpha;
 } mcmcInternals;
@@ -149,7 +150,7 @@ typedef struct{
     double PourcAcc_mu;
     double PourcAcc_sigma;
     double PourcAcc_nu1;
-    double PourcAcc_nu2;
+    double PourcAcc_kappa;
     double PourcAcc_tau;
     double PourcAcc_alpha;
 
@@ -166,7 +167,7 @@ typedef struct{
     double IsAccOK_mu;
     double IsAccOK_sigma;
     double IsAccOK_nu1;
-    double IsAccOK_nu2;
+    double IsAccOK_kappa;
     double IsAccOK_tau;
     double IsAccOK_alpha;
 } isAcceptOK;
@@ -182,7 +183,7 @@ typedef struct{
     double NbProp_mu;
     double NbProp_sigma;
     double NbProp_nu1;
-    double NbProp_nu2;
+    double NbProp_kappa;
     double NbProp_tau;
     double NbProp_alpha;
 } NbProposals;

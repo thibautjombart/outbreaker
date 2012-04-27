@@ -167,7 +167,7 @@ dnaseq *create_haplo(int length, gsl_rng *rng){
 
 /* Make an existing haplotype evolve using :
    - nu1: rate of transitions 
-   - nu2: rate of transversions 
+   - nu2: rate of transversions; nu2=kappa*nu1
    - double t: time of evolution between in and out
 */
 void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
@@ -195,7 +195,7 @@ void evolve_haplo(dnaseq *in, double nu1, double nu2, double t, gsl_rng *rng){
 
 /* Replicate an haplotype using:
    - nu1: rate of transitions 
-   - nu2: rate of transversions 
+   - nu2: rate of transversions; nu2=kappa*nu1
    - double t: time of evolution between in and out
 */
 void replicate_haplo(dnaseq *in, dnaseq *out, double nu1, double nu2, double t, gsl_rng *rng){
@@ -214,7 +214,7 @@ void replicate_haplo(dnaseq *in, dnaseq *out, double nu1, double nu2, double t, 
    - in: a reference haplotype
    - dist: the distance in nb of mutations from the reference
    - nu1: rate of transitions
-   - nu2: rate of transversions
+   - nu2: rate of transversions; nu2=kappa*nu1
    - double t: time of evolution between in and out
 */
 void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double nu2, gsl_rng *rng){
@@ -255,7 +255,7 @@ void make_distant_lineage(dnaseq *in, dnaseq *out, int dist, double nu1, double 
   - mu_dist,sigma_dist: the mean/sd for the distance between lineages (lognormal)
   - lambda_nlin: lambda for the number of lineages in a external infection (nlin ~ pois(lambda)+1)
   - nu1: rate of transitions
-  - nu2: rate of transversions
+  - nu2: rate of transversions; nu2=kappa*nu1
   - dates: dates at which patients are infected; ordered by increasing dates (forward-time)
 
   Sensible values:
@@ -285,6 +285,7 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
     /* OUTSIDE TRANSMISSIONS FIRST */
     for(k=0;k<N;k++){
 	i = vecint_i(datesIdx, k);
+	/* printf("\nSimulating outside haplotype %d - date:%d\n",k, dates[i]); */
 	if(ances[i]<0){ /* i.e. colonization from outside */
 			/* determine the number of lineages */
 	    nlin = 1 + gsl_ran_poisson(rng, lambda_nlin);
@@ -310,7 +311,9 @@ void evolve_epid_dna(epid_dna *in, int *ances, double mu_dist, double sigma_dist
 
 
     /* PATIENT->PATIENT TRANSMISSIONS */
-    for(i=0;i<N;i++){
+    for(k=0;k<N;k++){
+	i = vecint_i(datesIdx, k);
+	/* printf("\nSimulating transmitted haplotype %d - date:%d\n",k, dates[i]); */
 	/* make sure the ancestor is known */
 	if(ances[i]>=N){
 	    fprintf(stderr, "\n[in: simgen.c->evolve_epid_dna]\nUnknown ancestor index %d (%d patients)\n", ances[i], N);
@@ -406,8 +409,9 @@ list_dnaseq *swab_dna_patient(epid_dna *in, int patient, int N, double nu1, doub
   - colonDates: vector of colonisation dates for each patient, length nbData->NbPatients
 
 */
-list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, double lambda_nseq, double nu1, double nu2, int *colonDates, gsl_rng *rng){
+list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, aug_data *augData, double lambda_nseq, double nu1, double nu2, gsl_rng *rng){
     int i, j, counter=0;
+    int *colonDates=augData->C;
     int nbPatients=data->NbPatients;
     int *swabDates; /* temporary vector storing positive swab dates */
     list_dnaseq *out;
@@ -505,6 +509,21 @@ list_dnaseq *sample_epid_dna(epid_dna *in, nb_data *nb_data, raw_data *data, dou
 	    /* copy collection times */
 	    data->Tcollec[counter++] = listCollecDates[i][j];
 	}
+    }
+
+    /* REALLOCATE MATRICES OF LAMBDA AND TAU IN AUGDATA */
+    gsl_matrix_free(augData->alpha);
+    gsl_matrix_free(augData->tau);
+    augData->alpha = gsl_matrix_calloc(data->NbSequences, data->NbSequences);
+    if(augData->alpha == NULL){
+	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating matrix of alpha_kq in augData. Exiting.\n");
+	exit(1);
+    }
+
+    augData->tau = gsl_matrix_calloc(data->NbSequences, data->NbSequences);
+    if(augData->tau == NULL){
+	fprintf(stderr, "\n[in: simgen.c->sample_epid_dna]\nNo memory left for creating matrix of tau_kq in augData. Exiting.\n");
+	exit(1);
     }
 
 

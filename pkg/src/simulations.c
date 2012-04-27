@@ -4,7 +4,12 @@
 #include "InputOutput.h"
 #include "simepid.h"
 #include "simgen.h"
-
+#include "init.h"
+#include "logL.h"
+#include "mcmc.h"
+#include "moves.h"
+#include "prior.h"
+#include "tuneVariances.h"
 
 
 
@@ -50,7 +55,11 @@ int main(){
     int NbPatientsMax = 150;
     int NbColonisedPatients = 0;
     int NbSequences = 0;
-    nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbColonisedPatients);
+    /* nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbColonisedPatients); */
+    nb_data *nbData = createNbData(NbPatientsMax, Tmax, NbSequences, NbPatientsMax);
+    /* the vector of indices of col. pat. has been allocated the biggest size */
+    /* but the nb of colonised patients is actually zero */
+    nbData->NbColonisedPatients = NbColonisedPatients;
     for(i=0 ; i<NbPatientsMax ; i++)
 	{
 	    nbData->NbAdmissions[i]=1;
@@ -63,7 +72,7 @@ int main(){
 	    nbData->NbPosSwabs[i]=0;
 	    nbData->NbNegSwabs[i]=0;
 	}
-    aug_data *augData = createAugData(NbPatientsMax, Tmax);
+    aug_data *augData = createAugData(NbPatientsMax, Tmax, 1);
     int *indexInfector = (int *) calloc(nbData->NbPatients, sizeof(int)); /* -1 if infected from outside ; -100 never infected */
 
     /* SIMULATION ALGORITHM */
@@ -73,36 +82,81 @@ int main(){
 
     /* === SIMULATE GENETIC DATA === */
 
-    printf("\nInitial nb data: \n");
-    print_nbData(nbData);
-    fflush(stdout);
+    /* printf("\n>>> Initial nb data: \n"); */
+    /* print_nbData(nbData); */
+    /* fflush(stdout); */
 
-    printf("\n\nInitial raw data: \n");
-    print_rawData(data);
-    fflush(stdout);
+    /* printf("\n\n>>> Initial raw data: \n"); */
+    /* print_rawData(data); */
+    /* fflush(stdout); */
 
-    printf("\n\nInitial augmented data: \n");
-    print_augData(augData);
-    fflush(stdout);
+    /* printf("\n\n>>> Initial augmented data: \n"); */
+    /* print_augData(augData); */
+    /* fflush(stdout); */
 
-    int max_nb_lineages=5, haplo_length=10000;
-    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=2;
+    int max_nb_lineages=5, haplo_length=100;
+    double mu_dist=3.0, sigma_dist=0.1, lambda_nlin=1;
     double nu1=5e-5, nu2=1e-4, lambdaNseq=1.0;
 
     epid_dna *alldna = create_epid_dna(NbCases, max_nb_lineages, haplo_length);
-
+ 
     evolve_epid_dna(alldna, indexInfector, mu_dist, sigma_dist, lambda_nlin, nu1, nu2, augData->C, rng);
-    print_epid_dna(alldna);
+    /* print_epid_dna(alldna); */
 
-    return 0;
-
-    /* SAMPLING PROCEDURE */
+     /* SAMPLING PROCEDURE */
     list_dnaseq *dnasample;
-    dnasample = sample_epid_dna(alldna, nbData, data, lambdaNseq, nu1, nu2, augData->C, rng);
+    dnasample = sample_epid_dna(alldna, nbData, data, augData, lambdaNseq, nu1, nu2, rng);
 
+    /* printf("\n>>> Sampled DNA:\n"); */
+    /* print_list_dnaseq(dnasample); */
+
+    /* GET GENETIC DISTANCES */
+    dna_dist *dnainfo = compute_dna_distances(dnasample); /* genetic distances - all DNA info needed */
+
+    /* ESTIMATION */
+    mcmcInternals *MCMCSettings = createMcmcInternals();
+    param->weightNaGen = 0.001;
+
+    /* OUTPUT FILES */
+    output_files *Files = createFILES(workspace);
+
+    /* ACCEPTANCE */
+    acceptance *accept = createAcceptance(); /* accept is initialized to zero */
+    isAcceptOK *acceptOK = createIsAcceptOK();
+    NbProposals *nbProp = createNbProposals();
+
+    /* INITIALIZE IN MCMC SETTINGS */
+    InitMCMCSettings(MCMCSettings);
+    /* printf("\nMCMC initialized\n"); */
+
+    /* INITIALIZE PARAMETERS */
+    InitParam(param);
+    /* printf("\nParam initialized\n"); */
+
+    /* INITIALIZE AUGMENTED DATA */
+    InitAugData(param, nbData, data, augData);
+    /* printf("\nAugmented data initialized\n"); */
+
+
+    /* OUTPUT FILE PREPARATION  */
+    prepAllFiles(Files, data->NbPatients);
+    /* printf("\nOutput files prepared\n"); */
+
+
+    /*****************************************************/
+    /***                 Launch MCMC                   ***/
+    /*****************************************************/
+    MCMCSettings->BurnIn = 10;
+    MCMCSettings->NbSimul = 10;
+    MCMCSettings->SubSample = 10;
+
+    printf("\nStarting estimation\n");
+    fflush(stdout);
+    metro(MCMCSettings, param, data, nbData, augData, dnainfo, accept, acceptOK, nbProp, Files);
 
 
     /* Closing files and freeing memory */
+    freeMcmcInternals(MCMCSettings);
     freeParam(param);
     freeAugData(augData);
     freeNbData(nbData);
@@ -111,6 +165,11 @@ int main(){
     free_epid_dna(alldna);
     free_list_dnaseq(dnasample);
     free(indexInfector);
+    freeFILES(Files);
+    freeAcceptance(accept);
+    freeIsAcceptOK(acceptOK);
+    freeNbProposals(nbProp);
+    free_dna_dist(dnainfo);
     gsl_rng_free(rng);
 
     //getchar();
@@ -122,7 +181,7 @@ int main(){
 /*
   gcc instructions:
 
-  gcc -o simulation matvec.c alloc.c genclasses.c InputOutput.c prior.c genlike.c logL.c simepid.c simgen.c simulations.c -Wall -g -lgsl -lgslcblas
+  gcc -o simulation matvec.c alloc.c genclasses.c distances.c InputOutput.c init.c prior.c genlike.c logL.c moves.c mcmc.c tuneVariances.c simepid.c simgen.c simulations.c -Wall -g -lgsl -lgslcblas
 
   ./simulation
 

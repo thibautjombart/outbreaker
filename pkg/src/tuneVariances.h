@@ -17,11 +17,11 @@ int IsAcceptOKSigma(isAcceptOK * );
 
 int IsAcceptOKNu1(isAcceptOK * );
 
-int IsAcceptOKNu2(isAcceptOK * );
+int IsAcceptOKKappa(isAcceptOK * );
 
-int IsAcceptOKTau(isAcceptOK * );
+/* int IsAcceptOKTau(isAcceptOK * ); */
 
-int IsAcceptOKAlpha(isAcceptOK * );
+/* int IsAcceptOKAlpha(isAcceptOK * ); */
 
 void updateAccept(NbProposals * , acceptance * );
 
@@ -38,11 +38,11 @@ void updateMCMCSettingsSigma(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInte
 
 void updateMCMCSettingsNu1(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
 
-void updateMCMCSettingsNu2(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
+void updateMCMCSettingsKappa(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
 
-void updateMCMCSettingsTau(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
+/* void updateMCMCSettingsTau(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *); */
 
-void updateMCMCSettingsAlpha(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *);
+/* void updateMCMCSettingsAlpha(NbProposals * ,acceptance * ,isAcceptOK *, mcmcInternals *); */
 
 #endif
 

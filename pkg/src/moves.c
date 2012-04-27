@@ -14,7 +14,7 @@
 
 
 /*********************** Move parameters ***********************/
-void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
     /* updating beta_{i,j} with Metropolis algorithm */
     /* proposal distribution = lognormal */
 
@@ -24,34 +24,33 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     double sigmaProp;
     double r,z;
     double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
-
-    printf("\nMove beta: i = %d, j = %d", i, j);
+  
+    /* printf("\nMove beta: i = %d, j = %d", i, j); */
     curVal = gsl_matrix_ptr(curParam->beta,i,j);
     newVal = gsl_matrix_ptr(newParam->beta,i,j);
-    printf("\n - step i");
+    /* printf("\n - step i"); */
 
     sigmaProp = gsl_matrix_get(MCMCSettings->Sigma_beta,i,j);
-    printf("\n - step ii");
+    /* printf("\n - step ii"); */
     nbAccept = gsl_matrix_ptr(accept->PourcAcc_beta,i,j);
-    printf("\n - step iii");
+    /* printf("\n - step iii"); */
     nbPropos = gsl_matrix_ptr(NbProp->NbProp_beta,i,j);
-    printf("\n - step iv");
-    
+    /* printf("\n - step iv"); */
+
     /* printf("\nValue of sigmaProp: %.5f", sigmaProp); */
     /* printf("\nValue of newVal: %.5f", *newVal); */
     /* printf("\nValue of curVal: %.5f", *curVal); */
     /* printf("\nRandom value: %.5f", gsl_ran_flat (data->rng, 0.0, 100.0)); */
-    *newVal = *curVal * gsl_ran_lognormal(data->rng,0.0,sigmaProp); /* THIS IS THE ERROR */
-    printf("\n - step v ");
+    *newVal = *curVal * gsl_ran_lognormal(data->rng,0.0,sigmaProp);
+    /* printf("\n - step v "); */
+    /* fflush(stdout); */
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);
 
-    printf("\n - step vi");
+    /* printf("\n - step vi");fflush(stdout); */
     pAccept +=  logpriorBeta(i,j, newParam) - logpriorBeta(i,j,curParam);
-    printf("\n - step viii");
+    /* printf("\n - step viii");fflush(stdout); */
 
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
@@ -60,10 +59,10 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
     if (log(z)<=r) {
     	*curVal = *newVal;
     	*nbAccept +=1;
+    }else{
+	*newVal = *curVal;
     }
     *nbPropos+=1;
-
-    freeParam(newParam);
 
 }
 
@@ -71,12 +70,12 @@ void moveBeta(int i, int j, mcmcInternals * MCMCSettings, parameters * curParam,
 
 
 
-void moveAllBeta(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+void moveAllBeta(mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
     int i,j;
 
     for (i=0;i<2;i++){
 	for(j=0;j<2;j++){
-	    moveBeta(i,j,MCMCSettings, curParam, data, nb, augData, dnainfo, accept, NbProp);
+	    moveBeta(i,j,MCMCSettings, curParam, newParam, data, nb, augData, dnainfo, accept, NbProp);
 	}
     }
 
@@ -86,7 +85,7 @@ void moveAllBeta(mcmcInternals * MCMCSettings, parameters * curParam, raw_data *
 
 
 
-void moveBetaOut( char what, mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+void moveBetaOut( char what, mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
     /* what is one of "w" or "o" */
     /* updating betaWardOut ("w") or betaOutOut ("o") with Metropolis algorithm */
     /* proposal distribution = lognormal */
@@ -97,8 +96,6 @@ void moveBetaOut( char what, mcmcInternals * MCMCSettings, parameters * curParam
     double sigmaProp;
     double r,z;
     double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
     double (* logPrior) (parameters *);
 
     switch(what) {
@@ -134,47 +131,18 @@ void moveBetaOut( char what, mcmcInternals * MCMCSettings, parameters * curParam
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
+    }else{
+	*newVal = *curVal;
     }
     *nbPropos+=1;
 
-    freeParam(newParam);
-
 }
 
 
 
 
 
-void moveSp(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept){
-    /* updating Sp with a Gibbs sampler */
-
-    double NbTrueNeg=0;
-    double NbFalsePos=0;
-    int i,j,k;
-
-    for(i=0;i<data->NbPatients;i++){
-	for(j=0;j<nb->NbPosSwabs[i];j++) /* positive swabs */
-	    {
-		if(gsl_vector_get(data->P[i],j)<augData->C[i] || gsl_vector_get(data->P[i],j)>augData->E[i]){
-		    NbFalsePos++; /* false positives */
-		}
-	    }
-	for(k=0;k<nb->NbNegSwabs[i];k++) /* positive swabs */
-	    {
-		if(gsl_vector_get(data->N[i],k)<augData->C[i] || gsl_vector_get(data->N[i],k)>augData->E[i]){
-		    NbTrueNeg++; /* true negatives */
-		}
-	    }
-    }
-
-    /* curParam->Sp = gsl_ran_beta (data->rng, NbTrueNeg+1, NbFalsePos+1); */
-}
-
-
-
-
-
-void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept){
+void moveSe(parameters * curParam, parameters * newParam, raw_data * data, nb_data *nb, aug_data *augData, acceptance *accept){
     /* updating Se with a Gibbs sampler */
     double NbFalseNeg=0;
     double NbTruePos=0;
@@ -182,10 +150,6 @@ void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
 
     for(i=0;i<data->NbPatients;i++){
 	for(j=0;j<nb->NbPosSwabs[i];j++){ /* positive swabs */
-	    /* !!! THIS NEEDS TO BE CHANGED; TIMESEQ IS NO LONGER USED !!! */
-	    /* if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i] && gsl_vector_get(data->P[i],j)!=data->timeSeq[i]){ */
-	    /* 	NbTruePos++; /\* true positives *\/ */
-	    /* } */
 	    if(augData->C[i]<=gsl_vector_get(data->P[i],j) && gsl_vector_get(data->P[i],j)<=augData->E[i]){
 		NbTruePos++; /* true positives */
 	    }
@@ -205,7 +169,7 @@ void moveSe(parameters * curParam, raw_data * data, nb_data *nb, aug_data *augDa
 
 
 
-void movePi(parameters * curParam, raw_data * data, aug_data *augData, acceptance *accept){
+void movePi(parameters * curParam, parameters * newParam, raw_data * data, aug_data *augData, acceptance *accept){
     /* updating Pi with a Gibbs sampler */
     double ColonisedAtFirstAdmission=0;
     double NonColonisedAtFirstAdmission=0;
@@ -226,7 +190,7 @@ void movePi(parameters * curParam, raw_data * data, aug_data *augData, acceptanc
 
 
 
-void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curParam, raw_data *data, aug_data *augData, acceptance *accept, NbProposals *NbProp){
+void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data *data, aug_data *augData, acceptance *accept, NbProposals *NbProp){
     /* what is one of "m" or "s" */
     /* updating mu ("m") or sigma ("s") with Metropolis algorithm */
     /* proposal distribution = lognormal */
@@ -236,8 +200,6 @@ void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curP
     double sigmaProp;
     double r,z;
     double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
     double (* logPrior) (parameters *);
 
     switch(what) {
@@ -273,10 +235,10 @@ void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curP
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
+    }else{
+	*newVal = *curVal;
     }
     *nbPropos+=1;
-
-    freeParam(newParam);
 
 }
 
@@ -284,9 +246,8 @@ void moveDurationColon(char what,mcmcInternals * MCMCSettings, parameters * curP
 
 
 
-void moveMutationRate(int what, mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
-    /* what is one of 1 or 2 */
-    /* updating nu1 (1) or nu2 (2) with Metropolis algorithm */
+void moveNu(mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+    /* updating nu1 with Metropolis algorithm */
     /* proposal distribution = lognormal */
     double *newVal, *curVal;
     double * nbAccept;
@@ -294,56 +255,40 @@ void moveMutationRate(int what, mcmcInternals * MCMCSettings, parameters * curPa
     double sigmaProp;
     double r,z;
     double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
-    double (* logPrior) (parameters *);
+    /* double (* logPrior) (parameters *); */
 
-    switch(what) {
-    case 1:
-	curVal = &curParam->nu1;
-	newVal = &newParam->nu1;
-	sigmaProp = MCMCSettings->Sigma_nu1;
-	nbAccept = &accept->PourcAcc_nu1;
-	nbPropos = &NbProp->NbProp_nu1;
-	logPrior = logpriorNu1;
-	break;
-    case 2:
-	curVal = &curParam->nu2;
-	newVal = &newParam->nu2;
-	sigmaProp = MCMCSettings->Sigma_nu2;
-	nbAccept = &accept->PourcAcc_nu2;
-	nbPropos = &NbProp->NbProp_nu2;
-	logPrior = logpriorNu2;
-	break;
-    }
+    curVal = &curParam->nu1;
+    newVal = &newParam->nu1;
+    sigmaProp = MCMCSettings->Sigma_nu1;
+    nbAccept = &accept->PourcAcc_nu1;
+    nbPropos = &NbProp->NbProp_nu1;
 
     *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);
 
-    pAccept +=  logPrior(newParam) - logPrior(curParam);
+    pAccept +=  logpriorNu1(newParam) - logpriorNu1(curParam);
 
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
-    if (pAccept>0) r=0; else r=pAccept;
+    if (pAccept>0) r=0; else r=pAccept; /* r=log(min(1,ratioOfMHalgo))*/
     z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
+    }else{
+	*newVal = *curVal;
     }
     *nbPropos+=1;
-
-    freeParam(newParam);
 
 }
 
 
 
 
-
-void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
-    /* updating tau with Metropolis algorithm */
+void moveKappa(mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+    /* updating kappa with Metropolis algorithm */
     /* proposal distribution = lognormal */
     double *newVal, *curVal;
     double * nbAccept;
@@ -351,34 +296,32 @@ void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * dat
     double sigmaProp;
     double r,z;
     double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
+    /* double (* logPrior) (parameters *); */
 
-    curVal = &curParam->tau;
-    newVal = &newParam->tau;
-
-    sigmaProp = MCMCSettings->Sigma_tau;
-    nbAccept = &accept->PourcAcc_tau;
-    nbPropos = &NbProp->NbProp_tau;
+    curVal = &curParam->kappa;
+    newVal = &newParam->kappa;
+    sigmaProp = MCMCSettings->Sigma_kappa;
+    nbAccept = &accept->PourcAcc_kappa;
+    nbPropos = &NbProp->NbProp_kappa;
 
     *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
 
     pAccept += Colon(data, nb, augData, dnainfo, newParam);
     pAccept -= Colon(data, nb, augData, dnainfo, curParam);
 
-    pAccept +=  logpriorTau(newParam) - logpriorTau(curParam);
+    pAccept +=  logpriorKappa(newParam) - logpriorKappa(curParam);
 
     pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
 
-    if (pAccept>0) r=0; else r=pAccept;
+    if (pAccept>0) r=0; else r=pAccept; /* r=log(min(1,ratioOfMHalgo))*/
     z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	*curVal = *newVal;
 	*nbAccept +=1;
+    }else{
+	*newVal = *curVal;
     }
     *nbPropos+=1;
-
-    freeParam(newParam);
 
 }
 
@@ -387,53 +330,96 @@ void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * dat
 
 
 
-void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
-    /* updating alpha with Metropolis algorithm */
-    /* proposal distribution = truncated lognormal (no values >1) */
+/* !!! This needs to be checked. !!! */
+void moveTau(mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+
+    /* /\* updating tau with Metropolis algorithm *\/ */
+    /* /\* proposal distribution = lognormal *\/ */
+    /* double *newVal, *curVal; */
+    /* double * nbAccept; */
+    /* double * nbPropos; */
+    /* double sigmaProp; */
+    /* double r,z; */
+    /* double pAccept = 0; */
+ 
+    /* curVal = &curParam->tau; */
+    /* newVal = &newParam->tau; */
+
+    /* sigmaProp = MCMCSettings->Sigma_tau; */
+    /* nbAccept = &accept->PourcAcc_tau; */
+    /* nbPropos = &NbProp->NbProp_tau; */
+
+    /* *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); */
+
+    /* pAccept += Colon(data, nb, augData, dnainfo, newParam); */
+    /* pAccept -= Colon(data, nb, augData, dnainfo, curParam); */
+
+    /* pAccept +=  logpriorTau(newParam) - logpriorTau(curParam); */
+
+    /* pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
+
+    /* if (pAccept>0) r=0; else r=pAccept; */
+    /* z=gsl_rng_uniform(data->rng); */
+    /* if (log(z)<=r) { */
+    /* 	*curVal = *newVal; */
+    /* 	*nbAccept +=1; */
+    /* }else{
+	*newVal = *curVal;
+    } */
+    /* *nbPropos+=1; */
+
+}
 
 
-    double QCur, QNew;
-    double *newVal, *curVal;
-    double * nbAccept;
-    double * nbPropos;
-    double sigmaProp;
-    double r,z;
-    double pAccept = 0;
-    parameters *newParam = createParam();
-    copyParam(newParam,curParam);
 
-    curVal = &curParam->alpha;
-    newVal = &newParam->alpha;
 
-    sigmaProp = MCMCSettings->Sigma_alpha;
-    nbAccept = &accept->PourcAcc_alpha;
-    nbPropos = &NbProp->NbProp_alpha;
 
-    do
-	{
-	    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp);
-	}while(*(newVal)>1);
+/* !!! This needs to be checked. !!! */
+void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){
+    /* /\* updating alpha with Metropolis algorithm *\/ */
+    /* /\* proposal distribution = truncated lognormal (no values >1) *\/ */
 
-    QCur = gsl_cdf_gaussian_P(-log(*(curVal)),sigmaProp);
-    QNew = gsl_cdf_gaussian_P(-log(*(newVal)),sigmaProp);
 
-    pAccept += Colon(data, nb, augData, dnainfo, newParam);
-    pAccept -= Colon(data, nb, augData, dnainfo, curParam);
+    /* double QCur, QNew; */
+    /* double *newVal, *curVal; */
+    /* double * nbAccept; */
+    /* double * nbPropos; */
+    /* double sigmaProp; */
+    /* double r,z; */
+    /* double pAccept = 0; */
+   
+    /* curVal = &curParam->alpha; */
+    /* newVal = &newParam->alpha; */
 
-    pAccept +=  logpriorAlpha(newParam) - logpriorAlpha(curParam);
+    /* sigmaProp = MCMCSettings->Sigma_alpha; */
+    /* nbAccept = &accept->PourcAcc_alpha; */
+    /* nbPropos = &NbProp->NbProp_alpha; */
 
-    pAccept +=  log(*(newVal)) - log(*(curVal)); /* correction for lognormal */
-    pAccept +=   log(QCur) - log(QNew); /* correction for truncation (no values >1) */
+    /* do */
+    /* 	{ */
+    /* 	    *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); */
+    /* 	}while(*(newVal)>1); */
 
-    if (pAccept>0) r=0; else r=pAccept;
-    z=gsl_rng_uniform(data->rng);
-    if (log(z)<=r) {
-	*curVal = *newVal;
-	*nbAccept +=1;
-    }
-    *nbPropos+=1;
+    /* QCur = gsl_cdf_gaussian_P(-log(*(curVal)),sigmaProp); */
+    /* QNew = gsl_cdf_gaussian_P(-log(*(newVal)),sigmaProp); */
 
-    freeParam(newParam);
+    /* pAccept += Colon(data, nb, augData, dnainfo, newParam); */
+    /* pAccept -= Colon(data, nb, augData, dnainfo, curParam); */
+
+    /* pAccept +=  logpriorAlpha(newParam) - logpriorAlpha(curParam); */
+
+    /* pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
+    /* pAccept +=   log(QCur) - log(QNew); /\* correction for truncation (no values >1) *\/ */
+
+    /* if (pAccept>0) r=0; else r=pAccept; */
+    /* z=gsl_rng_uniform(data->rng); */
+    /* if (log(z)<=r) { */
+    /* 	*curVal = *newVal; */
+    /* 	*nbAccept +=1; */
+    /* } else{
+	*newVal = *curVal;
+    }*/
+    /* *nbPropos+=1; */
 
 }
 
@@ -443,7 +429,7 @@ void moveAlpha(mcmcInternals * MCMCSettings, parameters * curParam, raw_data * d
 
 
 /*********************** Move augmented data ***********************/
-void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData, dna_dist *dnainfo){
+void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData, aug_data *newAugData, dna_dist *dnainfo){
     /* updating C[i] with Metropolis algorithm */
     /* proposal distribution = uniform between [C_i-l;C_i+l] */
 
@@ -458,10 +444,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     int *newVal, *curVal;
     double r,z;
     double pAccept = 0;
-    double pAccept2;
-    aug_data *newAugData = createAugData(NbPatients, T);
-    copyAugData(newAugData,curAugData);
-
+ 
     curVal = &curAugData->C[i];
     newVal = &newAugData->C[i];
 
@@ -556,9 +539,10 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
+    } else {
+	copyAugData(newAugData,curAugData);
     }
 
-    freeAugData(newAugData);
 }
 
 
@@ -566,7 +550,7 @@ void moveC(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
 
 
-void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData, dna_dist *dnainfo){
+void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData, aug_data *newAugData, dna_dist *dnainfo){
     /* updating E[i] with Metropolis algorithm */
     /* proposal distribution = uniform between [E_i-l;E_i+l] */
 
@@ -581,8 +565,8 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     int *newVal, *curVal;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData(NbPatients, T);
-    copyAugData(newAugData,curAugData);
+    
+    /* printf("\naaa\n");fflush(stdout); */
 
     curVal = &curAugData->E[i];
     newVal = &newAugData->E[i];
@@ -592,54 +576,69 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     curNbPoss = curMaxTime-curMinTime;
 
     random=gsl_rng_uniform_int (data->rng, curNbPoss);
+    /* printf("\nbbb\n");fflush(stdout); */
 
     if(random<l){
 	*newVal = curMaxTime - random;
     } else {
 	*newVal = curMaxTime - random - 1;
     }
+    /* printf("\nbbba\n");fflush(stdout); */
 
     if(*newVal < *curVal){
 	if(data->ward[i]==0){
 	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
 		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I0[t]--;
+			newAugData->I0[t] = newAugData->I0[t]-1;
 		    }
 		}
-	    }
+	    }   
+	    /* printf("\nbbbb\n");fflush(stdout); */
+
 	} else {
 	    if(GSL_MAX(*newVal,0)<GSL_MIN(*curVal,T)){
 		for (t=GSL_MAX(*newVal,0);t<GSL_MIN(*curVal,T);t++){
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I1[t]--;
+			newAugData->I1[t] = newAugData->I1[t] -1;
 		    }
 		}
 	    }
 	}
     } else {
 	if(data->ward[i]==0){
+	    /* printf("\nbbbc\n");fflush(stdout); */
 	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
+	    /* printf("\nbite\n");fflush(stdout); */
+
 		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
+	    /* printf("\npoil\n");fflush(stdout); */
+	    /* printf("\nt:%d i=%d\n", t, i); */
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I0[t]++;
+	    /* printf("\nzob\n");fflush(stdout); */
+	    /* 		printf("\nt:%d\n", t); */
+			newAugData->I0[t] = newAugData->I0[t]+1;
 		    }
 		}
 	    }
 	} else {
+	    /* printf("\nbbbd\n");fflush(stdout); */
+
 	    if(GSL_MAX(*curVal,0)<GSL_MIN(*newVal,T)){
 		for (t=GSL_MAX(*curVal,0);t<GSL_MIN(*newVal,T);t++){
 		    if(gsl_vector_get(data->IsInHosp[i],t)==1){
-			newAugData->I1[t]++;
+			newAugData->I1[t] = newAugData->I1[t]+1;
 		    }
 		}
 	    }
 	}
     }
+	    /* printf("\nbbbe\n");fflush(stdout); */
 
     newMinTime = GSL_MAX(*newVal - l,curAugData->C[i]+1);
     newMaxTime = *newVal + l;
     newNbPoss = newMaxTime-newMinTime;
+    /* printf("\nccc\n");fflush(stdout); */
 
     QCur = 1.0/newNbPoss;
     QNew = 1.0/curNbPoss;
@@ -647,6 +646,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
     pAccept += ObsLevelPerCase(i, data, nb, newAugData, param) - ObsLevelPerCase(i, data, nb, curAugData, param);
 
     pAccept += DurationColonPerCase (i, newAugData, param) - DurationColonPerCase (i, curAugData, param);
+    /* printf("\nddd\n");fflush(stdout); */
 
     for(j=0;j<NbPatients;j++) /* only patients who are colonised after E_i are affected by the change in E_i */
 	{
@@ -659,12 +659,14 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
     if (pAccept>0) r=0; else r=pAccept;
     z=gsl_rng_uniform(data->rng);
+    /* printf("\neee\n");fflush(stdout); */
+
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
+    } else {
+	copyAugData(newAugData,curAugData);
     }
-
-    freeAugData(newAugData);
-
+   
 }
 
 
@@ -672,7 +674,7 @@ void moveE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * d
 
 
 
-void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData, dna_dist *dnainfo){
+void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data * data, nb_data *nb, aug_data *curAugData, aug_data *newAugData, dna_dist *dnainfo){
     /* updating C[i] and E[i] with Metropolis algorithm */
     /* proposal distribution = C_i uniform between [C_i-l;C_i+l] and E_i shifted so that E_i - C_i constant */
 
@@ -683,9 +685,7 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
     int *newValE, *curValE;
     double r,z;
     double pAccept = 0;
-    aug_data *newAugData = createAugData(NbPatients, T);
-    copyAugData(newAugData,curAugData);
-
+   
     curValC = &curAugData->C[i];
     newValC = &newAugData->C[i];
 
@@ -789,9 +789,9 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
     z=gsl_rng_uniform(data->rng);
     if (log(z)<=r) {
 	copyAugData(curAugData,newAugData);
+    } else {
+	copyAugData(newAugData,curAugData);
     }
-
-    freeAugData(newAugData);
 
 }
 
