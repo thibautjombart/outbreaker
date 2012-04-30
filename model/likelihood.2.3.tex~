@@ -55,19 +55,16 @@
 \renewcommand{\@biblabel}[1]{\quad#1.}
 \makeatother
 
+\author{In alphabetic order: \\Simon Cauchemez, Anne Cori, Neil Ferguson, Christophe Fraser, Thibaut Jombart}
+\title{A model of MRSA transmission incorporating epidemiological and genetic data}
 
 \begin{document}
 
 % Title must be 150 words or less
 % \begin{flushleft}
-{\Large
-\textbf{Likelihood}
-}
-% Insert Author names, affiliations and corresponding author email.
-\\
-\section*{Materials and Methods}
+\maketitle
 
-\subsection*{Observed data ($Y$)}
+\section*{Observed data ($Y$)}
 
 For each patient $i=1,\ldots,N$ admitted to one of the wards in the study period, we denote 
 \begin{itemize}
@@ -86,7 +83,7 @@ $T_i = \{t_i^1, \ldots, t_i^{m_i}\}$; collection dates $T_i$ are ordered so that
 	\item $l_{s_i^k,s_j^q}$ the number of typed nucleotides common to sequences $s_i^k$ and $s_j^q$.
 \end{itemize}
 
-\subsection*{Augmented (unobserved) data ($Z$)}
+\section*{Augmented (unobserved) data ($Z$)}
 
 For each patient $i$ admitted to one of the wards in the study period, we denote 
 \begin{itemize}
@@ -103,7 +100,7 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 
 \noindent We denote $I_w\left(t\right)=\sum_{i=1}^{N} \mathbf{1}_{\left\lbrace w_i=w \right\rbrace} \mathbf{1}_{\left\lbrace C_i \leq t < E_i \right\rbrace} \sum_{l=1}^{k_i} \mathbf{1}_{\left\lbrace A_i[l] \leq t < D_i[l] \right\rbrace} $  the number of patients in ward $w$ who are colonized at time $t$.
 
-\subsection*{Parameters ($\theta$)}
+\section*{Parameters ($\theta$)}
 
 Parameters of the model are: 
 \begin{itemize}
@@ -117,10 +114,10 @@ Parameters of the model are:
 	\item $\nu_1$ and $\nu_2$ the rate of transitions ($A \leftrightarrow G$ and $C \leftrightarrow T$) and transversions (other changes) of the DNA sequences. In practice, we will use $\nu_2=\kappa\nu_1$ with $\kappa \in \mathbb{R}_+$.
 % 	\item $\tau$ the time to the most recent common ancestor (MRCA) of a pair of isolates for indirect ancestries (before the earliest collection date).
 % 	\item $\alpha$ the probability that two sampled isolates belong to the same lineage (i.e., one is the direct ancestor of the other).
-	\item $\alpha$ the probability of having sequenced a given lineage existing within a patient; all lineages within a host are assumed to be equiprobable, so that $\alpha = 1/\mbox{nb lineages}$.
+	\item $\alpha_i$ is the within host 'pathogenic diversity', defined as the number of pathogenic lineages infecting patient $i$; all lineages are supposed to be as likely to be have been sequenced.
 \end{itemize}
 
-\subsection*{Statistical Model}
+\section*{Statistical Model}
 
 In the following, $\mathbf{1}_{\left\lbrace.\right\rbrace}$ denotes the indicator function, defined by $\mathbf{1}_{\left\lbrace X \right\rbrace}=1$ if $X$ is true, and $0$ otherwise.
 
@@ -138,7 +135,7 @@ and $P\left(\bm{\theta}\right)$ refer to the observation level, the transmission
 
 %%%%%%%%
 
-\subsubsection*{Observation level}
+\subsection*{Observation level}
 
 %%%%%%%%
 
@@ -166,7 +163,7 @@ The second line describes the negative tests, which can be either true negatives
 
 %%%%%%%%
 
-\subsubsection*{Transmission level (discrete time version ; time step = half day or day ?)} 
+\subsection*{Transmission level (discrete time version ; time step = half day or day ?)} 
 
 %%%%%%%%
 
@@ -204,50 +201,85 @@ $f_{i,j}$ is the probability of observing sequences $s_i$ and $s_j$ at respectiv
 
 %%%%%%%%
 
-\subsubsection*{Genetic likelihood}
+\subsection*{Genetic likelihood}
 
 %%%%%%%%
 
-The genetic likelihood given the infection $i \leftarrow j$ relies on how likely it is that a sequence in $S_i$ has an ancestor (i.e., an isolate from the same lineage) in $S_j$.
-The probability of observing the sequence $s_i^k$ given that patient $j$ infected patient $i$ is:
-\begin{eqnarray*}
-% p(s_i^k | s_i^1, \ldots, s_i^{k-1}, S_j, i \leftarrow j) & = & \Xi_{s_i^k}^{(1)} + \Xi_{s_i^k}^{(2)} + \Xi_{s_i^k}^{(3)} + \Xi_{s_i^k}^{(4)}\\
-% p(s_i^k | s_i^1, \ldots, s_i^{k-1}, S_j, i \leftarrow j) & = & b_{s_i^k, j} (\Xi_{s_i^k}^{(j)} + \Xi_{s_i^k}^{(i)}) + (1-b_{s_i^k, j}) \\
-p(s_i^k | S_j, i \leftarrow j) & = & \mathcal{B}\left(1 \lvert \sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}, \alpha\right) \Xi^{(j)} + 1 - \mathcal{B}\left(1 \arrowvert \sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}, \alpha\right) \\
-\end{eqnarray*}
-with:
-\begin{itemize}
-\item $\mathcal{B}(.\lvert n,p)$: probability mass function of the Binomial distribution with $n$ draws and probability $p$.
-\item $\sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}$: number of sequences in patient $j$ sampled before the sequence $s_i^k$.
-\item $\Xi^{(j)}$: direct ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$).
-%  \item $b_{s_i^k,j}$: equals 1 if a direct ancestor to sequence $s_i^k$ exists among $(S_i,S_j)$, and 0 otherwise;  
-%  \item $\Xi_{s_i^k}^{(j)}$: direct ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$)
-%  \item $\Xi_{s_i^k}^{(i)}$: direct ancestries to $s_i^k$ from sequences in patient $i$ ($S_i$)
-%  \item $\Xi_{s_i^k}^{(3)}$: indirect ancestries to $s_i^k$ from sequences in patient $j$ ($S_j$)
-%  \item $\Xi_{s_i^k}^{(4)}$: indirect ancestries to $s_i^k$ from sequences in patient $i$ ($S_i$)
-\end{itemize}
-
-$\Xi^{(j)}$ is given by:
-\begin{eqnarray*}
-\Xi_{s_i^k}^{(j)} & = & \sum_{q=1}^{m_j} \left(\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 \mathbf{1}_{\{t_i^k \geq t_j^q\}}(t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)
-\times \mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 \mathbf{1}_{\{t_i^k \geq t_j^q\}}(t_i^k - t_j^q) l_{s_i^k,s_j^q}\right) \right) \\
-% \Xi_{s_i^k}^{(i)} & = & \sum_{r=1}^{k-1} \left(\mathcal{P}\left(d_{s_i^k,s_i^r} | \nu_1 (t_i^k - t_i^r) l_{s_i^k,s_i^r}\right)
-% + \mathcal{P}\left(g_{s_i^k,s_i^r} | \nu_2 (t_i^k - t_i^r) l_{s_i^k,s_i^r}\right) \right) \\
-% \Xi_{s_i^k}^{(3)} & = & \sum_{q=1}^{m_j} (1-\alpha_{s_i^k,s_j^q}) \left(\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 (|t_i^k - t_j^q| + 2\tau_{s_i^k,s_j^q}) l_{s_i^k,s_j^q}\right)
-% + \mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 (|t_i^k - t_j^q| + 2\tau_{s_i^k,s_j^q}) l_{s_i^k,s_j^q}\right) \right) \\
-% \Xi_{s_i^k}^{(4)} & = & \sum_{r=1}^{k-1} (1-\alpha_{s_i^k,s_i^r}) \left(\mathcal{P}\left(d_{s_i^k,s_i^r} | \nu_1 (|t_i^k - t_i^r| + 2\tau_{s_i^k,s_i^r}) l_{s_i^k,s_i^r}\right)
-% + \mathcal{P}\left(g_{s_i^k,s_i^r} | \nu_2 (|t_i^k - t_i^r| + 2\tau_{s_i^k,s_i^r}) l_{s_i^k,s_i^r}\right) \right)\\
-\end{eqnarray*}
-where $\mathcal{P}(.|\lambda)$ is the probability mass function of a Poisson distribution with parameter $\lambda$. Left-hand terms correspond to transitions, while right-hand terms correspond to transversions.
+\subsubsection*{Ancestors and lineages}:\\
+\noindent We say that $B$ is an \textit{ancestor} of $A$ if and only if there is a path leading from $B$ to $A$ in the directed acyclic graph (DAG) representing the genealogy of $A$.
+Put simply, $B$ is an ancestor of $A$ if $A$ derives from $B$.
+We will say that $B$ is the \textit{most recent ancestor} (MRA) of $A$ if there is no older ancestor of $A$ in the considered set.
+A \textit{lineage} is defined as a set of (temporally ordered) individuals $\{x_1, ..., x_n\}$ so that $x_i$ is the MRA of $x_{i+1}$ for $i=1,\ldots,n-1$.
+For instance, in the lineage ($D \rightarrow C \rightarrow B \rightarrow A$), $B,C,D$ are all ancestors of $A$ and $B$ is the MRA of $A$.
+The genetic likelihood of $A$ will be defined as the probability of the observed mutations between $B$ and $A$, and is not conditional on previous ancestries.
 \\
 
-The probability of observing a set of sequences $S_i$ given that patient $j$ (with sequences $S_j$) infected patient $i$ is given by:
+\subsubsection*{Genetic likelihood of an infection}:\\
+The genetic likelihood of the infection of $i$ by $j$ (noted $i \leftarrow j$) relies on how likely it is to observe the genetic differences between sequences in $S_i$ and their most recent ancestors (MRA) in $S_j$.
+We first focus on the probability of observing a given sequence $S_i^k$ in $i$ given that $j$ infected $i$.
+We will note $\phi(s_i^k, s_j^q)$ the probability that $s_j^q$ is an ancestor of $s_i^k$, defined as:
+$$
+\phi(s_i^k, s_j^q) = \mathbf{1}_{\{t_i^k \geq t_j^q\}} \times 
+\underbrace{\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 (t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)}_{\mbox{transitions}}
+\times \underbrace{\mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 (t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)}_{\mbox{transversions}}
+$$
+with:
+\begin{itemize}
+\item $\mathbf{1}_{\{\mbox{statement}\}}$: indicator function, 1 if 'statement' is true, 0 otherwise
+\item $\mathcal{P}(.|\lambda)$: the probability mass function of a Poisson distribution with parameter $\lambda$
+\end{itemize}
+. The three terms respectively correspond to the indicator function ensuring that $s_j^q$ is older than $s_i^k$, the probability of the observed transitions ($d_{s_i^k,s_j^q}$), and the probability of the observed transversions ($g_{s_i^k,s_j^q}$). 
+\\
+
+We are now interested in $\xi(s_i^k, s_j^q)$,the probability that the sequence $s_j^q$ is the MRA of $s_i^k$.
+This requires two elements: i) that $s_j^q$ is an ancestor of $s_i^k$, and ii) that no ancestor of $s_i^k$ has been collected after $s_j^q$.
+This is given by:
+$$
+\xi(s_i^k, s_j^q) = \underbrace{\phi(s_i^k, s_j^q)}_{s_j^q \mbox{ ances. of } s_i^k} \times 
+\prod_{r=q+1}^{m_j} \underbrace{(1 - \phi(s_i^k, s_j^r))}_{s_j^r \mbox{ not ances. of } s_i^k}
+$$
+
+
+The genetic likelihood also needs to account for the possibility that no ancestor of $s_i^k$ has been isolated and sequenced in $S_j$.
+Assuming that all lineages are as likely to have been sequenced, the probability $\gamma(s_i^k, S_j)$ that the sampled $S_j$ contains at least one ancestor of $s_i^k$ is:
+$$
+\gamma(s_i^k, S_j) = 1 - \mathcal{B}\left(0 \lvert \:\: \sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}, 1/\alpha_i \right)
+$$
+with:
+\begin{itemize}
+\item $\mathcal{B}(.\lvert n,p)$: probability mass function of the Binomial distribution with $n$ draws and probability $p$
+\item $\sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}$: number of isolates sequenced in patient $j$ and collected before the sequence $s_i^k$
+\item $\alpha_i$: number of lineages in patient $j$
+\end{itemize}
+
+
+The probability $p(s_i^k | S_j, i \leftarrow j)$ of observing the sequence $s_i^k$ given that patient $j$ infected patient $i$ can now be computed as:
+$$
+p(s_i^k | S_j, i \leftarrow j) = 
+(\underbrace{\gamma(s_i^k, S_j)}_{\mbox{ances. in }S_j} \times 
+\underbrace{\sum_{q=1}^{m_j}\xi(s_i^k, s_j^q)}_{\mbox{prob. MRA for each }S_j} ) + 
+\underbrace{1 - \gamma(s_i^k, S_j)}_{\mbox{ances. not sampled}}
+$$
+
+
+The probability of observing the set of sequences $S_i$ given that $j$ infected $i$ is simply computed as the product over all sequences in $S_i$:
 \begin{eqnarray*}
 p(S_i | S_j, i \leftarrow j) & = & \prod_{k=1}^{m_i} p(s_i^k | S_j, i \leftarrow j) \\
 \end{eqnarray*}
+For the sake of simplicity, we shall refer to this quantity as $f_{i,j}$.
 \\
 
-Note that in the absence of genetic information ($m_i<1$ and $m_j=0$), $b_{s_i^k,j}$ is automatically set to 0.
+
+\subsubsection*{Assumptions of the model}
+The genetic model makes a few key assumptions:
+\begin{itemize}
+ \item different types of mutations happen independently
+ \item all lineages within a host are as likely to have been sampled and sequenced; when lineages have different within-host population sizes, this may still be ensured by extensive sequencing where only new haplotypes are retained; this assumption could be relaxed by parametrizing $\alpha_i$ as distributions.
+ \item all lineages present in a host are transmitted during a new infection; models excplicitly incorporating possible losses of diversity during the sampling process will be much more complex, and it will likely be difficult to disentangle this from sampling biases.
+\end{itemize}
+
+
+% Note that in the absence of genetic information ($m_i<1$ and $m_j=0$), $b_{s_i^k,j}$ is automatically set to 0.
 % The genetic likelihood only makes sense when there are sequences to be compared between $i$ and $j$, that is, when $m_i$ and $m_j$ are greater than 0.
 % We cannot simply ommit the genetic term in the global likelihood computation and implicitely assume $p(S_i | S_j, i \leftarrow j) = 1$, as this would give stronger weight to cases without genetic data.
 % Data augmentation is not possible either, as the space of possible sequences is huge unless we make very strong assumptions (on the number of clusters and the distributions of distances within and between clusters).
@@ -271,28 +303,29 @@ Note that in the absence of genetic information ($m_i<1$ and $m_j=0$), $b_{s_i^k
 
 % \noindent Alternatively, $g(x)$ could be defined as a function of the priors.
 
+
+
 %%%%%%%%
 
-\subsubsection*{Prior level}
+\subsection*{Prior level}
 
 %%%%%%%%
 
 For all model parameters, independent prior distributions were chosen: 
 \begin{itemize}
-	\item uniform on $[0,1]$ for $Sp$, $Se$, and $\pi$.
+	\item uniform on $[0,1]$ for $Sp$, $Se$, and $\pi$, 
 	\item flat exponential (mean 1000) for all other parameters. 
-	\item $\alpha$ can be parameterized using two approaches: i) using a prior on the number of lineages within a single host, and taking $\alpha=1/\mbox{nb. lineages}$ ii) inferred from the numbers of identical haplotypes sampled within a host at a given time point.
 \end{itemize}
 
   
-\subsection*{Parameter Estimation}
+\section*{Parameter Estimation}
 
 A Markov chain Monte Carlo (MCMC) method was used to sample the joint
 posterior distribution $P\left(\bm{Y},\bm{Z},\bm{\theta}\right)$.
 $Sp$, $Se$ and $\pi$ were updated using the Gibbs sampler, and all other parameters using a Metropolis algorithm.
 
 
-\subsection*{Appendix: Full formulation of the transmission level}
+\section*{Appendix: Full formulation of the transmission level}
 
 In the discrete version $A_i[k]$ is the first time step where individual $i$ is in hospital (for his/her $k_{th}$ stay), and $D_i[k]$ is the first time step where he/she is out of hospital (after his/her $k_{th}$ stay). Individual $i$ can transmit staph aureus from time step $C_i$ to time step $E_i-1$. 
 
