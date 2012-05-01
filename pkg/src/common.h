@@ -81,8 +81,9 @@ typedef struct{
     int *E; /* times of end of colonisation */
     int *I0; /* number of colonised individuals in ward 0 at each time step */
     int *I1; /* number of colonised individuals in ward 1 at each time step */
-    gsl_matrix *alpha; /* proba of direct ancestry between any 2 sequences; square matrix of dim NbSequences */
-    gsl_matrix *tau; /* TMRCA offset between any 2 sequences; square matrix of dim NbSequences */
+    vec_double **B; /* indic of direct ancestries; **B has length NbPatients; B[i]: ances. indic if sequences in patient 'i' */
+    /* gsl_matrix *alpha; /\* proba of direct ancestry between any 2 sequences; square matrix of dim NbSequences *\/ */
+    /* gsl_matrix *tau; /\* TMRCA offset between any 2 sequences; square matrix of dim NbSequences *\/ */
 } aug_data;
 
 

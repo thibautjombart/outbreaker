@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.10.24)  1 MAY 2012 11:04
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.8.24)  1 MAY 2012 18:33
 entering extended mode
  %&-line parsing enabled.
 **likelihood.2.3.tex
@@ -249,8 +249,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 61.
 LaTeX Font Info:    ... okay on input line 61.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 61.
 LaTeX Font Info:    ... okay on input line 61.
-
-(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+ (/usr/share/texmf/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count105
 \scratchdimen=\dimen123
@@ -302,25 +301,20 @@ Overfull \hbox (65.6502pt too wide) in alignment at lines 194--197
  [][][] []
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 209--216
-
- []
-
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 231--233
+Underfull \hbox (badness 10000) in paragraph at lines 237--239
 
  []
 
 [4]
-Underfull \hbox (badness 10000) in paragraph at lines 268--271
+Underfull \hbox (badness 10000) in paragraph at lines 274--277
 
  []
 
 [5] [6] [7] (./likelihood.2.3.aux) ) 
 Here is how much of TeX's memory you used:
  3968 strings out of 493848
- 54210 string characters out of 1152822
+ 54186 string characters out of 1152823
  136047 words of memory out of 3000000
  7188 multiletter control sequences out of 15000+50000
  18620 words of font info for 69 fonts, out of 3000000 for 9000
@@ -343,7 +337,7 @@ c/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
 cm/cmsy5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb
 ></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/shar
 e/texmf-texlive/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on likelihood.2.3.pdf (7 pages, 236810 bytes).
+Output written on likelihood.2.3.pdf (7 pages, 236971 bytes).
 PDF statistics:
  102 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

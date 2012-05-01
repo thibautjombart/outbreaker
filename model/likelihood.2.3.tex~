@@ -55,7 +55,7 @@
 \renewcommand{\@biblabel}[1]{\quad#1.}
 \makeatother
 
-\author{In alphabetic order: \\Simon Cauchemez, Anne Cori, Neil Ferguson, Christophe Fraser, Thibaut Jombart}
+\author{In alphabetic order: \\Simon Cauchemez, Anne Cori, Neil Ferguson, Christophe Fraser, Thibaut Jombart,...}
 \title{A model of MRSA transmission incorporating epidemiological and genetic data}
 
 \begin{document}
@@ -114,7 +114,7 @@ Parameters of the model are:
 	\item $\nu_1$ and $\nu_2$ the rate of transitions ($A \leftrightarrow G$ and $C \leftrightarrow T$) and transversions (other changes) of the DNA sequences. In practice, we will use $\nu_2=\kappa\nu_1$ with $\kappa \in \mathbb{R}_+$.
 % 	\item $\tau$ the time to the most recent common ancestor (MRCA) of a pair of isolates for indirect ancestries (before the earliest collection date).
 % 	\item $\alpha$ the probability that two sampled isolates belong to the same lineage (i.e., one is the direct ancestor of the other).
-	\item $\alpha_i$ is the 'within-host pathogenic diversity', defined as the number of pathogenic lineages infecting patient $i$; all lineages are supposed to be as likely to be have been sequenced. See description of the genetic likelihood for the definition of a lineage.
+	\item $\alpha$ is the 'within-host pathogenic diversity', defined as the number of pathogenic lineages infecting a given patient; all lineages are supposed to be as likely to be have been sequenced. See description of the genetic likelihood for the definition of a lineage.
 \end{itemize}
 
 \section*{Statistical Model}
@@ -208,16 +208,22 @@ $f_{i,j}$ is the probability of observing sequences $S_i$ and $S_j$ at respectiv
 \subsubsection*{Ancestors and lineages}
 \noindent We say that $B$ is an \textit{ancestor} of $A$ if and only if there is a path leading from $B$ to $A$ in the directed acyclic graph (DAG) representing the genealogy of $A$.
 Put simply, $B$ is an ancestor of $A$ if $A$ derives from $B$.
-We will say that $B$ is the \textit{most recent ancestor} (MRA) of $A$ if there is no older ancestor of $A$ in the considered set.
+We will say that $B$ is the \textit{most recent ancestor} (MRA) of $A$ if there is no ancestor of $A$ observed later in the considered set.
 A \textit{lineage} is defined as a set of (temporally ordered) individuals $\{x_1, ..., x_n\}$ so that $x_i$ is the MRA of $x_{i+1}$ for $i=1,\ldots,n-1$.
 For instance, in the lineage ($D \rightarrow C \rightarrow B \rightarrow A$), $B,C,D$ are all ancestors of $A$ and $B$ is the MRA of $A$.
-The genetic likelihood of $A$ will be defined as the probability of the observed mutations between $B$ and $A$, and is not conditional on previous ancestries.
-\\
+The genetic likelihood of $A$ given $B,C,D$ will be defined as the probability of the observed mutations between $B$ and $A$, and is not conditional on previous ancestries.
+The following statements (and thus the associated probabilities) are equivalent:
+\begin{itemize}
+ \item $A$ and $B$ are from the same lineage and $B$ is older than $A$
+ \item $B$ is an ancestor of $A$
+ \item $A$ is a descendent of $B$
+\end{itemize}
+
 
 \subsubsection*{Genetic likelihood of an infection}
 The genetic likelihood of the infection of $i$ by $j$ (noted $i \leftarrow j$) relies on how likely it is to observe the genetic differences between sequences in $S_i$ and their most recent ancestors (MRA) in $S_j$.
-We first focus on the probability of observing a given sequence $S_i^k$ in $i$ given that $j$ infected $i$.
-We will note $\phi(s_i^k, s_j^q)$ the probability of observing $s_i^k$ given that $s_j^q$ is one of its ancestors; this quantity is defined as:
+We first focus on the probability of observing a given sequence $s_i^k$ in $i$ given that $j$ infected $i$.
+We note $\phi(s_i^k, s_j^q)$ the probability of observing $s_i^k$ given an ancestor $s_j^k$ (which is also the probability that $s_j^q$ is an ancestor of $s_i^k$), defined as:
 $$
 \phi(s_i^k, s_j^q) = \mathbf{1}_{\{t_i^k \geq t_j^q\}} \times 
 \underbrace{\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 (t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)}_{\mbox{transitions}}
@@ -243,13 +249,13 @@ $$
 The genetic likelihood also needs to account for the possibility that, due to the sampling process, no ancestor of $s_i^k$ may have been isolated and sequenced in $S_j$.
 Assuming that all lineages are as likely to have been sequenced, the probability $\gamma(s_i^k, S_j)$ that $S_j$ contains at least one ancestor of $s_i^k$ is:
 $$
-\gamma(s_i^k, S_j) = 1 - \mathcal{B}\left(0 \lvert \:\: \sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}, 1/\alpha_i \right)
+\gamma(s_i^k, S_j) = 1 - \mathcal{B}\left(0 \lvert \:\: \sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}, 1/\alpha \right)
 $$
 with:
 \begin{itemize}
 \item $\mathcal{B}(.\lvert n,p)$: probability mass function of the Binomial distribution with $n$ draws and probability $p$
 \item $\sum_{j=1}^{m_j}\mathbf{1}_{\{t_i^k \geq t_j^q\}}$: number of isolates sequenced in patient $j$ and collected before the sequence $s_i^k$
-\item $\alpha_i$: number of lineages in patient $j$
+\item $\alpha$: number of lineages in patient $j$
 \end{itemize}
 
 
@@ -274,8 +280,9 @@ For the sake of simplicity, we shall refer to this quantity as $f_{i,j}$.
 The genetic model makes a few key assumptions:
 \begin{itemize}
  \item different types of mutations happen independently
- \item all lineages within a host are as likely to have been sampled and sequenced; when lineages have different within-host population sizes, this may still be ensured by extensive swabbing and retaining the sequences of new haplotypes only; this assumption could be relaxed by parametrizing $\alpha_is as distributions.
- \item all lineages present in a host are transmitted during a new infection; models excplicitly incorporating possible losses of diversity during the sampling process will be much more complex, and it will likely be difficult to disentangle this from sampling biases.
+ \item all patients share the same number of pathogen lineages $\alpha$; this could be relaxed by using a distribution for $\alpha$, e.g by taking $\alpha \sim 1+\mathcal{P}(\mu_a)$.
+ \item all lineages within a host are as likely to have been sampled and sequenced; when lineages have different within-host population sizes, this may still be ensured by extensive swabbing and retaining the sequences of new haplotypes only.
+%  \item all lineages present in a host are transmitted during a new infection; models excplicitly incorporating possible losses of diversity during the sampling process will be much more complex, and it will likely be difficult to disentangle this from sampling biases.
 \end{itemize}
 
 
