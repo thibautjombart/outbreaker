@@ -41,6 +41,31 @@ vec_int * create_vec_int(int n){
 
 
 
+/* CREATE A VECTOR OF DOUBLEEGERS OF SIZE N */
+vec_double * create_vec_double(int n){
+	vec_double *out = (vec_double *) malloc(sizeof(vec_double));
+	if(out == NULL){
+		fprintf(stderr, "\n[in: distances.c->create_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
+		exit(1);
+	}
+
+	/* NOTE out->values is not allocated when n=0 */
+	if(n>0){
+		out->values = (double *) calloc(n, sizeof(double));
+		if(out->values == NULL){
+			fprintf(stderr, "\n[in: distances.c->create_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
+			exit(1);
+		}
+	}
+
+	out->length = n;
+
+	return(out);
+}
+
+
+
+
 /* /\* CREATE A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO *\/ */
 /* vec_int * create_vec_int_zero(int n){ */
 /* 	vec_int *out = (vec_int *) malloc(sizeof(vec_int)); */
@@ -99,6 +124,37 @@ mat_int * create_mat_int(int n){
 
 
 
+/* CREATE EMPTY MAT_DOUBLE BETWEEN N OBJECTS */
+/* (values initialized to 0) */
+mat_double * create_mat_double(int n){
+	int i;
+	mat_double *out;
+
+	/* allocate output */
+	out = (mat_double *) malloc(sizeof(mat_double));
+	if(out == NULL){
+		fprintf(stderr, "\n[in: distances.c->create_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
+		exit(1);
+	}
+
+	/* fill in content */
+	out->rows = (vec_double **) calloc(n, sizeof(vec_double *));
+	if(out->rows == NULL){
+		fprintf(stderr, "\n[in: distances.c->create_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
+		exit(1);
+	}
+
+	for(i=0;i<n;i++){
+		out->rows[i] = create_vec_double(n);
+	}
+
+	out->n = n;
+
+	/* return */
+	return out;
+}
+
+
 
 
 /*
@@ -125,6 +181,23 @@ void free_mat_int(mat_int *in){
 }
 
 
+
+
+void free_vec_double(vec_double *in){
+	if(in->length > 0) free(in->values);
+	free(in);
+}
+
+
+void free_mat_double(mat_double *in){
+	int i;
+	if(in->n > 0) {
+		for(i=0;i<in->n;i++)
+			free_vec_double(in->rows[i]);
+	}
+	free(in->rows);
+	free(in);
+}
 
 
 
@@ -157,6 +230,31 @@ int matint_ij(mat_int *in, int i, int j){
 
 
 
+
+double vecdouble_i(vec_double *in, int i){
+	if(i >= in->length) {
+		fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length);
+		exit(1);
+	}
+	return in->values[i];
+}
+
+
+
+
+double matdouble_ij(mat_double *in, int i, int j){
+	if(i >= in->n) {
+		fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n);
+		exit(1);
+	}
+	return vecdouble_i(in->rows[i], j);
+}
+
+
+
+
+
+
 /* print method */
 void print_vec_int(vec_int *in){
 	int i;
@@ -181,6 +279,39 @@ void print_mat_int(mat_int *in){
 	}
 	printf("\n");
 }
+
+
+
+
+
+
+/* print method */
+void print_vec_double(vec_double *in){
+	int i;
+	printf("\nVector of %d values: ", in->length);
+	/* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
+	for(i=0;i<in->length;i++) printf("%d ", vecdouble_i(in,i));
+	printf("\n");
+}
+
+
+
+
+
+/* print method */
+void print_mat_double(mat_double *in){
+	int i,j;
+
+	for(i=0;i<in->n;i++){
+	printf("\n");
+		for(j=0;j<in->n;j++)
+			/* printf("%d ", in->rows[i]->values[j]); */
+			printf("%d ", matdouble_ij(in,i,j));
+	}
+	printf("\n");
+}
+
+
 
 
 
