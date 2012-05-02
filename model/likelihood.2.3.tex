@@ -104,17 +104,17 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 
 Parameters of the model are: 
 \begin{itemize}
-	\item $\beta$ a 2 by 2 matrix containing $\beta_{i \leftarrow j}$, the person to person transmission rate from ward $j$ to ward $i$
-	\item $\beta_{\text{ward} \leftarrow \text{out}}$ the force of infection from outside the 2 wards applied to patients in the wards
-	\item $\beta_{\text{out} \leftarrow \text{out}}$ the force of infection from outside the 2 wards applied to patients when they are not in the wards (eg inbetween two admissions)
-	\item $Sp$ the specificity of the testing, ie the probability of getting a negative test given uncolonized (assumed $100\%$)
-	\item $Se$ the sensitivity of the testing, ie the probability of getting a positive test given colonized
-	\item $\pi$ the probability of being already colonized at first admission
-	\item $\mu$ and $\sigma$ the mean and standard deviation of the duration of colonization.
-	\item $\nu_1$ and $\nu_2$ the rate of transitions ($A \leftrightarrow G$ and $C \leftrightarrow T$) and transversions (other changes) of the DNA sequences. In practice, we will use $\nu_2=\kappa\nu_1$ with $\kappa \in \mathbb{R}_+$.
+	\item $\beta$: a 2 by 2 matrix containing $\beta_{i \leftarrow j}$, the person to person transmission rate from ward $j$ to ward $i$
+	\item $\beta_{\text{ward} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients in the wards
+	\item $\beta_{\text{out} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients when they are not in the wards (eg inbetween two admissions)
+	\item $Sp$: the specificity of the testing, ie the probability of getting a negative test given uncolonized (assumed $100\%$)
+	\item $Se$: the sensitivity of the testing, ie the probability of getting a positive test given colonized
+	\item $\pi$: the probability of being already colonized at first admission
+	\item $\mu,\sigma$: the mean and standard deviation of the duration of colonization.
+	\item $\nu_1,\nu_2$: the rate of transitions ($A \leftrightarrow G$ and $C \leftrightarrow T$) and transversions (other changes) of the DNA sequences. In practice, we will use $\nu_2=\kappa\nu_1$ with $\kappa \in \mathbb{R}_+$.
 % 	\item $\tau$ the time to the most recent common ancestor (MRCA) of a pair of isolates for indirect ancestries (before the earliest collection date).
 % 	\item $\alpha$ the probability that two sampled isolates belong to the same lineage (i.e., one is the direct ancestor of the other).
-	\item $\alpha$ is the 'within-host pathogenic diversity', defined as the number of pathogenic lineages infecting a given patient; all lineages are supposed to be as likely to be have been sequenced. See description of the genetic likelihood for the definition of a lineage.
+	\item $\alpha$: the ``within-host pathogenic diversity'', defined as the number of pathogenic lineages infecting a given patient; $\alpha$ is assumed to follow a Poisson distribution with mean $\mu_{\alpha}$ (hyperparameter); all lineages are considered as likely to be have been sequenced.
 \end{itemize}
 
 \section*{Statistical Model}
@@ -208,7 +208,7 @@ $f_{i,j}$ is the probability of observing sequences $S_i$ and $S_j$ at respectiv
 \subsubsection*{Ancestors and lineages}
 \noindent We say that $B$ is an \textit{ancestor} of $A$ if and only if there is a path leading from $B$ to $A$ in the directed acyclic graph (DAG) representing the genealogy of $A$.
 Put simply, $B$ is an ancestor of $A$ if $A$ derives from $B$.
-We will say that $B$ is the \textit{most recent ancestor} (MRA) of $A$ if there is no ancestor of $A$ observed later in the considered set.
+We will say that $B$ is the \textit{most recent ancestor} (MRA) of $A$ if there is no other ancestor of $A$ observed later in the considered set.
 A \textit{lineage} is defined as a set of (temporally ordered) individuals $\{x_1, ..., x_n\}$ so that $x_i$ is the MRA of $x_{i+1}$ for $i=1,\ldots,n-1$.
 For instance, in the lineage ($D \rightarrow C \rightarrow B \rightarrow A$), $B,C,D$ are all ancestors of $A$ and $B$ is the MRA of $A$.
 The genetic likelihood of $A$ given $B,C,D$ will be defined as the probability of the observed mutations between $B$ and $A$, and is not conditional on previous ancestries.
@@ -280,7 +280,7 @@ For the sake of simplicity, we shall refer to this quantity as $f_{i,j}$.
 The genetic model makes a few key assumptions:
 \begin{itemize}
  \item different types of mutations happen independently
- \item all patients share the same number of pathogen lineages $\alpha$; this could be relaxed by using a distribution for $\alpha$, e.g by taking $\alpha \sim 1+\mathcal{P}(\mu_a)$.
+%  \item all patients share the same number of pathogen lineages $\alpha$; this could be relaxed by using a distribution for $\alpha$, e.g by taking $\alpha \sim 1+\mathcal{P}(\mu_a)$.
  \item all lineages within a host are as likely to have been sampled and sequenced; when lineages have different within-host population sizes, this may still be ensured by extensive swabbing and retaining the sequences of new haplotypes only.
 %  \item all lineages present in a host are transmitted during a new infection; models excplicitly incorporating possible losses of diversity during the sampling process will be much more complex, and it will likely be difficult to disentangle this from sampling biases.
 \end{itemize}
@@ -320,7 +320,9 @@ The genetic model makes a few key assumptions:
 
 For all model parameters, independent prior distributions were chosen: 
 \begin{itemize}
-	\item uniform on $[0,1]$ for $Sp$, $Se$, and $\pi$, 
+	\item uniform on $[0,1]$ for $Sp$, $Se$, $\pi$, $\nu_1$ and $\nu_2$
+	\item uniform on $[0,100]$ for $\kappa$ 
+	\item uniform on $[0-1000]$ for $\mu_{\alpha}$
 	\item flat exponential (mean 1000) for all other parameters. 
 \end{itemize}
 
