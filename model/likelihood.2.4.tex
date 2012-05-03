@@ -66,21 +66,23 @@
 
 \section*{Observed data ($Y$)}
 
-For each patient $i=1,\ldots,N$ admitted to one of the wards in the study period, we denote 
+Observed data are all denoted with $*$ as a superscript in order to distinguish them from the augmented data.
+
+For each patient $i=1,\ldots,N$ admitted to one of the wards in the study period (from time $1$ to time $T$), we denote 
 \begin{itemize}
-	\item $w_i$ the ward where the patient is admitted ($1$ for adult ICU, $2$ for paediatric ICU)
-	\item $k_i$ the number of times the patient is admitted (1 if no readmission)
-	\item $A_i$ and $D_i$ vectors containing the times of admission and discharge from the ward
-	\item $P_i$ and $N_i$ vectors containing the times of positive and negative swabs (positive defined as any of the samples taken is positive ; negative defined as all samples taken are negative).
-	\item $p_i$ and $n_i$ the size of those vectors, ie the number of positive and negative swabs.
- 	\item $S_i = \{s_i^1, \ldots, s_i^{m_i}\}$ a set of $m_i$ genetic sequences of MRSA isolated in patient $i$ at times 
-$T_i = \{t_i^1, \ldots, t_i^{m_i}\}$; collection dates $T_i$ are ordered so that $t_i^k \leq t_i^{k+1}$.
+	\item $w_i^*$ the ward where the patient is admitted ($1$ for adult ICU, $2$ for paediatric ICU)
+	\item $k_i^*$ the number of times the patient is admitted (1 if no readmission)
+	\item $A_i^*$ and $D_i^*$ vectors containing the times of admission and discharge from the ward
+	\item $P_i^*$ and $N_i^*$ vectors containing the times of positive and negative swabs (positive defined as any of the samples taken is positive ; negative defined as all samples taken are negative).
+	\item $p_i^*$ and $n_i^*$ the size of those vectors, ie the number of positive and negative swabs.
+ 	\item $S_i^* = \{s_i^{1^*}, \ldots, s_i^{m_i^*}\}$ a set of $m_i^*$ genetic sequences of MRSA isolated in patient $i$ at times 
+$T_i^* = \{t_i^{1^*}, \ldots, t_i^{m_i^*}\}$; collection dates $T_i^*$ are ordered so that $t_i^{k^*} \leq t_i^{k+1^*}$.
 % 	\item $s_i$ a genetic sequence of the MRSA isolated in patient $i$ at time $t_i$.
 % 	\item $\delta_{ab}$ and $\gamma_{ab}$ the number of transitions and transversions between isolates $a$ and $b$.
 % 	\item $L_{ab}$ the length of the DNA sequence comparable between $a$ and $b$.
- 	\item $d_{s_i^k,s_j^q}$ the number of transitions between sequence $k$ isolated in patient $i$ and sequence $q$ isolated in patient $j$.
-	\item $g_{s_i^k,s_j^q}$ the number of transversions between sequence $k$ isolated in patient $i$ and sequence $q$ isolated in patient $j$.
-	\item $l_{s_i^k,s_j^q}$ the number of typed nucleotides common to sequences $s_i^k$ and $s_j^q$.
+ 	\item $d_{s_i^k,s_j^q}^*$ the number of transitions between sequence $k$ isolated in patient $i$ and sequence $q$ isolated in patient $j$.
+	\item $g_{s_i^k,s_j^q}^*$ the number of transversions between sequence $k$ isolated in patient $i$ and sequence $q$ isolated in patient $j$.
+	\item $l_{s_i^k,s_j^q}^*$ the number of typed nucleotides common to sequences $s_i^{k^*}$ and $s_j^{q^*}$.
 \end{itemize}
 
 \section*{Augmented (unobserved) data ($Z$)}
@@ -90,6 +92,17 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 	\item $C_i$ the colonisation time (we assume no supercolonisations)
 	\item $E_i$ the time of end of colonisation.
 	\item $j_i$ the index if the case who infected patient $i$ (with value $-1$ if patient $i$ was infected outside the wards and $-2$ if he was not infected during the period of observation). 
+	\item $w_i$ the ward where the patient is admitted ($1$ for adult ICU, $2$ for paediatric ICU)
+	\item $k_i$ the number of times the patient is admitted (1 if no readmission)
+	\item $A_i$ and $D_i$ vectors containing the times of admission and discharge from the ward
+	\item $S_i = \{s_i^{1}, \ldots, s_i^{m_i}\}$ a set of $m_i$ genetic sequences of MRSA isolated in patient $i$ at times 
+$T_i = \{t_i^{1}, \ldots, t_i^{m_i}\}$; collection dates $T_i$ are ordered so that $t_i^{k} \leq t_i^{k+1}$.
+% 	\item $s_i$ a genetic sequence of the MRSA isolated in patient $i$ at time $t_i$.
+% 	\item $\delta_{ab}$ and $\gamma_{ab}$ the number of transitions and transversions between isolates $a$ and $b$.
+% 	\item $L_{ab}$ the length of the DNA sequence comparable between $a$ and $b$.
+ 	\item $d_{s_i^k,s_j^q}$ the number of transitions between sequence $k$ isolated in patient $i$ and sequence $q$ isolated in patient $j$.
+	\item $g_{s_i^k,s_j^q}$ the number of transversions between sequence $k$ isolated in patient $i$ and sequence $q$ isolated in patient $j$.
+	\item $l_{s_i^k,s_j^q}$ the number of typed nucleotides common to sequences $s_i^{k}$ and $s_j^{q}$.
 \end{itemize}
 
 % For each pair of sequences $s_i^k$ and $s_j^q$ in patients $i$ and $j$, we denote
@@ -107,8 +120,8 @@ Parameters of the model are:
 	\item $\beta$: a 2 by 2 matrix containing $\beta_{i \leftarrow j}$, the person to person transmission rate from ward $j$ to ward $i$
 	\item $\lambda_{\text{ward} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients in the wards
 	\item $\lambda_{\text{out} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients when they are not in the wards (eg inbetween two admissions)
-	\item $Sp$: the specificity of the testing, ie the probability of getting a negative test given uncolonized (assumed $100\%$)
-	\item $Se$: the sensitivity of the testing, ie the probability of getting a positive test given colonized
+	\item $\psi$: the specificity of the testing, ie the probability of getting a negative test given uncolonized (assumed $100\%$)
+	\item $\phi$: the sensitivity of the testing, ie the probability of getting a positive test given colonized
 	\item $\pi$: the probability of being already colonized at first admission
 	\item $\mu,\sigma$: the mean and standard deviation of the duration of colonization.
 	\item $\nu_1,\nu_2$: the rate of transitions ($A \leftrightarrow G$ and $C \leftrightarrow T$) and transversions (other changes) of the DNA sequences. In practice, we will use $\nu_2=\kappa\nu_1$ with $\kappa \in \mathbb{R}_+$.
@@ -125,11 +138,11 @@ The joint density of the observed data, the augmented data, and the model parame
 
 \begin{equation} \label {JointDensity}
 \begin{split}
-P\left(\bm{Y},\bm{Z},\bm{\theta}\right) = P\left(\bm{Y}|\bm{Z}\right)P\left(\bm{Z}|\bm{\theta}\right)P\left(\bm{\theta}\right)\\ \nonumber
+P\left(\bm{Y},\bm{Z},\bm{\theta}\right) = P\left(\bm{Y}|\bm{Z},\bm{\theta}\right)P\left(\bm{Z}|\bm{\theta}\right)P\left(\bm{\theta}\right)\\ \nonumber
 \end{split}
 \end{equation}
 
-\noindent where $P\left(\bm{Y}|\bm{Z}\right)$, $P\left(\bm{Z}|\bm{\theta}\right)$ 
+\noindent where $P\left(\bm{Y}|\bm{Z},\bm{\theta}\right)$, $P\left(\bm{Z}|\bm{\theta}\right)$ 
 and $P\left(\bm{\theta}\right)$ refer to the observation level, the transmission level
  and the prior level respectively.
 
@@ -142,24 +155,27 @@ and $P\left(\bm{\theta}\right)$ refer to the observation level, the transmission
 The observation level ensures that the observed data are consistent with the augmented data:
 
 \begin{eqnarray*}
-P\left(\bm{Y}|\bm{Z}\right) = &
+P\left(\bm{Y}|\bm{Z},\bm{\theta}\right) = &
 \bm{\prod}_{i=1}^N & % product on individuals
  \mathbf{1}_{\left\lbrace C_i < E_i \right\rbrace} \\
  &&
- \bm{\prod}_{j=1}^{p_i} % positive tests
+ \bm{\prod}_{j=1}^{p_i^*} % positive tests
 \left(
-\left( \mathbf{1}_{\left\lbrace P_i[j] < C_i \right\rbrace}+\mathbf{1}_{\left\lbrace P_i[j] \geq E_i \right\rbrace} \right) \times \left(1-Sp\right) % false positive
-+ \mathbf{1}_{\left\lbrace C_i \leq P_i[j] < E_i \right\rbrace} \times Se % true positive
+\left( \mathbf{1}_{\left\lbrace P_i^*[j] < C_i \right\rbrace}+\mathbf{1}_{\left\lbrace P_i^*[j] \geq E_i \right\rbrace} \right) \times \left(1-\psi\right) % false positive
++ \mathbf{1}_{\left\lbrace C_i \leq P_i^*[j] < E_i \right\rbrace} \times \phi % true positive
 \right) \\ 
-& & \bm{\prod}_{k=1}^{n_i} % negative tests
+& & \bm{\prod}_{k=1}^{n_i^*} % negative tests
 \left(
-\left( \mathbf{1}_{\left\lbrace N_i[k] < C_i \right\rbrace}+\mathbf{1}_{\left\lbrace N_i[k] \geq E_i \right\rbrace} \right) \times Sp % true negative
-+ \mathbf{1}_{\left\lbrace C_i \leq N_i[k] < E_i \right\rbrace} \times \left(1-Se\right) % false negative
+\left( \mathbf{1}_{\left\lbrace N_i^*[k] < C_i \right\rbrace}+\mathbf{1}_{\left\lbrace N_i^*[k] \geq E_i \right\rbrace} \right) \times \psi % true negative
++ \mathbf{1}_{\left\lbrace C_i \leq N_i^*[k] < E_i \right\rbrace} \times \left(1-\phi\right) % false negative
 \right) \\ 
+& & \mathbf{1}_{\left\lbrace w_i^* = w_i \right\rbrace} \mathbf{1}_{\left\lbrace k_i^* = k_i \right\rbrace} \mathbf{1}_{\left\lbrace A_i^* = A_i \right\rbrace} \mathbf{1}_{\left\lbrace D_i^* = D_i \right\rbrace} \mathbf{1}_{\left\lbrace m_i^* = m_i \right\rbrace} \mathbf{1}_{\left\lbrace S_i^* = S_i \right\rbrace} \mathbf{1}_{\left\lbrace T_i^* = T_i \right\rbrace}\\
+& & \bm{\prod}_{k=1}^{m_i^*} \bm{\prod}_{j=1}^{N} \bm{\prod}_{q=1}^{m_j^*} \mathbf{1}_{\left\lbrace d_{s_i^k,s_j^q}^*=d_{s_i^k,s_j^q} \right\rbrace} 
+\mathbf{1}_{\left\lbrace g_{s_i^k,s_j^q}^*=g_{s_i^k,s_j^q} \right\rbrace} \mathbf{1}_{\left\lbrace l_{s_i^k,s_j^q}^*=l_{s_i^k,s_j^q} \right\rbrace} \\
 \end{eqnarray*}
 
-The first line describes the positive tests, which can be either false positives (first term) or true positives (second term). 
-The second line describes the negative tests, which can be either true negatives (first term) or false negatives (second term). 
+The second line describes the positive tests, which can be either false positives (first term) or true positives (second term). 
+The third line describes the negative tests, which can be either true negatives (first term) or false negatives (second term). 
 
 %%%%%%%%
 
@@ -170,12 +186,30 @@ The second line describes the negative tests, which can be either true negatives
 In the discrete version $A_i[k]$ is the first time step where individual $i$ is in hospital (for his/her $k_{th}$ stay), and $D_i[k]$ is the first time step where he/she is out of hospital (after his/her $k_{th}$ stay). Individual $i$ can transmit staph aureus from time step $C_i$ to time step $E_i-1$. 
 
 \begin{eqnarray*}
-P\left(\bm{Z}|\bm{\theta}\right) = 
-\bm{\prod}_{i=1}^N % product on individuals
-\left( \Omega_i^{\left(1\right)} + \Omega_i^{\left(2\right)} \right) \times \left(\Phi_{\mu,\sigma}\left(E_i-C_i+0.5\right) - \Phi_{\mu,\sigma}\left(E_i-C_i-0.5\right) \right)
+P\left(\bm{Z}|\bm{\theta}\right) & =  & 
+P\left(\left\{C_i,E_i,j_i,w_i,k_i,A_i,D_i,m_i,S_i,T_i\right\}_{i=1\ldots,N},\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{i,j=1\ldots N;k=1\ldots m_i;q=1\ldots m_j}, \left\{I_w\left(t\right)\right\}_{w=1,2;t=1\ldots,T} |\bm{\theta}\right) \\
+& \propto & \bm{\prod}_{t=1}^T \bm{\prod}_{w=1}^2 P\left(I_w\left(t\right)|\left\{E_i,C_i,w_i,k_i,A_i,D_i\right\}_{i=1\ldots,N/C_i\leq t},\bm{\theta}\right) \bm{\prod}_{i=1}^N \mathbf{1}_{\left\lbrace C_i = t \right\rbrace} \\ % individuals colonised at time t
+&& \times P\left(E_i|C_i,\bm{\theta}\right) \\
+&& \times P\left(S_i|m_i,T_i,\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{j=1\ldots N,k=1\ldots m_i;q=1\ldots m_j},C_i,j_i,w_i,k_i,A_i,D_i,S_{j_i},m_{j_i},\bm{\theta}\right) \\
+&& \times P\left(j_i|C_i,I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) \\
+&&  P\left(C_i|I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) \\
 \end{eqnarray*}
 
-\noindent where $\Phi_{\mu,\sigma}$ is the cumulative density function of a Gamma distribution with mean $\mu$ and standard deviation $\sigma$ (we assume that the duration of colonisation is Gamma distributed), and: 
+with: 
+
+\begin{eqnarray*}
+P\left(E_i|C_i,\bm{\theta}\right) = \Phi_{\mu,\sigma}\left(E_i-C_i+0.5\right) - \Phi_{\mu,\sigma}\left(E_i-C_i-0.5\right)
+\end{eqnarray*}
+
+\noindent where $\Phi_{\mu,\sigma}$ is the cumulative density function of a Gamma distribution with mean $\mu$ and standard deviation $\sigma$ (we assume that the duration of colonisation is Gamma distributed)
+
+and with: 
+
+\begin{eqnarray*}
+P\left(C_i|I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) = \Omega_i^{\left(1\right)} + \Omega_i^{\left(2\right)} 
+\end{eqnarray*}
+
+where
 
 \begin{eqnarray*}
 \Omega_i^{\left(1\right)} & = & \pi \times \mathbf{1}_{\left\lbrace C_i < A_i[1] \right\rbrace}  \\
@@ -223,9 +257,9 @@ The following statements (and thus the associated probabilities) are equivalent:
 \subsubsection*{Genetic likelihood of an infection}
 The genetic likelihood of the infection of $i$ by $j$ (noted $i \leftarrow j$) relies on how likely it is to observe the genetic differences between sequences in $S_i$ and their most recent ancestors (MRA) in $S_j$.
 We first focus on the probability of observing a given sequence $s_i^k$ in $i$ given that $j$ infected $i$.
-We note $\phi(s_i^k, s_j^q)$ the probability of observing $s_i^k$ given an ancestor $s_j^k$ (which is also the probability that $s_j^q$ is an ancestor of $s_i^k$), defined as:
+We note $\rho(s_i^k, s_j^q)$ the probability of observing $s_i^k$ given an ancestor $s_j^k$ (which is also the probability that $s_j^q$ is an ancestor of $s_i^k$), defined as:
 $$
-\phi(s_i^k, s_j^q) = \mathbf{1}_{\{t_i^k \geq t_j^q\}} \times 
+\rho(s_i^k, s_j^q) = \mathbf{1}_{\{t_i^k \geq t_j^q\}} \times 
 \underbrace{\mathcal{P}\left(d_{s_i^k,s_j^q} | \nu_1 (t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)}_{\mbox{transitions}}
 \times \underbrace{\mathcal{P}\left(g_{s_i^k,s_j^q} | \nu_2 (t_i^k - t_j^q) l_{s_i^k,s_j^q}\right)}_{\mbox{transversions}}
 $$
@@ -241,8 +275,8 @@ We are now interested in $\xi(s_i^k, s_j^q)$,the probability that the sequence $
 This requires two elements: i) that $s_j^q$ is an ancestor of $s_i^k$, and ii) that no ancestor of $s_i^k$ has been collected after $s_j^q$.
 This is given by:
 $$
-\xi(s_i^k, s_j^q) = \underbrace{\phi(s_i^k, s_j^q)}_{s_j^q \mbox{ ances. of } s_i^k} \times 
-\prod_{r=q+1}^{m_j} \underbrace{(1 - \phi(s_i^k, s_j^r))}_{s_j^r \mbox{ not ances. of } s_i^k}
+\xi(s_i^k, s_j^q) = \underbrace{\rho(s_i^k, s_j^q)}_{s_j^q \mbox{ ances. of } s_i^k} \times 
+\prod_{r=q+1}^{m_j} \underbrace{(1 - \rho(s_i^k, s_j^r))}_{s_j^r \mbox{ not ances. of } s_i^k}
 $$
 
 
@@ -320,7 +354,7 @@ The genetic model makes a few key assumptions:
 
 For all model parameters, independent prior distributions were chosen: 
 \begin{itemize}
-	\item uniform on $[0,1]$ for $Sp$, $Se$, $\pi$, $\nu_1$ and $\nu_2$
+	\item uniform on $[0,1]$ for $\psi$, $\phi$, $\pi$, $\nu_1$ and $\nu_2$
 	\item uniform on $[0,100]$ for $\kappa$ 
 	\item uniform on $[0-1000]$ for $\mu_{\alpha}$
 	\item flat exponential (mean 1000) for all other parameters. 
@@ -331,7 +365,7 @@ For all model parameters, independent prior distributions were chosen:
 
 A Markov chain Monte Carlo (MCMC) method was used to sample the joint
 posterior distribution $P\left(\bm{Y},\bm{Z},\bm{\theta}\right)$.
-$Sp$, $Se$ and $\pi$ were updated using the Gibbs sampler, and all other parameters using a Metropolis algorithm.
+$\psi$, $\phi$ and $\pi$ were updated using the Gibbs sampler, and all other parameters using a Metropolis algorithm.
 
 
 \section*{Appendix: Full formulation of the transmission level}
