@@ -198,12 +198,33 @@ P\left(\left\{C_i,E_i,j_i,w_i,k_i,A_i,D_i,m_i,S_i,T_i\right\}_{i=1\ldots,N},\lef
 with: 
 
 \begin{eqnarray*}
+P\left(I_w\left(t\right)|\left\{E_i,C_i,w_i,k_i,A_i,D_i\right\}_{i=1\ldots,N/C_i\leq t},\bm{\theta}\right) =  \mathbf{1}_{\left\lbrace I_w\left(t\right)=\sum_{i=1}^{N} \mathbf{1}_{\left\lbrace w_i=w \right\rbrace} \mathbf{1}_{\left\lbrace C_i \leq t < E_i \right\rbrace} \sum_{l=1}^{k_i} \mathbf{1}_{\left\lbrace A_i[l] \leq t < D_i[l] \right\rbrace} \right\rbrace}
+\end{eqnarray*}
+
+\begin{eqnarray*}
 P\left(E_i|C_i,\bm{\theta}\right) = \Phi_{\mu,\sigma}\left(E_i-C_i+0.5\right) - \Phi_{\mu,\sigma}\left(E_i-C_i-0.5\right)
 \end{eqnarray*}
 
 \noindent where $\Phi_{\mu,\sigma}$ is the cumulative density function of a Gamma distribution with mean $\mu$ and standard deviation $\sigma$ (we assume that the duration of colonisation is Gamma distributed)
 
-and with: 
+\begin{eqnarray*}
+P\left(S_i|m_i,T_i,\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{j=1\ldots N,k=1\ldots m_i;q=1\ldots m_j},C_i,j_i,w_i,k_i,A_i,D_i,S_{j_i},m_{j_i},\bm{\theta}\right) = f_{i\leftarrow j_i}
+\end{eqnarray*}
+
+$f_{i\leftarrow j}$ is the probability of observing sequences $S_i$ at times $T_i$ given that individual $j$ infected individual $i$ and that sequences $S_j$ were observed at times $T_j$ (see next section on the genetic likelihood). 
+Similarly, $f_{\text{i},\text{ward} \leftarrow \text{out}}$ and $f_{\text{i},\text{out} \leftarrow \text{out}}$ are the probability of observing sequence $s_i$ at time $t_i$ given that individual $i$ was infected from outside the wards ($j_i = -1$) while he was in or outsite hospital respectively. 
+
+\begin{eqnarray*}
+P\left(j_i|C_i,I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) = 
+\mathbf{1}_{\left\lbrace \text{individual $i$ is in a ward at time $C_i$} \right\rbrace} 
+	\left( 
+			\mathbf{1}_{\left\lbrace j_i\geq 0 \right\rbrace} \frac{\beta_{w_i \leftarrow w_{j_i}} }{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}}}	
+			+ \mathbf{1}_{\left\lbrace j_i = -1 \right\rbrace} \frac{\lambda_{\text{ward} \leftarrow \text{out} }}{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}}}
+	\right)
++ \mathbf{1}_{\left\lbrace \text{individual $i$ is not in a ward at time $C_i$} \right\rbrace} \mathbf{1}_{\left\lbrace j_i = -1 \right\rbrace}
+\end{eqnarray*}
+
+HERE PROBLEM WHAT HAPPENS TO THOSE NEVER INFECTED ($j_i = -2$)? 
 
 \begin{eqnarray*}
 P\left(C_i|I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) = \Omega_i^{\left(1\right)} + \Omega_i^{\left(2\right)} 
@@ -223,15 +244,6 @@ $\lambda_i\left(t\right)$ is the force of transmission applied to individual $i$
 \lambda_i^{\left(t\right)} & = & \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) + \lambda_{\text{ward} \leftarrow \text{out}} \text{ if individual $i$ is in a ward at time $t$}  \\
  & = & \lambda_{\text{out} \leftarrow \text{out}} \text{ otherwise}\\
 \end{eqnarray*}
-\bigskip
-$\eta_i\left(C_i\right)$ is the probability of observing sequences $S_i$ given the possible contamination sources at time $C_i$. It is equal to: 
-\begin{eqnarray*}
-\eta_i\left(C_i\right) & = & \frac{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} f_{i \leftarrow j} + \lambda_{\text{ward} \leftarrow \text{out}}f_{\text{i},\text{ward} \leftarrow \text{out}} }{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}} } \text{ if individual $i$ is in a ward at time $C_i$}  \\
- & = & f_{\text{i},\text{out} \leftarrow \text{out}} \text{ otherwise}\\
-\end{eqnarray*}
-\bigskip
-
-$f_{i,j}$ is the probability of observing sequences $S_i$ and $S_j$ at respective times $T_i$ and $T_j$ given that individual $j$ infected individual $i$ (see next section on the genetic likelihood). Similarly, $f_{\text{i},\text{ward} \leftarrow \text{out}}$ and $f_{\text{i},\text{out} \leftarrow \text{out}}$ are the probability of observing sequence $s_i$ at time $t_i$ given that individual $i$ was infected from outside the wards while he was in or outsite hospital respectively. 
 
 %%%%%%%%
 
