@@ -1,20 +1,13 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.8.24)  2 MAY 2012 11:21
+This is pdfTeX, Version 3.1415926-1.40.10 (MiKTeX 2.8) (preloaded format=pdflatex 2012.2.1)  3 MAY 2012 10:07
 entering extended mode
- %&-line parsing enabled.
-**likelihood.2.3.tex
-(./likelihood.2.3.tex
+**C:/msysgit/msysgit/outbreaker-code/model/likelihood.2.3.tex
+(C:/msysgit/msysgit/outbreaker-code/model/likelihood.2.3.tex
 LaTeX2e <2009/09/24>
-Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
-yphenation, farsi, arabic, croatian, bulgarian, ukrainian, russian, czech, slov
-ak, danish, dutch, finnish, french, basque, ngerman, german, german-x-2009-06-1
-9, ngerman-x-2009-06-19, ibycus, monogreek, greek, ancientgreek, hungarian, san
-skrit, italian, latin, latvian, lithuanian, mongolian2a, mongolian, bokmal, nyn
-orsk, romanian, irish, coptic, serbian, turkish, welsh, esperanto, uppersorbian
-, estonian, indonesian, interlingua, icelandic, kurmanji, slovenian, polish, po
-rtuguese, spanish, galician, catalan, swedish, ukenglish, pinyin, loaded.
-(/usr/share/texmf-texlive/tex/latex/base/article.cls
+Babel <v3.8l> and hyphenation patterns for english, dumylang, nohyphenation, ge
+rman, ngerman, german-x-2009-06-19, ngerman-x-2009-06-19, french, loaded.
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\base\article.cls"
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
-(/usr/share/texmf-texlive/tex/latex/base/size10.clo
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\base\size10.clo"
 File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
@@ -29,24 +22,24 @@ File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsmath.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ams\math\amsmath.sty"
 Package: amsmath 2000/07/18 v2.13 AMS math features
 \@mathmargin=\skip43
 
 For additional information on amsmath, use the `?' option.
-(/usr/share/texmf-texlive/tex/latex/amsmath/amstext.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ams\math\amstext.sty"
 Package: amstext 2000/06/29 v2.01
 
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsgen.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ams\math\amsgen.sty"
 File: amsgen.sty 1999/11/30 v2.0
 \@emptytoks=\toks14
 \ex@=\dimen103
 ))
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsbsy.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ams\math\amsbsy.sty"
 Package: amsbsy 1999/11/29 v1.2d
 \pmbraise@=\dimen104
 )
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsopn.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ams\math\amsopn.sty"
 Package: amsopn 1999/12/14 v2.01 operator names
 )
 \inf@bad=\count87
@@ -87,61 +80,67 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
 LaTeX Info: Redefining \[ on input line 2666.
 LaTeX Info: Redefining \] on input line 2667.
 )
-(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\amsfonts\amssymb.sty"
 Package: amssymb 2009/06/22 v3.00
 
-(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\amsfonts\amsfonts.sty"
 Package: amsfonts 2009/06/22 v3.00 Basic AMSFonts support
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 96.
 ))
-(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\graphics\graphicx.sty"
 Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
 
-(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\graphics\keyval.sty"
 Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
 \KV@toks@=\toks19
 )
-(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\graphics\graphics.sty"
 Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
 
-(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\graphics\trig.sty"
 Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 )
-(/etc/texmf/tex/latex/config/graphics.cfg
-File: graphics.cfg 2009/08/28 v1.8 graphics configuration of TeX Live
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
 )
 Package graphics Info: Driver file: pdftex.def on input line 91.
 
-(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def
-File: pdftex.def 2010/03/12 v0.04p Graphics/color for pdfTeX
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\pdftex-def\pdftex.def"
+File: pdftex.def 2011/01/28 v0.05d Graphics/color for pdfTeX
 \Gread@gobject=\count99
 ))
 \Gin@req@height=\dimen112
 \Gin@req@width=\dimen113
 )
-(/usr/share/texmf-texlive/tex/latex/cite/cite.sty
-LaTeX Info: Redefining \cite on input line 285.
-LaTeX Info: Redefining \nocite on input line 356.
-Package: cite 2009/08/29  v 5.2
-)
-(/usr/share/texmf-texlive/tex/latex/graphics/color.sty
+("\\fi--san01\homes\acori\profiles\application data\MiKTeX\2.8\tex\latex\cite\c
+ite.sty"
+LaTeX Info: Redefining \cite on input line 302.
+LaTeX Info: Redefining \nocite on input line 373.
+Package: cite 2010/09/10  v 5.3
+) ("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\graphics\color.sty"
 Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
 
-(/etc/texmf/tex/latex/config/color.cfg
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\00miktex\color.cfg"
 File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
 Package color Info: Driver file: pdftex.def on input line 130.
 )
-(/var/lib/texmf/tex/generic/babel/babel.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\generic\babel\babel.sty"
 Package: babel 2008/07/06 v3.8l The Babel package
 
-(/usr/share/texmf-texlive/tex/generic/babel/frenchb.ldf
+*************************************
+* Local config file bblopts.cfg used
+*
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\00miktex\bblopts.cfg"
+File: bblopts.cfg 2006/07/31 v1.0 MiKTeX 'babel' configuration
+)
+("C:\Program Files (x86)\MiKTeX 2.8\tex\generic\babel\frenchb.ldf"
 Language: frenchb 2009/03/16 v2.3d French support from the babel system
 
-(/usr/share/texmf-texlive/tex/generic/babel/babel.def
+("C:\Program Files (x86)\MiKTeX 2.8\tex\generic\babel\babel.def"
 File: babel.def 2008/07/06 v3.8l Babel common definitions
 \babel@savecnt=\count100
 \U@D=\dimen114
@@ -158,15 +157,15 @@ Package babel Info: Making ? an active character on input line 123.
 *************************************
 * Local config file frenchb.cfg used
 *
-(/usr/share/texmf-texlive/tex/generic/babel/frenchb.cfg))
-(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+("C:\Program Files (x86)\MiKTeX 2.8\tex\generic\babel\frenchb.cfg"))
+("C:\Program Files (x86)\MiKTeX 2.8\tex\generic\babel\english.ldf"
 Language: english 2005/03/30 v3.3o English support from the babel system
 \l@canadian = a dialect from \language\l@american 
 \l@australian = a dialect from \language\l@british 
 \l@newzealand = a dialect from \language\l@british 
 ))
-(/usr/share/texmf-texlive/tex/latex/carlisle/scalefnt.sty)
-(/usr/share/texmf-texlive/tex/latex/tools/bm.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\carlisle\scalefnt.sty")
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\tools\bm.sty"
 Package: bm 2004/02/26 v1.1c Bold Symbol Support (DPC/FMi)
 \symboldoperators=\mathgroup6
 \symboldletters=\mathgroup7
@@ -174,7 +173,7 @@ Package: bm 2004/02/26 v1.1c Bold Symbol Support (DPC/FMi)
 LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 138.
 LaTeX Info: Redefining \bm on input line 204.
 )
-(/usr/share/texmf-texlive/tex/latex/amscls/amsthm.sty
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ams\classes\amsthm.sty"
 Package: amsthm 2004/08/06 v2.20
 \thm@style=\toks20
 \thm@bodyfont=\toks21
@@ -186,23 +185,25 @@ Package: amsthm 2004/08/06 v2.20
 \thm@headsep=\skip48
 \dth@everypar=\toks25
 )
-(/usr/share/texmf-texlive/tex/latex/ccaption/ccaption.sty
+("\\fi--san01\homes\acori\profiles\application data\MiKTeX\2.8\tex\latex\ccapti
+on\ccaption.sty"
 Package: ccaption 2009/09/02 v3.2b Extended captioning and new floats
 \@contcwidth=\skip49
 \@contindw=\skip50
 \abovelegendskip=\skip51
 \belowlegendskip=\skip52
 \c@newflo@tctr=\count103
-)
-(/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty
+) ("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\ltxmisc\url.sty"
 \Urlmuskip=\muskip11
 Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
 )
-(/usr/share/texmf-texlive/tex/latex/caption/caption.sty
-Package: caption 2009/10/09 v3.1k Customizing captions (AR)
+("\\fi--san01\homes\acori\profiles\application data\MiKTeX\2.8\tex\latex\captio
+n\caption.sty"
+Package: caption 2011/11/10 v3.2e Customizing captions (AR)
 
-(/usr/share/texmf-texlive/tex/latex/caption/caption3.sty
-Package: caption3 2009/10/09 v3.1k caption3 kernel (AR)
+("\\fi--san01\homes\acori\profiles\application data\MiKTeX\2.8\tex\latex\captio
+n\caption3.sty"
+Package: caption3 2011/11/01 v1.4a caption3 kernel (AR)
 \captionmargin=\dimen117
 \captionmargin@=\dimen118
 \captionwidth=\dimen119
@@ -210,9 +211,9 @@ Package: caption3 2009/10/09 v3.1k caption3 kernel (AR)
 \caption@parindent=\dimen121
 \caption@hangindent=\dimen122
 Package caption Info: The definition of \@makecaption has been changed,
-(caption)             frenchb will NOT customize it on input line 1007.
+(caption)             frenchb will NOT customize it.
 Package caption Info: Unknown document class (or package),
-(caption)             standard defaults will be used on input line 1068.
+(caption)             standard defaults will be used.
 )
 
 Package caption Warning: Unsupported document class (or package) detected,
@@ -234,9 +235,7 @@ tcstyle \hangindent =\@contindw \hangafter =\@ne \@conttfont #2\par } \else \@c
 ontpre {\@contnfont #1\@contdelim }\@conttempa {\@contcstyle \@conttfont #2\par
  } \fi \fi \@contpost \if@contcw \par } \fi \vskip \belowcaptionskip .
 \c@ContinuedFloat=\count104
-) (./likelihood.2.3.aux)
-\openout1 = `likelihood.2.3.aux'.
-
+) (C:\msysgit\msysgit\outbreaker-code\model\likelihood.2.3.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 61.
 LaTeX Font Info:    ... okay on input line 61.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 61.
@@ -249,7 +248,9 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 61.
 LaTeX Font Info:    ... okay on input line 61.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 61.
 LaTeX Font Info:    ... okay on input line 61.
- (/usr/share/texmf/tex/context/base/supp-pdf.mkii
+
+("\\fi--san01\homes\acori\profiles\application data\MiKTeX\2.8\tex\context\base
+\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count105
 \scratchdimen=\dimen123
@@ -279,25 +280,25 @@ Package frenchb.ldf Warning: OT1 encoding should not be used for French.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Try loading font information for U+msa on input line 65.
-(/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
 LaTeX Font Info:    Try loading font information for U+msb on input line 65.
 
-(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 71.
 
-(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
+("C:\Program Files (x86)\MiKTeX 2.8\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 71.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
-Overfull \hbox (65.6502pt too wide) in alignment at lines 194--197
+{C:/Users/acori/AppData/Local/MiKTeX/2.8/pdftex/config/pdftex.map}] [2]
+Overfull \hbox (65.82732pt too wide) in alignment at lines 194--197
  [][][] []
  []
 
@@ -311,33 +312,39 @@ Underfull \hbox (badness 10000) in paragraph at lines 274--277
 
  []
 
-[5] [6] [7] (./likelihood.2.3.aux) ) 
+[5] [6] [7] (C:\msysgit\msysgit\outbreaker-code\model\likelihood.2.3.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
 Here is how much of TeX's memory you used:
- 3968 strings out of 493848
- 54186 string characters out of 1152823
- 136047 words of memory out of 3000000
- 7188 multiletter control sequences out of 15000+50000
+ 4097 strings out of 495289
+ 57925 string characters out of 3180055
+ 132887 words of memory out of 3000000
+ 7240 multiletter control sequences out of 15000+200000
  18620 words of font info for 69 fonts, out of 3000000 for 9000
- 714 hyphenation exceptions out of 8191
- 36i,15n,38p,575b,224s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/share/texmf-texlive/fonts/type1/publi
-c/amsfonts/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
-cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.p
-fb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cmextra/cmex7.pfb></us
-r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/tex
-mf-texlive/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-texlive/
-fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/
-public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfo
-nts/cm/cmmib10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr
-10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr
-/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texmf
--texlive/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texmf-texlive/font
-s/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/publi
-c/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
-cm/cmsy5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb
-></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/shar
-e/texmf-texlive/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on likelihood.2.3.pdf (7 pages, 237151 bytes).
+ 14 hyphenation exceptions out of 8191
+ 36i,15n,38p,620b,224s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
+<C:/Program Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C
+:/Program Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/
+Program Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C
+:/Program Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/
+Program Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Pr
+ogram Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Progr
+am Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program 
+Files (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmmib10.pfb><C:/Program F
+iles (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program File
+s (x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files (
+x86)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (x86
+)/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Program Files (x86)/Mi
+KTeX 2.8/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Program Files (x86)/MiKTeX
+ 2.8/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2
+.8/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/Program Files (x86)/MiKTeX 2.8/
+fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.8/fon
+ts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files (x86)/MiKTeX 2.8/fonts
+/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on likelihood.2.3.pdf (7 pages, 237534 bytes).
 PDF statistics:
  102 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
