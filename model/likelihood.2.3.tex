@@ -89,6 +89,7 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 \begin{itemize}
 	\item $C_i$ the colonisation time (we assume no supercolonisations)
 	\item $E_i$ the time of end of colonisation.
+	\item $j_i$ the index if the case who infected patient $i$ (with value $-1$ if patient $i$ was infected outside the wards and $-2$ if he was not infected during the period of observation). 
 \end{itemize}
 
 % For each pair of sequences $s_i^k$ and $s_j^q$ in patients $i$ and $j$, we denote
@@ -97,7 +98,6 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 % 	\item $b_{s_i^k,j}$ an indicator function with value 1 if a direct ancestor to sequence $s_i^k$ has been sampled in patients $i$ or $j$, and 0 otherwise.
 % \end{itemize}
 
-
 \noindent We denote $I_w\left(t\right)=\sum_{i=1}^{N} \mathbf{1}_{\left\lbrace w_i=w \right\rbrace} \mathbf{1}_{\left\lbrace C_i \leq t < E_i \right\rbrace} \sum_{l=1}^{k_i} \mathbf{1}_{\left\lbrace A_i[l] \leq t < D_i[l] \right\rbrace} $  the number of patients in ward $w$ who are colonized at time $t$.
 
 \section*{Parameters ($\theta$)}
@@ -105,8 +105,8 @@ For each patient $i$ admitted to one of the wards in the study period, we denote
 Parameters of the model are: 
 \begin{itemize}
 	\item $\beta$: a 2 by 2 matrix containing $\beta_{i \leftarrow j}$, the person to person transmission rate from ward $j$ to ward $i$
-	\item $\beta_{\text{ward} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients in the wards
-	\item $\beta_{\text{out} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients when they are not in the wards (eg inbetween two admissions)
+	\item $\lambda_{\text{ward} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients in the wards
+	\item $\lambda_{\text{out} \leftarrow \text{out}}$: the force of infection from outside the 2 wards applied to patients when they are not in the wards (eg inbetween two admissions)
 	\item $Sp$: the specificity of the testing, ie the probability of getting a negative test given uncolonized (assumed $100\%$)
 	\item $Se$: the sensitivity of the testing, ie the probability of getting a positive test given colonized
 	\item $\pi$: the probability of being already colonized at first admission
@@ -186,13 +186,13 @@ P\left(\bm{Z}|\bm{\theta}\right) =
 $\Omega_i^{\left(1\right)}$ is the probability that individual $i$ is colonized before his/her first admission in the wards ; $\Omega_i^{\left(2\right)}$ is the probability that individual $i$ is colonized after his/her first admission in the wards. 
 $\lambda_i\left(t\right)$ is the force of transmission applied to individual $i$ at time $t$. It is equal to: 
 \begin{eqnarray*}
-\lambda_i^{\left(t\right)} & = & \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) + \beta_{\text{ward} \leftarrow \text{out}} \text{ if individual $i$ is in a ward at time $t$}  \\
- & = & \beta_{\text{out} \leftarrow \text{out}} \text{ otherwise}\\
+\lambda_i^{\left(t\right)} & = & \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) + \lambda_{\text{ward} \leftarrow \text{out}} \text{ if individual $i$ is in a ward at time $t$}  \\
+ & = & \lambda_{\text{out} \leftarrow \text{out}} \text{ otherwise}\\
 \end{eqnarray*}
 \bigskip
 $\eta_i\left(C_i\right)$ is the probability of observing sequences $S_i$ given the possible contamination sources at time $C_i$. It is equal to: 
 \begin{eqnarray*}
-\eta_i\left(C_i\right) & = & \frac{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} f_{i \leftarrow j} + \beta_{\text{ward} \leftarrow \text{out}}f_{\text{i},\text{ward} \leftarrow \text{out}} }{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \beta_{\text{ward} \leftarrow \text{out}} } \text{ if individual $i$ is in a ward at time $C_i$}  \\
+\eta_i\left(C_i\right) & = & \frac{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} f_{i \leftarrow j} + \lambda_{\text{ward} \leftarrow \text{out}}f_{\text{i},\text{ward} \leftarrow \text{out}} }{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}} } \text{ if individual $i$ is in a ward at time $C_i$}  \\
  & = & f_{\text{i},\text{out} \leftarrow \text{out}} \text{ otherwise}\\
 \end{eqnarray*}
 \bigskip
@@ -349,16 +349,16 @@ P\left(\bm{Z}|\bm{\theta}\right) =
 \begin{eqnarray*}
 \lefteqn{\Omega_i^{\left(1\right)} = \pi \times \mathbf{1}_{\left\lbrace C_i < A_i[1] \right\rbrace} }\\
 \lefteqn{\Omega_i^{\left(2\right)}  = \left( 1-\pi \right) \sum_{l=1}^{k_i} \mathbf{1}_{\left\lbrace A_i[l] \leq C_i < D_i[l] \right\rbrace}}\\
-	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \sum_{t=A_i[s]}^{D_i[s]-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) + \beta_{\text{ward} \leftarrow \text{out}}\left(D_i[s]-A_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \beta_{\text{out} \leftarrow \text{out}}\left(A_i[s+1]-D_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \sum_{t=A_i[l]}^{C_i-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) - \beta_{\text{ward} \leftarrow \text{out}}\left(C_i-A_i[l]\right)  \right) \\
-	 && \times \left( 1 - \text{exp}\left( - \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(C_i\right) - \beta_{\text{ward} \leftarrow \text{out}} \right) \right) \\
-	 && \times \frac{\sum_{j=1}^N \mathbf{1}_{\left\lbrace C_j \leq C_i < E_j \right\rbrace} \sum_{r=1}^{k_j} \mathbf{1}_{\left\lbrace A_j[r] \leq C_i < D_j[r] \right\rbrace} \beta_{w_i \leftarrow w_j} f_{i \leftarrow j} + \beta_{\text{ward} \leftarrow \text{out}}f_{\text{i},\text{ward} \leftarrow \text{out}} }{\sum_{j=1}^N \mathbf{1}_{\left\lbrace C_j \leq C_i < E_j \right\rbrace} \sum_{r=1}^{k_j} \mathbf{1}_{\left\lbrace A_j[r] \leq C_i < D_j[r] \right\rbrace} \beta_{w_i \leftarrow w_j} + \beta_{\text{ward} \leftarrow \text{out}} } \\
+	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \sum_{t=A_i[s]}^{D_i[s]-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) + \lambda_{\text{ward} \leftarrow \text{out}}\left(D_i[s]-A_i[s]\right) \right] \right) \\
+	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \lambda_{\text{out} \leftarrow \text{out}}\left(A_i[s+1]-D_i[s]\right) \right] \right) \\
+	 && \times \text{exp}\left( - \sum_{t=A_i[l]}^{C_i-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) - \lambda_{\text{ward} \leftarrow \text{out}}\left(C_i-A_i[l]\right)  \right) \\
+	 && \times \left( 1 - \text{exp}\left( - \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(C_i\right) - \lambda_{\text{ward} \leftarrow \text{out}} \right) \right) \\
+	 && \times \frac{\sum_{j=1}^N \mathbf{1}_{\left\lbrace C_j \leq C_i < E_j \right\rbrace} \sum_{r=1}^{k_j} \mathbf{1}_{\left\lbrace A_j[r] \leq C_i < D_j[r] \right\rbrace} \beta_{w_i \leftarrow w_j} f_{i \leftarrow j} + \lambda_{\text{ward} \leftarrow \text{out}}f_{\text{i},\text{ward} \leftarrow \text{out}} }{\sum_{j=1}^N \mathbf{1}_{\left\lbrace C_j \leq C_i < E_j \right\rbrace} \sum_{r=1}^{k_j} \mathbf{1}_{\left\lbrace A_j[r] \leq C_i < D_j[r] \right\rbrace} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}} } \\
 \lefteqn{\Omega_i^{\left(3\right)}  = \mathbf{1}_{\left\lbrace k_i > 1 \right\rbrace} \left( 1-\pi \right) \sum_{l=1}^{k_i-1} \mathbf{1}_{\left\lbrace D_i[l] \leq C_i < A_i[l+1] \right\rbrace}}\\
-	 && \times \text{exp}\left( - \sum_{s=1}^{l} \left[ \sum_{t=A_i[s]}^{D_i[s]-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) + \beta_{\text{ward} \leftarrow \text{out}}\left(D_i[s]-A_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \beta_{\text{out} \leftarrow \text{out}}\left(A_i[s+1]-D_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \beta_{\text{out} \leftarrow \text{out}}\left(C_i-D_i[l]\right) \right) \\
-	 && \times \left( 1 - \text{exp}\left( - \beta_{\text{out} \leftarrow \text{out}} \right) \right) \\
+	 && \times \text{exp}\left( - \sum_{s=1}^{l} \left[ \sum_{t=A_i[s]}^{D_i[s]-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) + \lambda_{\text{ward} \leftarrow \text{out}}\left(D_i[s]-A_i[s]\right) \right] \right) \\
+	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \lambda_{\text{out} \leftarrow \text{out}}\left(A_i[s+1]-D_i[s]\right) \right] \right) \\
+	 && \times \text{exp}\left( - \lambda_{\text{out} \leftarrow \text{out}}\left(C_i-D_i[l]\right) \right) \\
+	 && \times \left( 1 - \text{exp}\left( - \lambda_{\text{out} \leftarrow \text{out}} \right) \right) \\
 	 && \times f_{\text{i},\text{out} \leftarrow \text{out}}  \\
 \end{eqnarray*}
 \bigskip
