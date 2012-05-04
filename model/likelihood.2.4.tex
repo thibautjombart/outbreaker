@@ -187,10 +187,16 @@ In the discrete version $A_i[k]$ is the first time step where individual $i$ is 
 
 \begin{eqnarray*}
 P\left(\bm{Z}|\bm{\theta}\right) & =  & 
-P\left(\left\{C_i,E_i,j_i,w_i,k_i,A_i,D_i,m_i,S_i,T_i\right\}_{i=1\ldots,N},\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{i,j=1\ldots N;k=1\ldots m_i;q=1\ldots m_j}, \left\{I_w\left(t\right)\right\}_{w=1,2;t=1\ldots,T} |\bm{\theta}\right) \\
+P\left(\left\{C_i,E_i,j_i,w_i,k_i,A_i,D_i,m_i,S_i,T_i\right\}_{i=1\ldots,N},\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{
+\substack{i,j=1\ldots N \\ k=1\ldots m_i \\ q=1\ldots m_j}
+}, \left\{I_w\left(t\right)\right\}_{
+\substack{w=1,2 \\ t=1\ldots,T}
+} |\bm{\theta}\right) \\
 & \propto & \bm{\prod}_{t=1}^T \bm{\prod}_{w=1}^2 P\left(I_w\left(t\right)|\left\{E_i,C_i,w_i,k_i,A_i,D_i\right\}_{i=1\ldots,N/C_i\leq t},\bm{\theta}\right) \bm{\prod}_{i=1}^N \mathbf{1}_{\left\lbrace C_i = t \right\rbrace} \\ % individuals colonised at time t
 && \times P\left(E_i|C_i,\bm{\theta}\right) \\
-&& \times P\left(S_i|m_i,T_i,\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{j=1\ldots N,k=1\ldots m_i;q=1\ldots m_j},C_i,j_i,w_i,k_i,A_i,D_i,S_{j_i},m_{j_i},\bm{\theta}\right) \\
+&& \times P\left(S_i|m_i,T_i,\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{
+\substack{j=1\ldots N \\ k=1\ldots m_i \\ q=1\ldots m_j}
+},C_i,j_i,w_i,k_i,A_i,D_i,S_{j_i},m_{j_i},\bm{\theta}\right) \\
 && \times P\left(j_i|C_i,I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) \\
 &&  P\left(C_i|I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) \\
 \end{eqnarray*}
@@ -208,20 +214,24 @@ P\left(E_i|C_i,\bm{\theta}\right) = \Phi_{\mu,\sigma}\left(E_i-C_i+0.5\right) - 
 \noindent where $\Phi_{\mu,\sigma}$ is the cumulative density function of a Gamma distribution with mean $\mu$ and standard deviation $\sigma$ (we assume that the duration of colonisation is Gamma distributed)
 
 \begin{eqnarray*}
-P\left(S_i|m_i,T_i,\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{j=1\ldots N,k=1\ldots m_i;q=1\ldots m_j},C_i,j_i,w_i,k_i,A_i,D_i,S_{j_i},m_{j_i},\bm{\theta}\right) = f_{i\leftarrow j_i}
+P\left(S_i|m_i,T_i,\left\{d_{s_i^k,s_j^q},g_{s_i^k,s_j^q},l_{s_i^k,s_j^q}\right\}_{
+\substack{j=1\ldots N \\ k=1\ldots m_i \\ q=1\ldots m_j}
+},C_i,j_i,w_i,k_i,A_i,D_i,S_{j_i},m_{j_i},\bm{\theta}\right) = f_{i\leftarrow j_i}
 \end{eqnarray*}
 
 $f_{i\leftarrow j}$ is the probability of observing sequences $S_i$ at times $T_i$ given that individual $j$ infected individual $i$ and that sequences $S_j$ were observed at times $T_j$ (see next section on the genetic likelihood). 
 Similarly, $f_{\text{i},\text{ward} \leftarrow \text{out}}$ and $f_{\text{i},\text{out} \leftarrow \text{out}}$ are the probability of observing sequence $s_i$ at time $t_i$ given that individual $i$ was infected from outside the wards ($j_i = -1$) while he was in or outsite hospital respectively. 
 
 \begin{eqnarray*}
-P\left(j_i|C_i,I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) = 
-\mathbf{1}_{\left\lbrace \text{individual $i$ is in a ward at time $C_i$} \right\rbrace} 
-	\left( 
-			\mathbf{1}_{\left\lbrace j_i\geq 0 \right\rbrace} \frac{\beta_{w_i \leftarrow w_{j_i}} }{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}}}	
-			+ \mathbf{1}_{\left\lbrace j_i = -1 \right\rbrace} \frac{\lambda_{\text{ward} \leftarrow \text{out} }}{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}}}
-	\right)
-+ \mathbf{1}_{\left\lbrace \text{individual $i$ is not in a ward at time $C_i$} \right\rbrace} \mathbf{1}_{\left\lbrace j_i = -1 \right\rbrace}
+\lefteqn{
+P\left(j_i|C_i,I_1\left(1\right),\ldots,I_1\left(t-1\right),I_2\left(1\right),\ldots,I_2\left(t-1\right),w_i,k_i,A_i,D_i,\bm{\theta}\right) = }\\
+&& \left\{ 
+\begin{array}{l l}
+  \frac{\beta_{w_i \leftarrow w_{j_i}} }{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}}} & \quad \mbox{if individual $i$ is in a ward at time $C_i$ and $j_i\geq 0$}\\
+  \frac{\lambda_{\text{ward} \leftarrow \text{out} }}{\sum_{\text{$j$ colonized and in a ward at time $C_i$}} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}}} & \quad \mbox{if individual $i$ is in a ward at time $C_i$ and $j_i=-1$}\\ 
+    1 & \quad \mbox{if individual $i$ is not in a ward at time $C_i$ and $j_i=-1$}\\ 
+    0 & \quad \mbox{otherwise}\\
+\end{array} \right. \\
 \end{eqnarray*}
 
 HERE PROBLEM WHAT HAPPENS TO THOSE NEVER INFECTED ($j_i = -2$)? 
@@ -234,7 +244,7 @@ where
 
 \begin{eqnarray*}
 \Omega_i^{\left(1\right)} & = & \pi \times \mathbf{1}_{\left\lbrace C_i < A_i[1] \right\rbrace}  \\
-\Omega_i^{\left(2\right)}  & = & \left( 1-\pi \right) \times \mathbf{1}_{\left\lbrace C_i \geq A_i[1] \right\rbrace} \times e^{-\sum_{t=A_i[1]}^{C_i-1}\lambda_i\left(t\right)} \left( 1 - e^{-\lambda_i\left(C_i\right)} \right) \eta_i\left(C_i\right)\\
+\Omega_i^{\left(2\right)}  & = & \left( 1-\pi \right) \times \mathbf{1}_{\left\lbrace C_i \geq A_i[1] \right\rbrace} \times e^{-\sum_{t=A_i[1]}^{C_i-1}\lambda_i\left(t\right)} \left( 1 - e^{-\lambda_i\left(C_i\right)} \right) \\
 \end{eqnarray*}
 \bigskip
 
@@ -378,40 +388,6 @@ For all model parameters, independent prior distributions were chosen:
 A Markov chain Monte Carlo (MCMC) method was used to sample the joint
 posterior distribution $P\left(\bm{Y},\bm{Z},\bm{\theta}\right)$.
 $\psi$, $\phi$ and $\pi$ were updated using the Gibbs sampler, and all other parameters using a Metropolis algorithm.
-
-
-\section*{Appendix: Full formulation of the transmission level}
-
-In the discrete version $A_i[k]$ is the first time step where individual $i$ is in hospital (for his/her $k_{th}$ stay), and $D_i[k]$ is the first time step where he/she is out of hospital (after his/her $k_{th}$ stay). Individual $i$ can transmit staph aureus from time step $C_i$ to time step $E_i-1$. 
-
-\begin{eqnarray*}
-P\left(\bm{Z}|\bm{\theta}\right) = 
-\bm{\prod}_{i=1}^N % product on individuals
-\left( \Omega_i^{\left(1\right)} + \Omega_i^{\left(2\right)} + \Omega_i^{\left(3\right)} \right) \times \left(\Phi_{\mu,\sigma}\left(E_i-C_i+0.5\right) - \Phi_{\mu,\sigma}\left(E_i-C_i-0.5\right) \right)
-\end{eqnarray*}
-
-\noindent where $\Phi_{\mu,\sigma}$ is the cumulative density function of a Gamma distribution with mean $\mu$ and standard deviation $\sigma$ (we assume that the duration of colonisation is Gamma distributed), and: 
-
-\begin{eqnarray*}
-\lefteqn{\Omega_i^{\left(1\right)} = \pi \times \mathbf{1}_{\left\lbrace C_i < A_i[1] \right\rbrace} }\\
-\lefteqn{\Omega_i^{\left(2\right)}  = \left( 1-\pi \right) \sum_{l=1}^{k_i} \mathbf{1}_{\left\lbrace A_i[l] \leq C_i < D_i[l] \right\rbrace}}\\
-	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \sum_{t=A_i[s]}^{D_i[s]-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) + \lambda_{\text{ward} \leftarrow \text{out}}\left(D_i[s]-A_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \lambda_{\text{out} \leftarrow \text{out}}\left(A_i[s+1]-D_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \sum_{t=A_i[l]}^{C_i-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) - \lambda_{\text{ward} \leftarrow \text{out}}\left(C_i-A_i[l]\right)  \right) \\
-	 && \times \left( 1 - \text{exp}\left( - \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(C_i\right) - \lambda_{\text{ward} \leftarrow \text{out}} \right) \right) \\
-	 && \times \frac{\sum_{j=1}^N \mathbf{1}_{\left\lbrace C_j \leq C_i < E_j \right\rbrace} \sum_{r=1}^{k_j} \mathbf{1}_{\left\lbrace A_j[r] \leq C_i < D_j[r] \right\rbrace} \beta_{w_i \leftarrow w_j} f_{i \leftarrow j} + \lambda_{\text{ward} \leftarrow \text{out}}f_{\text{i},\text{ward} \leftarrow \text{out}} }{\sum_{j=1}^N \mathbf{1}_{\left\lbrace C_j \leq C_i < E_j \right\rbrace} \sum_{r=1}^{k_j} \mathbf{1}_{\left\lbrace A_j[r] \leq C_i < D_j[r] \right\rbrace} \beta_{w_i \leftarrow w_j} + \lambda_{\text{ward} \leftarrow \text{out}} } \\
-\lefteqn{\Omega_i^{\left(3\right)}  = \mathbf{1}_{\left\lbrace k_i > 1 \right\rbrace} \left( 1-\pi \right) \sum_{l=1}^{k_i-1} \mathbf{1}_{\left\lbrace D_i[l] \leq C_i < A_i[l+1] \right\rbrace}}\\
-	 && \times \text{exp}\left( - \sum_{s=1}^{l} \left[ \sum_{t=A_i[s]}^{D_i[s]-1} \left( \sum_{w=1}^{2} \beta_{w_i \leftarrow w} I_w\left(t\right) \right) + \lambda_{\text{ward} \leftarrow \text{out}}\left(D_i[s]-A_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \mathbf{1}_{\left\lbrace l \geq 2 \right\rbrace} \sum_{s=1}^{l-1} \left[ \lambda_{\text{out} \leftarrow \text{out}}\left(A_i[s+1]-D_i[s]\right) \right] \right) \\
-	 && \times \text{exp}\left( - \lambda_{\text{out} \leftarrow \text{out}}\left(C_i-D_i[l]\right) \right) \\
-	 && \times \left( 1 - \text{exp}\left( - \lambda_{\text{out} \leftarrow \text{out}} \right) \right) \\
-	 && \times f_{\text{i},\text{out} \leftarrow \text{out}}  \\
-\end{eqnarray*}
-\bigskip
-
-$\Omega_i^{\left(1\right)}$ is the probability that individual $i$ is colonized before his/her first admission in the wards ; $\Omega_i^{\left(2\right)}$ is the probability that individual $i$ is colonized during one of his/her stays in the wards ; $\Omega_i^{\left(3\right)}$ is the probability, that individual $i$, if admitted several times, is colonized between successive stays in the wards.
-
-$f_{i,j}$ is the probability of observing sequences $s_i$ and $s_j$ at respective time steps $t_i$ and $t_j$ given that individual $j$ infected individual $i$ (see next section on the genetic likelihood). Similarly, $f_{\text{i},\text{ward} \leftarrow \text{out}}$ and $f_{\text{i},\text{out} \leftarrow \text{out}}$ are the probability of observing sequence $s_i$ at time $t_i$ given that individual $i$ was infected from outside the wards while he was in or outsite hospital respectively. 
 
 \end{document}
 
