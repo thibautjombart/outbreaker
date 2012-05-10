@@ -133,17 +133,17 @@ which can be decomposed in:
 \begin{eqnarray}
 & & p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)  p(t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)\\
 &=& p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)  p(T_i^{inf} | t_i, A_i, w, \mu_1, \mu_2) p(t_i, A_i, w, \mu_1, \mu_2)\\
-&=& \underbrace{p(s_i | t_i, T_i^{inf}, A_i, \mu_1, \mu_2)}_{\Omega_1}  
-    \underbrace{p(T_i^{inf} | A_i, w)}_{\Omega_2}
-    \underbrace{p(t_i, A_i, w, \mu_1, \mu_2)}_{\Omega_3} 
+&=& \underbrace{p(s_i | t_i, T_i^{inf}, A_i, \mu_1, \mu_2)}_{\Omega_i^1}  
+    \underbrace{p(T_i^{inf} | A_i, w)}_{\Omega_i^2}
+    \underbrace{p(t_i, A_i, w, \mu_1, \mu_2)}_{\Omega_i^3} 
 \end{eqnarray}
-\noindent where $\Omega_1$ is the genetic likelihood, $\Omega_2$ if the epidemiological likelihood (from W\&T), and $\Omega_3$ is mixture of constants and priors.
+\noindent where $\Omega_i^1$ is the genetic likelihood, $\Omega_i^2$ if the epidemiological likelihood (from W\&T), and $\Omega_i^3$ is mixture of constants and priors.
 \\
 
 
 
 
-$\Omega_1$ is computed as: 
+$\Omega_i^1$ is computed as: 
 $$
 \underbrace{\mathcal{P}\left(d_{i,A_i} | (t_i - t_{A_i}) l_{i,A_i} \mu_1 \right)}_{\mbox{transitions}}
 \times 
@@ -156,6 +156,7 @@ $$
 \underbrace{\mathcal{P}\left(g_{i,A_i} | (t_{A_i} - T_i^{inf} + t_i - T_i^{inf}) l_{i,A_i} \mu_2 \right)}_{\mbox{transversions}}
 $$
 otherwise; $\mathcal{P}(. | \lambda)$ is the density of a Poisson distribution of parameter $\lambda$.
+Note that when the genetic likelihood cannot be computed (i.e. $s_i$ or $s_j$ is missing, or the two sequences have no typed nucleotide position in common), it can be replaced by the average likelihood of the other $\Omega_i^{1}$
 ~\\
 
 %% BINOMIAL VERSION %%
@@ -176,17 +177,17 @@ otherwise; $\mathcal{P}(. | \lambda)$ is the density of a Poisson distribution o
 
 
 
-$\Omega_2$ is defined by the (known) distribution of the generation time:
+$\Omega_i^2$ is defined by the (known) distribution of the generation time:
 $$
-\Omega_2 = \frac{w(t_i - t_{A_i})}{\sum_{k=1}^n w(t_i - t_{A_k})} 
+\Omega_i^2 = \frac{w(t_i - t_{A_i})}{\sum_{k=1}^n w(t_i - t_{A_k})} 
 $$
 ~\\
 
 
 
-The term $\Omega_3$ can be rewritten:
+The term $\Omega_i^3$ can be rewritten:
 \begin{eqnarray}
-\Omega_3 &=&  p(t_i, A_i, w, \mu_1, \mu_2) \\
+\Omega_i^3 &=&  p(t_i, A_i, w, \mu_1, \mu_2) \\
 	 &=&  p(t_i, w) p(A_i, \mu_1, \mu_2) \\
 	 &=&  p(t_i, w) p(A_i) p(\mu_1) p(\kappa) 
 \end{eqnarray}
@@ -201,33 +202,33 @@ The global posterior distribution is proportional to the product of (1) over all
 \end{eqnarray}
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Model with missing data}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-!!! Need to work on that one. 
-
-The basic model can be extended to incorporate the fact that some infectors have not been sampled, and therefore some infections cannot be reconstructed.
-% This will be modeled by $A_i=0$ when $i$'s infector has not been observed. 
-We introduce the parameter $\pi$, which is the probability of having observed the infector of a given case.
-Then the expression (1) becomes:
-\begin{equation}
- p(s_i, t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)
-\end{equation}
-which can be decomposed in:
-\begin{eqnarray}
-& & p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)  p(t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)\\
-&=& p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)  p(T_i^{inf} | t_i, A_i, w, \mu_1, \mu_2, \pi) p(t_i, A_i, w, \mu_1, \mu_2, \pi)\\
-&=& \underbrace{p(s_i | t_i, T_i^{inf}, A_i, \mu_1, \mu_2, \pi)}_{\Omega^*_1}  
-    \underbrace{p(T_i^{inf} | A_i, w, \pi)}_{\Omega^*_2}
-    \underbrace{p(t_i, A_i, w, \mu_1, \mu_2, \pi)}_{\Omega^*_3} 
-\end{eqnarray}
-The first two terms are simply given by $\Omega^*_1 = \pi \Omega_1$ and $\Omega^*_2 = \pi \Omega_2$
-
 % 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section*{Model with missing data}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% !!! Need to work on that one. 
+% 
+% The basic model can be extended to incorporate the fact that some infectors have not been sampled, and therefore some infections cannot be reconstructed.
+% % This will be modeled by $A_i=0$ when $i$'s infector has not been observed. 
+% We introduce the parameter $\pi$, which is the probability of having observed the infector of a given case.
+% Then the expression (1) becomes:
+% \begin{equation}
+%  p(s_i, t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)
+% \end{equation}
+% which can be decomposed in:
+% \begin{eqnarray}
+% & & p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)  p(t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)\\
+% &=& p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2, \pi)  p(T_i^{inf} | t_i, A_i, w, \mu_1, \mu_2, \pi) p(t_i, A_i, w, \mu_1, \mu_2, \pi)\\
+% &=& \underbrace{p(s_i | t_i, T_i^{inf}, A_i, \mu_1, \mu_2, \pi)}_{\Omega^*_1}  
+%     \underbrace{p(T_i^{inf} | A_i, w, \pi)}_{\Omega^*_2}
+%     \underbrace{p(t_i, A_i, w, \mu_1, \mu_2, \pi)}_{\Omega^*_3} 
+% \end{eqnarray}
+% The first two terms are simply given by $\Omega^*_1 = \pi \Omega_i^1$ and $\Omega^*_2 = \pi \Omega_i^2$
+% 
+% % 
 % 
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
