@@ -100,10 +100,11 @@ For each patient $i=1,\ldots,n$ we note the data:
 Augmented data are noted using capital latin letters:
 \begin{itemize}
 	\item $T_i^{inf}$: time at which patient $i$ has been infected
-	\item $A_i$: the infector of $i$; $A_i=j$ indicates that $j$ has infected $i$
+	\item $A_i$: the closest observed parent node of $i$ in the infection tree; $A_i=j$ indicates that $j$ has infected $i$, either directly, or with one or several intermediate generations, which were unobserved. 
+	\item $K_i$: an integer $\geq 1$ indicating how many generations separate $A_i$ and $i$: $K_i=2$ indicates that $j$ has infected an unobserved individual, who has infected $i$.
 \end{itemize}
 
-
+In a first simple approach, $K_i$ could be set to $1$ for all $i$, hence assuming that the whole outbreak was observed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Parameters}
@@ -127,15 +128,15 @@ Parameters are indicated using greek letters:
 This model assumes that all ancestries have been sampled.
 The posterior distribution for patient $i$ is proportional to the joint distribution:
 \begin{equation}
- p(s_i, t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)
+ p(s_i, t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \mu_2)
 \end{equation}
 which can be decomposed in:
 \begin{eqnarray}
-& & p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)  p(t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)\\
-&=& p(s_i | t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)  p(T_i^{inf} | t_i, A_i, w, \mu_1, \mu_2) p(t_i, A_i, w, \mu_1, \mu_2)\\
-&=& \underbrace{p(s_i | t_i, T_i^{inf}, A_i, \mu_1, \mu_2)}_{\Omega_i^1}  
-    \underbrace{p(T_i^{inf} | A_i, w)}_{\Omega_i^2}
-    \underbrace{p(t_i, A_i, w, \mu_1, \mu_2)}_{\Omega_i^3} 
+& & p(s_i | t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \mu_2)  p(t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \mu_2)\\
+&=& p(s_i | t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \mu_2)  p(T_i^{inf} | t_i, A_i, K_i, w, \mu_1, \mu_2) p(t_i, A_i, K_i, w, \mu_1, \mu_2)\\
+&=& \underbrace{p(s_i | t_i, T_i^{inf}, A_i, K_i, \mu_1, \mu_2)}_{\Omega_i^1}  
+    \underbrace{p(T_i^{inf} | A_i, K_i, w)}_{\Omega_i^2}
+    \underbrace{p(t_i, A_i, K_i, w, \mu_1, \mu_2)}_{\Omega_i^3} 
 \end{eqnarray}
 \noindent where $\Omega_i^1$ is the genetic likelihood, $\Omega_i^2$ if the epidemiological likelihood (from W\&T), and $\Omega_i^3$ is mixture of constants and priors.
 \\
@@ -179,26 +180,27 @@ Note that when the genetic likelihood cannot be computed (i.e. $s_i$ or $s_j$ is
 
 $\Omega_i^2$ is defined by the (known) distribution of the generation time:
 $$
-\Omega_i^2 = \frac{w(t_i - t_{A_i})}{\sum_{k=1}^n w(t_i - t_{A_k})} 
+\Omega_i^2 = w^{\left(K_i\right)}(t_i - t_{A_i})
 $$
 ~\\
 
-
+with $w^{\left(k\right)} = \underbrace{w*w*\ldots*w}_{k \text{ times}} $, where $*$ denotes the convolution operator, defined, for two discrete distributions $a$ and $b$, by $\left(a*b\right)\left(t\right) = \sum_{s=-\infty}^{+\infty} a\left(t-s\right)b\left(s\right)$.
 
 The term $\Omega_i^3$ can be rewritten:
 \begin{eqnarray}
-\Omega_i^3 &=&  p(t_i, A_i, w, \mu_1, \mu_2) \\
-	 &=&  p(t_i, w) p(A_i, \mu_1, \mu_2) \\
-	 &=&  p(t_i, w) p(A_i) p(\mu_1) p(\kappa) 
+\Omega_i^3 &=&  p(t_i, A_i, K_i, w, \mu_1, \mu_2) \\
+	 &=&  p(t_i, w) p(A_i, K_i,\mu_1, \mu_2) \\
+	 &=&  p(t_i, w) p(A_i) p(K_i) p(\mu_1) p(\kappa) 
 \end{eqnarray}
 as the different components are independent.
 $p(t_i, w)$ is a constant and does not need to be known to sample from (1).
 $p(A_i)$ is the prior on ancestries, set to $1/(n-1)$.
+$p(K_i)$ is the prior on the number of generations from closest ancestries. In a first simple approach, this could be set to $p(K_i) = \mathbf{1}_{\left\lbrace K_i=1\right\rbrace}$, where $\mathbf{1}_{\left\lbrace.\right\rbrace}$ denotes the indicator function, defined by $\mathbf{1}_{\left\lbrace X \right\rbrace}=1$ if $X$ is true, and $0$ otherwise. In a second approach, a Poisson distribution could be used to allow unobserved intermediate cases.
 $ p(\mu_1)$ and $p(\kappa)$ are the priors for the mutations rates.
 
 The global posterior distribution is proportional to the product of (1) over all individuals:
 \begin{eqnarray}
-\prod_{i=1}^n p(s_i, t_i, T_i^{inf}, A_i, w, \mu_1, \mu_2)
+\prod_{i=1}^n p(s_i, t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \mu_2)
 \end{eqnarray}
 
 
