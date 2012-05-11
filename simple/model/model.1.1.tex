@@ -84,8 +84,8 @@ The transmission tree and the mutation rates are the quantities we want to infer
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 For each patient $i=1,\ldots,n$ we note the data:
 \begin{itemize}
-	\item $s_i$: the genetic sequence obtained for patient $i$
-	\item $t_i$: the collection time for $s_i$
+	\item $s_i$: the genetic sequence obtained for patient $i$.
+	\item $t_i$: the collection time for $s_i$ (time is considered as a discrete variable).
 %  	\item $d_{i,j}$: the number of transitions between $s_i$ and $s_j$
 %  	\item $g_{i,j}$: the number of transversions between $s_i$ and $s_j$
 %  	\item $l_{i,j}$: the number of nucleotide positions typed in both $s_i$ and $s_j$
@@ -99,12 +99,12 @@ For each patient $i=1,\ldots,n$ we note the data:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Augmented data are noted using capital latin letters:
 \begin{itemize}
-	\item $T_i^{inf}$: time at which patient $i$ has been infected (time is considered as a discrete variable).
-	\item $A_i$: the closest observed parent node of $i$ in the infection tree; $A_i=j$ indicates that $j$ has infected $i$, either directly, or with one or several intermediate generations, which were unobserved. 
+	\item $T_i^{inf}$: time at which patient $i$ has been infected.
+	\item $A_i$: the closest observed ancestor of $i$ in the infection tree; $A_i=j$ indicates that $j$ has infected $i$, either directly, or with one or several intermediate generations, which were unobserved. 
 	\item $K_i$: an integer $\geq 1$ indicating how many generations separate $A_i$ and $i$: $K_i=2$ indicates that $j$ has infected an unobserved individual, who has infected $i$.
 \end{itemize}
 
-In a first simple approach, $K_i$ could be set to $1$ for all $i$, hence assuming that the whole outbreak was observed.
+As a first simple approach, $K_i$ could be set to $1$ for all $i$, hence assuming that the whole outbreak was observed.
 
 
 
@@ -129,7 +129,7 @@ We use the following functions of the data/augmented data:
 Parameters are indicated using greek letters:
 \begin{itemize}
 	\item $\mu_1$: rates of transitions, given per site and unit time (likely day).
-	\item $\kappa $: rate of transversions, parametrised as $\kappa = \kappa \mu_1$ to account for the correlation between the two rates.
+	\item $\mu_2 $: rate of transversions, parametrised as $\mu_2 = \kappa \mu_1$ to account for the correlation between the two rates.
 \end{itemize}
 
 
@@ -147,9 +147,9 @@ The posterior distribution is proportional to:
 \begin{eqnarray}
 & & p(\{s_i, t_i, T_i^{inf}, A_i, K_i\}_{(i=1,\ldots,n)}, w, \mu_1, \kappa)\\
 & = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \kappa | \{s_k, t_k, T_k^{inf}, A_k, K_k\}_{(k=1,\ldots,i-1)}) \nonumber \\ 
-& & p(s_1, t_1, T_1^{inf}, A_1, K_1, w, \mu_1, \kappa)\\
+& & \times p(s_1, t_1, T_1^{inf}, A_1, K_1, w, \mu_1, \kappa)\\
 & = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \kappa | s_{A_i}, t_{A_i}, T_{A_i}^{inf}) \nonumber \\
-& & p(s_1, t_1, T_1^{inf}, A_1, K_1, w, \mu_1, \kappa)
+& & \times p(s_1, t_1, T_1^{inf}, A_1, K_1, w, \mu_1, \kappa)
 \end{eqnarray}
 
 
@@ -160,11 +160,11 @@ The term for case $i$ ($i=2,\ldots,n$) is:
 \end{equation}
 which can be decomposed into:
 \begin{eqnarray}
-p(s_i | t_i, T_i^{inf}, A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa)  
-p(t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \kappa | s_{A_i}, t_{A_i}, T_{A_i}^{inf}) & \nonumber  \\
-= p(s_i | t_i, T_i^{inf}, A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa)
+% p(s_i | t_i, T_i^{inf}, A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa)  
+% p(t_i, T_i^{inf}, A_i, K_i, w, \mu_1, \kappa | s_{A_i}, t_{A_i}, T_{A_i}^{inf}) & \nonumber  \\
+p(s_i | t_i, T_i^{inf}, A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa)
   p(t_i | T_i^{inf}, A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa) & \nonumber \\
-  p(T_i^{inf} | A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa)
+\times  p(T_i^{inf} | A_i, s_{A_i}, t_{A_i}, T_{A_i}^{inf}, K_i, w, \mu_1, \kappa)
     p(A_i, K_i, w, \mu_1, \kappa | s_{A_i}, t_{A_i}, T_{A_i}^{inf}) & \nonumber \\
 = \underbrace{p(s_i | t_i, T_i^{inf}, A_i, s_{A_i}, t_{A_i}, \mu_1, \kappa)}_{\Omega_i^1}  
     \underbrace{p(t_i | T_i^{inf}, w)
@@ -241,8 +241,9 @@ The term $\Omega_i^3$ can be rewritten:
 as the different components are independent.
 $p(w)$ is a constant and does not need to be known to sample from (1).
 $p(A_i)$ is the prior on ancestries, set to $1/(n-1)$.
-$p(K_i)$ is the prior on the number of generations from closest ancestries. In a first simple approach, this could be set to $p(K_i) = \mathbf{1}_{\left\lbrace K_i=1\right\rbrace}$.
-In a second approach, a Poisson distribution could be used to allow unobserved intermediate cases.
+$p(K_i)$ is the prior on the number of generations from closest ancestries. 
+If we assume that then entire outbreak has been sampled, this would be set to $p(K_i) = \mathbf{1}_{\left\lbrace K_i=1\right\rbrace}$.
+Alternatively, more flexibility would be gained by using a Poisson distribution to allow for unobserved intermediate cases.
 % , where $\mathbf{1}_{\left\lbrace.\right\rbrace}$ denotes the indicator function, defined by $\mathbf{1}_{\left\lbrace X \right\rbrace}=1$ if $X$ is true, and $0$ otherwise. 
 $ p(\mu_1)$ and $p(\kappa)$ are the priors for these two parameters.
 ~\\
