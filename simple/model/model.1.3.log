@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.10.24)  6 JUN 2012 22:37
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.8.24)  7 JUN 2012 10:35
 entering extended mode
  %&-line parsing enabled.
 **model.1.3.tex
@@ -249,7 +249,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
 LaTeX Font Info:    ... okay on input line 58.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
 LaTeX Font Info:    ... okay on input line 58.
- (/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+ (/usr/share/texmf/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count105
 \scratchdimen=\dimen123
@@ -324,7 +324,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 258--269
 [4] (./model.1.3.aux) ) 
 Here is how much of TeX's memory you used:
  3962 strings out of 493848
- 54063 string characters out of 1152822
+ 54039 string characters out of 1152823
  137047 words of memory out of 3000000
  7183 multiletter control sequences out of 15000+50000
  16414 words of font info for 61 fonts, out of 3000000 for 9000
@@ -342,7 +342,7 @@ usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/tex
 mf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-texlive/fo
 nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/p
 ublic/amsfonts/cm/cmsy7.pfb>
-Output written on model.1.3.pdf (4 pages, 155395 bytes).
+Output written on model.1.3.pdf (4 pages, 155326 bytes).
 PDF statistics:
  67 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
