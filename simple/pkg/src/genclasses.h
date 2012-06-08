@@ -34,9 +34,9 @@ typedef struct{
   CONSTRUCTORS
   ============
 */
- dnaseq * create_dnaseq(int length);
+ dnaseq * alloc_dnaseq(int length);
 
- list_dnaseq * create_list_dnaseq(int n, int length);
+ list_dnaseq * alloc_list_dnaseq(int n, int length);
 
 
 

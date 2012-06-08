@@ -55,13 +55,13 @@ typedef struct{
 
 
 
-vec_int * create_vec_int(int n);
+vec_int * alloc_vec_int(int n);
 
-mat_int * create_mat_int(int n);
+mat_int * alloc_mat_int(int n);
 
-vec_double * create_vec_double(int n);
+vec_double * alloc_vec_double(int n);
 
-mat_double * create_mat_double(int n);
+mat_double * alloc_mat_double(int n);
 
 
 /*
