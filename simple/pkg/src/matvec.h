@@ -86,13 +86,13 @@ void free_vec_double(vec_double *in);
    === EXTERNAL FUNCTIONS ===
    ==========================
 */
-int vecint_i(vec_int *in, int i);
+int vec_int_i(vec_int *in, int i);
 
-int matint_ij(mat_int *in, int i, int j);
+int mat_int_ij(mat_int *in, int i, int j);
 
-double vecdouble_i(vec_double *in, int i);
+double vec_double_i(vec_double *in, int i);
 
-double matdouble_ij(mat_double *in, int i, int j);
+double mat_double_ij(mat_double *in, int i, int j);
 
 void print_vec_int(vec_int *in);
 
