@@ -67,7 +67,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We seek a simple probabilistic model allowing to reconstruct the transmission tree (who infected whom) of a densely sampled disease outbreak based on RNA/DNA sequences sampled at given time points.
-This model is designed for densely sampled outbreaks with fairly short generation times and moderate genetic diversity (typically, genomes should accumulate zero, one or maybe two mutations per generation).
+This model is designed for densely sampled outbreaks with fairly short generation times and moderate genetic diversity (typically, genomes should accumulate zero, one or maybe two mutations per generation of infection).
 For instance, the method should be relevant for influenza, but HIV is clearly out of the scope of the approach.
 \\
 
@@ -151,6 +151,7 @@ We use the following functions of the data/augmented data:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Parameters}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This model assumes that cases are ordered by increasing infection dates ($T_i^{inf} \leq T_{i+1}^{inf}$).
 Parameters are indicated using greek letters:
 \begin{itemize}
          \item $\alpha_i$: the closest observed ancestor of $i$ in the infection tree; $\alpha_i=j$ indicates that $j$ has infected $i$, either directly, or with one or several intermediate generations, which were unobserved. 
@@ -177,20 +178,19 @@ We note $\kappa = \{\kappa_2, \ldots, \kappa_n\}$.
 \subsection*{Likelihood}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This model assumes that cases are ordered by increasing infection dates ($T_i^{inf} \leq T_{i+1}^{inf}$).
 The posterior distribution is proportional to the joint distribution:
 \begin{eqnarray}
-& & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}, w, f_w, \alpha, \kappa, \mu_1, \gamma)\\
-& = & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}| w, f_w, \alpha, \kappa, \mu_1, \gamma) \times p( w, f_w, \alpha, \kappa, \mu_1, \gamma)
+& & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}, w,  \alpha, \kappa, \mu_1, \gamma)\\
+& = & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}| w,  \alpha, \kappa, \mu_1, \gamma) \times p( w,  \alpha, \kappa, \mu_1, \gamma)
 \end{eqnarray}
 where the first term is the likelihood of observed and augmented data, and the second, the prior.
 The likelihood can be decomposed as:
 
 \begin{eqnarray}
-& & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}|  w, f_w, \alpha, \kappa, \mu_1, \gamma) \\
-& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf} | \{s_k, t_k, T_k^{inf} \}_{(k=1,\ldots,i-1)}, w, f_w, \alpha, \kappa, \mu_1, \gamma) 
+& & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}|  w,  \alpha, \kappa, \mu_1, \gamma) \\
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf} | \{s_k, t_k, T_k^{inf} \}_{(k=1,\ldots,i-1)}, w,  \alpha, \kappa, \mu_1, \gamma) 
   \times p(s_1, t_1, T_1^{inf})\\
-& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, f_w, \alpha_i, \kappa_i, \mu_1, \gamma) 
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) 
   \times p(s_1, t_1, T_1^{inf})
 \end{eqnarray}
 
@@ -199,17 +199,17 @@ The term $p(s_1, t_1, T_1^{inf})$ is the probability of the data of the first ca
 This will need to be modified if we explicitely model infections from outside the system.
 The term for case $i$ ($i=2,\ldots,n$) is:
 \begin{equation}
- p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, f_w, \alpha_i, \kappa_i, \mu_1, \gamma )
+ p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma )
 \end{equation}
 which can be decomposed into:
 \begin{eqnarray}
-& & p(s_i | t_i, T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, f_w, \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
-& &  \times  p(t_i | T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, f_w, \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
-& & \times  p(T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, f_w, \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
+& & p(s_i | t_i, T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
+& &  \times  p(t_i | T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
+& & \times  p(T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
 % & & \times  p(\alpha_i, \kappa_i| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \alpha_i, \kappa_i, \mu_1, \gamma)  \\
 & = & 
 \underbrace{p(s_i | \alpha_i, s_{\alpha_i}, \kappa_i, \mu_1, \gamma)}_{\Omega_i^1} 
-  \times  \underbrace{p(t_i | T_i^{inf}, w, f_w) 
+  \times  \underbrace{p(t_i | T_i^{inf}, w) 
   p(T_i^{inf}| \alpha_i, T_{\alpha_i}^{inf}, \kappa_i, w)}_{\Omega_i^2}
 % & & \times  \underbrace{p(\alpha_i, \kappa_i| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \alpha_i, \kappa_i, \mu_1, \gamma)}_{\Omega_i^3}
 % = \underbrace{p(s_i | t_i, T_i^{inf}, \alpha_i, s_{\alpha_i}, t_{\alpha_i}, \mu_1, \gamma)}_{\Omega_i^1}  
@@ -240,23 +240,15 @@ As mutations only occur during transmission events, the expected divergence betw
 % \underbrace{\mathcal{B}\left(g(i,\alpha_i) | (t_{\alpha_i} - T_i^{ini} + t_i - T_i^{ini}) l(i,\alpha_i), \gamma \mu_1 \right)}_{\mbox{transversions}}
 % \end{equation}
 $\mathcal{B}(. | n, p)$ is the probability mass function of a Binomial distribution with $n$ draws and a probability $p$.
-~\\
-
-%% POISSON VERSION %%
-% $$
-% \underbrace{\mathcal{P}\left(d(i,\alpha_i) | (t_i - t_{\alpha_i}) l(i,\alpha_i) \mu_1 \right)}_{\mbox{transitions}}
-% \times 
-% \underbrace{\mathcal{P}\left(g(i,\alpha_i) | (t_i - t_{\alpha_i}) l(i,\alpha_i) \gamma \right)}_{\mbox{transversions}}
-% $$
-% if $t_{\alpha_i} \leq T_i^{inf} $, and as:
-% $$
-% \underbrace{\mathcal{P}\left(d(i,\alpha_i) | (t_{\alpha_i} - T_i^{inf} + t_i - T_i^{inf}) l(i,\alpha_i) \mu_1 \right)}_{\mbox{transitions}}
-% \times 
-% \underbrace{\mathcal{P}\left(g(i,\alpha_i) | (t_{\alpha_i} - T_i^{inf} + t_i - T_i^{inf}) l(i,\alpha_i) \gamma \right)}_{\mbox{transversions}}
-% $$
-% otherwise; $\mathcal{P}(. | \lambda)$ is the density of a Poisson distribution of parameter $\lambda$.
-% 
-% Note that when the genetic likelihood cannot be computed (i.e. $s_i$ or $s_j$ is missing, or the two sequences have no typed nucleotide position in common), it can be replaced by the average likelihood of the other $\Omega_i^{1}$
+This is approximated by:
+\begin{equation}
+ \underbrace{\mathcal{P}\left(d(s_i,s_{\alpha_i}) | l(s_i,s_{\alpha_i}) \kappa_i \mu_1 \right)}_{\mbox{transitions}}
+ \times 
+ \underbrace{\mathcal{P}\left(g(s_i,s_{\alpha_i}) | l(s_i,s_{\alpha_i}) \kappa_i \gamma \mu_1 \right)}_{\mbox{transversions}}
+ \end{equation}
+where $\mathcal{P}(. | \lambda)$ is the density of a Poisson distribution of parameter $\lambda$.
+ 
+ Note that when the genetic likelihood cannot be computed (i.e. $s_i$ or $s_j$ is missing, or the two sequences have no typed nucleotide position in common), it can be replaced by the average likelihood of the other $\Omega_i^{1}$
 ~\\
 
 
@@ -265,7 +257,7 @@ $\mathcal{B}(. | n, p)$ is the probability mass function of a Binomial distribut
 
 $\Omega_i^2$ is determined by the distribution of the generation time, and the dates of collection and infection:
 \begin{eqnarray}
- \Omega_i^2 & = & p(t_i | T_i^{inf}, w, f_w) \times p(T_i^{inf}| \alpha_i, T_{\alpha_i}^{inf}, \kappa_i, w) \nonumber \\
+ \Omega_i^2 & = & p(t_i | T_i^{inf}, w) \times p(T_i^{inf}| \alpha_i, T_{\alpha_i}^{inf}, \kappa_i, w) \nonumber \\
 & = &  f_w(t_i - T_i^{inf}) \times  w^{\left(\kappa_i\right)}(T_i^{inf} - T_{\alpha_i}^{inf})
 % & = &  \mathbf{1}_{\{w(t_i - T_i^{inf}) > 0\}} \times  w^{\left(\kappa_i\right)}(T_i^{inf} - T_{\alpha_i}^{inf})
 \end{eqnarray}
@@ -336,11 +328,11 @@ $w^{\left(k\right)} = \underbrace{w*w*\ldots*w}_{k \text{ times}} $, where $*$ d
 For all model parameters, independent prior distributions have been chosen:
 \begin{itemize}
 	\item $p(w) = \mathbf{1}_{\{w=w_0\}}$: the distribution of the generation time will be fixed to a given distribution ($w_0$) by default; this can be parameterized later in a more complex model.
-	\item $p(\alpha_i)$: set to $1/(n-1)$.
+	\item $p(\alpha_i) = \mathbf{1}_{\{k\neq i\}}\frac{1}{n-1}$.
 	\item $p(\kappa_i - 1) = \mathcal{NB}(1,\pi)$, the probability mass function of a negative binomial distribution counting the number of unobserved cases before one observed case; $\pi$ is the proportion of unobserved (unsampled) cases in the outbreak. If we assume that the entire outbreak has been sampled, $p(\kappa_i) = \mathbf{1}_{\left\lbrace \kappa_i=1\right\rbrace}$.
 %       \kappa, \mu_1, \gamma uniform
 	\item $p(\mu_1) = Unif(0,1)$.
-	\item $p(\gamma) = Unif(0,100)$. 
+	\item $p(\gamma) $ set so that $\mu_2$ has a uniform prior on $[0;1]$ (to be worked out). 
 % 	\item $p(\mu_1) = Exp(\lambda1)$, an exponential distribution of parameter $\lambda1$.
 % 	\item $p(\gamma)$
 \end{itemize}
