@@ -10,181 +10,38 @@
 #include "matvec.h"
 #include "tuneVariances.h"
 
-/**************** nb_data ****************/
-nb_data * createNbData(int NbPatients, int T, int NbSequences, int NbColonisedPatients){
-    nb_data *nb = (nb_data *) malloc(sizeof(nb_data));
-    if(nb == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
-	exit(1);
-    }
-
-    nb->NbAdmissions = (int *) calloc(NbPatients, sizeof(int));
-    if(nb->NbAdmissions == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
-	exit(1);
-    }
-
-    nb->NbPosSwabs = (int *) calloc(NbPatients, sizeof(int));
-    if(nb->NbPosSwabs == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
-	exit(1);
-    }
-
-    nb->NbNegSwabs = (int *) calloc(NbPatients, sizeof(int));
-    if(nb->NbNegSwabs == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
-	exit(1);
-    }
-
-    nb->indexColonisedPatients = (int *) calloc(NbColonisedPatients, sizeof(int));
-    if(nb->indexColonisedPatients == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
-	exit(1);
-    }
-
-    nb->M = (int *) calloc(NbPatients, sizeof(int));
-    if(nb->M == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbData]\nNo memory left for creating nbData. Exiting.\n");
-	exit(1);
-    }
-
-    nb->NbColonisedPatients = NbColonisedPatients;
-    nb->NbPatients = NbPatients;
-    nb->T = T;
-    nb->NbSequences = NbSequences;
-
-    return nb;
-}
 
 
 
-
-
-void freeNbData(nb_data *nb){
-    free(nb->NbAdmissions);
-    free(nb->NbPosSwabs);
-    free(nb->NbNegSwabs);
-    free(nb->indexColonisedPatients);
-    free(nb->M);
-    free(nb);
-}
-
-
-
-
-
-void print_nbData(nb_data *nb){
+/**************** data ****************/
+data *alloc_data(int n){
     int i;
-    printf("\nNb of patients: %d, time span 0-%d", nb->NbPatients, nb->T);
-    printf("\nNb of colonized patients: %d", nb->NbColonisedPatients);
-    printf("\nNb of Admissions:\n");
-    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->NbAdmissions[i]);
-    printf("\nNb of positive swabs:\n");
-    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->NbPosSwabs[i]);
-    printf("\nNb of negative swabs:\n");
-    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->NbNegSwabs[i]);
-    printf("\nIndices of colonized patients:\n");
-    for(i=0;i<nb->NbColonisedPatients;i++) printf("%d ",nb->indexColonisedPatients[i]);
-    printf("\nNb of sequences in each patient:\n");
-    for(i=0;i<nb->NbPatients;i++) printf("%d ",nb->M[i]);
-    fflush(stdout);
-}
+    data *data = (data *) malloc(sizeof(data));
 
-
-
-/**************** raw_data ****************/
-raw_data *createRawData(nb_data *nb){
-    int i;
-    raw_data *data = (raw_data *) malloc(sizeof(raw_data));
-
-    /* EPI DATA */
     if(data == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
 	exit(1);
     }
 
     data->ward = (int *) calloc(nb->NbPatients, sizeof(int));
     if(data->ward == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
 	exit(1);
     }
 
-    /* data->PatientIndex = (int *) calloc(nb->NbPatients, sizeof(int)); */
-    /* if(data->PatientIndex == NULL){ */
-    /* 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n"); */
-    /* 	exit(1); */
-    /* } */
-
-    /* data->timeSeq = (int *) calloc(nb->NbPatients, sizeof(int)); */
-    /* if(data->timeSeq == NULL){ */
-    /* 	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n"); */
-    /* 	exit(1); */
-    /* } */
-
-    data->A = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
-    if(data->A == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
-
-    data->D = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
-    if(data->D == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
-
-    data->P = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
-    if(data->P == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
-
-    data->N = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
-    if(data->N == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
-
-    data->IsInHosp = (gsl_vector **) calloc(nb->NbPatients, sizeof(gsl_vector *));
-    if(data->IsInHosp == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
-	exit(1);
-    }
-
-    for(i=0;i<nb->NbPatients;i++){
-	data->A[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
-	data->D[i] = gsl_vector_calloc(nb->NbAdmissions[i]);
-	if(nb->NbPosSwabs[i]>0){
-	    data->P[i] = gsl_vector_calloc(nb->NbPosSwabs[i]);
-	    /* nb->indexColonisedPatients[nb->NbColonisedPatients] = i; */
-	    /* nb->NbColonisedPatients++; */
-	} else {
-	    data->P[i] = NULL;
-	}
-	if(nb->NbNegSwabs[i]>0){
-	    data->N[i] = gsl_vector_calloc(nb->NbNegSwabs[i]);
-	} else {
-	    data->N[i] = NULL;
-	}
-	data->IsInHosp[i] = gsl_vector_calloc(nb->T);
-    }
-
-    /* simple integers */
-    data->NbPatients = nb->NbPatients;
-    data->T = nb->T;
-
+   
 
     /* GENETIC DATA */
     /* S: indices of sequences collected for each patient */
     data->S = (int **) malloc(nb->NbPatients*sizeof(int *));
     if(data->S == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
 	exit(1);
     }
     for(i=0;i<nb->NbPatients;i++){
 	data->S[i] = (int *) calloc(nb->M[i], sizeof(int));
 	if(data->S[i] == NULL){
-	    fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	    fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
 	    exit(1);
 	}
     }
@@ -192,14 +49,14 @@ raw_data *createRawData(nb_data *nb){
     /* Tcollec: collection times for each sequence */
     data->Tcollec = (int *) calloc(nb->NbSequences, sizeof(int));
     if(data->Tcollec == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
 	exit(1);
     }
 
     /* M: number of sequences collected for each patient */
     data->M = (int *) calloc(nb->NbPatients, sizeof(int));
     if(data->M == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createRawData]\nNo memory left for creating rawData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
 	exit(1);
     }
     for(i=0;i<nb->NbPatients;i++){
@@ -225,7 +82,7 @@ raw_data *createRawData(nb_data *nb){
 
 
 
-void freeRawData(raw_data *data){
+void freeData(data *data){
     int i;
 
     for(i=0 ; i<data->NbPatients ; i++){
@@ -255,7 +112,7 @@ void freeRawData(raw_data *data){
 
 
 
-void print_rawData(raw_data *data){
+void printdata(data *data){
     int i,j;
     printf("\nNb of patients: %d, time span 0-%d", data->NbPatients, data->T);
     printf("\nWard data:\n");
@@ -308,48 +165,48 @@ void print_rawData(raw_data *data){
 
 
 
-/**************** aug_data ****************/
-aug_data *createAugData(int NbPatients, int T, int NbSequences){
-    aug_data *augData = (aug_data *) malloc(sizeof(aug_data));
+/**************** augdata ****************/
+augdata *alloc_AugData(int NbPatients, int T, int NbSequences){
+    augdata *augData = (augdata *) malloc(sizeof(augdata));
     if(augData == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
 
     augData->C = (int *) calloc(NbPatients, sizeof(int));
     if(augData->C == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
     augData->E = (int *) calloc(NbPatients, sizeof(int));
     if(augData->E == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
     augData->I0 = (int *) calloc(T, sizeof(int));
     if(augData->I0 == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
     augData->I1 = (int *) calloc(T, sizeof(int));
     if(augData->I1 == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
     augData->alpha = gsl_matrix_calloc(NbSequences,NbSequences);
     if(augData->alpha == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
     augData->tau = gsl_matrix_calloc(NbSequences,NbSequences);
     if(augData->tau == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAugData]\nNo memory left for creating augData. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n");
 	exit(1);
     }
 
@@ -364,7 +221,7 @@ aug_data *createAugData(int NbPatients, int T, int NbSequences){
 
 
 
-void freeAugData(aug_data *augData){
+void freeAugData(augdata *augData){
     free(augData->C);
     free(augData->E);
     free(augData->I0);
@@ -377,7 +234,7 @@ void freeAugData(aug_data *augData){
 
 
 
-void print_augData(aug_data *augData){
+void print_augData(augdata *augData){
     int i;
     printf("\nNb of patients: %d, time span 0-%d", augData->NbPatients, augData->T);
     printf("\nColonisation times: \n");
@@ -400,7 +257,7 @@ void print_augData(aug_data *augData){
 
 
 
-void copyAugData(aug_data *augDataDest, aug_data *augDataSource){
+void copyAugData(augdata *augDataDest, augdata *augDataSource){
     augDataDest->NbPatients = augDataSource->NbPatients;
     augDataDest->T = augDataSource->T;
     memcpy(augDataDest->C, augDataSource->C, augDataDest->NbPatients*sizeof(int));
@@ -417,10 +274,10 @@ void copyAugData(aug_data *augDataDest, aug_data *augDataSource){
 
 
 /***************** param ******************/
-parameters *createParam(){
+parameters *alloc_Param(){
     parameters *param = (parameters *) malloc(sizeof(parameters));
     if(param == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createParam]\nNo memory left for creating parameters. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Param]\nNo memory left for creating parameters. Exiting.\n");
 	exit(1);
     }
 
@@ -553,10 +410,10 @@ void readParameters(char* workspace, parameters * param, hospDurationParam *para
 }
 
 /***************** hospDurationParam ******************/
-hospDurationParam *createHospDurationParam(){
+hospDurationParam *alloc_HospDurationParam(){
     hospDurationParam *param = (hospDurationParam *) malloc(sizeof(hospDurationParam));
     if(param == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createHospDurationParam]\nNo memory left for creating hospDurationParam. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_HospDurationParam]\nNo memory left for creating hospDurationParam. Exiting.\n");
 	exit(1);
     }
 
@@ -579,10 +436,10 @@ void freeHospDurationParam(hospDurationParam *in){
 }
 
 /************* Is Acceptance OK *************/
-isAcceptOK *createIsAcceptOK(){
+isAcceptOK *alloc_IsAcceptOK(){
     isAcceptOK *acceptOK = (isAcceptOK *) malloc(sizeof(isAcceptOK));
     if(acceptOK == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createIsAcceptOK]\nNo memory left for creating acceptOK. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_IsAcceptOK]\nNo memory left for creating acceptOK. Exiting.\n");
 	exit(1);
     }
 
@@ -616,10 +473,10 @@ void freeIsAcceptOK(isAcceptOK *acceptOK){
 
 
 /************ NbProposals ***************/
-NbProposals *createNbProposals(){
+NbProposals *alloc_NbProposals(){
     NbProposals *NbProp = (NbProposals *) malloc(sizeof(NbProposals));
     if(NbProp == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createNbProposals]\nNo memory left for creating NbProp. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_NbProposals]\nNo memory left for creating NbProp. Exiting.\n");
 	exit(1);
     }
 
@@ -676,10 +533,10 @@ void freeNbProposals(NbProposals *NbProp){
 
 
 /************** OUTPUT FILES **************/
-output_files *createFILES(char *workspace){
+output_files *alloc_FILES(char *workspace){
     output_files *fich = (output_files *) malloc(sizeof(output_files));
     if(fich == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createFILES]\nNo memory left for creating fich. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_FILES]\nNo memory left for creating fich. Exiting.\n");
 	exit(1);
     }
 
@@ -745,16 +602,16 @@ void freeFILES(output_files *fich){
 
 
 /************ MCMC internals **************/
-mcmcInternals *createMcmcInternals(){
+mcmcInternals *alloc_McmcInternals(){
     mcmcInternals *MCMCSettings = (mcmcInternals *) malloc(sizeof(mcmcInternals));
     if(MCMCSettings == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createMcmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_McmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
 	exit(1);
     }
 
     MCMCSettings->Sigma_beta = gsl_matrix_calloc(2,2);
     if(MCMCSettings->Sigma_beta == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createMcmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_McmcInternals]\nNo memory left for creating MCMCSettings. Exiting.\n");
 	exit(1);
     }
 
@@ -814,10 +671,10 @@ void freeMcmcInternals(mcmcInternals *MCMCSettings){
 
 
 /************ Acceptance ***************/
-acceptance *createAcceptance(){
+acceptance *alloc_Acceptance(){
     acceptance *accept = (acceptance *) malloc(sizeof(acceptance));
     if(accept == NULL){
-	fprintf(stderr, "\n[in: alloc.c->createAcceptance]\nNo memory left for creating accept. Exiting.\n");
+	fprintf(stderr, "\n[in: alloc.c->alloc_Acceptance]\nNo memory left for creating accept. Exiting.\n");
 	exit(1);
     }
 
