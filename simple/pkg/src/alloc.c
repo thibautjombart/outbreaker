@@ -14,56 +14,23 @@
 
 
 /**************** data ****************/
-data *alloc_data(int n){
-    int i;
-    data *data = (data *) malloc(sizeof(data));
-
-    if(data == NULL){
-	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
+data *alloc_data(int n, int length){
+    /* allocate pointer */
+    data *out = (data *) malloc(sizeof(data));
+    if(out == NULL){
+	fprintf(stderr, "\n[in: alloc.c->alloc_data]\nNo memory left for creating data. Exiting.\n");
 	exit(1);
     }
 
-    data->ward = (int *) calloc(nb->NbPatients, sizeof(int));
-    if(data->ward == NULL){
-	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
-	exit(1);
-    }
+    /* fill in integers */
+    out->n = n;
+    out->length = length;
 
-   
-
-    /* GENETIC DATA */
-    /* S: indices of sequences collected for each patient */
-    data->S = (int **) malloc(nb->NbPatients*sizeof(int *));
-    if(data->S == NULL){
-	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
-	exit(1);
-    }
-    for(i=0;i<nb->NbPatients;i++){
-	data->S[i] = (int *) calloc(nb->M[i], sizeof(int));
-	if(data->S[i] == NULL){
-	    fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
-	    exit(1);
-	}
-    }
-
-    /* Tcollec: collection times for each sequence */
-    data->Tcollec = (int *) calloc(nb->NbSequences, sizeof(int));
-    if(data->Tcollec == NULL){
-	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
-	exit(1);
-    }
-
-    /* M: number of sequences collected for each patient */
-    data->M = (int *) calloc(nb->NbPatients, sizeof(int));
-    if(data->M == NULL){
-	fprintf(stderr, "\n[in: alloc.c->alloc_Data]\nNo memory left for creating Data. Exiting.\n");
-	exit(1);
-    }
-    for(i=0;i<nb->NbPatients;i++){
-	data->M[i] = nb->M[i];
-    }
-    data->NbSequences = nb->NbSequences;
-
+    /* dates: collection times for each sequence */
+    out->dates = alloc_vec_int(n);
+  
+    /* dna: list of DNA sequences */
+    out->dna = alloc_list_dnaseq(n, length);
 
     /* RANDOM NUMBER GENERATOR */
     /* time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
@@ -73,90 +40,31 @@ data *alloc_data(int n){
     typ=gsl_rng_default;
     gsl_rng * rng=gsl_rng_alloc(typ);
     gsl_rng_set(rng,t); /* changes the seed of the random generator */
-    data->rng = rng;
+    out->rng = rng;
 
-    return data;
+    return out;
 }
 
 
 
 
 
-void freeData(data *data){
-    int i;
-
-    for(i=0 ; i<data->NbPatients ; i++){
-	if(data->A[i] != NULL) gsl_vector_free(data->A[i]);
-	if(data->D[i] != NULL) gsl_vector_free(data->D[i]);
-	if(data->P[i] != NULL) gsl_vector_free(data->P[i]);
-	if(data->N[i] != NULL) gsl_vector_free(data->N[i]);
-	if(data->IsInHosp[i] != NULL) gsl_vector_free(data->IsInHosp[i]);
-	free(data->S[i]);
-    }
-
-    free(data->ward);
-    /* free(data->PatientIndex); */
-    /* free(data->timeSeq); */
-    free(data->A);
-    free(data->D);
-    free(data->P);
-    free(data->N);
-    free(data->IsInHosp);
-    free(data->S);
-    free(data->Tcollec);
-    free(data->M);
-    gsl_rng_free(data->rng);
-    free(data);
+void freeData(data *in){
+    free_vec_int(in->dates);
+    free_list_dnaseq(in->dna);
+    gsl_rng_free(in->rng);
+    free(in);
 }
 
 
 
 
-void printdata(data *data){
-    int i,j;
-    printf("\nNb of patients: %d, time span 0-%d", data->NbPatients, data->T);
-    printf("\nWard data:\n");
-    for(i=0;i<data->NbPatients;i++) printf("%d ", data->ward[i]);
-    printf("\nAdmission dates:\n");
-    for(i=0;i<data->NbPatients;i++){
-	printf("\nPatient %d:\n",i);
-	/* if(data->A[i]!=NULL) gsl_vector_fprintf(stdout, data->A[i], "%.1f"); else printf("NULL\n"); */
-	if(data->A[i]!=NULL) print_gsl_vector(data->A[i], "%.1f "); else printf("NULL\n");
-
-    }
-    printf("\nDischarge dates:\n");
-    for(i=0;i<data->NbPatients;i++){
-	printf("\nPatient %d:\n",i);
-	if(data->D[i]!=NULL) print_gsl_vector(data->D[i], "%.1f "); else printf("NULL\n");
-    }
-    printf("\nDates of positive swabs:\n");
-    for(i=0;i<data->NbPatients;i++){
-	printf("Patient %d:\n",i);
-	if(data->P[i]!=NULL) print_gsl_vector(data->P[i], "%.1f "); else printf("NULL\n");
-    }
-    printf("\nDates of negative swabs:\n");
-    for(i=0;i<data->NbPatients;i++){
-	printf("Patient %d:\n",i);
-	if(data->N[i]!=NULL) print_gsl_vector(data->N[i], "%.1f "); else printf("NULL\n");
-    }
-    printf("\nHospital presence:\n");
-    for(i=0;i<data->NbPatients;i++){
-	printf("Patient %d:\n",i);
-	print_gsl_vector(data->IsInHosp[i], "%.0f ");
-    }
-    printf("\nIndices of sequences for each patient:\n");
-    for(i=0;i<data->NbPatients;i++){
-	printf("\nPatient %d\n",i);
-	for(j=0;j<data->M[i];j++){
-	    printf("%d ", data->S[i][j]);
-	}
-    }
-    printf("\nCollection times:\n");
-    for(i=0;i<data->NbSequences;i++){
-	printf("%d ", data->Tcollec[i]);
-    }
-    printf("\nNb of sequences per patient:\n");
-    for(i=0;i<data->NbPatients;i++) printf("%d ", data->M[i]);
+void print_data(in *in){
+    printf("\n%d sequences of length %d", in->NbPatients, in->T);
+    printf("\nCollection dates:");
+    print_vec_int(in->dates);
+    printf("\nSequences:");
+    print_list_dnaseq(in->dna);
 }
 
 
