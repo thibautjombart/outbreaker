@@ -15,11 +15,11 @@
   ====================
 */
 
-/* CREATE A VECTOR OF INTEGERS OF SIZE N */
-vec_int * create_vec_int(int n){
+/* ALLOC A VECTOR OF INTEGERS OF SIZE N */
+vec_int * alloc_vec_int(int n){
     vec_int *out = (vec_int *) malloc(sizeof(vec_int));
     if(out == NULL){
-	fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
+	fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
 	exit(1);
     }
 
@@ -27,7 +27,7 @@ vec_int * create_vec_int(int n){
     if(n>0){
 	out->values = (int *) calloc(n, sizeof(int));
 	if(out->values == NULL){
-	    fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
+	    fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
 	    exit(1);
 	}
     }
@@ -41,11 +41,11 @@ vec_int * create_vec_int(int n){
 
 
 
-/* CREATE A VECTOR OF DOUBLEEGERS OF SIZE N */
-vec_double * create_vec_double(int n){
+/* ALLOC A VECTOR OF DOUBLEEGERS OF SIZE N */
+vec_double * alloc_vec_double(int n){
     vec_double *out = (vec_double *) malloc(sizeof(vec_double));
     if(out == NULL){
-	fprintf(stderr, "\n[in: distances.c->create_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
+	fprintf(stderr, "\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
 	exit(1);
     }
 
@@ -53,7 +53,7 @@ vec_double * create_vec_double(int n){
     if(n>0){
 	out->values = (double *) calloc(n, sizeof(double));
 	if(out->values == NULL){
-	    fprintf(stderr, "\n[in: distances.c->create_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
+	    fprintf(stderr, "\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
 	    exit(1);
 	}
     }
@@ -66,17 +66,17 @@ vec_double * create_vec_double(int n){
 
 
 
-/* /\* CREATE A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO *\/ */
-/* vec_int * create_vec_int_zero(int n){ */
+/* /\* ALLOC A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO *\/ */
+/* vec_int * alloc_vec_int_zero(int n){ */
 /* 	vec_int *out = (vec_int *) malloc(sizeof(vec_int)); */
 /* 	if(out == NULL){ */
-/* 		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
+/* 		fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
 /* 		exit(1); */
 /* 	} */
 
 /* 	out->values = (int *) calloc(n, sizeof(int)); */
 /* 	if(out->values == NULL){ */
-/* 		fprintf(stderr, "\n[in: distances.c->create_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
+/* 		fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
 /* 		exit(1); */
 /* 	} */
 
@@ -90,28 +90,28 @@ vec_double * create_vec_double(int n){
 
 
 
-/* CREATE EMPTY MAT_INT BETWEEN N OBJECTS */
+/* ALLOC EMPTY MAT_INT BETWEEN N OBJECTS */
 /* (values initialized to 0) */
-mat_int * create_mat_int(int n){
+mat_int * alloc_mat_int(int n){
     int i;
     mat_int *out;
 
     /* allocate output */
     out = (mat_int *) malloc(sizeof(mat_int));
     if(out == NULL){
-	fprintf(stderr, "\n[in: distances.c->create_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
+	fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
 	exit(1);
     }
 
     /* fill in content */
     out->rows = (vec_int **) calloc(n, sizeof(vec_int *));
     if(out->rows == NULL){
-	fprintf(stderr, "\n[in: distances.c->create_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
+	fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
 	exit(1);
     }
 
     for(i=0;i<n;i++){
-	out->rows[i] = create_vec_int(n);
+	out->rows[i] = alloc_vec_int(n);
     }
 
     out->n = n;
@@ -124,28 +124,28 @@ mat_int * create_mat_int(int n){
 
 
 
-/* CREATE EMPTY MAT_DOUBLE BETWEEN N OBJECTS */
+/* ALLOC EMPTY MAT_DOUBLE BETWEEN N OBJECTS */
 /* (values initialized to 0) */
-mat_double * create_mat_double(int n){
+mat_double * alloc_mat_double(int n){
     int i;
     mat_double *out;
 
     /* allocate output */
     out = (mat_double *) malloc(sizeof(mat_double));
     if(out == NULL){
-	fprintf(stderr, "\n[in: distances.c->create_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
+	fprintf(stderr, "\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
 	exit(1);
     }
 
     /* fill in content */
     out->rows = (vec_double **) calloc(n, sizeof(vec_double *));
     if(out->rows == NULL){
-	fprintf(stderr, "\n[in: distances.c->create_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
+	fprintf(stderr, "\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
 	exit(1);
     }
 
     for(i=0;i<n;i++){
-	out->rows[i] = create_vec_double(n);
+	out->rows[i] = alloc_vec_double(n);
     }
 
     out->n = n;
@@ -457,12 +457,12 @@ int main(){
     gsl_rng_set(rng,t); /* changes the seed of the random generator */
 
     int i, N = 10;
-    mat_int * test = create_mat_int(N);
+    mat_int * test = alloc_mat_int(N);
 
     print_mat_int (test);
     free_mat_int(test);
 
-    vec_int *myVec = create_vec_int(30), *toto;
+    vec_int *myVec = alloc_vec_int(30), *toto;
     for(i=0;i<30;i++){
 	myVec->values[i] = 30-i;
     }
@@ -471,7 +471,7 @@ int main(){
     
     printf("\nMin/Max: %d, %d\n", min_vec_int(myVec), max_vec_int(myVec));
 
-    toto = create_vec_int(15);
+    toto = alloc_vec_int(15);
     sample_vec_int(myVec, toto, 1, rng);
     printf("\n15 sampled values - with replacement \n");
     print_vec_int(toto);
@@ -498,8 +498,8 @@ int main(){
     
     printf("\n== sorting a vector ==\n");
     vec_int *idx, *sortedVec;
-    idx = create_vec_int(30);
-    sortedVec = create_vec_int(30);
+    idx = alloc_vec_int(30);
+    sortedVec = alloc_vec_int(30);
     sort_vec_int(myVec, sortedVec, idx);
     printf("\nvector to sort:");
     print_vec_int(myVec);
@@ -508,7 +508,7 @@ int main(){
     printf("\nindices:");
     print_vec_int(idx);
 
-    /* vec_int *a = create_vec_int(10); */
+    /* vec_int *a = alloc_vec_int(10); */
     /* for(i=0;i<10;i++){ */
     /* 	a->values[i] = i; */
     /* } */

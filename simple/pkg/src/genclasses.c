@@ -23,12 +23,12 @@
   ============
 */
 
-/* CREATE DNASEQ OBJECT - ONE DNA SEQUENCE */
-dnaseq * create_dnaseq(int length){
+/* ALLOC DNASEQ OBJECT - ONE DNA SEQUENCE */
+dnaseq * alloc_dnaseq(int length){
 	/* ALLOCATE OUTPUT */
 	dnaseq *out = (dnaseq *) malloc(sizeof(dnaseq));
 	if(out==NULL){
-		fprintf(stderr, "\n[in: classes.c->create_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
+		fprintf(stderr, "\n[in: classes.c->alloc_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
 		exit(1);
 	}
 
@@ -41,26 +41,26 @@ dnaseq * create_dnaseq(int length){
 
 
 
-/* CREATE LIST_DNASEQ OBJECT - A LIST OF ALIGNED DNA SEQUENCES */
-list_dnaseq * create_list_dnaseq(int n, int length){
+/* ALLOC LIST_DNASEQ OBJECT - A LIST OF ALIGNED DNA SEQUENCES */
+list_dnaseq * alloc_list_dnaseq(int n, int length){
 	int i;
 
 	/* ALLOCATE OUTPUT */
 	list_dnaseq *out = (list_dnaseq *) malloc(sizeof(list_dnaseq));
 	if(out==NULL){
-		fprintf(stderr, "\n[in: classes.c->create_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+		fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
 		exit(1);
 	}
 
 	/* FILL/ALLOCATE CONTENT */
 	out->list = (dnaseq **) malloc(n*sizeof(dnaseq *));
 	if(out->list==NULL){
-		fprintf(stderr, "\n[in: classes.c->create_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+		fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
 		exit(1);
 	}
 
 	for(i=0;i<n;i++){
-		out->list[i] = create_dnaseq(length);
+		out->list[i] = alloc_dnaseq(length);
 	}
 	out->n = n;
 	out->length = length;
@@ -153,8 +153,8 @@ char DNAbin2char(unsigned char in){
 list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 	int i, j, count=0;
 
-	/* CREATE OUTPUT */
-	list_dnaseq *out = create_list_dnaseq(*n,*length);
+	/* ALLOC OUTPUT */
+	list_dnaseq *out = alloc_list_dnaseq(*n,*length);
 
 	/* FILL IN THE OUTPUT */
 	for(i=0;i<*n;i++){
@@ -201,8 +201,8 @@ void copy_dnaseq(dnaseq *in, dnaseq *out){
 /* 	const int N=5, L=30; */
 /* 	int i,j; */
 
-/* 	/\* create a list of sequences *\/ */
-/* 	list_dnaseq * test = create_list_dnaseq(N, L); */
+/* 	/\* alloc a list of sequences *\/ */
+/* 	list_dnaseq * test = alloc_list_dnaseq(N, L); */
 
 /* 	for(i=0;i<N;i++){ */
 /* 		for(j=0;j<L;j++){ */

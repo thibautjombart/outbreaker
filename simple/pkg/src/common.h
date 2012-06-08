@@ -32,12 +32,18 @@
 #define TRUE 1
 #define FALSE 0
 
-#define SizeWard0 8
-#define SizeWard1 12
-/* #define NbPatients 142 */
-/* #define T 100 /\* number of time steps corresponding to the study period *\/ */
 
 typedef short int bool;
+
+ typedef struct{
+     int n, length; /* n: number of observations; length: sequence length */
+     vec_int * dates; /* collection dates*/
+     list_dnaseq * dna; /* sequences */
+     gsl_rng * rng;
+ } data;
+
+
+
 
 
 
