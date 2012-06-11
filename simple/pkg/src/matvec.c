@@ -258,7 +258,7 @@ double mat_double_ij(mat_double *in, int i, int j){
 /* print method */
 void print_vec_int(vec_int *in){
     int i;
-    printf("\nVector of %d values: ", in->length);
+    printf("Vector of %d integers: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
     for(i=0;i<in->length;i++) printf("%d ", vec_int_i(in,i));
     printf("\n");
@@ -288,7 +288,7 @@ void print_mat_int(mat_int *in){
 /* print method */
 void print_vec_double(vec_double *in){
     int i;
-    printf("\nVector of %d values: ", in->length);
+    printf("Vector of %d doubles: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
     for(i=0;i<in->length;i++) printf("%.3f ", vec_double_i(in,i));
     printf("\n");
