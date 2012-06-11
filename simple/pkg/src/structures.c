@@ -84,6 +84,54 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
 
 
 
+
+/*
+  =======
+  GENTIME
+  =======
+*/
+
+gentime *alloc_gentime(){
+  /* allocate pointer */
+    gentime *out = (gentime *) malloc(sizeof(gentime));
+    if(out == NULL){
+	fprintf(stderr, "\n[in: structures.c->alloc_gentime]\nNo memory left for creating gentime. Exiting.\n");
+	exit(1);
+    }
+
+    out->type = 0;
+    out->param1 = 0.0;
+    out->param2 = 0.0;
+    out->param3 = 0.0;
+
+    /* return */
+    return out;
+} /* end alloc_gentime */
+
+
+
+
+void free_gentime(gentime *in){
+    free(in);
+} /* end free_gentime*/
+
+
+
+
+void print_gentime(gentime *in){
+    printf("\n= Description of generation time function =\n");
+    printf("\nType: %d", in->type);
+    printf("\nparam1: %.5f \tparam2: %.5f \tparam3: %.5f", in->param1, in->param2, in->param3);
+} /* end print_gentime*/
+
+
+
+
+
+
+
+
+
 /*
  =======
   PARAM
@@ -129,13 +177,13 @@ void free_param(param *in){
 
 
 void print_param(param *in){
-    printf("\n= Infection dates =\n");
+    printf("\n= Tinf (infection dates) =\n");
     print_vec_int(in->Tinf);
     printf("\n= Alpha_i (ancestries) =\n");
     print_vec_int(in->alpha);
     printf("\n= Kappa_i (generations from nearest ancestor) =\n");
     print_vec_int(in->kappa);
-    printf("\n= Mutations rates (mu1, mu2, gamma) =\n");
+    printf("\n= mu1, mu2, gamma (transi, transver, coef) =\n");
     printf("%.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma);
     printf("\n= pi (proportion of observed cases =\n");
     printf("%.5f", in->pi);
@@ -157,132 +205,9 @@ void copy_param(param *in, param *out){
 
 
 
-/* void copyParam(parameters * paramDest, parameters * paramSource){ */
-/*     gsl_matrix_memcpy (paramDest->beta,paramSource->beta); */
-/*     paramDest->betaWardOut = paramSource->betaWardOut; */
-/*     paramDest->betaOutOut = paramSource->betaOutOut; */
-
-/*     /\* paramDest->Sp = paramSource->Sp; *\/ */
-/*     paramDest->Se = paramSource->Se; */
-
-/*     paramDest->Pi = paramSource->Pi; */
-
-/*     paramDest->mu = paramSource->mu; */
-/*     paramDest->sigma = paramSource->sigma; */
-
-/*     paramDest->nu1 = paramSource->nu1; */
-/*     paramDest->kappa = paramSource->kappa; */
-
-/*     paramDest->weightNaGen = paramSource->weightNaGen; */
-/* } */
 
 
 
-
-
-
-/* void print_param(parameters *param){ */
-/*     printf("\nBeta matrix:\n"); */
-/*     gsl_matrix_fprintf(stdout, param->beta, "%.3f"); */
-/*     printf("\nBeta ward<-out: %.3f", param->betaWardOut); */
-/*     printf("\nBeta out<-out: %.3f", param->betaOutOut); */
-/*     printf("\nsensibility of the test: %.3f", param->Se); */
-/*     printf("\nprobability of being colonized at first admission: %.3f", param->Pi); */
-/*     printf("\nmu/sigma - duration of colonisation: %.3f %.3f", param->mu, param->sigma); */
-/*     printf("\nnu1: %.3f   kappa: %3f   nu2: %.3f", param->nu1, param->kappa, param->nu1*param->kappa); */
-/*     printf("\nweightNaGen: %.3f", param->weightNaGen); */
-/*     fflush(stdout); */
-/* } */
-
-
-/* void readParameters(char* workspace, parameters * param, hospDurationParam *paramHosp) */
-/* { */
-/*     FILE * paramInit; */
-/*     char val[30]; */
-/*     char file[200]; */
-
-/*     strcpy(file, workspace); */
-/*     strcat(file,"param.txt"); */
-/*     if ((paramInit=fopen(file,"r"))==NULL) */
-/* 	{ */
-/* 	    printf("Cannot read param.txt"); */
-/* 	    exit(2); */
-/* 	} */
-
-/*     fscanf(paramInit,"%s %lf",val,gsl_matrix_ptr (param->beta,0,0)); */
-/*     printf("%s %g\n",val,gsl_matrix_get(param->beta,0,0)); */
-
-/*     fscanf(paramInit,"%s %lf",val,gsl_matrix_ptr (param->beta,0,1)); */
-/*     printf("%s %g\n",val,gsl_matrix_get(param->beta,0,1)); */
-
-/*     fscanf(paramInit,"%s %lf",val,gsl_matrix_ptr (param->beta,1,0)); */
-/*     printf("%s %g\n",val,gsl_matrix_get(param->beta,1,0)); */
-
-/*     fscanf(paramInit,"%s %lf",val,gsl_matrix_ptr (param->beta,1,1)); */
-/*     printf("%s %g\n",val,gsl_matrix_get(param->beta,1,1)); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->betaWardOut); */
-/*     printf("%s %g\n",val,param->betaWardOut); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->betaOutOut); */
-/*     printf("%s %g\n",val,param->betaOutOut); */
-
-/*     /\*fscanf(paramInit,"%s %lf",val,&param->Sp); */
-/*       printf("%s %g\n",val,param->Sp);*\/ */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->Se); */
-/*     printf("%s %g\n",val,param->Se); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->Pi); */
-/*     printf("%s %g\n",val,param->Pi); */
-
-/*     fscanf(paramInit,"%s %lf",val,&paramHosp->mu); */
-/*     printf("%s %g\n",val,paramHosp->mu); */
-
-/*     fscanf(paramInit,"%s %lf",val,&paramHosp->sigma); */
-/*     printf("%s %g\n",val,paramHosp->sigma); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->mu); */
-/*     printf("%s %g\n",val,param->mu); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->sigma); */
-/*     printf("%s %g\n",val,param->sigma); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->nu1); */
-/*     printf("%s %g\n",val,param->nu1); */
-
-/*     fscanf(paramInit,"%s %lf",val,&param->kappa); */
-/*     printf("%s %g\n",val,param->kappa); */
-
-/*     fclose(paramInit); */
-
-/* } */
-
-/* /\***************** hospDurationParam ******************\/ */
-/* hospDurationParam *alloc_HospDurationParam(){ */
-/*     hospDurationParam *param = (hospDurationParam *) malloc(sizeof(hospDurationParam)); */
-/*     if(param == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_HospDurationParam]\nNo memory left for creating hospDurationParam. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     param->mu = 0.0; */
-/*     param->sigma = 0.0; */
-
-/*     return param; */
-/* } */
-
-
-/* void print_HospDurationParam(hospDurationParam *param){ */
-/*     printf("\nmu/sigma - duration of hospitalisation: %.3f %.3f", param->mu, param->sigma); */
-/*     fflush(stdout); */
-/* } */
-
-
-
-/* void freeHospDurationParam(hospDurationParam *in){ */
-/*     free(in); */
-/* } */
 
 /* /\************* Is Acceptance OK *************\/ */
 /* isAcceptOK *alloc_IsAcceptOK(){ */
@@ -609,20 +534,35 @@ void copy_param(param *in, param *out){
   ======================
 */
 
-/* int main(){ */
-/*     data * dat = alloc_data(10,100); */
-/*     print_data(dat); */
-/*     free_data(dat); */
+int main(){
+    /* data */
+    data * dat = alloc_data(10,100);
+    printf("\nData\n");
+    print_data(dat);
+    free_data(dat);
 
-/*     return 0; */
-/* } */
+    /* gentime */
+    gentime * gen = alloc_gentime();
+    printf("\nGentime\n");
+    print_gentime(gen);
+    free_gentime(gen);
+
+    /* param */
+    param * par = alloc_param(10);
+    printf("\nParam\n");
+    print_param(par);
+    free_param(par);
+
+    printf("\n\n");
+    return 0;
+}
 
 
 
 /* 
    gcc instructions:
 
-   gcc -o structures matvec.c genclasses.c structures.c -lgsl -lgslcblas -g -pedantic
+   gcc -o structures matvec.c genclasses.c structures.c -lgsl -lgslcblas -g -Wall
 
   ./structures
 

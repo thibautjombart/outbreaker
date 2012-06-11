@@ -34,18 +34,18 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length)
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, length);
 
- 
+
     /* PRINT DATA */
     printf("\n>>> Data <<<\n");
     print_data(dat);
 
- 
+
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna);
     printf("\n>>> DNA info <<<\n");
     print_dna_dist(dnainfo);
 
- 
+
     /* FREE MEMORY */
     free_data(dat);
     gsl_rng_free(rng);

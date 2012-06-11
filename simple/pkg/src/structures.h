@@ -32,6 +32,17 @@
  } data;
 
 
+
+
+/* descriptors/parameters of the generation time function 'w' */
+typedef struct{
+    int type; /* type of distribution for generation time */
+    double param1, param2, param3; /* parameters for the generation time distribution 'w' */
+} gentime;
+
+
+
+
 /* param: contains augmented data and parameters */
 typedef struct{
     int n; /* number of observations, length of the vec_int objects */
