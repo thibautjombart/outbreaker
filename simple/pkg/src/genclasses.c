@@ -25,17 +25,23 @@
 
 /* ALLOC DNASEQ OBJECT - ONE DNA SEQUENCE */
 dnaseq * alloc_dnaseq(int length){
-	/* ALLOCATE OUTPUT */
-	dnaseq *out = (dnaseq *) malloc(sizeof(dnaseq));
-	if(out==NULL){
-		fprintf(stderr, "\n[in: classes.c->alloc_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
-		exit(1);
-	}
+    int i;
 
-	/* FILL/ALLOCATE CONTENT */
-	out->seq =  (char*) malloc(length*sizeof(char));
-	out->length = length;
-	return out;
+    /* ALLOCATE OUTPUT */
+    dnaseq *out = (dnaseq *) malloc(sizeof(dnaseq));
+    if(out==NULL){
+	fprintf(stderr, "\n[in: classes.c->alloc_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
+	exit(1);
+    }
+
+    /* FILL/ALLOCATE CONTENT */
+    out->seq =  (char*) malloc(length*sizeof(char));
+    out->length = length;
+    for(i=0;i<length;i++){
+	out->seq[i] = '-';
+    }
+
+    return out;
 }
 
 
@@ -43,28 +49,28 @@ dnaseq * alloc_dnaseq(int length){
 
 /* ALLOC LIST_DNASEQ OBJECT - A LIST OF ALIGNED DNA SEQUENCES */
 list_dnaseq * alloc_list_dnaseq(int n, int length){
-	int i;
+    int i;
 
-	/* ALLOCATE OUTPUT */
-	list_dnaseq *out = (list_dnaseq *) malloc(sizeof(list_dnaseq));
-	if(out==NULL){
-		fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
-		exit(1);
-	}
+    /* ALLOCATE OUTPUT */
+    list_dnaseq *out = (list_dnaseq *) malloc(sizeof(list_dnaseq));
+    if(out==NULL){
+	fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+	exit(1);
+    }
 
-	/* FILL/ALLOCATE CONTENT */
-	out->list = (dnaseq **) malloc(n*sizeof(dnaseq *));
-	if(out->list==NULL){
-		fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
-		exit(1);
-	}
+    /* FILL/ALLOCATE CONTENT */
+    out->list = (dnaseq **) malloc(n*sizeof(dnaseq *));
+    if(out->list==NULL){
+	fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+	exit(1);
+    }
 
-	for(i=0;i<n;i++){
-		out->list[i] = alloc_dnaseq(length);
-	}
-	out->n = n;
-	out->length = length;
-	return out;
+    for(i=0;i<n;i++){
+	out->list[i] = alloc_dnaseq(length);
+    }
+    out->n = n;
+    out->length = length;
+    return out;
 }
 
 
@@ -81,22 +87,22 @@ list_dnaseq * alloc_list_dnaseq(int n, int length){
 */
 
 void free_dnaseq(dnaseq *in){
-	if(in!=NULL){
-		free(in->seq);
-		free(in);
-	}
+    if(in!=NULL){
+	free(in->seq);
+	free(in);
+    }
 }
 
 
 void free_list_dnaseq(list_dnaseq *in){
-	int i;
-	if(in!=NULL){
-		for(i=0;i<in->n;i++){
-			free_dnaseq(in->list[i]);
-		}
-		free(in->list);
-		free(in);
+    int i;
+    if(in!=NULL){
+	for(i=0;i<in->n;i++){
+	    free_dnaseq(in->list[i]);
 	}
+	free(in->list);
+	free(in);
+    }
 }
 
 
@@ -108,24 +114,24 @@ void free_list_dnaseq(list_dnaseq *in){
 */
 
 void print_dnaseq(dnaseq *in){
-	int i;
-	for(i=0;i<in->length;i++){
-		printf("%c", in->seq[i]);
-	}
-	printf("\n");
+    int i;
+    for(i=0;i<in->length;i++){
+	printf("%c", in->seq[i]);
+    }
+    printf("\n");
 }
 
 
 
 
 void print_list_dnaseq(list_dnaseq *in){
-	int i;
-	printf("\nList of DNA %d sequences (size: %d)\n", in->n, in->length);
-	for(i=0;i<in->n;i++){
-		printf("%d: ", i+1);
-		print_dnaseq(in->list[i]);
-	}
-	printf("\n");
+    int i;
+    printf("\nList of %d DNA sequences (size: %d)\n", in->n, in->length);
+    for(i=0;i<in->n;i++){
+	printf("%d: ", i+1);
+	print_dnaseq(in->list[i]);
+    }
+    printf("\n");
 }
 
 
@@ -133,11 +139,11 @@ void print_list_dnaseq(list_dnaseq *in){
 
 /* convert a 'raw' of DNAbin object to char */
 char DNAbin2char(unsigned char in){
-	if(is_A(in)) return 'a';
-	if(is_G(in)) return 'g';
-	if(is_T(in)) return 't';
-	if(is_C(in)) return 'c';
-	return '-';
+    if(is_A(in)) return 'a';
+    if(is_G(in)) return 'g';
+    if(is_T(in)) return 't';
+    if(is_C(in)) return 'c';
+    return '-';
 }
 
 
@@ -151,24 +157,24 @@ char DNAbin2char(unsigned char in){
 
 /* convert DNAbin class to list_dnaseq */
 list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
-	int i, j, count=0;
+    int i, j, count=0;
 
-	/* ALLOC OUTPUT */
-	list_dnaseq *out = alloc_list_dnaseq(*n,*length);
+    /* ALLOC OUTPUT */
+    list_dnaseq *out = alloc_list_dnaseq(*n,*length);
 
-	/* FILL IN THE OUTPUT */
-	for(i=0;i<*n;i++){
-		for(j=0;j<*length;j++){
-			out->list[i]->seq[j] = DNAbin2char(in[count++]);
-		}
+    /* FILL IN THE OUTPUT */
+    for(i=0;i<*n;i++){
+	for(j=0;j<*length;j++){
+	    out->list[i]->seq[j] = DNAbin2char(in[count++]);
 	}
+    }
 
-	/* printf("\nlist_dnaseq in C:\n"); */
-	/* print_list_dnaseq(out); */
-	/* printf("\n"); */
+    /* printf("\nlist_dnaseq in C:\n"); */
+    /* print_list_dnaseq(out); */
+    /* printf("\n"); */
 
-	/* RETURN */
-	return out;
+    /* RETURN */
+    return out;
 }
 
 
@@ -179,7 +185,7 @@ void copy_dnaseq(dnaseq *in, dnaseq *out){
     if(out->length!=in->length){
 	fprintf(stderr, "\n[in: genclasses.c->copy_dnaseq]\n.Input and output length mismatch (in:%d, out:%d)\n", in->length, out->length);
 	exit(1);
-	}
+    }
 
     int i;
     for(i=0;i<in->length;i++){
@@ -223,10 +229,10 @@ void copy_dnaseq(dnaseq *in, dnaseq *out){
 
 /* gcc instructions:
 
-gcc -o genclasses genclasses.c && ./genclasses
+   gcc -o genclasses genclasses.c && ./genclasses
 
 
-valgrind --leak-check=full genclasses
+   valgrind --leak-check=full genclasses
 
 
 */

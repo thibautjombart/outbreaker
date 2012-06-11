@@ -1,6 +1,9 @@
 #ifndef __COMMON_H
-
 #include "common.h"
+#endif
+
+#ifndef __STRUCTURES_H
+#include "structures.h"
 #endif
 
 #ifndef __ALLOC_H
@@ -8,34 +11,36 @@
 
 
 
-aug_data *alloc_AugData(int NbPatients, int T, int NbSequences);
-void freeAugData(aug_data *);
-void copyAugData(aug_data *, aug_data *);
-void print_augData(aug_data *);
+data *alloc_data(int n, int length);
+void free_data(data *in);
 
-parameters *alloc_Param();
-void freeParam(parameters *);
-void copyParam(parameters * , parameters * );
-void print_param(parameters *);
+/* void freeAugData(aug_data *); */
+/* void copyAugData(aug_data *, aug_data *); */
+/* void print_augData(aug_data *); */
 
-mcmcInternals *alloc_McmcInternals();
-void printStdProp(mcmcInternals *);
-void freeMcmcInternals(mcmcInternals*);
+/* parameters *alloc_Param(); */
+/* void freeParam(parameters *); */
+/* void copyParam(parameters * , parameters * ); */
+/* void print_param(parameters *); */
 
-acceptance *alloc_Acceptance();
-void reInitiateAcceptance(acceptance *);
-void printAcceptance(acceptance *, NbProposals *);
-void freeAcceptance(acceptance*);
+/* mcmcInternals *alloc_McmcInternals(); */
+/* void printStdProp(mcmcInternals *); */
+/* void freeMcmcInternals(mcmcInternals*); */
 
-isAcceptOK *alloc_IsAcceptOK();
-void freeIsAcceptOK(isAcceptOK *);
+/* acceptance *alloc_Acceptance(); */
+/* void reInitiateAcceptance(acceptance *); */
+/* void printAcceptance(acceptance *, NbProposals *); */
+/* void freeAcceptance(acceptance*); */
 
-NbProposals *alloc_NbProposals();
-void reInitiateNbProp(NbProposals *);
-void freeNbProposals(NbProposals *);
+/* isAcceptOK *alloc_IsAcceptOK(); */
+/* void freeIsAcceptOK(isAcceptOK *); */
 
-output_files *alloc_FILES(char*);
-void freeFILES(output_files *);
+/* NbProposals *alloc_NbProposals(); */
+/* void reInitiateNbProp(NbProposals *); */
+/* void freeNbProposals(NbProposals *); */
+
+/* output_files *alloc_FILES(char*); */
+/* void freeFILES(output_files *); */
 
 #endif
 
