@@ -503,6 +503,29 @@ void copy_mat_double(mat_double *in, mat_double *out){
 
 
 
+/* 
+   ============
+   BASIC STATS
+   ============
+*/
+
+int sum_vec_int(vec_int *in){
+    int i, out=0;
+    for(i=0;i<in->length;i++){
+	out += in->values[i];
+    }
+    return out;
+}
+
+
+double sum_vec_double(vec_double *in){
+    int i;
+    double out=0.0;
+    for(i=0;i<in->length;i++){
+	out += in->values[i];
+    }
+    return out;
+}
 
 
 

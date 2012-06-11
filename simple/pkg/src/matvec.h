@@ -122,4 +122,18 @@ void copy_mat_int(mat_int *in, mat_int *out);
 
 void copy_mat_double(mat_double *in, mat_double *out);
 
+
+/* 
+   ============
+   BASIC STATS
+   ============
+*/
+
+int sum_vec_int(vec_int *in);
+
+double sum_vec_double(vec_double *in);
+
+
+
+
 #endif

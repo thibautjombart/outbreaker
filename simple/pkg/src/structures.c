@@ -71,8 +71,7 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
 	}
     }
 
-    /* END / RETURN */
-    print_data(out);
+    /* RETURN */
     return out;
 } /* end Rinput2data */
 
@@ -91,7 +90,7 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
   =======
 */
 
-gentime *alloc_gentime(int nbPrecomp){
+gentime *alloc_gentime(int trunc){
   /* allocate pointer */
     gentime *out = (gentime *) malloc(sizeof(gentime));
     if(out == NULL){
@@ -103,9 +102,10 @@ gentime *alloc_gentime(int nbPrecomp){
     out->param1 = 0.0;
     out->param2 = 0.0;
     out->param3 = 0.0;
+    out->trunc = trunc>0 ? trunc : 1; /* make sur that p(0) is not zero */
 
     /* allocate vectpr of densities */
-    out->dens = alloc_vec_double(nbPrecomp);
+    out->dens = alloc_vec_double(out->trunc);
 
     /* return */
     return out;
@@ -126,7 +126,7 @@ void print_gentime(gentime *in){
     printf("\n= Description of generation time function =\n");
     printf("\nType: %d", in->type);
     printf("\nparam1: %.5f \tparam2: %.5f \tparam3: %.5f", in->param1, in->param2, in->param3);
-    printf("\n= Pre-computed density =\n");
+    printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->trunc);
     print_vec_double(in->dens);
 } /* end print_gentime*/
 
@@ -567,7 +567,7 @@ void copy_param(param *in, param *out){
 
 
 
-/* 
+/*
    gcc instructions:
 
    gcc -o structures matvec.c genclasses.c structures.c -lgsl -lgslcblas -g -Wall

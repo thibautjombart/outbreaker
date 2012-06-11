@@ -19,25 +19,36 @@
   ======================
 */
 
-void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length){
+void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
+		  int *wType, double *wParam1, double *wParam2, double *wParam3, int *wTrunc){
     /* DECLARATIONS */
-    int N;
+    int N, TIMESPAN;
     data *dat;
     gsl_rng *rng;
+    gentime *gen;
     dna_dist * dnainfo;
 
 
     /* INITIALIZE RNG */
-    rng = create_gsl_rng();
+    rng = create_gsl_rng(time(NULL));
 
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, length);
-
-
-    /* PRINT DATA */
     printf("\n>>> Data <<<\n");
     print_data(dat);
+
+
+    /* /\* GET TIME SPAN *\/ */
+    /* TIMESPAN = max_vec_int(dat->dates) - min_vec_int(dat->dates); */
+    /* printf("\nTimespan is %d\n",TIMESPAN); */
+
+
+    /* CREATE AND INIT GENERATION TIME */
+    gen = alloc_gentime(*wTrunc);
+    init_gentime(gen, *wType, *wParam1, *wParam2, *wParam3);
+    printf("\n>>> gentime info <<<\n");
+    print_gentime(gen);
 
 
     /* COMPUTE GENETIC DISTANCES */
