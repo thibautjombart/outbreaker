@@ -1,20 +1,26 @@
 
 
-# if 0
-
 #include "common.h"
-#include "init.h"
-#include "InputOutput.h"
-#include "logL.h"
-#include "mcmc.h"
-#include "moves.h"
-#include "prior.h"
-#include "alloc.h"
-#include "tuneVariances.h"
+
+/* #include "init.h" */
+/* #include "InputOutput.h" */
+/* #include "logL.h" */
+/* #include "mcmc.h" */
+/* #include "moves.h" */
+/* #include "tuneVariances.h" */
 
 
 
+gsl_rng * create_gsl_rng(){
+    time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
+    gsl_rng_env_setup();
+    gsl_rng *out = gsl_rng_alloc(gsl_rng_default);
+    gsl_rng_set(out,t); /* changes the seed of the random generator */
+    return out;
+}
 
+
+# if 0
 
 
 void CalculIsInHosp(nb_data * nbData, raw_data *data){

@@ -13,7 +13,7 @@ data *alloc_data(int n, int length){
     /* allocate pointer */
     data *out = (data *) malloc(sizeof(data));
     if(out == NULL){
-	fprintf(stderr, "\n[in: alloc.c->alloc_data]\nNo memory left for creating data. Exiting.\n");
+	fprintf(stderr, "\n[in: structures.c->alloc_data]\nNo memory left for creating data. Exiting.\n");
 	exit(1);
     }
 
@@ -27,14 +27,6 @@ data *alloc_data(int n, int length){
     /* dna: list of DNA sequences */
     out->dna = alloc_list_dnaseq(n, length);
 
-    /* RANDOM NUMBER GENERATOR */
-    time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
-    /* time_t t = 1; /\* time in seconds, used to change the seed of the random generator *\/ */
-    gsl_rng_env_setup();
-    const gsl_rng_type *typ=gsl_rng_default;
-    out->rng = gsl_rng_alloc(typ);
-    gsl_rng_set(out->rng,t); /* changes the seed of the random generator */
-
     return out;
 } /* end alloc_data */
 
@@ -45,7 +37,6 @@ data *alloc_data(int n, int length){
 void free_data(data *in){
     free_vec_int(in->dates);
     free_list_dnaseq(in->dna);
-    gsl_rng_free(in->rng);
     free(in);
 } /* end free_data*/
 
@@ -88,146 +79,81 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
 
 
 
-/* /\**************** augdata ****************\/ */
-/* augdata *alloc_AugData(int NbPatients, int T, int NbSequences){ */
-/*     augdata *augData = (augdata *) malloc(sizeof(augdata)); */
-/*     if(augData == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-
-/*     augData->C = (int *) calloc(NbPatients, sizeof(int)); */
-/*     if(augData->C == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     augData->E = (int *) calloc(NbPatients, sizeof(int)); */
-/*     if(augData->E == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     augData->I0 = (int *) calloc(T, sizeof(int)); */
-/*     if(augData->I0 == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     augData->I1 = (int *) calloc(T, sizeof(int)); */
-/*     if(augData->I1 == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     augData->alpha = gsl_matrix_calloc(NbSequences,NbSequences); */
-/*     if(augData->alpha == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     augData->tau = gsl_matrix_calloc(NbSequences,NbSequences); */
-/*     if(augData->tau == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_AugData]\nNo memory left for creating augData. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     augData->NbPatients = NbPatients; */
-/*     augData->T = T; */
-/*     augData->NbSequences = NbSequences; */
-
-/*     return augData; */
-/* } */
 
 
 
 
 
-/* void freeAugData(augdata *augData){ */
-/*     free(augData->C); */
-/*     free(augData->E); */
-/*     free(augData->I0); */
-/*     free(augData->I1); */
-/*     gsl_matrix_free(augData->alpha); */
-/*     gsl_matrix_free(augData->tau); */
-/*     free(augData); */
-/* } */
+/*
+ =======
+  PARAM
+ =======
+*/
+
+param *alloc_param(int n){
+  /* allocate pointer */
+    param *out = (param *) malloc(sizeof(param));
+    if(out == NULL){
+	fprintf(stderr, "\n[in: structures.c->alloc_param]\nNo memory left for creating param. Exiting.\n");
+	exit(1);
+    }
+
+    /* fill in integers */
+    out->n = n;
+
+    /* allocates vectors of integers */
+    out->Tinf = alloc_vec_int(n);
+    out->alpha = alloc_vec_int(n);
+    out->kappa = alloc_vec_int(n);
+
+    /* fill in doubles */
+    out->mu1 = 0.0001;
+    out->gamma = 1.0;
+    out->pi = 1.0;
+
+    /* return */
+    return out;
+} /* end alloc_param */
 
 
 
 
-/* void print_augData(augdata *augData){ */
-/*     int i; */
-/*     printf("\nNb of patients: %d, time span 0-%d", augData->NbPatients, augData->T); */
-/*     printf("\nColonisation times: \n"); */
-/*     for(i=0;i<augData->NbPatients;i++) printf("%d ", augData->C[i]); */
-/*     printf("\nClearance times: \n"); */
-/*     for(i=0;i<augData->NbPatients;i++) printf("%d ", augData->E[i]); */
-/*     printf("\nNb of colonised individuals at each time step, ward 0: \n"); */
-/*     for(i=0;i<augData->T;i++) printf("%d ", augData->I0[i]); */
-/*     printf("\nNb of colonised individuals at each time step, ward 1: \n"); */
-/*     for(i=0;i<augData->T;i++) printf("%d ", augData->I1[i]); */
-/*     fflush(stdout); */
-/*     printf("\nMatrix of alpha_kq: \n"); */
-/*     gsl_matrix_fprintf(stdout, augData->alpha, "%.3f"); */
-/*     fflush(stdout); */
-/*     printf("\nMatrix of tau_kq: \n"); */
-/*     gsl_matrix_fprintf(stdout, augData->tau, "%.3f"); */
-/*     fflush(stdout); */
-/* } */
+void free_param(param *in){
+    free_vec_int(in->Tinf);
+    free_vec_int(in->alpha);
+    free_vec_int(in->kappa);
+    free(in);
+} /* end free_param*/
 
 
 
 
-/* void copyAugData(augdata *augDataDest, augdata *augDataSource){ */
-/*     augDataDest->NbPatients = augDataSource->NbPatients; */
-/*     augDataDest->T = augDataSource->T; */
-/*     memcpy(augDataDest->C, augDataSource->C, augDataDest->NbPatients*sizeof(int)); */
-/*     memcpy(augDataDest->E, augDataSource->E, augDataDest->NbPatients*sizeof(int)); */
-/*     memcpy(augDataDest->I0, augDataSource->I0, augDataSource->T*sizeof(int)); */
-/*     memcpy(augDataDest->I1, augDataSource->I1, augDataSource->T*sizeof(int)); */
-/*     gsl_matrix_memcpy(augDataDest->alpha, augDataSource->alpha); */
-/*     gsl_matrix_memcpy(augDataDest->tau, augDataSource->tau); */
-/* } */
+void print_param(param *in){
+    printf("\n= Infection dates =\n");
+    print_vec_int(in->Tinf);
+    printf("\n= Alpha_i (ancestries) =\n");
+    print_vec_int(in->alpha);
+    printf("\n= Kappa_i (generations from nearest ancestor) =\n");
+    print_vec_int(in->kappa);
+    printf("\n= Mutations rates (mu1, mu2, gamma) =\n");
+    printf("%.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma);
+    printf("\n= pi (proportion of observed cases =\n");
+    printf("%.5f", in->pi);
+} /* end print_param*/
 
 
 
 
-
-
-/* /\***************** param ******************\/ */
-/* parameters *alloc_Param(){ */
-/*     parameters *param = (parameters *) malloc(sizeof(parameters)); */
-/*     if(param == NULL){ */
-/* 	fprintf(stderr, "\n[in: alloc.c->alloc_Param]\nNo memory left for creating parameters. Exiting.\n"); */
-/* 	exit(1); */
-/*     } */
-
-/*     param->beta = gsl_matrix_calloc(2,2); */
-/*     param->betaWardOut = 0.1; */
-/*     param->betaOutOut = 0.1; */
-/*     param->Se = 0.0; */
-/*     param->Pi = 0.0; */
-/*     param->mu = 0.0; */
-/*     param->sigma = 0.0; */
-/*     param->nu1 = 0.0; */
-/*     param->kappa = 0.0; */
-/*     param->weightNaGen = 0.0; */
-
-/*     return param; */
-/* } */
-
-
-
-
-
-/* void freeParam(parameters *param){ */
-/*     gsl_matrix_free(param->beta); */
-/*     free(param); */
-/* } */
-
-
+void copy_param(param *in, param *out){
+    /* copy atomic values */
+    out->n = in->n;
+    out->mu1 = in->mu1;
+    out->gamma = in->gamma;
+    out->pi = in->pi;
+    copy_vec_int(in->Tinf,out->Tinf);
+    copy_vec_int(in->alpha,out->alpha);
+    copy_vec_int(in->kappa,out->kappa);
+} /* end copy_param */
 
 
 
@@ -683,13 +609,13 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
   ======================
 */
 
-int main(){
-    data * dat = alloc_data(10,100);
-    print_data(dat);
-    free_data(dat);
+/* int main(){ */
+/*     data * dat = alloc_data(10,100); */
+/*     print_data(dat); */
+/*     free_data(dat); */
 
-    return 0;
-}
+/*     return 0; */
+/* } */
 
 
 
