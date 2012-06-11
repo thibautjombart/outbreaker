@@ -1,3 +1,5 @@
+#if 0
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -214,3 +216,6 @@ void metro (mcmcInternals * MCMCSettings, parameters * param, raw_data * data, n
     /* fflush(stdout); */
 
 }
+
+
+#endif

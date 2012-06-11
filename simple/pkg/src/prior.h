@@ -1,34 +1,34 @@
-#ifndef __COMMON_H
-#include "common.h"
-#endif
+/* #ifndef __COMMON_H */
+/* #include "common.h" */
+/* #endif */
 
-#ifndef __PRIOR_H
-#define __PRIOR_H
+/* #ifndef __PRIOR_H */
+/* #define __PRIOR_H */
 
-double logpriorBeta(int , int , parameters * );
+/* double logpriorBeta(int , int , parameters * ); */
 
-double logpriorBetaWardOut(parameters * );
+/* double logpriorBetaWardOut(parameters * ); */
 
-double logpriorBetaOutOut(parameters * );
+/* double logpriorBetaOutOut(parameters * ); */
 
-double logpriorPi(parameters * );
+/* double logpriorPi(parameters * ); */
 
-double logpriorSp(parameters * );
+/* double logpriorSp(parameters * ); */
 
-double logpriorSe(parameters * );
+/* double logpriorSe(parameters * ); */
 
-double logpriorMu(parameters * );
+/* double logpriorMu(parameters * ); */
 
-double logpriorSigma(parameters * );
+/* double logpriorSigma(parameters * ); */
 
-double logpriorNu1(parameters * param);
+/* double logpriorNu1(parameters * param); */
 
-double logpriorKappa(parameters * param);
+/* double logpriorKappa(parameters * param); */
 
-/* double logpriorAlpha(parameters * param); */
+/* /\* double logpriorAlpha(parameters * param); *\/ */
 
-/* double logpriorTau(parameters * param); */
+/* /\* double logpriorTau(parameters * param); *\/ */
 
-double logprior (parameters * );
+/* double logprior (parameters * ); */
 
-#endif
+/* #endif */

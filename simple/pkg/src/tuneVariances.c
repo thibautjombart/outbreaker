@@ -1,3 +1,6 @@
+#if 0
+
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -302,3 +305,7 @@ void updateMCMCSettingsKappa(NbProposals * nbProp,acceptance * accept,isAcceptOK
 /* 	    acceptOK->IsAccOK_alpha+=1; */
 /* 	} */
 /* } */
+
+
+
+#endif

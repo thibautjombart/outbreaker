@@ -1,3 +1,5 @@
+#if 0
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -610,3 +612,6 @@ void writeData(int NbCases, char* workspace, nb_data *nbData, raw_data *data, au
     fclose(NbNegSwabs);
     fclose(IndexInfector);
 }
+
+
+#endif

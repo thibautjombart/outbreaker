@@ -1,3 +1,5 @@
+#if 0
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -195,3 +197,4 @@ double logprior (parameters * param){
 }
 
 
+#endif

@@ -1,4 +1,7 @@
 
+
+# if 0
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -160,3 +163,7 @@ void InitParam(parameters *param){
     param->kappa=1.0;
 
 }
+
+
+
+#endif

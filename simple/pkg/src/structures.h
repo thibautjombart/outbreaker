@@ -19,9 +19,9 @@
 
 
 /*
-  =====================
-  >>>>> CLASSES <<<<<
-  =====================
+  =========
+   CLASSES
+  =========
 */
  typedef struct{
      int n, length; /* n: number of observations; length: sequence length */
@@ -34,15 +34,26 @@
 
 
 /*
-  =====================
-  >>>>> METHODS <<<<<
-  =====================
+  =========
+   METHODS
+  =========
 */
 
+
+/* CONSTRUCTORS */
 data *alloc_data(int n, int length);
+
+
+/* DESTRUCTORS */
 void free_data(data *in);
 
 
+/* PRINTING */
+void print_data(data *in);
+
+
+/* R INTERFACES */
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *length);
 
 
 
