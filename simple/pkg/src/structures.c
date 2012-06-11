@@ -673,7 +673,7 @@ int main(){
 /* 
    gcc instructions:
 
-   gcc -o structures matvec.c genclasses.c structures.c -lgsl -lgslcblas -g
+   gcc -o structures matvec.c genclasses.c structures.c -lgsl -lgslcblas -g -pedantic
 
   ./structures
 
