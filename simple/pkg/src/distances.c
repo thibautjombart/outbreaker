@@ -18,17 +18,17 @@
   ====================
 */
 
-/* CREATE A DNA_DIST OBJECT */
-dna_dist * create_dna_dist(int n){
+/* ALLOC A DNA_DIST OBJECT */
+dna_dist * alloc_dna_dist(int n){
     dna_dist * out = (dna_dist *) malloc(sizeof(dna_dist));
     if(out==NULL){
-	fprintf(stderr, "\n[in: distances.c->create_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n");
+	fprintf(stderr, "\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n");
 	exit(1);
     }
 
-    out->transi = create_mat_int(n);
-    out->transv = create_mat_int(n);
-    out->nbcommon = create_mat_int(n);
+    out->transi = alloc_mat_int(n);
+    out->transv = alloc_mat_int(n);
+    out->nbcommon = alloc_mat_int(n);
     out->n = n;
 
     return out;
@@ -113,7 +113,7 @@ dna_dist * compute_dna_distances(list_dnaseq *in){
     int N=in->n, L=in->length;
 
     /* CREATE OUTPUT */
-    dna_dist *out = create_dna_dist(N);
+    dna_dist *out = alloc_dna_dist(N);
   
     /* COMPUTE DISTANCES */
     /* for all unique pairs of sequences */
@@ -169,7 +169,7 @@ dna_dist * compute_dna_distances(list_dnaseq *in){
 /* 	int i,j; */
 
 /* 	/\* create a list of sequences *\/ */
-/* 	list_dnaseq * test = create_list_dnaseq(N, L); */
+/* 	list_dnaseq * test = alloc_list_dnaseq(N, L); */
 
 /* 	for(i=0;i<N;i++){ */
 /* 		for(j=0;j<L;j++){ */
@@ -205,8 +205,10 @@ dna_dist * compute_dna_distances(list_dnaseq *in){
 /*
   gcc instructions
 
-  gcc -o distances matvec.c genclasses.c distances.c && ./distances
+  gcc -o distances matvec.c genclasses.c distances.c -lgsl -lgslcblas -g
 
-  valgrind --leak-check=full distances
+  ./distances
+
+  valgrind --leak-check=full -v distances
 
 */
