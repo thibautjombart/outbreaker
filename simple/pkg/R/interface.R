@@ -3,7 +3,7 @@
 ## auxiliary functions
 #######################
 
-outbreaker <- function(dna, dates){
+outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=10){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -29,11 +29,19 @@ outbreaker <- function(dna, dates){
         dates <- as.integer(difftime(dates, min(dates), units="days"))
     }
 
-    ## make sure minimum date is 0 ##
+    ## make sure minimugit pum date is 0 ##
     dates <- as.integer(dates-min(dates))
 
-    ## .C("Rinput2data", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker")
-    .C("R_outbreaker", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker")
+    ## parameters of generation time function ##
+    w.type <- as.integer(w.type)
+    w.param <- rep(w.param, length=3)
+    w.param <- as.double(w.param)
+    w.trunc <- as.integer(w.trunc)
+
+    ## .C("Rinput2data", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker") int *wType, int *wParam1, int *wParam2, int *wParam3, int *wTrunc
+    .C("R_outbreaker",
+       dna, dates, n.ind, n.nucl,
+       w.type, w.param[1], w.param[2], w.param[3], w.trunc, PACKAGE="outbreaker")
 
     cat("\nComputations finished.")
     return(invisible())

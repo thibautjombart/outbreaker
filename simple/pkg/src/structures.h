@@ -38,6 +38,7 @@
 typedef struct{
     int type; /* type of distribution for generation time */
     double param1, param2, param3; /* parameters for the generation time distribution 'w' */
+    int trunc; /* value of truncation; p(x>=truc)=0 */
     vec_double *dens; /* pre-computed values of density for 0, 1, ..., n-1*/
 } gentime;
 
@@ -60,27 +61,60 @@ typedef struct{
 
 
 
+
+
+
 /*
   =========
    METHODS
   =========
 */
 
-
-/* CONSTRUCTORS */
+/*
+  ======
+   DATA
+  ======
+*/
 data *alloc_data(int n, int length);
 
-
-/* DESTRUCTORS */
 void free_data(data *in);
 
-
-/* PRINTING */
 void print_data(data *in);
 
-
-/* R INTERFACES */
 data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *length);
+
+
+
+
+
+/*
+  =======
+  GENTIME
+  =======
+*/
+
+gentime *alloc_gentime(int trunc);
+
+void free_gentime(gentime *in);
+
+void print_gentime(gentime *in);
+
+
+
+
+/*
+ =======
+  PARAM
+ =======
+*/
+
+param *alloc_param(int n);
+
+void free_param(param *in);
+
+void print_param(param *in);
+
+void copy_param(param *in, param *out);
 
 
 
