@@ -32,9 +32,10 @@ outbreaker <- function(dna, dates){
     ## make sure minimum date is 0 ##
     dates <- as.integer(dates-min(dates))
 
-    .C("Rinput2data", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker")
+    ## .C("Rinput2data", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker")
+    .C("R_outbreaker", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker")
 
-    cat("\nComputation finished.")
+    cat("\nComputations finished.")
     return(invisible())
 }
 

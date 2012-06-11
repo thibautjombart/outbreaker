@@ -23,12 +23,27 @@
    CLASSES
   =========
 */
+
+/* data: contains only observed data */
  typedef struct{
      int n, length; /* n: number of observations; length: sequence length */
      vec_int * dates; /* collection dates*/
      list_dnaseq * dna; /* sequences */
-     gsl_rng * rng;
  } data;
+
+
+/* param: contains augmented data and parameters */
+typedef struct{
+    int n; /* number of observations, length of the vec_int objects */
+    vec_int *Tinf; /* times of infection */
+    vec_int *alpha; /* idx of closest ancestor for each case; -1 = unknown */
+    vec_int *kappa; /* number of generations before a case and its closest ancestor */
+    double mu1; /* rate of transitions */
+    double gamma; /* so that rate of transversions mu2 = gamma x mu1 */
+    double pi; /* proportion of observed cases */
+} param;
+
+
 
 
 
