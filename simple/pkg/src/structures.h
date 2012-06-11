@@ -38,6 +38,7 @@
 typedef struct{
     int type; /* type of distribution for generation time */
     double param1, param2, param3; /* parameters for the generation time distribution 'w' */
+    vec_double *dens; /* pre-computed values of density for 0, 1, ..., n-1*/
 } gentime;
 
 

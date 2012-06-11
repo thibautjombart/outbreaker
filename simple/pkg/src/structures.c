@@ -74,7 +74,7 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
     /* END / RETURN */
     print_data(out);
     return out;
-} /* end fillin_data */
+} /* end Rinput2data */
 
 
 
@@ -91,7 +91,7 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
   =======
 */
 
-gentime *alloc_gentime(){
+gentime *alloc_gentime(int nbPrecomp){
   /* allocate pointer */
     gentime *out = (gentime *) malloc(sizeof(gentime));
     if(out == NULL){
@@ -104,6 +104,9 @@ gentime *alloc_gentime(){
     out->param2 = 0.0;
     out->param3 = 0.0;
 
+    /* allocate vectpr of densities */
+    out->dens = alloc_vec_double(nbPrecomp);
+
     /* return */
     return out;
 } /* end alloc_gentime */
@@ -112,6 +115,7 @@ gentime *alloc_gentime(){
 
 
 void free_gentime(gentime *in){
+    free_vec_double(in->dens);
     free(in);
 } /* end free_gentime*/
 
@@ -122,6 +126,8 @@ void print_gentime(gentime *in){
     printf("\n= Description of generation time function =\n");
     printf("\nType: %d", in->type);
     printf("\nparam1: %.5f \tparam2: %.5f \tparam3: %.5f", in->param1, in->param2, in->param3);
+    printf("\n= Pre-computed density =\n");
+    print_vec_double(in->dens);
 } /* end print_gentime*/
 
 
@@ -534,28 +540,30 @@ void copy_param(param *in, param *out){
   ======================
 */
 
-int main(){
-    /* data */
-    data * dat = alloc_data(10,100);
-    printf("\nData\n");
-    print_data(dat);
-    free_data(dat);
 
-    /* gentime */
-    gentime * gen = alloc_gentime();
-    printf("\nGentime\n");
-    print_gentime(gen);
-    free_gentime(gen);
 
-    /* param */
-    param * par = alloc_param(10);
-    printf("\nParam\n");
-    print_param(par);
-    free_param(par);
+/* int main(){ */
+/*     /\* data *\/ */
+/*     data * dat = alloc_data(10,100); */
+/*     printf("\nData\n"); */
+/*     print_data(dat); */
+/*     free_data(dat); */
 
-    printf("\n\n");
-    return 0;
-}
+/*     /\* gentime *\/ */
+/*     gentime * gen = alloc_gentime(20); */
+/*     printf("\nGentime\n"); */
+/*     print_gentime(gen); */
+/*     free_gentime(gen); */
+
+/*     /\* param *\/ */
+/*     param * par = alloc_param(10); */
+/*     printf("\nParam\n"); */
+/*     print_param(par); */
+/*     free_param(par); */
+
+/*     printf("\n\n"); */
+/*     return 0; */
+/* } */
 
 
 
