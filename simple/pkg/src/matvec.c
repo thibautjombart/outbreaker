@@ -438,6 +438,73 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
 
 
 
+/* 
+   =========
+   COPYING
+   =========
+*/
+
+void copy_vec_int(vec_int *in, vec_int *out){
+    int i;
+    if(in->length != out->length){
+	fprintf(stderr, "\n[in: matvec.c->copy_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+    	exit(1);
+    }
+
+    for(i=0;i<in->length;i++){
+	out->values[i] = in->values[i];
+    }
+}
+
+
+
+void copy_vec_double(vec_double *in, vec_double *out){
+    int i;
+    if(in->length != out->length){
+	fprintf(stderr, "\n[in: matvec.c->copy_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+    	exit(1);
+    }
+
+    for(i=0;i<in->length;i++){
+	out->values[i] = in->values[i];
+    }
+}
+
+
+
+
+void copy_mat_int(mat_int *in, mat_int *out){
+    int i;
+    if(in->n != out->n){
+	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
+    	exit(1);
+    }
+
+    for(i=0;i<in->n;i++){
+	copy_vec_int(in->rows[i],out->rows[i]);
+    }
+}
+
+
+
+
+void copy_mat_double(mat_double *in, mat_double *out){
+    int i;
+    if(in->n != out->n){
+	fprintf(stderr, "\n[in: matvec.c->copy_mat_double]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
+    	exit(1);
+    }
+
+    for(i=0;i<in->n;i++){
+	copy_vec_double(in->rows[i],out->rows[i]);
+    }
+}
+
+
+
+
+
+
 
 
 /*
@@ -447,84 +514,108 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
 */
 
 
-/* int main(){ */
-/*     /\* RANDOM NUMBER GENERATOR *\/ */
-/*     time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
-/*     const gsl_rng_type *typ; */
-/*     gsl_rng_env_setup(); */
-/*     typ=gsl_rng_default; */
-/*     gsl_rng * rng=gsl_rng_alloc(typ); */
-/*     gsl_rng_set(rng,t); /\* changes the seed of the random generator *\/ */
+int main(){
+    /* RANDOM NUMBER GENERATOR */
+    time_t t = time(NULL); /* time in seconds, used to change the seed of the random generator */
+    const gsl_rng_type *typ;
+    gsl_rng_env_setup();
+    typ=gsl_rng_default;
+    gsl_rng * rng=gsl_rng_alloc(typ);
+    gsl_rng_set(rng,t); /* changes the seed of the random generator */
 
-/*     int i, N = 10; */
-/*     mat_int * test = alloc_mat_int(N); */
+    int i, N = 10;
+    mat_int * test = alloc_mat_int(N);
 
-/*     print_mat_int (test); */
-/*     free_mat_int(test); */
+    print_mat_int (test);
+    free_mat_int(test);
 
-/*     vec_int *myVec = alloc_vec_int(30), *toto; */
-/*     for(i=0;i<30;i++){ */
-/* 	myVec->values[i] = 30-i; */
-/*     } */
-/*     printf("\nVector\n"); */
-/*     print_vec_int(myVec); */
+    vec_int *myVec = alloc_vec_int(30), *toto;
+    for(i=0;i<30;i++){
+	myVec->values[i] = 30-i;
+    }
+    printf("\nVector\n");
+    print_vec_int(myVec);
     
-/*     printf("\nMin/Max: %d, %d\n", min_vec_int(myVec), max_vec_int(myVec)); */
+    printf("\nMin/Max: %d, %d\n", min_vec_int(myVec), max_vec_int(myVec));
 
-/*     toto = alloc_vec_int(15); */
-/*     sample_vec_int(myVec, toto, 1, rng); */
-/*     printf("\n15 sampled values - with replacement \n"); */
-/*     print_vec_int(toto); */
+    toto = alloc_vec_int(15);
+    sample_vec_int(myVec, toto, 1, rng);
+    printf("\n15 sampled values - with replacement \n");
+    print_vec_int(toto);
 
-/*     sample_vec_int(myVec, toto, 1, rng); */
-/*     printf("\nanother 15 sampled values - with replacement \n"); */
-/*     print_vec_int(toto); */
+    sample_vec_int(myVec, toto, 1, rng);
+    printf("\nanother 15 sampled values - with replacement \n");
+    print_vec_int(toto);
 
-/*     sample_vec_int(myVec, toto, 0, rng); */
-/*     printf("\n15 sampled values - without replacement \n"); */
-/*     print_vec_int(toto); */
+    sample_vec_int(myVec, toto, 0, rng);
+    printf("\n15 sampled values - without replacement \n");
+    print_vec_int(toto);
 
-/*     sample_vec_int(myVec, toto, 0, rng); */
-/*     printf("\nanother 15 sampled values - without replacement \n"); */
-/*     print_vec_int(toto); */
+    sample_vec_int(myVec, toto, 0, rng);
+    printf("\nanother 15 sampled values - without replacement \n");
+    print_vec_int(toto);
 
-/*     permut_vec_int(myVec,rng); */
-/*     printf("\npermut the vector myVec \n"); */
-/*     print_vec_int(myVec); */
+    permut_vec_int(myVec,rng);
+    printf("\npermut the vector myVec \n");
+    print_vec_int(myVec);
 
-/*     permut_vec_int(myVec,rng); */
-/*     printf("\nanother permutation of the vector myVec \n"); */
-/*     print_vec_int(myVec); */
+    permut_vec_int(myVec,rng);
+    printf("\nanother permutation of the vector myVec \n");
+    print_vec_int(myVec);
     
-/*     printf("\n== sorting a vector ==\n"); */
-/*     vec_int *idx, *sortedVec; */
-/*     idx = alloc_vec_int(30); */
-/*     sortedVec = alloc_vec_int(30); */
-/*     sort_vec_int(myVec, sortedVec, idx); */
-/*     printf("\nvector to sort:"); */
-/*     print_vec_int(myVec); */
-/*     printf("\nsorted vector:"); */
-/*     print_vec_int(sortedVec); */
-/*     printf("\nindices:"); */
-/*     print_vec_int(idx); */
+    printf("\n== sorting a vector ==\n");
+    vec_int *idx, *sortedVec;
+    idx = alloc_vec_int(30);
+    sortedVec = alloc_vec_int(30);
+    sort_vec_int(myVec, sortedVec, idx);
+    printf("\nvector to sort:");
+    print_vec_int(myVec);
+    printf("\nsorted vector:");
+    print_vec_int(sortedVec);
+    printf("\nindices:");
+    print_vec_int(idx);
 
-/*     /\* vec_int *a = alloc_vec_int(10); *\/ */
-/*     /\* for(i=0;i<10;i++){ *\/ */
-/*     /\* 	a->values[i] = i; *\/ */
-/*     /\* } *\/ */
-/*     /\* printf("\nvector a: \n"); *\/ */
-/*     /\* print_vec_int(a); *\/ */
-/*     /\* for(i=0;i<10;i++){ *\/ */
-/*     /\* 	printf("\n%d matches in a at position %d", i, in_vec_int(i,a)); *\/ */
-/*     /\* } *\/ */
+    /* copies */
+    printf("\nCopy of sorted vector\n");
+    vec_int *copyVec = alloc_vec_int(sortedVec->length);
+    copy_vec_int(sortedVec,copyVec);
+    print_vec_int(copyVec);
 
-/*     free_vec_int(toto); */
-/*     free_vec_int(myVec); */
-/*     free_vec_int(idx); */
-/*     free_vec_int(sortedVec); */
-/*     gsl_rng_free(rng); */
-/*     return 0; */
-/* } */
+
+    printf("\nCopy of a matrix\n");
+    mat_double *mat = alloc_mat_double(2);
+    mat->rows[0]->values[0] = 1.1;
+    mat->rows[0]->values[1] = 2.1;
+    mat->rows[1]->values[1] = 666.0;
+    printf("\nmat\n");
+    print_mat_double(mat);
+    mat_double *mat2 = alloc_mat_double(2);
+    printf("\nmat2 before copy\n");
+    print_mat_double(mat2);
+    copy_mat_double(mat,mat2);
+    printf("\nmat2 after copy\n");
+    print_mat_double(mat);
+
+    /* vec_int *a = alloc_vec_int(10); */
+    /* for(i=0;i<10;i++){ */
+    /* 	a->values[i] = i; */
+    /* } */
+    /* printf("\nvector a: \n"); */
+    /* print_vec_int(a); */
+    /* for(i=0;i<10;i++){ */
+    /* 	printf("\n%d matches in a at position %d", i, in_vec_int(i,a)); */
+    /* } */
+
+    free_vec_int(toto);
+    free_vec_int(myVec);
+    free_vec_int(idx);
+    free_vec_int(sortedVec);
+    free_vec_int(copyVec);
+    free_mat_double(mat);
+    free_mat_double(mat2);
+    gsl_rng_free(rng);
+    return 0;
+}
 
 
 

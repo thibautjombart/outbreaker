@@ -114,5 +114,12 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
 
 void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx);
 
+void copy_vec_int(vec_int *in, vec_int *out);
+
+void copy_vec_double(vec_double *in, vec_double *out);
+
+void copy_mat_int(mat_int *in, mat_int *out);
+
+void copy_mat_double(mat_double *in, mat_double *out);
 
 #endif
