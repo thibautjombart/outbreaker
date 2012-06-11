@@ -5,9 +5,9 @@
 
 
 /*
-  ======================
-  >>>>> DATA <<<<<
-  ======================
+  ======
+   DATA
+  ======
 */
 data *alloc_data(int n, int length){
     /* allocate pointer */
@@ -61,6 +61,29 @@ void print_data(data *in){
 
 
 
+
+/* Create a data object using inputs from R */
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *length){
+    int i, j, count=0;
+    data * out = alloc_data(*n, *length);
+
+    /* FILL IN DATES */
+    for(i=0;i<*n;i++){
+	out->dates->values[i] = Tcollec[i];
+    }
+
+    /* FILL IN DNA DATA */
+    /* avoid using DNAbin2list_dnaseq here as it re-allocates memory */
+    for(i=0;i<*n;i++){
+	for(j=0;j<*length;j++){
+	    out->dna->list[i]->seq[j] = DNAbin2char(DNAbinInput[count++]);
+	}
+    }
+
+    /* END / RETURN */
+    print_data(out);
+    return out;
+} /* end fillin_data */
 
 
 

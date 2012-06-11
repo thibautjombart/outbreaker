@@ -1,3 +1,5 @@
+#if 0
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -800,3 +802,4 @@ void moveCandE(int i, mcmcInternals * MCMCSettings, parameters * param, raw_data
 
 
 
+#endif

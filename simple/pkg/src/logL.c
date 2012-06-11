@@ -1,3 +1,5 @@
+#if 0
+
 #include "common.h"
 #include "init.h"
 #include "InputOutput.h"
@@ -338,3 +340,6 @@ double fullLoglikelihoodWithPrior(raw_data * data, nb_data *nb, aug_data *augDat
     return(L);
 }
 
+
+
+#endif

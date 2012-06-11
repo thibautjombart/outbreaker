@@ -1,3 +1,4 @@
+#if 0
 
 #include "common.h"
 #include "init.h"
@@ -270,3 +271,6 @@ void R_outbreaker(int *nbPatients, int *duration, int *nbAdmVec, int *nbPosSwab,
 
 
 */
+
+
+#endif

@@ -4,6 +4,7 @@
   Licence: GPL >=2.
 
 */
+#if 0
 
 #include "common.h"
 #include "alloc.h"
@@ -295,3 +296,7 @@ double genlike_ij(int i, int j, raw_data *data, aug_data *augData, dna_dist *dna
   valgrind --leak-check=full genlike
 
 */
+
+
+
+# endif
