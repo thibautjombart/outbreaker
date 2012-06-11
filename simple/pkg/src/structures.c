@@ -2,17 +2,6 @@
 #include "matvec.h"
 #include "genclasses.h"
 #include "structures.h"
-#include "alloc.h"
-
-/* #include "init.h" */
-/* #include "InputOutput.h" */
-/* #include "logL.h" */
-/* #include "mcmc.h" */
-/* #include "moves.h" */
-/* #include "prior.h" */
-/* #include "tuneVariances.h" */
-
-
 
 
 /*
@@ -684,11 +673,10 @@ int main(){
 /* 
    gcc instructions:
 
-   gcc -o alloc matvec.c genclasses.c alloc.c
-   gcc -o alloc matvec.c genclasses.c alloc.c -lgsl -lgslcblas -g
+   gcc -o structures matvec.c genclasses.c structures.c -lgsl -lgslcblas -g
 
-  ./alloc
+  ./structures
 
-   valgrind --leak-check=full --track-origins=yes -v alloc
+   valgrind --leak-check=full --track-origins=yes -v structures
 
 */

@@ -6,7 +6,7 @@
 
 
 /*
-  This file contains the defition of the data structures used in this program.
+  This file contains the defition of the data structures used in this program, ad elementary methods (allocation, de-allocation, printing, accessing/setting content).
 */
 
 
@@ -17,12 +17,38 @@
 #include "matvec.h"
 #include "genclasses.h"
 
+
+/*
+  =====================
+  >>>>> CLASSES <<<<<
+  =====================
+*/
  typedef struct{
      int n, length; /* n: number of observations; length: sequence length */
      vec_int * dates; /* collection dates*/
      list_dnaseq * dna; /* sequences */
      gsl_rng * rng;
  } data;
+
+
+
+
+/*
+  =====================
+  >>>>> METHODS <<<<<
+  =====================
+*/
+
+data *alloc_data(int n, int length);
+void free_data(data *in);
+
+
+
+
+
+
+
+
 
 
 
