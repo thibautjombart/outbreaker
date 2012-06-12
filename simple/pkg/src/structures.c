@@ -90,7 +90,9 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
   =======
 */
 
-gentime *alloc_gentime(int trunc){
+/* 'trunc' is the time at which w is truncated to zero */
+/* 'maxK' is the maximum number of unobserved generations, for which we need convolutions */
+gentime *alloc_gentime(int trunc, int maxK){
   /* allocate pointer */
     gentime *out = (gentime *) malloc(sizeof(gentime));
     if(out == NULL){
@@ -103,9 +105,10 @@ gentime *alloc_gentime(int trunc){
     out->param2 = 0.0;
     out->param3 = 0.0;
     out->trunc = trunc>0 ? trunc : 1; /* make sur that p(0) is not zero */
+    out->maxK = maxK>0 ? maxK : 1;
 
     /* allocate vector of densities */
-    out->dens = alloc_vec_double(out->trunc);
+    out->dens = alloc_mat_double(out->trunc, out->maxK);
 
     /* return */
     return out;
@@ -115,7 +118,7 @@ gentime *alloc_gentime(int trunc){
 
 
 void free_gentime(gentime *in){
-    free_vec_double(in->dens);
+    free_mat_double(in->dens);
     free(in);
 } /* end free_gentime*/
 
@@ -127,7 +130,7 @@ void print_gentime(gentime *in){
     printf("\nType: %d", in->type);
     printf("\nparam1: %.5f \tparam2: %.5f \tparam3: %.5f", in->param1, in->param2, in->param3);
     printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->trunc);
-    print_vec_double(in->dens);
+    print_mat_double(in->dens);
 } /* end print_gentime*/
 
 

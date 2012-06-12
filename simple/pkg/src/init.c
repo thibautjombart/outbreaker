@@ -27,6 +27,7 @@ gsl_rng * create_gsl_rng(time_t t){
 /* initialize and pre-compute generation time */
 void init_gentime(gentime *in, int type, double param1, double param2, double param3){
     double sumDens=0.0;
+    int i,j;
 
     /* UPDATE OBJECT'S CONTENT */
     in->type = type;
@@ -36,11 +37,16 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
 
     /* PRE-COMPUTE DENSITIES */
     /* ! need to incorporate cases with Ki>1 */
-    int i;
     switch(in->type){
     case 1: /* Poisson */
-	for(i=0;i<in->dens->length;i++){
-	    in->dens->values[i] =  gsl_ran_poisson_pdf((unsigned int) i, in->param1);
+	/* for kappa=1 */
+	for(i=0;i<in->dens->p;i++){
+	    in->dens->rows[0]->values[i] =  gsl_ran_poisson_pdf((unsigned int) i, in->param1);
+	}
+
+	/* for kappa>1 */
+	for(i=1;i<in->dens->n;i++){
+	    convol_vec_double(in->dens->rows[0], in->dens->rows[i-1], in->dens->rows[i]);
 	}
 	break;
     default:
@@ -49,11 +55,14 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
     }
 
     /* NORMALIZE DENSITIES */
-    sumDens = sum_vec_double(in->dens);
-    for(i=0;i<in->dens->length;i++){
-	in->dens->values[i] =in->dens->values[i]/sumDens;
+    for(i=0;i<in->dens->n;i++){
+	sumDens = sum_vec_double(in->dens->rows[i]);
+	for(j=0;j<in->dens->p;i++){
+	    in->dens->rows[i]->values[j] = in->dens->rows[i]->values[j]/sumDens;
+	}
     }
-}
+
+} /* end init_gentime */
 
 
 
@@ -62,7 +71,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances){
     int i, TmaxLike;
 
     /* Tinf */
-    TmaxLike = which_max_vec_double(gen->dens);
+    TmaxLike = which_max_vec_double(gen->dens->rows[0]);
     for(i=0;i<dat->n;i++){
 	par->Tinf->values[i] = vec_int_i(dat->dates,i) - TmaxLike;
     }

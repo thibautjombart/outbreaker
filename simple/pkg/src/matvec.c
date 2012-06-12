@@ -641,17 +641,17 @@ int which_max_vec_double(vec_double *vec){
    a * b (t) = \sum_{u=0}^t a(t-u) b(u)
 */
 void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
-    int u, t=in_a->length;
+    int u, t=in_a->length-1;
 
     /* check sizes */
-    if(in_a->length != in_b->length !=out->length){
+    if(in_a->length != in_b->length || in_a->length!=out->length){
 	fprintf(stderr, "\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length);
     	exit(1);
     }
 
     /* make computations */
     out->values[0] = vec_double_i(in_a, t) * vec_double_i(in_b, 0);
-    for(u=1;u<t;u++){
+    for(u=1;u<=t;u++){
 	out->values[u] = vec_double_i(out,u-1) + vec_double_i(in_a, t-u) * vec_double_i(in_b, u);
     }
 }
@@ -688,7 +688,18 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     } */
 /*     printf("\nVector\n"); */
 /*     print_vec_int(myVec); */
-    
+  
+/*     vec_double *a = alloc_vec_double(4); */
+/*     vec_double *convol = alloc_vec_double(4); */
+/*     a->values[1]=3; */
+/*     a->values[2]=2; */
+/*     a->values[3]=4; */
+/*     convol_vec_double(a,a,convol); */
+/*     printf("\nvector 'a'\n"); */
+/*     print_vec_double(a); */
+/*     printf("\nConvolution (a*a)\n"); */
+/*     print_vec_double(convol); */
+ 
 /*     printf("\nMin/Max: %d, %d\n", min_vec_int(myVec), max_vec_int(myVec)); */
 /*     printf("\nMin position/Max position: %d, %d\n", which_min_vec_int(myVec), which_max_vec_int(myVec)); */
 
@@ -766,6 +777,8 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     free_vec_int(idx); */
 /*     free_vec_int(sortedVec); */
 /*     free_vec_int(copyVec); */
+/*     free_vec_double(a); */
+/*     free_vec_double(convol); */
 /*     free_mat_double(mat); */
 /*     free_mat_double(mat2); */
 /*     gsl_rng_free(rng); */
