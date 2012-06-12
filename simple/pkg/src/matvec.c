@@ -338,24 +338,6 @@ int in_vec_int(int x, vec_int *vec){
 
 
 
-/* find max value in a vector of integers */
-int max_vec_int(vec_int *vec){
-    if(vec->length<1) return (int) NAN;
-    int i, out=vec_int_i(vec,0);
-    for(i=0;i<vec->length;i++) if(out<vec_int_i(vec,i)) out=vec_int_i(vec,i);
-    return out;
-}
-
-
-
-/* find min value in a vector of integers */
-int min_vec_int(vec_int *vec){
-    if(vec->length<1) return (int) NAN;
-    int i, out=vec_int_i(vec,0);
-    for(i=0;i<vec->length;i++) if(out>vec_int_i(vec,i)) out=vec_int_i(vec,i);
-    return out;
-}
-
 
 
 /* permut the values of a vector of integers */
@@ -509,6 +491,9 @@ void copy_mat_double(mat_double *in, mat_double *out){
    ============
 */
 
+/*
+   SUMS
+*/
 int sum_vec_int(vec_int *in){
     int i, out=0;
     for(i=0;i<in->length;i++){
@@ -526,6 +511,127 @@ double sum_vec_double(vec_double *in){
     }
     return out;
 }
+
+
+
+
+
+/*
+   MINIMUMS
+*/
+
+/* FIND MIN VALUE IN A VECTOR OF INTEGERS */
+int min_vec_int(vec_int *vec){
+    if(vec->length<1) return (int) NAN;
+    int i, out=vec_int_i(vec,0);
+    for(i=0;i<vec->length;i++) if(out>vec_int_i(vec,i)) out=vec_int_i(vec,i);
+    return out;
+}
+
+
+/* FIND POSITION OF MIN VALUE IN A VECTOR OF INTEGERS */
+int which_min_vec_int(vec_int *vec){
+    if(vec->length<1) return (int) NAN;
+    int i, curmin=vec_int_i(vec,0), out=0;
+    for(i=0;i<vec->length;i++) {
+	if(curmin>vec_int_i(vec,i)){
+	    curmin=vec_int_i(vec,i);
+	    out=i;
+	}
+    }
+    return out;
+}
+
+
+
+
+/* FIND MIN VALUE IN A VECTOR OF DOUBLES */
+double min_vec_double(vec_double *vec){
+    if(vec->length<1) return (double) NAN;
+    int i;
+    double out=vec_double_i(vec,0);
+    for(i=0;i<vec->length;i++) if(out>vec_double_i(vec,i)) out=vec_double_i(vec,i);
+    return out;
+}
+
+
+
+/* FIND POSITION OF MIN VALUE IN A VECTOR OF DOUBLES */
+int which_min_vec_double(vec_double *vec){
+    if(vec->length<1) return (int) NAN;
+    int i, out=0;
+    double curmin=vec_double_i(vec,0);
+    for(i=0;i<vec->length;i++) {
+	if(curmin>vec_double_i(vec,i)){
+	    curmin=vec_double_i(vec,i);
+	    out=i;
+	}
+    }
+    return out;
+}
+
+
+
+
+
+
+/*
+   MAXIMUMS
+*/
+
+/* FIND MAX VALUE IN A VECTOR OF INTEGERS */
+int max_vec_int(vec_int *vec){
+    if(vec->length<1) return (int) NAN;
+    int i, out=vec_int_i(vec,0);
+    for(i=0;i<vec->length;i++) if(out<vec_int_i(vec,i)) out=vec_int_i(vec,i);
+    return out;
+}
+
+
+
+/* FIND POSITION OF MAX VALUE IN A VECTOR OF INTEGERS */
+int which_max_vec_int(vec_int *vec){
+    if(vec->length<1) return (int) NAN;
+    int i, curmax=vec_int_i(vec,0), out=0;
+    for(i=0;i<vec->length;i++) {
+	if(curmax<vec_int_i(vec,i)){
+	    curmax=vec_int_i(vec,i);
+	    out=i;
+	}
+    }
+    return out;
+}
+
+
+
+/* FIND MAX VALUE IN A VECTOR OF DOUBLES */
+double max_vec_double(vec_double *vec){
+    if(vec->length<1) return (double) NAN;
+    int i;
+    double out=vec_double_i(vec,0);
+    for(i=0;i<vec->length;i++) if(out<vec_double_i(vec,i)) out=vec_double_i(vec,i);
+    return out;
+}
+
+
+
+/* FIND POSITION OF MAX VALUE IN A VECTOR OF DOUBLES */
+int which_max_vec_double(vec_double *vec){
+    if(vec->length<1) return (int) NAN;
+    int i, out=0;
+    double curmax=vec_double_i(vec,0);
+    for(i=0;i<vec->length;i++) {
+	if(curmax<vec_double_i(vec,i)){
+	    curmax=vec_double_i(vec,i);
+	    out=i;
+	}
+    }
+    return out;
+}
+
+
+
+
 
 
 
@@ -560,6 +666,7 @@ double sum_vec_double(vec_double *in){
 /*     print_vec_int(myVec); */
     
 /*     printf("\nMin/Max: %d, %d\n", min_vec_int(myVec), max_vec_int(myVec)); */
+/*     printf("\nMin position/Max position: %d, %d\n", which_min_vec_int(myVec), which_max_vec_int(myVec)); */
 
 /*     toto = alloc_vec_int(15); */
 /*     sample_vec_int(myVec, toto, 1, rng); */
@@ -597,6 +704,7 @@ double sum_vec_double(vec_double *in){
 /*     print_vec_int(sortedVec); */
 /*     printf("\nindices:"); */
 /*     print_vec_int(idx); */
+    
 
 /*     /\* copies *\/ */
 /*     printf("\nCopy of sorted vector\n"); */

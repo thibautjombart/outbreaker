@@ -104,10 +104,6 @@ void print_mat_double(mat_double *in);
 
 void print_gsl_vector(gsl_vector *in, char format[256]);
 
-int max_vec_int(vec_int *vec);
-
-int min_vec_int(vec_int *vec);
-
 void permut_vec_int(vec_int *in, gsl_rng * rng);
 
 void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
@@ -123,15 +119,47 @@ void copy_mat_int(mat_int *in, mat_int *out);
 void copy_mat_double(mat_double *in, mat_double *out);
 
 
-/* 
+
+/*
    ============
    BASIC STATS
    ============
 */
 
+/*
+   SUMS
+*/
 int sum_vec_int(vec_int *in);
 
 double sum_vec_double(vec_double *in);
+
+/*
+   MINIMUMS
+*/
+
+int min_vec_int(vec_int *vec);
+
+int which_min_vec_int(vec_int *vec);
+
+double min_vec_double(vec_double *vec);
+
+int which_min_vec_double(vec_double *vec);
+
+
+/*
+   MAXIMUMS
+*/
+
+int max_vec_int(vec_int *vec);
+
+int which_max_vec_int(vec_int *vec);
+
+double max_vec_double(vec_double *vec);
+
+int which_max_vec_double(vec_double *vec);
+
+
+
 
 
 
