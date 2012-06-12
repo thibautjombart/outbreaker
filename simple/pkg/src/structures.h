@@ -39,7 +39,8 @@ typedef struct{
     int type; /* type of distribution for generation time */
     double param1, param2, param3; /* parameters for the generation time distribution 'w' */
     int trunc; /* value of truncation; p(x>=truc)=0 */
-    vec_double *dens; /* pre-computed values of density for 0, 1, ..., n-1*/
+    int maxK; /* maximum value of kappa_i (i.e. max nb of generations between two cases) */
+    mat_double *dens; /* pre-computed values of density: row 'i' gives densities for kappa=i at 0, 1, ..., n-1*/
 } gentime;
 
 
@@ -93,7 +94,7 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
   =======
 */
 
-gentime *alloc_gentime(int trunc);
+gentime *alloc_gentime(int trunc, int maxK);
 
 void free_gentime(gentime *in);
 

@@ -26,9 +26,9 @@ dna_dist * alloc_dna_dist(int n){
 	exit(1);
     }
 
-    out->transi = alloc_mat_int(n);
-    out->transv = alloc_mat_int(n);
-    out->nbcommon = alloc_mat_int(n);
+    out->transi = alloc_mat_int(n,n);
+    out->transv = alloc_mat_int(n,n);
+    out->nbcommon = alloc_mat_int(n,n);
     out->n = n;
 
     return out;
