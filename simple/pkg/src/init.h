@@ -9,6 +9,8 @@ gsl_rng * create_gsl_rng(time_t t);
 
 void init_gentime(gentime *in, int type, double param1, double param2, double param3);
 
+void init_param(param *par, data *dat,  gentime *gen, int *ances);
+
 
 /* void CalculIsInHosp(nb_data *, raw_data *); */
 

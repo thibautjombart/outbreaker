@@ -28,13 +28,14 @@ gsl_rng * create_gsl_rng(time_t t){
 void init_gentime(gentime *in, int type, double param1, double param2, double param3){
     double sumDens=0.0;
 
-    /* update object's content */
+    /* UPDATE OBJECT'S CONTENT */
     in->type = type;
     in->param1 = param1;
     in->param2 = param2;
     in->param3 = param3;
 
-    /* pre-compute densities */
+    /* PRE-COMPUTE DENSITIES */
+    /* ! need to incorporate cases with Ki>1 */
     int i;
     switch(in->type){
     case 1: /* Poisson */
@@ -47,7 +48,7 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
 	exit(1);
     }
 
-    /* normalize densities */
+    /* NORMALIZE DENSITIES */
     sumDens = sum_vec_double(in->dens);
     for(i=0;i<in->dens->length;i++){
 	in->dens->values[i] =in->dens->values[i]/sumDens;
@@ -57,25 +58,32 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
 
 
 
-/* void init_param(param *par){ */
-/*     int i; */
+void init_param(param *par, data *dat,  gentime *gen, int *ances){
+    int i, TmaxLike;
+
+    /* Tinf */
+    TmaxLike = which_max_vec_double(gen->dens);
+    for(i=0;i<dat->n;i++){
+	par->Tinf->values[i] = vec_int_i(dat->dates,i) - TmaxLike;
+    }
+
+    /* alpha */
+    for(i=0;i<dat->n;i++){
+	par->alpha->values[i] = ances[i];
+    }
+
+    /* kappa */
+    for(i=0;i<dat->n;i++){
+	par->kappa->values[i] = 1;
+    }
+
+    /* doubles*/
+    par->mu1 = 1e-5;
+    par->gamma = 1.0;
+    par->pi = 0.5;
+}
 
 
-/*     param->betaWardOut=0.1; */
-/*     param->betaOutOut=0.1; */
-
-/*     /\* param->Sp = 1.0; *\/ */
-/*     param->Se = 0.9; */
-
-/*     param->Pi = 0.1; */
-
-/*     param->mu = 5; */
-/*     param->sigma=1; */
-
-/*     param->nu1=1e-6; */
-/*     param->kappa=1.0; */
-
-/* } */
 
 
 

@@ -20,12 +20,14 @@
 */
 
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
-		  int *wType, double *wParam1, double *wParam2, double *wParam3, int *wTrunc){
+		  int *wType, double *wParam1, double *wParam2, double *wParam3, int *wTrunc, 
+		  int *ances){
     /* DECLARATIONS */
-    int N, TIMESPAN;
-    data *dat;
+    int N = *n;
     gsl_rng *rng;
+    data *dat;
     gentime *gen;
+    param *par;
     dna_dist * dnainfo;
 
 
@@ -51,6 +53,12 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     print_gentime(gen);
 
 
+    /* CREATE AND INIT PARAMETERS */
+    par = alloc_param(N);
+    init_param(par, dat,  gen, ances);
+    print_param(par);
+
+
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna);
     printf("\n>>> DNA info <<<\n");
@@ -58,8 +66,10 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
 
     /* FREE MEMORY */
-    free_data(dat);
     gsl_rng_free(rng);
+    free_data(dat);
+    free_gentime(gen);
+    free_param(par);
     free_dna_dist(dnainfo);
 } /* end R_outbreaker */
 
