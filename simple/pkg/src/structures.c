@@ -104,7 +104,7 @@ gentime *alloc_gentime(int trunc){
     out->param3 = 0.0;
     out->trunc = trunc>0 ? trunc : 1; /* make sur that p(0) is not zero */
 
-    /* allocate vectpr of densities */
+    /* allocate vector of densities */
     out->dens = alloc_vec_double(out->trunc);
 
     /* return */
