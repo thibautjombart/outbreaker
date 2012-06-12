@@ -27,7 +27,7 @@ typedef struct{
 
 typedef struct{
 	vec_int ** rows;
-	int n;
+	int n, p;
 } mat_int;
 
 
@@ -41,7 +41,7 @@ typedef struct{
 
 typedef struct{
 	vec_double ** rows;
-	int n;
+	int n, p;
 } mat_double;
 
 
@@ -57,11 +57,11 @@ typedef struct{
 
 vec_int * alloc_vec_int(int n);
 
-mat_int * alloc_mat_int(int n);
+mat_int * alloc_mat_int(int n, int p);
 
 vec_double * alloc_vec_double(int n);
 
-mat_double * alloc_mat_double(int n);
+mat_double * alloc_mat_double(int n, int p);
 
 
 /*
@@ -160,6 +160,14 @@ int which_max_vec_double(vec_double *vec);
 
 
 
+
+/*
+   ===================
+   TRICKIER OPERATIONS
+   ===================
+*/
+
+void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out);
 
 
 

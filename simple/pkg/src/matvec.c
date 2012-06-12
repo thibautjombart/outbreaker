@@ -66,33 +66,11 @@ vec_double * alloc_vec_double(int n){
 
 
 
-/* /\* ALLOC A VECTOR OF INTEGERS OF SIZE N INITIALIZED TO ZERO *\/ */
-/* vec_int * alloc_vec_int_zero(int n){ */
-/* 	vec_int *out = (vec_int *) malloc(sizeof(vec_int)); */
-/* 	if(out == NULL){ */
-/* 		fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
-/* 		exit(1); */
-/* 	} */
-
-/* 	out->values = (int *) calloc(n, sizeof(int)); */
-/* 	if(out->values == NULL){ */
-/* 		fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
-/* 		exit(1); */
-/* 	} */
-
-/* 	out->length = n; */
-
-/* 	return(out); */
-/* } */
-
-
-
-
-
 
 /* ALLOC EMPTY MAT_INT BETWEEN N OBJECTS */
 /* (values initialized to 0) */
-mat_int * alloc_mat_int(int n){
+/* n rows, p columns */
+mat_int * alloc_mat_int(int n, int p){
     int i;
     mat_int *out;
 
@@ -111,10 +89,11 @@ mat_int * alloc_mat_int(int n){
     }
 
     for(i=0;i<n;i++){
-	out->rows[i] = alloc_vec_int(n);
+	out->rows[i] = alloc_vec_int(p);
     }
 
     out->n = n;
+    out->p = p;
 
     /* return */
     return out;
@@ -126,7 +105,7 @@ mat_int * alloc_mat_int(int n){
 
 /* ALLOC EMPTY MAT_DOUBLE BETWEEN N OBJECTS */
 /* (values initialized to 0) */
-mat_double * alloc_mat_double(int n){
+mat_double * alloc_mat_double(int n, int p){
     int i;
     mat_double *out;
 
@@ -145,10 +124,11 @@ mat_double * alloc_mat_double(int n){
     }
 
     for(i=0;i<n;i++){
-	out->rows[i] = alloc_vec_double(n);
+	out->rows[i] = alloc_vec_double(p);
     }
 
     out->n = n;
+    out->p = p;
 
     /* return */
     return out;
@@ -270,10 +250,10 @@ void print_vec_int(vec_int *in){
 /* print method */
 void print_mat_int(mat_int *in){
     int i,j;
-
+    printf("\n%dx%d matrix of integers",in->n,in->p);
     for(i=0;i<in->n;i++){
 	printf("\n");
-	for(j=0;j<in->n;j++)
+	for(j=0;j<in->p;j++)
 	    /* printf("%d ", in->rows[i]->values[j]); */
 	    printf("%d ", mat_int_ij(in,i,j));
     }
@@ -302,9 +282,10 @@ void print_vec_double(vec_double *in){
 void print_mat_double(mat_double *in){
     int i,j;
 
+    printf("\n%dx%d matrix of doubles",in->n,in->p);
     for(i=0;i<in->n;i++){
 	printf("\n");
-	for(j=0;j<in->n;j++)
+	for(j=0;j<in->p;j++)
 	    /* printf("%d ", in->rows[i]->values[j]); */
 	    printf("%.3f ", mat_double_ij(in,i,j));
     }
@@ -457,11 +438,18 @@ void copy_vec_double(vec_double *in, vec_double *out){
 
 void copy_mat_int(mat_int *in, mat_int *out){
     int i;
+
+    /* checks */
     if(in->n != out->n){
 	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
     	exit(1);
     }
+    if(in->p != out->p){
+	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p);
+    	exit(1);
+    }
 
+    /* copy */
     for(i=0;i<in->n;i++){
 	copy_vec_int(in->rows[i],out->rows[i]);
     }
@@ -472,11 +460,18 @@ void copy_mat_int(mat_int *in, mat_int *out){
 
 void copy_mat_double(mat_double *in, mat_double *out){
     int i;
+
+    /* checks */
     if(in->n != out->n){
-	fprintf(stderr, "\n[in: matvec.c->copy_mat_double]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
+	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
+    	exit(1);
+    }
+    if(in->p != out->p){
+	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p);
     	exit(1);
     }
 
+    /* copy */
     for(i=0;i<in->n;i++){
 	copy_vec_double(in->rows[i],out->rows[i]);
     }
@@ -485,7 +480,7 @@ void copy_mat_double(mat_double *in, mat_double *out){
 
 
 
-/* 
+/*
    ============
    BASIC STATS
    ============
@@ -635,6 +630,35 @@ int which_max_vec_double(vec_double *vec){
 
 
 
+/* 
+   ===================
+   TRICKIER OPERATIONS
+   ===================
+*/
+
+/* convolution for a positive discrete distribution
+   (stored as a vector of doubles from 0 to t)
+   a * b (t) = \sum_{u=0}^t a(t-u) b(u)
+*/
+void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
+    int u, t=in_a->length;
+
+    /* check sizes */
+    if(in_a->length != in_b->length !=out->length){
+	fprintf(stderr, "\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length);
+    	exit(1);
+    }
+
+    /* make computations */
+    out->values[0] = vec_double_i(in_a, t) * vec_double_i(in_b, 0);
+    for(u=1;u<t;u++){
+	out->values[u] = vec_double_i(out,u-1) + vec_double_i(in_a, t-u) * vec_double_i(in_b, u);
+    }
+}
+
+
+
+
 
 /*
   =========================
@@ -652,10 +676,10 @@ int which_max_vec_double(vec_double *vec){
 /*     gsl_rng * rng=gsl_rng_alloc(typ); */
 /*     gsl_rng_set(rng,t); /\* changes the seed of the random generator *\/ */
 
-/*     int i, N = 10; */
-/*     mat_int * test = alloc_mat_int(N); */
+/*     int i, N = 5, P=10; */
+/*     mat_int * test = alloc_mat_int(N, P); */
 
-/*     print_mat_int (test); */
+/*     print_mat_int(test); */
 /*     free_mat_int(test); */
 
 /*     vec_int *myVec = alloc_vec_int(30), *toto; */
@@ -714,13 +738,13 @@ int which_max_vec_double(vec_double *vec){
 
 
 /*     printf("\nCopy of a matrix\n"); */
-/*     mat_double *mat = alloc_mat_double(2); */
+/*     mat_double *mat = alloc_mat_double(2,2); */
 /*     mat->rows[0]->values[0] = 1.1; */
 /*     mat->rows[0]->values[1] = 2.1; */
 /*     mat->rows[1]->values[1] = 666.0; */
 /*     printf("\nmat\n"); */
 /*     print_mat_double(mat); */
-/*     mat_double *mat2 = alloc_mat_double(2); */
+/*     mat_double *mat2 = alloc_mat_double(2,2); */
 /*     printf("\nmat2 before copy\n"); */
 /*     print_mat_double(mat2); */
 /*     copy_mat_double(mat,mat2); */
