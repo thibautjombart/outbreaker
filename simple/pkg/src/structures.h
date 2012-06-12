@@ -94,7 +94,7 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
   =======
 */
 
-gentime *alloc_gentime(int trunc, int maxK);
+gentime *alloc_gentime(int maxK, int trunc);
 
 void free_gentime(gentime *in);
 
