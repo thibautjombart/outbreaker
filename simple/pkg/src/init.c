@@ -40,9 +40,15 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
     switch(in->type){
     case 1: /* Poisson */
 	/* for kappa=1 */
-	for(i=0;i<in->dens->p;i++){
-	    in->dens->rows[0]->values[i] =  gsl_ran_poisson_pdf((unsigned int) i, in->param1);
+	for(j=0;j<in->trunc;j++){
+	    in->dens->rows[0]->values[j] =  gsl_ran_poisson_pdf((unsigned int) j, in->param1);
 	}
+
+	/* normalize the density */
+	sumDens = sum_vec_double(in->dens->rows[0]);
+	for(j=0;j<in->trunc;j++){
+    	    in->dens->rows[0]->values[j] = in->dens->rows[0]->values[j]/sumDens;
+    	}
 
 	/* for kappa>1 */
 	for(i=1;i<in->dens->n;i++){
@@ -54,13 +60,13 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
 	exit(1);
     }
 
-    /* NORMALIZE DENSITIES */
-    for(i=0;i<in->dens->n;i++){
-	sumDens = sum_vec_double(in->dens->rows[i]);
-	for(j=0;j<in->dens->p;i++){
-	    in->dens->rows[i]->values[j] = in->dens->rows[i]->values[j]/sumDens;
-	}
-    }
+    /* /\* NORMALIZE DENSITIES *\/ */
+    /* for(i=0;i<in->dens->n;i++){ */
+    /* 	sumDens = sum_vec_double(in->dens->rows[i]); */
+    /* 	for(j=0;j<in->dens->p;j++){ */
+    /* 	    in->dens->rows[i]->values[j] = in->dens->rows[i]->values[j]/sumDens; */
+    /* 	} */
+    /* } */
 
 } /* end init_gentime */
 

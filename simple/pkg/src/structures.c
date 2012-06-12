@@ -44,10 +44,12 @@ void free_data(data *in){
 
 
 void print_data(data *in){
+    fflush(stdout);
     printf("\n= Collection dates =\n");
     print_vec_int(in->dates);
     printf("\n= Sequences =");
     print_list_dnaseq(in->dna);
+    fflush(stdout);
 } /* end print_data*/
 
 
@@ -92,7 +94,8 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
 
 /* 'trunc' is the time at which w is truncated to zero */
 /* 'maxK' is the maximum number of unobserved generations, for which we need convolutions */
-gentime *alloc_gentime(int trunc, int maxK){
+/* 'maxT' must be larger than the largest time difference that can be observed between two related cases */
+gentime *alloc_gentime(int maxK, int trunc){
   /* allocate pointer */
     gentime *out = (gentime *) malloc(sizeof(gentime));
     if(out == NULL){
@@ -108,7 +111,7 @@ gentime *alloc_gentime(int trunc, int maxK){
     out->maxK = maxK>0 ? maxK : 1;
 
     /* allocate vector of densities */
-    out->dens = alloc_mat_double(out->trunc, out->maxK);
+    out->dens = alloc_mat_double(out->maxK, out->trunc*out->maxK);
 
     /* return */
     return out;
@@ -126,11 +129,13 @@ void free_gentime(gentime *in){
 
 
 void print_gentime(gentime *in){
+    fflush(stdout);
     printf("\n= Description of generation time function =\n");
     printf("\nType: %d", in->type);
     printf("\nparam1: %.5f \tparam2: %.5f \tparam3: %.5f", in->param1, in->param2, in->param3);
     printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->trunc);
     print_mat_double(in->dens);
+    fflush(stdout);
 } /* end print_gentime*/
 
 
@@ -186,6 +191,7 @@ void free_param(param *in){
 
 
 void print_param(param *in){
+    fflush(stdout);
     printf("\n= Tinf (infection dates) =\n");
     print_vec_int(in->Tinf);
     printf("\n= Alpha_i (ancestries) =\n");
@@ -196,6 +202,7 @@ void print_param(param *in){
     printf("%.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma);
     printf("\n= pi (proportion of observed cases =\n");
     printf("%.5f", in->pi);
+    fflush(stdout);
 } /* end print_param*/
 
 

@@ -238,10 +238,12 @@ double mat_double_ij(mat_double *in, int i, int j){
 /* print method */
 void print_vec_int(vec_int *in){
     int i;
+    fflush(stdout);
     printf("Vector of %d integers: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
     for(i=0;i<in->length;i++) printf("%d ", vec_int_i(in,i));
     printf("\n");
+    fflush(stdout);
 }
 
 
@@ -250,6 +252,7 @@ void print_vec_int(vec_int *in){
 /* print method */
 void print_mat_int(mat_int *in){
     int i,j;
+    fflush(stdout);
     printf("\n%dx%d matrix of integers",in->n,in->p);
     for(i=0;i<in->n;i++){
 	printf("\n");
@@ -258,6 +261,7 @@ void print_mat_int(mat_int *in){
 	    printf("%d ", mat_int_ij(in,i,j));
     }
     printf("\n");
+    fflush(stdout);
 }
 
 
@@ -268,10 +272,12 @@ void print_mat_int(mat_int *in){
 /* print method */
 void print_vec_double(vec_double *in){
     int i;
+    fflush(stdout);
     printf("Vector of %d doubles: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
     for(i=0;i<in->length;i++) printf("%.3f ", vec_double_i(in,i));
     printf("\n");
+    fflush(stdout);
 }
 
 
@@ -281,7 +287,7 @@ void print_vec_double(vec_double *in){
 /* print method */
 void print_mat_double(mat_double *in){
     int i,j;
-
+    fflush(stdout);
     printf("\n%dx%d matrix of doubles",in->n,in->p);
     for(i=0;i<in->n;i++){
 	printf("\n");
@@ -290,6 +296,7 @@ void print_mat_double(mat_double *in){
 	    printf("%.3f ", mat_double_ij(in,i,j));
     }
     printf("\n");
+    fflush(stdout);
 }
 
 
@@ -300,6 +307,7 @@ void print_mat_double(mat_double *in){
 /* alternative print method for gsl vectors */
 void print_gsl_vector(gsl_vector *in, char format[256]){
     int i;
+    fflush(stdout);
     for(i=0;i<in->size;i++){
 	printf(format, in->data[i]);
     }
@@ -641,7 +649,7 @@ int which_max_vec_double(vec_double *vec){
    a * b (t) = \sum_{u=0}^t a(t-u) b(u)
 */
 void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
-    int u, t=in_a->length-1;
+    int u, t;
 
     /* check sizes */
     if(in_a->length != in_b->length || in_a->length!=out->length){
@@ -650,10 +658,12 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
     }
 
     /* make computations */
-    out->values[0] = vec_double_i(in_a, t) * vec_double_i(in_b, 0);
-    for(u=1;u<=t;u++){
-	out->values[u] = vec_double_i(out,u-1) + vec_double_i(in_a, t-u) * vec_double_i(in_b, u);
+    for(t=0;t<in_a->length;t++){
+	for(u=0;u<=t;u++){
+	    out->values[t] += vec_double_i(in_a, t-u) * vec_double_i(in_b, u);
+	}
     }
+   
 }
 
 

@@ -3,7 +3,7 @@
 ## auxiliary functions
 #######################
 
-outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=10,
+outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=5,
                        init.tree=c("seqTrack","random")){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
