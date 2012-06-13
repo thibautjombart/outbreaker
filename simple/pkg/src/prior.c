@@ -1,200 +1,88 @@
-#if 0
 
 #include "common.h"
-#include "init.h"
-#include "InputOutput.h"
-#include "logL.h"
-#include "mcmc.h"
-#include "moves.h"
 #include "prior.h"
-#include "alloc.h"
-#include "tuneVariances.h"
-
-/* extern gsl_rng * rng; */
 
 
+/* p(alpha_i): = 1/(n-1) if alpha_i \neq i, and zero otherwise */
+double logprior_alpha_i(int i, param *par){
+    double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1/(par->n-1);
+    return log(out);
+}
+
+
+
+/* p(kappa_i) = NB(1, 1-pi) with pi: prop obs cases */
+double logprior_kappa_i(int i, param *par){
+    double out = gsl_ran_negativeBINOMIALshit_pdf(vec_int_i(par->kappa,i)-1, 1, par->pi); /* TO BE REPLACED WITH ADEQUATE FUNCTION */
+    return log(out);
+}
 
 
 
 
+/* p(mu_1) = Unif(0,1) = 1*/
+double logprior_mu_1(){
+    return 0.0; /* log(1) -> 0 */
+}
 
-/*****************************************************************************/
-/*                        PRIORS                                             */
-/*****************************************************************************/
 
-/******************************************************************************/
-/* Transmission rates                                                         */
-/******************************************************************************/
 
-/* flat exponential priors */
-/* Note : here we exclude the case were any transmission rate is 0 */
-
-double logpriorBeta(int i, int j, parameters * param){
-    double h = log(gsl_ran_exponential_pdf (gsl_matrix_get(param->beta,i,j), 1000));
-    return h;
+/* p(gamma) = logN(1,1.25) */
+double logprior_gamma(param *par){
+    double out = gsl_ran_somethingforLogNormal(param->gamma, 1, 1.25); /* TO BE REPLACED WITH ADEQUATE FUNCTION CALL */
+    return log(out);
 }
 
 
 
 
 
-double logpriorBetaWardOut(parameters * param){
-    double h = log(gsl_ran_exponential_pdf(param->betaWardOut, 1000));
-    return h;
+double logprior_all(param *par){
+    int i;
+    double out=0.0;
+
+    /* result is the sum of priors over all parameters and individuals */
+    for(i=0;i<par->n;i++){
+	out += logprior_alpha_i(i,par);
+	out += logprior_kappa_i(i,par);
+    }
+
+    out += logprior_mu1();
+    out += logprior_gamma(par);
+
+    return(out);
 }
 
 
 
 
 
-double logpriorBetaOutOut(parameters * param){
-    double h = log(gsl_ran_exponential_pdf(param->betaOutOut, 1000));
-    return h;
-}
+/* /\******************************************************************************\/ */
+/* /\* Total                                                                      *\/ */
+/* /\******************************************************************************\/ */
+/* double logprior (parameters * param){ */
+/*     int i,j; */
+/*     double h=0; */
 
-/******************************************************************************/
-/* Probability of being infected at first admission                           */
-/******************************************************************************/
+/*     for(i=0 ; i<2 ; i++) */
+/* 	{ */
+/* 	    for(j=0 ; j<2 ; j++) */
+/* 		{ */
+/* 		    h+=logpriorBeta(i,j,param); */
+/* 		} */
+/* 	} */
 
-double logpriorPi(parameters * param){
-    /* uniform prior */
-    double h = 0;
-    return h;
-}
+/*     h+=logpriorBetaWardOut(param)+logpriorBetaOutOut(param); */
 
-/******************************************************************************/
-/* Specificity and sensitivity of testing                                     */
-/******************************************************************************/
+/*     /\* h+=logpriorSp(param)+logpriorSe(param); *\/ */
+/*     h+=logpriorSe(param); */
 
-/* uniform priors */
-double logpriorSp(parameters * param){
+/*     h+=logpriorMu(param)+logpriorSigma(param); */
 
-    double h = 0;
-    return h;
-}
+/*     h+=logpriorNu1(param)+logpriorKappa(param); */
 
-double logpriorSe(parameters * param){
+/*     /\* h+=logpriorTau(param)+logpriorAlpha(param); *\/ */
 
-    double h = 0;
-    return h;
-}
-
-
-
-
-
-
-
-/******************************************************************************/
-/* Mean and std of duration of colonisation period                            */
-/******************************************************************************/
-double logpriorMu(parameters * param){
-
-    double h = log(gsl_ran_exponential_pdf(param->mu, 1000));
-    return h;
-}
-
-
-
-
-
-double logpriorSigma(parameters * param){
-
-    double h = log(gsl_ran_exponential_pdf(param->sigma, 1000));
-    return h;
-}
-
-
-
-
-
-
-
-/******************************************************************************/
-/* Mutation rates                                                             */
-/******************************************************************************/
-double logpriorNu1(parameters * param){
-
-    double h = log(gsl_ran_exponential_pdf(param->nu1, 1000));
-    return h;
-}
-
-
-
-
-
-double logpriorKappa(parameters * param){
-
-    double h = log(gsl_ran_exponential_pdf(param->kappa, 1000));
-    return h;
-}
-
-
-
-
-
-
-
-
-/******************************************************************************/
-/* Tau                                                                        */
-/******************************************************************************/
-/* double logpriorTau(parameters * param){ */
-
-/*     double h = log(gsl_ran_exponential_pdf(param->tau, 1000)); */
 /*     return h; */
 /* } */
 
-
-
-
-
-
-
-/******************************************************************************/
-/* Alpha                                                                        */
-/******************************************************************************/
-/* uniform prior */
-/* double logpriorAlpha(parameters * param){ */
-
-/*     double h = 0; */
-/*     return h; */
-/* } */
-
-
-
-
-
-
-
-/******************************************************************************/
-/* Total                                                                      */
-/******************************************************************************/
-double logprior (parameters * param){
-    int i,j;
-    double h=0;
-
-    for(i=0 ; i<2 ; i++)
-	{
-	    for(j=0 ; j<2 ; j++)
-		{
-		    h+=logpriorBeta(i,j,param);
-		}
-	}
-
-    h+=logpriorBetaWardOut(param)+logpriorBetaOutOut(param);
-
-    /* h+=logpriorSp(param)+logpriorSe(param); */
-    h+=logpriorSe(param);
-
-    h+=logpriorMu(param)+logpriorSigma(param);
-
-    h+=logpriorNu1(param)+logpriorKappa(param);
-
-    /* h+=logpriorTau(param)+logpriorAlpha(param); */
-
-    return h;
-}
-
-
-#endif
