@@ -80,7 +80,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     logPost = logposterior_all(dat, dnainfo, gen, par);
     printf("\nLog-posterior value: %.10f\n", logPost);
 
-
+    
     /* FREE MEMORY */
     gsl_rng_free(rng);
     free_data(dat);

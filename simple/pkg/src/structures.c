@@ -245,6 +245,63 @@ void copy_param(param *in, param *out){
 
 
 
+
+
+/*
+ =======
+  MCMC_PARAM
+ =======
+*/
+
+mcmc_param *alloc_mcmc_param(int n){
+  /* allocate pointer */
+    mcmc_param *out = (mcmc_param *) malloc(sizeof(mcmc_param));
+    if(out == NULL){
+	fprintf(stderr, "\n[in: structures.c->alloc_mcmc_param]\nNo memory left for creating mcmc_param. Exiting.\n");
+	exit(1);
+    }
+
+    /* fill in integers */
+    out->n_accept = 2; /* the first set of parameters is accepted by definition */
+    out->n_reject = 0;
+    out->n_accept_mu1 = 1;
+    out->n_reject_mu1 = 0;
+    out->n_accept_gamma = 1;
+    out->n_reject_gamma = 0;
+
+    /* fill in doubles */
+    out->sigma_mu1 = 0.000001;
+    out->sigma_gamma = 0.1;
+
+    /* return */
+    return out;
+} /* end alloc_mcmc_param */
+
+
+
+
+void free_mcmc_param(mcmc_param *in){
+    free(in);
+} /* end free_mcmc_param*/
+
+
+
+
+void print_mcmc_param(mcmc_param *in){
+    fflush(stdout);
+    printf("\nsigma for mu1: %.10f",in->sigma_mu1);
+    printf("\nsigma for gamma: %.10f",in->sigma_gamma);
+    printf("\nglobal nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept, in->n_reject, (double) in->n_accept / in->n_reject);
+    printf("\nmu1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_mu1, in->n_reject_mu1, (double) in->n_accept_mu1 / in->n_reject_mu1);
+    printf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
+    fflush(stdout);
+} /* end print_mcmc_param*/
+
+
+
+
+
+
 /* /\************* Is Acceptance OK *************\/ */
 /* isAcceptOK *alloc_IsAcceptOK(){ */
 /*     isAcceptOK *acceptOK = (isAcceptOK *) malloc(sizeof(isAcceptOK)); */
