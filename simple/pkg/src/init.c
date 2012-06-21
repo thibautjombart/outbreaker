@@ -36,7 +36,6 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
     in->param3 = param3;
 
     /* PRE-COMPUTE DENSITIES */
-    /* ! need to incorporate cases with Ki>1 */
     switch(in->type){
     case 1: /* Poisson */
 	/* for kappa=1 */
