@@ -3,6 +3,7 @@
 #include "genclasses.h"
 #include "distances.h"
 #include "init.h"
+#include "prior.h"
 /* #include "InputOutput.h" */
 /* #include "logL.h" */
 /* #include "mcmc.h" */
@@ -30,6 +31,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     param *par;
     dna_dist * dnainfo;
 
+    double logPrior, logLike, logPost;
 
     /* INITIALIZE RNG */
     rng = create_gsl_rng(time(NULL));
@@ -63,6 +65,11 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     dnainfo = compute_dna_distances(dat->dna);
     printf("\n>>> DNA info <<<\n");
     print_dna_dist(dnainfo);
+
+
+    /* COMPUTE PRIORS */
+    logPrior = logprior_all(par);
+    printf("\nPrior value (log): %.10f\n", logPrior);
 
 
     /* FREE MEMORY */
