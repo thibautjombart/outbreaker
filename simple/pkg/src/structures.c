@@ -141,8 +141,28 @@ void print_gentime(gentime *in){
 
 
 
+/* get density from generation time funtion at time 't' with 'kappa_i' generations*/
+double gentime_dens(gentime *in, int t, int kappa_i){
+    /* error if requested kappa_i does not exist */
+    if(kappa_i > in->maxK){
+	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK);
+	fflush(stdout);
+	exit(1);
+    }
 
+    /* error if requested time too large */
+    if(t >= in->maxK*in->trunc){
+	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->trunc);
+	fflush(stdout);
+	exit(1);
+    }
 
+    /* otherwise fetch density value */
+    if(t >= in->trunc || t < 0) return 0.0;
+
+    double out=mat_double_ij(in->dens, kappa_i, t);
+    return out;
+}
 
 
 
@@ -553,6 +573,8 @@ void copy_param(param *in, param *out){
 
 
 /* int main(){ */
+/*     int i; */
+
 /*     /\* data *\/ */
 /*     data * dat = alloc_data(10,100); */
 /*     printf("\nData\n"); */
@@ -560,9 +582,15 @@ void copy_param(param *in, param *out){
 /*     free_data(dat); */
 
 /*     /\* gentime *\/ */
-/*     gentime * gen = alloc_gentime(20); */
+/*     gentime * gen = alloc_gentime(5, 20); */
 /*     printf("\nGentime\n"); */
 /*     print_gentime(gen); */
+/*     printf("\nDensity for kappa=1, first 20 values:\n"); */
+/*     for(i=0;i<20;i++) printf("%.6f ", gentime_dens(gen, i, 1)); */
+/*     printf("\nDensity for kappa=2, first 20 values:\n"); */
+/*     for(i=0;i<20;i++) printf("%.6f ", gentime_dens(gen, i, 2)); */
+/*     printf("\nDensity for kappa=3, first 20 values:\n"); */
+/*     for(i=0;i<20;i++) printf("%.6f ", gentime_dens(gen, i, 3)); */
 /*     free_gentime(gen); */
 
 /*     /\* param *\/ */
