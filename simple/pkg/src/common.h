@@ -33,7 +33,9 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_sort.h>
 
-#define NEARZERO 0.0000000001
+#define NEARZERO 0.00000000000000000001 /* 1e-20*/
+#define NEARPLUSINF 100000000000000000000 /* 10e-20*/
+#define NEARMINUSINF -100000000000000000000 /* -10e-20*/
 #define TRUE 1
 #define FALSE 0
 
