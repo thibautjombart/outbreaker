@@ -40,7 +40,7 @@ typedef struct{
     double param1, param2, param3; /* parameters for the generation time distribution 'w' */
     int trunc; /* value of truncation; p(x>=truc)=0 */
     int maxK; /* maximum value of kappa_i (i.e. max nb of generations between two cases) */
-    mat_double *dens; /* pre-computed values of density: row 'i' gives densities for kappa=i at 0, 1, ..., n-1*/
+    mat_double *dens; /* pre-computed values of density: row 'i' gives densities for kappa=i at t=0, 1, ..., trunc-1*/
 } gentime;
 
 
