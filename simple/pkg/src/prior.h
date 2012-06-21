@@ -2,6 +2,7 @@
 #ifndef __PRIOR_H
 #define __PRIOR_H
 
+void filter_logprob(double *in);
 
 double logprior_alpha_i(int i, param *par);
 

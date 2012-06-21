@@ -4,10 +4,19 @@
 #include "prior.h"
 
 
+/* FUNCTION FILTERING LOG-PROB TO AVOID -INF or NaN*/
+void filter_logprob(double *in){
+    if(*in < NEARMINUSINF) *in = NEARMINUSINF;
+}
+
+
+
 /* p(alpha_i): = 1/(n-1) if alpha_i \neq i, and zero otherwise */
 double logprior_alpha_i(int i, param *par){
     double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1.0/(par->n-1.0);
-    return log(out);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
 }
 
 
@@ -15,7 +24,9 @@ double logprior_alpha_i(int i, param *par){
 /* p(kappa_i) = NB(1, 1-pi) with pi: prop obs cases */
 double logprior_kappa_i(int i, param *par){
     double out = gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, 1.0-par->pi, 1.0);
-    return log(out);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
 }
 
 
@@ -23,7 +34,9 @@ double logprior_kappa_i(int i, param *par){
 /* p(pi) = beta(4,3) */
 double logprior_pi(param *par){
     double out = gsl_ran_beta_pdf(par->pi, 4.0, 3.0);
-    return log(out);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
 }
 
 
@@ -38,7 +51,9 @@ double logprior_mu1(){
 /* p(gamma) = logN(1,1.25) */
 double logprior_gamma(param *par){
     double out = gsl_ran_lognormal_pdf(par->gamma, 1.0, 1.25);
-    return log(out);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
 }
 
 
@@ -56,6 +71,8 @@ double logprior_all(param *par){
     out += logprior_pi(par);
     out += logprior_mu1();
     out += logprior_gamma(par);
+
+    filter_logprob(&out);
 
     return(out);
 }
