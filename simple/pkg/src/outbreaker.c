@@ -4,6 +4,7 @@
 #include "distances.h"
 #include "init.h"
 #include "prior.h"
+#include "likelihood.h"
 /* #include "InputOutput.h" */
 /* #include "logL.h" */
 /* #include "mcmc.h" */
@@ -71,6 +72,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     logPrior = logprior_all(par);
     printf("\nPrior value (log): %.10f\n", logPrior);
 
+   /* COMPUTE LIKELIHOOD */
+    logLike = loglikelihood_all(dat, dnainfo, gen, par);
+    printf("\nLog-likelihood value: %.10f\n", logLike);
 
     /* FREE MEMORY */
     gsl_rng_free(rng);

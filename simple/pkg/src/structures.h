@@ -100,7 +100,7 @@ void free_gentime(gentime *in);
 
 void print_gentime(gentime *in);
 
-
+double gentime_dens(gentime *in, int t, int kappa_i);
 
 
 /*
