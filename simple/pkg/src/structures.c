@@ -248,9 +248,9 @@ void copy_param(param *in, param *out){
 
 
 /*
- =======
+ ============
   MCMC_PARAM
- =======
+ ============
 */
 
 mcmc_param *alloc_mcmc_param(int n){
