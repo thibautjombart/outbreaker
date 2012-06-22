@@ -5,11 +5,10 @@
 #include "init.h"
 #include "prior.h"
 #include "likelihood.h"
+#include "move.h"
 /* #include "InputOutput.h" */
 /* #include "logL.h" */
 /* #include "mcmc.h" */
-/* #include "moves.h" */
-/* #include "prior.h" */
 /* #include "tuneVariances.h" */
 
 
@@ -80,7 +79,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     logPost = logposterior_all(dat, dnainfo, gen, par);
     printf("\nLog-posterior value: %.10f\n", logPost);
 
+    /* TEST MOVING PARAM */
     
+
     /* FREE MEMORY */
     gsl_rng_free(rng);
     free_data(dat);

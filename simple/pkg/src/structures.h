@@ -132,15 +132,18 @@ void copy_param(param *in, param *out);
 
 
 
+/*
+ ============
+  MCMC_PARAM
+ ============
+*/
 
+mcmc_param *alloc_mcmc_param(int n);
 
+void free_mcmc_param(mcmc_param *in);
 
+void print_mcmc_param(mcmc_param *in);
 
-
-/* typedef struct{ */
-/*     int n; /\* number of infections *\/ */
-/*     vec_int * T_inf; /\* infection dates *\/ */
-/* } aug_data; */
 
 
 
