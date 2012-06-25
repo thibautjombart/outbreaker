@@ -46,7 +46,7 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
 	}
     }
 
-} /* move_mu1 */
+} /* end move_mu1 */
 
 
 
@@ -94,8 +94,52 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
 
+void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+    double logRatio=0.0;
+    int i, toMove = 0;
 
-/* MOVE VALUES OF ALPHA */
+    /* DETERMINE WHICH Tinf_i TO MOVE */
+    sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_Tinf, FALSE, rng);
+
+    /* MOVE EACH Tinf_i IN TURN */
+    for(i=0;i<mcmcPar->idx_move_Tinf->length;i++){
+	toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
+
+	/* move i-th Tinf */
+	do{
+	    tempPar->Tinf->values[toMove] += gsl_rng_uniform(rng) >= 0.5 ? 1 : -1; /* move : +/- 1 unit time */
+	} while(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)); /* ensure Tinf_i <= T_i*/
+
+
+	/* ACCEPT/REJECT STEP */
+	/* compute only genetic part as the epi part is unchanged */
+	logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar);
+
+	/* compute the priors */
+	logRatio += logprior_gamma(tempPar) - logprior_gamma(currentPar);
+
+	/* if p(new/old) > 1, accept new */
+	if(logRatio>=0) {
+	    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+	    mcmcPar->n_accept_Tinf += 1;
+	} else { /* else accept new with proba (new/old) */
+	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+		mcmcPar->n_accept_Tinf += 1;
+	    } else { /* reject */
+		tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
+		mcmcPar->n_reject_Tinf += 1;
+	    }
+	}
+
+    }
+} /* end move_Tinf*/
+
+
+
+
+
+/* MOVE VALUES OF ALPHA AND KAPPA */
 void move_alpha(param *old_par, param *new_par, data *dat, dna_dist *dnainfo, gentime *gen, gsl_rng *rng){
     /* DETERMINE WHICH alpha_i TO MOVE */
 
@@ -284,7 +328,7 @@ int main(){
     printf("\nLog-posterior value: %.10f\n", logPost);
 
 
-    /* move mu1 */
+    /* MOVE MU1 */
     int i;
     mcmcPar->sigma_mu1 = 0.001;
     for(i=0;i<500;i++){
@@ -294,6 +338,7 @@ int main(){
     printf("\n");
     fflush(stdout);
 
+    /* MOVE GAMMA */
     for(i=0;i<500;i++){
 	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
 	printf("\ngamma: %.10f (reject: %d  accept: %d  ratio: %.3f)", par->gamma, mcmcPar->n_reject_gamma, mcmcPar->n_accept_gamma, (double) mcmcPar->n_reject_gamma / mcmcPar->n_accept_gamma);
@@ -301,6 +346,15 @@ int main(){
     printf("\n");
     fflush(stdout);
 
+    /* MOVE TINF */
+    for(i=0;i<500;i++){
+	move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	printf("\nTinf:");
+	print_vec_int(par->Tinf);
+	printf(" (reject: %d  accept: %d  ratio: %.3f)", mcmcPar->n_reject_Tinf, mcmcPar->n_accept_Tinf, (double) mcmcPar->n_reject_Tinf / mcmcPar->n_accept_Tinf);
+    }
+    printf("\n");
+    fflush(stdout);
 
     /* /\* RUNTIME TEST *\/ */
     /* int ITER=10e6, i; */
