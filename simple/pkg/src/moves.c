@@ -95,12 +95,25 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
 
+/* MOVE VALUES OF ALPHA */
+void move_alpha(param *old_par, param *new_par, data *dat, dna_dist *dnainfo, gentime *gen, gsl_rng *rng){
+    /* DETERMINE WHICH alpha_i TO MOVE */
+
+
+    /* find relevant candidates (we need T^inf_{alpha_i} < T^inf_i) */
+
+    
+    /* MOVE EACH alpha_i */
+
+}
+
+
+
 /* MOVE VALUES OF KAPPA */
-void move_kappa(param *old_par, param *new_par, data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
-    /* DETERMINE THE NUMBER OF kappa_i VALUES TO MOVE */
-
+void move_kappa(param *old_par, param *new_par, data *dat, dna_dist *dnainfo, gentime *gen, gsl_rng *rng){
     /* DETERMINE WHICH kappa_i TO MOVE */
-
+    /* find relevant candidates (*/
+    
     /* MOVE EACH kappa_i */
 
 }
@@ -325,7 +338,7 @@ int main(){
 
   gcc -o moves matvec.c genclasses.c structures.c init.c distances.c prior.c likelihood.c moves.c -lgsl -lgslcblas -Wall -O3
 
- ./move
+ ./moves
 
   valgrind --leak-check=full -v moves
 

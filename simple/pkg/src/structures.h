@@ -65,11 +65,17 @@ typedef struct{
     int n_accept, n_reject; /* global accept/reject*/
     int n_accept_mu1, n_reject_mu1; /* accept/reject for mu1 */
     int n_accept_gamma, n_reject_gamma; /* accept/reject for gamma */
-    int n_accept_kappa, n_reject_kappa; /* accept/reject for kappa */
+    int n_accept_Tinf, n_reject_Tinf; /* accept/reject for Tinf */
     int n_accept_alpha, n_reject_alpha; /* accept/reject for alpha */
-    int n_move_kappa, n_move_alpha; /* number of kappa and alpha to move at each chain */
+    int n_accept_kappa, n_reject_kappa; /* accept/reject for kappa */
+    int n_move_Tinf, n_move_alpha, n_move_kappa; /* number of Tinf, kappa and alpha to move at each chain */
     double sigma_mu1; /* sigma for normal proposal for mu1 */
     double sigma_gamma; /* sigma for normal proposal for gamma */
+    vec_int *idx_move_Tinf; /* vector of length n_move_Tinf giving indices of Tinf_i to move */
+    vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
+    vec_int *idx_move_kappa; /* vector of length n_move_kappa giving indices of kappa_i to move */
+    vec_int *all_idx; /* vector of integers 0:(n-1) */
+
 } mcmc_param;
 
 

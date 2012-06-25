@@ -261,7 +261,46 @@ mcmc_param *alloc_mcmc_param(int n){
 	exit(1);
     }
 
-    /* return */
+    /* DETERMINE THE NUMBER OF Tinf */
+    /* set to N/10, minimum 1 */
+    out->n_move_Tinf = (int) n/10;
+    out->n_move_Tinf = out->n_move_Tinf < 1 ? 1 : out->n_move_Tinf;
+
+
+    /* DETERMINE THE NUMBER OF KAPPA AND ALPHA TO MOVE */
+    /* set to N/10, minimum 1 */
+    out->n_move_alpha = (int) n/10;
+    out->n_move_alpha = out->n_move_alpha < 1 ? 1 : out->n_move_alpha;
+    out->n_move_kappa = out->n_move_alpha;
+
+    /* ALLOCATE VECTORS */
+    out->idx_move_Tinf = alloc_vec_int(out->n_move_Tinf);
+    out->idx_move_alpha = alloc_vec_int(out->n_move_alpha);
+    out->idx_move_kappa = alloc_vec_int(out->n_move_kappa);
+    out->all_idx = alloc_vec_int(n);
+
+
+    /* FILL OUT OUTTEGERS */
+    out->n_reject = 0;
+    out->n_accept_mu1 = 0;
+    out->n_reject_mu1 = 0;
+    out->n_accept_gamma = 0;
+    out->n_reject_gamma = 0;
+    out->n_accept_Tinf = 0;
+    out->n_reject_Tinf = 0;
+    out->n_accept_alpha = 0;
+    out->n_reject_alpha = 0;
+    out->n_accept_kappa = 0;
+    out->n_reject_kappa = 0;
+    out->n_accept = 0;
+
+
+    /* FILL IN DOUBLES */
+    out->sigma_mu1 = 0.0;
+    out->sigma_gamma = 0.0;
+
+
+    /* RETURN */
     return out;
 } /* end alloc_mcmc_param */
 
@@ -269,6 +308,10 @@ mcmc_param *alloc_mcmc_param(int n){
 
 
 void free_mcmc_param(mcmc_param *in){
+    free_vec_int(in->idx_move_Tinf);
+    free_vec_int(in->idx_move_alpha);
+    free_vec_int(in->idx_move_kappa);
+    free_vec_int(in->all_idx);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -279,13 +322,32 @@ void print_mcmc_param(mcmc_param *in){
     fflush(stdout);
     printf("\nsigma for mu1: %.10f",in->sigma_mu1);
     printf("\nsigma for gamma: %.10f",in->sigma_gamma);
-    printf("\nnb moves for kappa: %d",in->n_move_kappa);
+    printf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     printf("\nnb moves for alpha: %d",in->n_move_alpha);
+    printf("\nnb moves for kappa: %d",in->n_move_kappa);
+
     printf("\nglobal nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept, in->n_reject, (double) in->n_accept / in->n_reject);
+
     printf("\nmu1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_mu1, in->n_reject_mu1, (double) in->n_accept_mu1 / in->n_reject_mu1);
+
     printf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
-    printf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
+
+    printf("\nTinf: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_Tinf, in->n_reject_Tinf, (double) in->n_accept_Tinf / in->n_reject_Tinf);
+
     printf("\nalpha: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_alpha, in->n_reject_alpha, (double) in->n_accept_alpha / in->n_reject_alpha);
+
+    printf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
+
+    printf("\nIndices of Tinf_i to move:\n");
+    print_vec_int(in->idx_move_Tinf);
+    printf("\nIndices of alpha_i to move:\n");
+    print_vec_int(in->idx_move_alpha);
+    printf("\nIndices of kappa_i to move:\n");
+    print_vec_int(in->idx_move_kappa);
+
+    printf("\nVector of all indices (0:(n-1)):\n");
+    print_vec_int(in->all_idx);
+
     fflush(stdout);
 } /* end print_mcmc_param*/
 
@@ -647,6 +709,13 @@ void print_mcmc_param(mcmc_param *in){
 /*     printf("\nParam\n"); */
 /*     print_param(par); */
 /*     free_param(par); */
+
+/*     /\* /\\* mcmcParam *\\/ *\/ */
+/*     mcmc_param * mcmcPar = alloc_mcmc_param(10); */
+/*     printf("\nMcmcParam\n"); */
+/*     print_mcmc_param(mcmcPar); */
+/*     free_mcmc_param(mcmcPar); */
+
 
 /*     printf("\n\n"); */
 /*     return 0; */
