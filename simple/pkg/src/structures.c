@@ -277,10 +277,11 @@ mcmc_param *alloc_mcmc_param(int n){
     out->idx_move_Tinf = alloc_vec_int(out->n_move_Tinf);
     out->idx_move_alpha = alloc_vec_int(out->n_move_alpha);
     out->idx_move_kappa = alloc_vec_int(out->n_move_kappa);
+    out->proba_vec = alloc_vec_double(n);
     out->all_idx = alloc_vec_int(n);
 
 
-    /* FILL OUT OUTTEGERS */
+    /* FILL OUT INTEGERS */
     out->n_reject = 0;
     out->n_accept_mu1 = 0;
     out->n_reject_mu1 = 0;
@@ -312,6 +313,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_int(in->idx_move_alpha);
     free_vec_int(in->idx_move_kappa);
     free_vec_int(in->all_idx);
+    free_vec_double(in->proba_vec);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -347,6 +349,9 @@ void print_mcmc_param(mcmc_param *in){
 
     printf("\nVector of all indices (0:(n-1)):\n");
     print_vec_int(in->all_idx);
+ 
+    printf("\nVector of prior ancestry proba:\n");
+    print_vec_double(in->proba_vec);
 
     fflush(stdout);
 } /* end print_mcmc_param*/
