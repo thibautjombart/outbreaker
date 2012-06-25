@@ -65,6 +65,9 @@ typedef struct{
     int n_accept, n_reject; /* global accept/reject*/
     int n_accept_mu1, n_reject_mu1; /* accept/reject for mu1 */
     int n_accept_gamma, n_reject_gamma; /* accept/reject for gamma */
+    int n_accept_kappa, n_reject_kappa; /* accept/reject for kappa */
+    int n_accept_alpha, n_reject_alpha; /* accept/reject for alpha */
+    int n_move_kappa, n_move_alpha; /* number of kappa and alpha to move at each chain */
     double sigma_mu1; /* sigma for normal proposal for mu1 */
     double sigma_gamma; /* sigma for normal proposal for gamma */
 } mcmc_param;

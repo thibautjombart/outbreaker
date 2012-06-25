@@ -95,7 +95,7 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
 
-/* move values of kappa */
+/* MOVE VALUES OF KAPPA */
 void move_kappa(param *old_par, param *new_par, data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
     /* DETERMINE THE NUMBER OF kappa_i VALUES TO MOVE */
 
@@ -110,7 +110,7 @@ void move_kappa(param *old_par, param *new_par, data *dat, dna_dist *dnainfo, ge
 
 /*
 
-MODEL CODE FROM ANNE 
+CODE MODEL FROM ANNE 
 
 */
 /* void movePi(parameters * curParam, parameters * newParam, raw_data * data, aug_data *augData, acceptance *accept){ */
@@ -247,6 +247,7 @@ int main(){
 
     /* ALLOCATE MCMCPAR */
     mcmcPar = alloc_mcmc_param(3);
+    init_mcmc_param(mcmcPar, dat);
     printf("\nMCMC parameters (mcmcPar)\n");
     print_mcmc_param(mcmcPar);
 
