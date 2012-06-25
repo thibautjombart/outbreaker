@@ -313,7 +313,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_int(in->idx_move_alpha);
     free_vec_int(in->idx_move_kappa);
     free_vec_int(in->all_idx);
-    free_vec_double(in->proba_vec);
+    free_vec_int(in->candid_ances);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -349,9 +349,9 @@ void print_mcmc_param(mcmc_param *in){
 
     printf("\nVector of all indices (0:(n-1)):\n");
     print_vec_int(in->all_idx);
- 
-    printf("\nVector of prior ancestry proba:\n");
-    print_vec_double(in->proba_vec);
+
+    printf("\nVector of candidate ancestors:\n");
+    print_vec_int(in->proba_vec);
 
     fflush(stdout);
 } /* end print_mcmc_param*/

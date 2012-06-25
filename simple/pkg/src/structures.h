@@ -75,7 +75,7 @@ typedef struct{
     vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
     vec_int *idx_move_kappa; /* vector of length n_move_kappa giving indices of kappa_i to move */
     vec_int *all_idx; /* vector of integers 0:(n-1) */
-    vec_double *proba_vec; /* vector of probabilities used to move alpha_i */
+    vec_int *candid_ances; /* vector of candidate ancestors used to move alpha_i */
 } mcmc_param;
 
 
