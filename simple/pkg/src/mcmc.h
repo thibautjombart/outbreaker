@@ -1,10 +1,9 @@
-/* #ifndef __COMMON_H */
-/* #include "common.h" */
-/* #endif */
 
-/* #ifndef __MCMC_H */
-/* #define __MCMC_H */
+#ifndef __MCMC_H
+#define __MCMC_H
 
-/* void metro (mcmcInternals * , parameters * , raw_data *, nb_data *, aug_data *, dna_dist *, acceptance *, isAcceptOK *, NbProposals *, output_files * ); */
+void fprint_param(FILE *file, param *par, int step, bool quiet);
 
-/* #endif */
+void mcmc(int nIter, int outEvery, char outputFile[256], bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng);
+
+#endif
