@@ -11,6 +11,8 @@ void init_gentime(gentime *in, int type, double param1, double param2, double pa
 
 void init_param(param *par, data *dat,  gentime *gen, int *ances);
 
+void init_mcmc_param(mcmc_param *in, data *dat);
+
 
 /* void CalculIsInHosp(nb_data *, raw_data *); */
 

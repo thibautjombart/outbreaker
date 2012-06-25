@@ -101,6 +101,37 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances){
 
 
 
+void init_mcmc_param(mcmc_param *in, data *dat){
+    int N = dat->n;
+ 
+    /* DETERMINE THE NUMBER OF KAPPA AND ALPHA TO MOVE */
+    /* set to N/10, minimum 1 */
+    in->n_move_kappa = (int) N/10;
+    in->n_move_kappa = in->n_move_kappa < 1 ? 1 : in->n_move_kappa;
+    in->n_move_alpha = in->n_move_kappa;
+
+    /* INITIALIZE COUNTERS */
+    /* the first set of parameters is accepted by definition */
+    /* param accepted: mu1 (1), gamma (1), some kappa (n_move_kappa), some alpha (n_move_alpha) */
+    in->n_reject = 0;
+    in->n_accept_mu1 = 1;
+    in->n_reject_mu1 = 0;
+    in->n_accept_gamma = 1;
+    in->n_reject_gamma = 0;
+    in->n_accept_kappa = in->n_move_kappa;
+    in->n_reject_kappa = 0;
+    in->n_accept_alpha = in->n_move_alpha;
+    in->n_reject_alpha = 0;
+    in->n_accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_kappa + in->n_accept_alpha;
+
+
+    /* INITIALIZE MCMC PARAMETERS */
+    in->sigma_mu1 = 0.000001;
+    in->sigma_gamma = 0.1;
+}
+
+
+
 /* void InitMCMCSettings(mcmcInternals *MCMCSettings){ */
 /*     MCMCSettings->NbSimul = 110000; */
 /*     MCMCSettings->SubSample = 10; */
