@@ -576,7 +576,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="src/param.c"
+ac_unique_file="src/structures.c"
 ac_subst_vars='SHELL
 PATH_SEPARATOR
 PACKAGE_NAME

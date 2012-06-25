@@ -5,11 +5,8 @@
 #include "init.h"
 #include "prior.h"
 #include "likelihood.h"
-#include "move.h"
-/* #include "InputOutput.h" */
-/* #include "logL.h" */
-/* #include "mcmc.h" */
-/* #include "tuneVariances.h" */
+#include "moves.h"
+#include "mcmc.h"
 
 
 
@@ -22,7 +19,7 @@
 
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
 		  int *wType, double *wParam1, double *wParam2, double *wParam3, int *wTrunc, 
-		  int *ances){
+		  int *ances, int *nIter, int *outputEvery, int *quiet){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
     gsl_rng *rng;
@@ -30,6 +27,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     gentime *gen;
     param *par;
     dna_dist * dnainfo;
+    mcmc_param * mcmcPar;
 
     double logPrior, logLike, logPost;
 
@@ -79,15 +77,21 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     logPost = logposterior_all(dat, dnainfo, gen, par);
     printf("\nLog-posterior value: %.10f\n", logPost);
 
-    /* TEST MOVING PARAM */
-    
+    /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
+    mcmcPar = alloc_mcmc_param(dat->n);
+    init_mcmc_param(mcmcPar, dat);
+
+    /* RUN MCMC */
+    mcmc(*nIter, *outputEvery, "output.txt", (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+
 
     /* FREE MEMORY */
-    gsl_rng_free(rng);
     free_data(dat);
     free_gentime(gen);
     free_param(par);
     free_dna_dist(dnainfo);
+    free_mcmc_param (mcmcPar);
+    gsl_rng_free(rng);
 } /* end R_outbreaker */
 
 
