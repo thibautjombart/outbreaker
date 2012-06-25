@@ -144,7 +144,7 @@ void print_gentime(gentime *in){
 /* get density from generation time funtion at time 't' with 'kappa_i' generations*/
 double gentime_dens(gentime *in, int t, int kappa_i){
     /* error if requested kappa_i does not exist */
-    if(kappa_i > in->maxK){
+    if(kappa_i > in->maxK || kappa_i<1){
 	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK);
 	fflush(stdout);
 	exit(1);
@@ -160,7 +160,7 @@ double gentime_dens(gentime *in, int t, int kappa_i){
     /* otherwise fetch density value */
     if(t >= in->trunc || t < 0) return 0.0;
 
-    double out=mat_double_ij(in->dens, kappa_i, t);
+    double out=mat_double_ij(in->dens, kappa_i-1, t);
     return out;
 }
 
@@ -277,8 +277,8 @@ mcmc_param *alloc_mcmc_param(int n){
     out->idx_move_Tinf = alloc_vec_int(out->n_move_Tinf);
     out->idx_move_alpha = alloc_vec_int(out->n_move_alpha);
     out->idx_move_kappa = alloc_vec_int(out->n_move_kappa);
-    out->proba_vec = alloc_vec_double(n);
     out->all_idx = alloc_vec_int(n);
+    out->candid_ances = alloc_vec_int(n);
 
 
     /* FILL OUT INTEGERS */
@@ -351,7 +351,7 @@ void print_mcmc_param(mcmc_param *in){
     print_vec_int(in->all_idx);
 
     printf("\nVector of candidate ancestors:\n");
-    print_vec_int(in->proba_vec);
+    print_vec_int(in->candid_ances);
 
     fflush(stdout);
 } /* end print_mcmc_param*/

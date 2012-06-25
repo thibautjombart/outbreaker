@@ -23,8 +23,8 @@ int find_maxLike_kappa_i(int T, gentime *gen){
     int i, out=1;
     double temp=0.0, currentMax=0.0;
 
-    for(i=0;i<gen->dens->n;i++){
-	temp = mat_double_ij(gen->dens, i, T);
+    for(i=1;i<gen->maxK;i++){
+	temp = gentime_dens(gen, T, i);
 	if(currentMax < temp) {
 	    currentMax = temp;
 	    out = i+1;
@@ -178,6 +178,8 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 /* MOVE VALUES OF ALPHA AND KAPPA */
 void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
     int i, j, oldestDate = 0, nCandidates=0, toMove=0, T, ances;
+    double logRatio = 0.0;
+
 
     /* DETERMINE WHICH alpha_i/kappa_i TO MOVE */
     /*  - we change same kappa_i as alpha_i - */
@@ -191,7 +193,7 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 	toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
 
 	/* move only isolates with an ancestor in the sample */
-	if(vec_int_i(currentPar->Tinf, toMove) > oldestIsolate){
+	if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){
 	    /* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) */
 	    nCandidates=0;
 	    for(j=0;j<dat->n;j++){
@@ -200,7 +202,7 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 	    }
 
 	    /* check that there is at least a candidate or issue error */
-	    if(nCandidates=0){
+	    if(nCandidates==0){
 		fprintf(stderr, "\n[in: moves.c->move_alpha_kappa]\nNo candidate ancestor for 'i' but still trying to move 'alpha_i' (i: %d).\n", toMove);
 		exit(1);
 	    }
@@ -208,9 +210,14 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 	    /* GET PROPOSED ALPHA_I */
 	    tempPar->alpha->values[toMove] = vec_int_i(mcmcPar->candid_ances, gsl_rng_uniform_int(rng, nCandidates));
 
-	    /* GET PROPOSED (MOST PROBABLE GIVEN W) KAPPA_I */
-	    ances = vec_int_i(tempPar->alpha,toMove); /* ances: proposed ancestor for 'toMove' */
-	    T = vec_int_i(tempPar->Tinf, toMove) - vec_int_i(tempPar->Tinf, ances); /* time between ancestor and descendent */
+	    /* /\* GET PROPOSED (MOST PROBABLE GIVEN W) KAPPA_I *\/ */
+	    /* ances: proposed ancestor for 'toMove' */
+	    ances = vec_int_i(tempPar->alpha,toMove);
+
+	    /* time between ancestor and descendent */
+	    T = vec_int_i(tempPar->Tinf, toMove) - vec_int_i(tempPar->Tinf, ances);
+
+	    /* most likely value of kappa */
 	    tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen);
 
 
@@ -331,7 +338,7 @@ CODE MODEL FROM ANNE
 
 int main(){
   /* DECLARATIONS */
-    int TIMESPAN;
+    int TIMESPAN, i;
     data *dat;
     gentime *gen;
     param *par, *tempPar;
@@ -366,6 +373,8 @@ int main(){
     init_gentime(gen, 1, 1.0, 0.0, 0.0);
     printf("\n>>> gentime info <<<\n");
     print_gentime(gen);
+    printf("sizes of rows in gen: ");
+    for(i=0;i<gen->dens->n;i++) printf("%d ", gen->dens->rows[i]->length);
 
 
      /* CREATE AND INIT PARAMETERS */
@@ -415,7 +424,6 @@ int main(){
 
 
     /* MOVE MU1 */
-    int i;
     mcmcPar->sigma_mu1 = 0.001;
     for(i=0;i<500;i++){
 	move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
@@ -444,7 +452,7 @@ int main(){
 
 
 
-    /* MOVE alpha_kappa */
+    /* MOVE ALPHA AND KAPPA */
     for(i=0;i<500;i++){
 	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 	printf("\nAlpha:");
