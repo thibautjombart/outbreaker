@@ -94,9 +94,11 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
     double logRatio=0.0;
 
     /* GENERATE CANDIDATE VALUE FOR GAMMA */
-    do{
-	tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma);
-    } while(tempPar->gamma < 0); /* avoid negative values */
+    /* do{ */
+    /* 	tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma); */
+    /* } while(tempPar->gamma < 0); /\* avoid negative values *\/ */
+    tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma);
+    if(tempPar->gamma < 0.0) tempPar->gamma = 0.0;
 
 
     /* ACCEPT / REJECT */

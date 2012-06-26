@@ -57,12 +57,14 @@ dates <- c(4,6,2,0,4,6)
 
 
 ## run outbreaker
-outbreaker(as.DNAbin(gen), dates, n.iter=5e5, sample.every=500, sigma.mu1=1e-3)
+outbreaker(as.DNAbin(gen), dates, n.iter=1e5, sample.every=500, sigma.mu1=1e-3)
 
 
 ## read chains outputs
 res <- read.table("output.txt",header=TRUE)
+param <- read.table("mcmcOutput.txt",header=TRUE)
 
+## check mu1/mu2
 matplot(res$step, res[,2:3], type="l", col=c("blue","red"), lty=1, ylim=c(0,0.003))
 abline(h=c(0.001,0.002), col=c("blue","red"), lty=2)
 legend("topright",fill=c("blue","red"),leg=c("transition","transversion"), title="mutation rates")
@@ -70,10 +72,15 @@ legend("topright",fill=c("blue","red"),leg=c("transition","transversion"), title
 plot(density(res$mu1[-(1:100)]),main="mu1 posterior")
 plot(density(res$mu2[-(1:100)]),main="mu2 posterior")
 
-
-## check mcmc parameters
-param <- read.table("mcmcOutput.txt",header=TRUE)
 matplot(param$step, param[,3], type="l", main="p accept mu")
+
+
+## check gamma
+plot(res$step,res$gamma,type="l", main="gamma")
+matplot(param$step, param[,4], type="l", main="p accept gamma")
+
+
+## check mcmc param
 head(param,50)
 tail(param,10)
 
