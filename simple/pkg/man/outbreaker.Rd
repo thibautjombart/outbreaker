@@ -57,7 +57,7 @@ dates <- c(4,6,2,0,4,6)
 
 
 ## run outbreaker
-outbreaker(as.DNAbin(gen), dates, n.iter=1e5, sample.every=500, sigma.mu1=1e-3)
+outbreaker(as.DNAbin(gen), dates, n.iter=2e5, sample.every=500)
 
 
 ## read chains outputs
