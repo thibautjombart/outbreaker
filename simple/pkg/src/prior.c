@@ -24,6 +24,7 @@ double logprior_alpha_i(int i, param *par){
 /* p(kappa_i) = NB(1, 1-pi) with pi: prop obs cases */
 double logprior_kappa_i(int i, param *par){
     double out = gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, 1.0-par->pi, 1.0);
+    /* printf("\nprior for Kappa_i=%d (pi=%.3f): %.15f",vec_int_i(par->kappa,i), par->pi, out);fflush(stdout); */
     out = log(out);
     filter_logprob(&out);
     return out;
@@ -68,7 +69,7 @@ double logprior_all(param *par){
 	out += logprior_kappa_i(i,par);
     }
 
-    out += logprior_pi(par);
+    /* out += logprior_pi(par); */
     out += logprior_mu1();
     out += logprior_gamma(par);
 
