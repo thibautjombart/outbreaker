@@ -18,7 +18,7 @@
 */
 
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
-		  int *wType, double *wParam1, double *wParam2, double *wParam3, int *wTrunc, 
+		  double *gentimeDens, int *wTrunc, 
 		  int *ances, int *nIter, int *outputEvery, int *tuneEvery, int *quiet){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
@@ -48,7 +48,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(TIMESPAN, *wTrunc);
-    init_gentime(gen, *wType, *wParam1, *wParam2, *wParam3);
+    init_gentime(gen, gentimeDens);
     printf("\n>>> gentime info <<<\n");
     print_gentime(gen);
 

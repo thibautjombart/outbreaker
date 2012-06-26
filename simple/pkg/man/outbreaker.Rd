@@ -52,12 +52,14 @@ gen[6,c(256,503,504)] <- c('a','g','g')
 
 ##plot(nj(dist.dna(as.DNAbin(gen), model="raw")), type="unr")
 
-## dates
+## dates (collection; infection = 2 days before collection)
 dates <- c(4,6,2,0,4,6)
 
+## density function
+wdens <- c(0,0,2,0,0)
 
 ## run outbreaker
-outbreaker(as.DNAbin(gen), dates, n.iter=1e6, sample.every=1000)
+outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000)
 
 
 ## read chains outputs
@@ -95,6 +97,15 @@ apply(alpha,2,f1)
 
 # this should be 3-1-4-0-5 #
 assign <- sapply(apply(alpha,2,f1),function(e) names(e)[which.max(e)])
+
+
+## check infection dates
+infdates <- tail(res[,5:10],round(nrow(res)/2))
+library(UsingR)
+violinplot(infdates)
+title("Infection dates")
+points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
+
 
 
 ## check mcmc param

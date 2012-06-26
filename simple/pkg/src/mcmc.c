@@ -224,8 +224,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move gamma */
 	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
-	/* /\* move Tinf *\/ */
-	/* move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
+	/* move Tinf */
+	move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move alpha and kappa */
 	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);

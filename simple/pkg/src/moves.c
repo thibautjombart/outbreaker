@@ -189,10 +189,11 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
 
 	/* move i-th Tinf */
-	do{
-	    tempPar->Tinf->values[toMove] += gsl_rng_uniform(rng) >= 0.5 ? 1 : -1; /* move : +/- 1 unit time */
-	} while(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)); /* ensure Tinf_i <= T_i*/
-
+	/* do{ */
+	/*     tempPar->Tinf->values[toMove] += gsl_rng_uniform(rng) >= 0.5 ? 1 : -1; /\* move : +/- 1 unit time *\/ */
+	/* } while(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)); /\* ensure Tinf_i <= T_i*\/ */
+	tempPar->Tinf->values[toMove] += gsl_rng_uniform(rng) >= 0.5 ? 1 : -1;
+	if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood */

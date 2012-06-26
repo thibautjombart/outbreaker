@@ -36,8 +36,6 @@
 
 /* descriptors/parameters of the generation time function 'w' */
 typedef struct{
-    int type; /* type of distribution for generation time */
-    double param1, param2, param3; /* parameters for the generation time distribution 'w' */
     int trunc; /* value of truncation; p(x>=truc)=0 */
     int maxK; /* maximum value of kappa_i (i.e. max nb of generations between two cases) */
     mat_double *dens; /* pre-computed values of density: row 'i' gives densities for kappa=i at t=0, 1, ..., trunc-1*/
