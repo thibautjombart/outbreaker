@@ -25,48 +25,28 @@ gsl_rng * create_gsl_rng(time_t t){
 
 
 /* initialize and pre-compute generation time */
-void init_gentime(gentime *in, int type, double param1, double param2, double param3){
+void init_gentime(gentime *in, double *values){
     double sumDens=0.0;
     int i,j;
 
-    /* UPDATE OBJECT'S CONTENT */
-    in->type = type;
-    in->param1 = param1;
-    in->param2 = param2;
-    in->param3 = param3;
-
+   
     /* PRE-COMPUTE DENSITIES */
-    switch(in->type){
-    case 1: /* Poisson */
-	/* for kappa=1 */
-	for(j=0;j<in->trunc;j++){
-	    in->dens->rows[0]->values[j] =  gsl_ran_poisson_pdf((unsigned int) j, in->param1);
-	}
-
-	/* normalize the density */
-	sumDens = sum_vec_double(in->dens->rows[0]);
-	for(j=0;j<in->trunc;j++){
-    	    in->dens->rows[0]->values[j] = in->dens->rows[0]->values[j]/sumDens;
-    	}
-
-	/* for kappa>1 */
-	for(i=1;i<in->dens->n;i++){
-	    convol_vec_double(in->dens->rows[0], in->dens->rows[i-1], in->dens->rows[i]);
-	}
-	break;
-    default:
-	fprintf(stderr, "\n[in: init.c->init_gentime]\nMethod %d is unknown. Exiting.\n", in->type);
-	exit(1);
+    /* for kappa=1 */
+    /* copy densities provided by user (from R) */
+    for(j=0;j<in->trunc;j++){
+	in->dens->rows[0]->values[j] = values[j];
     }
 
-    /* /\* NORMALIZE DENSITIES *\/ */
-    /* for(i=0;i<in->dens->n;i++){ */
-    /* 	sumDens = sum_vec_double(in->dens->rows[i]); */
-    /* 	for(j=0;j<in->dens->p;j++){ */
-    /* 	    in->dens->rows[i]->values[j] = in->dens->rows[i]->values[j]/sumDens; */
-    /* 	} */
-    /* } */
+    /* normalize this density */
+    sumDens = sum_vec_double(in->dens->rows[0]);
+    for(j=0;j<in->trunc;j++){
+	in->dens->rows[0]->values[j] = in->dens->rows[0]->values[j]/sumDens;
+    }
 
+    /* compute convolutions for kappa>1 */
+    for(i=1;i<in->dens->n;i++){
+	convol_vec_double(in->dens->rows[0], in->dens->rows[i-1], in->dens->rows[i]);
+    }
 } /* end init_gentime */
 
 

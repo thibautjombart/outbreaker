@@ -3,7 +3,7 @@
 ## auxiliary functions
 #######################
 
-outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=15,
+outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random"),
                        n.iter=1e5, sample.every=1000, tune.every=1000, quiet=FALSE){
     ## CHECKS ##
@@ -12,6 +12,7 @@ outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=15,
     if(!is.matrix(dna)) dna <- as.matrix(dna)
     if(is.character(dates)) stop("dates are characters; they must be integers or dates with POSIXct format (see ?as.POSIXct)")
     init.tree <- match.arg(init.tree)
+    if(length(w.dens)<w.trunc) stop(paste("incomplete w.dens: values needed from t=0 to t=", w.trunc-1,sep=""))
 
 
     ## PROCESS INPUTS ##
@@ -35,10 +36,10 @@ outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=15,
     ## make sure minimugit pum date is 0 ##
     dates <- as.integer(dates-min(dates))
 
-    ## parameters of generation time function ##
-    w.type <- as.integer(w.type)
-    w.param <- rep(w.param, length=3)
-    w.param <- as.double(w.param)
+    ## check generation time function ##
+    w.dens <- as.double(w.dens)
+    w.dens <- w.dens/sum(w.dens)
+    if(any(is.na(w.dens))) stop("NAs in w.dens after normalization")
     w.trunc <- as.integer(w.trunc)
 
 
@@ -72,14 +73,13 @@ outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=15,
     tune.every <- as.integer(tune.every)
     quiet <- as.integer(quiet)
 
-    ## .C("Rinput2data", dna, dates, n.ind, n.nucl, PACKAGE="outbreaker") int *wType, int *wParam1, int *wParam2, int *wParam3, int *wTrunc
     .C("R_outbreaker",
        dnaraw, dates, n.ind, n.nucl,
-       w.type, w.param[1], w.param[2], w.param[3], w.trunc,
+       w.dens, w.trunc,
        ances, n.iter, sample.every, tune.every, quiet,
        PACKAGE="outbreaker")
 
-    cat("\nComputations finished.\n")
+    cat("\nComputations finished.\n\n")
     return(invisible())
 }
 

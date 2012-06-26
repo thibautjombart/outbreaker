@@ -103,10 +103,6 @@ gentime *alloc_gentime(int maxK, int trunc){
 	exit(1);
     }
 
-    out->type = 0;
-    out->param1 = 0.0;
-    out->param2 = 0.0;
-    out->param3 = 0.0;
     out->trunc = trunc>0 ? trunc : 1; /* make sur that p(0) is not zero */
     out->maxK = maxK>0 ? maxK : 1;
 
@@ -131,8 +127,6 @@ void free_gentime(gentime *in){
 void print_gentime(gentime *in){
     fflush(stdout);
     printf("\n= Description of generation time function =\n");
-    printf("\nType: %d", in->type);
-    printf("\nparam1: %.5f \tparam2: %.5f \tparam3: %.5f", in->param1, in->param2, in->param3);
     printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->trunc);
     print_mat_double(in->dens);
     fflush(stdout);
