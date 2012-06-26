@@ -51,9 +51,11 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     double logRatio=0.0;
 
     /* GENERATE CANDIDATE VALUE FOR MU1 */
-    do{
-	tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1);
-    } while(tempPar->mu1 < 0); /* avoid negative values */
+    /* do{ */
+    /* 	tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1); */
+    /* } while(tempPar->mu1 < 0.0); /\* avoid negative values *\/ */
+    tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1);
+    if(tempPar->mu1 < 0.0) tempPar->mu1 = 0.0;
 
 
     /* ACCEPT / REJECT */
@@ -62,11 +64,8 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
     logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
 
-    /* printf("\nCurrent mu1: %.10f   New mu1: %.10f\n", currentPar->mu1, tempPar->mu1); */
-    /* printf("\nLL old: %.5f  LL new:%.5f  logRatio: %.5f\n", loglikelihood_gen_all(dat, dnainfo, currentPar), loglikelihood_gen_all(dat, dnainfo, tempPar), logRatio); */
-
     /* if p(new/old) > 1, accept new */
-    if(logRatio>=0) {
+    if(logRatio>=0.0) {
 	currentPar->mu1 = tempPar->mu1;
 	mcmcPar->n_accept_mu1 += 1;
 	/* printf("\nAccepting new value\n"); */
@@ -98,7 +97,7 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
     do{
 	tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma);
     } while(tempPar->gamma < 0); /* avoid negative values */
-    
+
 
     /* ACCEPT / REJECT */
     /* compute only genetic part as the epi part is unchanged */
@@ -111,7 +110,7 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
     /* if p(new/old) > 1, accept new */
-    if(logRatio>=0) {
+    if(logRatio>=0.0) {
 	currentPar->gamma = tempPar->gamma;
 	mcmcPar->n_accept_gamma += 1;
     } else { /* else accept new with proba (new/old) */
@@ -155,7 +154,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	logRatio += logprior_gamma(tempPar) - logprior_gamma(currentPar);
 
 	/* if p(new/old) > 1, accept new */
-	if(logRatio>=0) {
+	if(logRatio>=0.0) {
 	    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 	    mcmcPar->n_accept_Tinf += 1;
 	} else { /* else accept new with proba (new/old) */
@@ -229,7 +228,7 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 	    logRatio += logprior_gamma(tempPar) - logprior_gamma(currentPar);
 
 	    /* if p(new/old) > 1, accept new */
-	    if(logRatio>=0) {
+	    if(logRatio>=0.0) {
 		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
 		mcmcPar->n_accept_alpha += 1;

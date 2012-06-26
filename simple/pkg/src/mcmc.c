@@ -67,24 +67,87 @@ void fprint_param(FILE *file, param *par, int step, bool quiet){
 
 
 
+/* print mcmc parameter (e.g. acceptance/rejection) to file 
+   order is as follows:
+   step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma
+*/
+void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
+    double temp=0.0;
+    /* OUTPUT TO FILE */
+    fprintf(file,"\n%d\t", step);
+    fprintf(file,"\t%.lf", update_get_accept_rate(mcmcPar));
+    temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
+    fprintf(file,"\t%.5f", temp);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
+    fprintf(file,"\t%d", mcmcPar->n_like_zero);
+}
+
+
+
+
+
+
+/*
+   UPDATE GLOBAL ACCEPTANCE RATE
+*/
+double update_get_accept_rate(mcmc_param *in){
+    in->n_accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_Tinf + in->n_accept_alpha + in->n_accept_kappa;
+    in->n_reject = in->n_reject_mu1 + in->n_reject_gamma + in->n_reject_Tinf + in->n_reject_alpha + in->n_reject_kappa;
+    return (double) in->n_accept / (double) (in->n_accept+in->n_reject);
+}
+
+
+
+
+
+
+
+
+
+
+/*
+   ================
+   TUNING FUNCTIONS
+   ================
+*/
+
+void tune_mu1(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_mu1 / (double) (in->n_accept_mu1 + in->n_reject_mu1);
+
+    /* acceptable zone: 35-45% acceptance */
+    if(paccept<0.35) {
+	in->sigma_mu1 /= 1.5;
+    } else if (paccept>0.45) in->sigma_mu1 *= 1.5;
+}
+
+
+
+
 
 /*
    ===============================================
    METROPOLIS-HASTING ALGORITHM FOR ALL PARAMETERS
    ===============================================
 */
-void mcmc(int nIter, int outEvery, char outputFile[256], bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i;
 
     /* OPEN OUTPUT FILE */
-    FILE *file=fopen(outputFile,"w");
+    FILE *file = fopen(outputFile,"w"), *mcmcFile = fopen(mcmcOutputFile,"w");
     if(file==NULL){
-	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file 'output.txt'.\n");
+	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile);
+	exit(1);
+    }
+    if(mcmcFile==NULL){
+	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile);
 	exit(1);
     }
 
-    /* OUTPUT TO FILE - HEADER */
+
+    /* OUTPUT TO OUTFILE - HEADER */
     fprintf(file, "step\tmu1\tmu2\tgamma");
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
@@ -95,6 +158,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], bool quiet, param *par,
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tkappa_%d", i+1);
     }
+
+    /* OUTPUT TO MCMCOUTFILE - HEADER */
+    fprintf(mcmcFile, "step\tp_accept\tp_accept_mu1\tsigma_mu1\tsigma_gamma\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
@@ -109,9 +175,10 @@ void mcmc(int nIter, int outEvery, char outputFile[256], bool quiet, param *par,
 	for(i=0;i<dat->n;i++){
 	    printf("\tkappa_%d", i+1);
 	}
-
-	fprint_param(file, par, 1, quiet);
     }
+
+    fprint_param(file, par, 1, quiet);
+    fprint_mcmc_param(mcmcFile, mcmcPar, 1);
 
 
     /* CREATE TEMPORARY PARAMETERS */
@@ -123,24 +190,32 @@ void mcmc(int nIter, int outEvery, char outputFile[256], bool quiet, param *par,
     for(i=2;i<=nIter;i++){
 	if(i % outEvery == 0){
 	    fprint_param(file, par, i, quiet);
+	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
 	}
 
+	/* TUNING */
+	if(i % tuneEvery == 0){
+	    tune_mu1(mcmcPar,rng);
+	}
+
+	/* MOVEMENTS */
 	/* move mu1 */
 	move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
-	/* move gamma */
-	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	/* /\* move gamma *\/ */
+	/* move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng); */
 
-	/* move Tinf */
-	move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	/* /\* move Tinf *\/ */
+	/* move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
 
-	/* move alpha and kappa */
-	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	/* /\* move alpha and kappa *\/ */
+	/* move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
     }
 
 
-    /* CLOSE OUTPUT FILE */
+    /* CLOSE OUTPUT OUTFILE */
     fclose(file);
+    fclose(mcmcFile);
 
     /* FREE TEMPORARY PARAMETERS */
     free_param(tempPar);
