@@ -38,7 +38,7 @@ void fprint_param(FILE *file, param *par, int step, bool quiet){
 	fprintf(file, "\t%d", vec_int_i(par->Tinf, i));
     }
     for(i=0;i<par->Tinf->length;i++){
-	fprintf(file, "\t%d", vec_int_i(par->alpha, i));
+	fprintf(file, "\t%d", vec_int_i(par->alpha, i)+1);
     }
     for(i=0;i<par->Tinf->length;i++){
 	fprintf(file, "\t%d", vec_int_i(par->kappa, i));
@@ -54,7 +54,7 @@ void fprint_param(FILE *file, param *par, int step, bool quiet){
 	    printf("\t%d", vec_int_i(par->Tinf, i));
 	}
 	for(i=0;i<par->Tinf->length;i++){
-	    printf("\t%d", vec_int_i(par->alpha, i));
+	    printf("\t%d", vec_int_i(par->alpha, i)+1);
 	}
 	for(i=0;i<par->Tinf->length;i++){
 	    printf("\t%d", vec_int_i(par->kappa, i));
@@ -227,8 +227,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* /\* move Tinf *\/ */
 	/* move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
 
-	/* /\* move alpha and kappa *\/ */
-	/* move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
+	/* move alpha and kappa */
+	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
     }
 
 

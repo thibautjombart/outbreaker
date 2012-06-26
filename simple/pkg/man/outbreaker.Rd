@@ -57,7 +57,7 @@ dates <- c(4,6,2,0,4,6)
 
 
 ## run outbreaker
-outbreaker(as.DNAbin(gen), dates, n.iter=2e5, sample.every=500)
+outbreaker(as.DNAbin(gen), dates, n.iter=1e6, sample.every=1000)
 
 
 ## read chains outputs
@@ -77,11 +77,29 @@ matplot(param$step, param[,3], type="l", main="p accept mu")
 
 ## check gamma
 plot(res$step,res$gamma,type="l", main="gamma")
+plot(density(tail(res$gamma,round(nrow(res)/2))),main="gamma")
+
 matplot(param$step, param[,4], type="l", main="p accept gamma")
+
+
+## check kappa
+kappa <- tail(res[,17:22],round(nrow(res)/2))
+apply(kappa,2,mean)
+boxplot(kappa, main="kappa")
+
+
+## check alpha
+f1 <- function(x) {table(x)/length(x)}
+alpha <- tail(res[,11:16],round(nrow(res)/2))
+apply(alpha,2,f1)
+
+# this should be 3-1-4-0-5 #
+assign <- sapply(apply(alpha,2,f1),function(e) names(e)[which.max(e)])
 
 
 ## check mcmc param
 head(param,50)
 tail(param,10)
+
 
 }

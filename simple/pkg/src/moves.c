@@ -89,6 +89,52 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
 
 
 
+/* /\* MOVE VALUES OF PI *\/ */
+/* void move_pi(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mcmc_param *mcmcPar, gsl_rng *rng){ */
+/*     double logRatio=0.0; */
+
+/*     /\* GENERATE CANDIDATE VALUE FOR PI *\/ */
+/*     /\* do{ *\/ */
+/*     /\* 	tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi); *\/ */
+/*     /\* } while(tempPar->pi < 0.0); /\\* avoid negative values *\\/ *\/ */
+/*     tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi); */
+/*     if(tempPar->pi < 0.0) { */
+/* 	tempPar->pi = 0.0; */
+/*     } else if(tempPar->pi > 1.0) tempPar->pi = 1.0; */
+
+
+/*     /\* ACCEPT / REJECT *\/ */
+/*     logRatio += loglikelihood_all(dat, dnainfo, tempPar); */
+/*     logRatio -= loglikelihood_all(dat, dnainfo, currentPar); */
+/*     logRatio += logprior_pi(tempPar); */
+/*     logRatio -= logprior_pi(currentPar); */
+
+
+/*     /\* if p(new/old) > 1, accept new *\/ */
+/*     if(logRatio>=0.0) { */
+/* 	currentPar->pi = tempPar->pi; */
+/* 	mcmcPar->n_accept_pi += 1; */
+/* 	/\* printf("\nAccepting new value\n"); *\/ */
+/*     } else { /\* else accept new with proba (new/old) *\/ */
+/* 	if(log(gsl_rng_uniform(rng)) <= logRatio){ /\* accept *\/ */
+/* 	    currentPar->pi = tempPar->pi; */
+/* 	    mcmcPar->n_accept_pi += 1; */
+/* 	    /\* printf("\nAccepting new value\n"); *\/ */
+/* 	} else { /\* reject *\/ */
+/* 	    tempPar->pi = currentPar->pi; */
+/* 	    mcmcPar->n_reject_pi += 1; */
+/* 	    /\* printf("\nRejecting new value\n"); *\/ */
+/* 	} */
+/*     } */
+
+/* } /\* end move_pi *\/ */
+
+
+
+
+
+
+
 /* MOVE VALUES OF GAMMA */
 void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mcmc_param *mcmcPar, gsl_rng *rng){
     double logRatio=0.0;
@@ -219,7 +265,7 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 	    T = vec_int_i(tempPar->Tinf, toMove) - vec_int_i(tempPar->Tinf, ances);
 
 	    /* most likely value of kappa */
-	    tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen);
+	    /* tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen); */
 
 
 	    /* ACCEPT/REJECT STEP */
