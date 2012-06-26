@@ -78,6 +78,8 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.lf", update_get_accept_rate(mcmcPar));
     temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
     fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_gamma / (double) (mcmcPar->n_accept_gamma + mcmcPar->n_reject_gamma);
+    fprintf(file,"\t%.5f", temp);
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
@@ -125,6 +127,21 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
 
 
 
+void tune_gamma(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_gamma / (double) (in->n_accept_gamma + in->n_reject_gamma);
+
+    /* acceptable zone: 35-45% acceptance */
+    if(paccept<0.35) {
+	in->sigma_gamma /= 1.5;
+    } else if (paccept>0.45) in->sigma_gamma *= 1.5;
+}
+
+
+
+
+
+
 
 /*
    ===============================================
@@ -160,7 +177,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept\tp_accept_mu1\tsigma_mu1\tsigma_gamma\tn_like_zero");
+    fprintf(mcmcFile, "step\tp_accept\tp_accept_mu1\tp_accept_gamma\tsigma_mu1\tsigma_gamma\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
@@ -196,14 +213,16 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* TUNING */
 	if(i % tuneEvery == 0){
 	    tune_mu1(mcmcPar,rng);
+	    tune_gamma(mcmcPar,rng);
+
 	}
 
 	/* MOVEMENTS */
 	/* move mu1 */
-	move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	/* move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng); */
 
-	/* /\* move gamma *\/ */
-	/* move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng); */
+	/* move gamma */
+	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
 	/* /\* move Tinf *\/ */
 	/* move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */

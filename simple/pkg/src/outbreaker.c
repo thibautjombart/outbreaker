@@ -86,7 +86,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     mcmcPar->sigma_mu1 = *sigma_mu1;
 
     /* OPTIONAL - fix some parameters */
-    par->gamma = 2.0;
+    par->mu1 = 0.001;
 
 
     /* RUN MCMC */
