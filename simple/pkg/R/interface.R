@@ -79,7 +79,7 @@ outbreaker <- function(dna, dates, w.type=1, w.param=c(2,0,0), w.trunc=15,
        ances, n.iter, sample.every, tune.every, quiet,
        PACKAGE="outbreaker")
 
-    cat("\nComputations finished.")
+    cat("\nComputations finished.\n")
     return(invisible())
 }
 
