@@ -219,7 +219,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* MOVEMENTS */
 	/* move mu1 */
-	/* move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng); */
+	move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
 	/* move gamma */
 	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
