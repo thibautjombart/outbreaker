@@ -37,8 +37,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, length);
-    printf("\n>>> Data <<<\n");
-    print_data(dat);
+    /* printf("\n>>> Data <<<\n"); */
+    /* print_data(dat); */
 
 
     /* GET TIME SPAN */
@@ -49,8 +49,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(TIMESPAN, *wTrunc);
     init_gentime(gen, gentimeDens);
-    printf("\n>>> gentime info <<<\n");
-    print_gentime(gen);
+    /* printf("\n>>> gentime info <<<\n"); */
+    /* print_gentime(gen); */
 
 
     /* CREATE AND INIT PARAMETERS */
@@ -61,21 +61,21 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna);
-    printf("\n>>> DNA info <<<\n");
-    print_dna_dist(dnainfo);
+    /* printf("\n>>> DNA info <<<\n"); */
+    /* print_dna_dist(dnainfo); */
 
 
-    /* COMPUTE PRIORS */
-    logPrior = logprior_all(par);
-    printf("\nPrior value (log): %.10f\n", logPrior);
+   /*  /\* COMPUTE PRIORS *\/ */
+   /*  logPrior = logprior_all(par); */
+   /*  printf("\nPrior value (log): %.10f\n", logPrior); */
 
-   /* COMPUTE LIKELIHOOD */
-    logLike = loglikelihood_all(dat, dnainfo, gen, par);
-    printf("\nLog-likelihood value: %.10f\n", logLike);
+   /* /\* COMPUTE LIKELIHOOD *\/ */
+   /*  logLike = loglikelihood_all(dat, dnainfo, gen, par); */
+   /*  printf("\nLog-likelihood value: %.10f\n", logLike); */
 
-    /* COMPUTE POSTERIOR */
-    logPost = logposterior_all(dat, dnainfo, gen, par);
-    printf("\nLog-posterior value: %.10f\n", logPost);
+   /*  /\* COMPUTE POSTERIOR *\/ */
+   /*  logPost = logposterior_all(dat, dnainfo, gen, par); */
+   /*  printf("\nLog-posterior value: %.10f\n", logPost); */
 
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
     mcmcPar = alloc_mcmc_param(dat->n);
@@ -85,7 +85,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     /* mcmcPar->sigma_mu1 = *sigma_mu1; */
 
     /* OPTIONAL - fix some parameters */
-    par->pi = 1.0;
+    par->pi = 0.5;
+    printf("\npi before mcmc:%.3f\n",par->pi);fflush(stdout);
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, "output.txt", "mcmcOutput.txt", *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);

@@ -56,10 +56,14 @@ gen[6,c(256,503,504)] <- c('a','g','g')
 dates <- c(4,6,2,0,4,6)
 
 ## density function
-wdens <- c(0,0,2,0,0)
+wdens <- c(0.5,0.5,2,0.2,0)
+
+## shit density function
+##wdens <- c(1,1,1,1,1)
 
 ## run outbreaker
-outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000)
+outbreaker(as.DNAbin(gen), dates, wdens, n.iter=5e5, sample.every=1000)
+##outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1000, sample.every=10, quiet=TRUE)
 
 
 ## read chains outputs
@@ -85,9 +89,11 @@ matplot(param$step, param[,4], type="l", main="p accept gamma")
 
 
 ## check kappa
+library(UsingR)
 kappa <- tail(res[,17:22],round(nrow(res)/2))
 apply(kappa,2,mean)
-boxplot(kappa, main="kappa")
+violinplot(kappa)
+title("kappa")
 
 
 ## check alpha
@@ -95,17 +101,14 @@ f1 <- function(x) {table(x)/length(x)}
 alpha <- tail(res[,11:16],round(nrow(res)/2))
 apply(alpha,2,f1)
 
-# this should be 3-1-4-0-5 #
 assign <- sapply(apply(alpha,2,f1),function(e) names(e)[which.max(e)])
-
+assign # this should be 3-1-4-0-3-5
 
 ## check infection dates
 infdates <- tail(res[,5:10],round(nrow(res)/2))
-library(UsingR)
 violinplot(infdates)
 title("Infection dates")
 points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
-
 
 
 ## check mcmc param

@@ -199,8 +199,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* CREATE TEMPORARY PARAMETERS */
+    printf("--- pi in par, in mcmc:%.3f", par->pi);
     param *tempPar = alloc_param(dat->n);
     copy_param(par,tempPar);
+    printf("--- pi in par, in mcmc after copy:%.3f", par->pi);
+    printf("--- pi in tempPar, in mcmc:%.3f", tempPar->pi);
 
 
     /* RUN NITER CHAINS */
@@ -227,8 +230,14 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move Tinf */
 	move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
-	/* move alpha and kappa */
-	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	/* move alpha_i*/
+	move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+
+	/* move kappa_i*/
+	/* move_kappa(par, gen, mcmcPar, rng); */
+
+	/* /\* move alpha and kappa *\/ */
+	/* move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
     }
 
 
