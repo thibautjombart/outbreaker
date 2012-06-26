@@ -19,7 +19,8 @@
 
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
 		  int *wType, double *wParam1, double *wParam2, double *wParam3, int *wTrunc, 
-		  int *ances, int *nIter, int *outputEvery, int *quiet){
+		  int *ances, int *nIter, int *outputEvery, int *tuneEvery, int *quiet, 
+		  double *sigma_mu1){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
     gsl_rng *rng;
@@ -81,8 +82,15 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     mcmcPar = alloc_mcmc_param(dat->n);
     init_mcmc_param(mcmcPar, dat);
 
+    /* SET MCMC_PARAM */
+    mcmcPar->sigma_mu1 = *sigma_mu1;
+
+    /* OPTIONAL - fix some parameters */
+    par->gamma = 2.0;
+
+
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, "output.txt", (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+    mcmc(*nIter, *outputEvery, "output.txt", "mcmcOutput.txt", *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
 
 
     /* FREE MEMORY */

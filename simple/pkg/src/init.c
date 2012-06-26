@@ -122,7 +122,8 @@ void init_mcmc_param(mcmc_param *in, data *dat){
 
 
     /* INITIALIZE MCMC PARAMETERS */
-    in->sigma_mu1 = 0.000001;
+    /* in->sigma_mu1 = 0.000001; */
+    in->sigma_mu1 = 0.00001;
     in->sigma_gamma = 0.1;
 
     /* FILL IN VECTOR OF ALL INDICES */

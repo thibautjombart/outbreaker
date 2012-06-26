@@ -294,7 +294,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_accept_kappa = 0;
     out->n_reject_kappa = 0;
     out->n_accept = 0;
-
+    out->n_like_zero = 0;
 
     /* FILL IN DOUBLES */
     out->sigma_mu1 = 0.0;

@@ -76,6 +76,7 @@ typedef struct{
     vec_int *idx_move_kappa; /* vector of length n_move_kappa giving indices of kappa_i to move */
     vec_int *all_idx; /* vector of integers 0:(n-1) */
     vec_int *candid_ances; /* vector of candidate ancestors used to move alpha_i */
+    int n_like_zero; /* number of times likelihood was zero */
 } mcmc_param;
 
 
