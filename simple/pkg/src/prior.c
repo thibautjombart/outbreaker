@@ -33,7 +33,7 @@ double logprior_kappa_i(int i, param *par){
 
 /* p(pi) = beta(4,3) */
 double logprior_pi(param *par){
-    double out = gsl_ran_beta_pdf(par->pi, 4.0, 3.0);
+    double out = gsl_ran_beta_pdf(par->pi, par->pi_param1, par->pi_param2);
     out = log(out);
     filter_logprob(&out);
     return out;

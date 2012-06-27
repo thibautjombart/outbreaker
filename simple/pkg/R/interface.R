@@ -5,7 +5,8 @@
 
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star"),
-                       n.iter=1e5, sample.every=1000, tune.every=1000, quiet=FALSE){
+                       n.iter=1e5, sample.every=1000, tune.every=1000,
+                       pi.param1=6, pi.param2=1, quiet=FALSE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -87,12 +88,14 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     n.iter <- as.integer(n.iter)
     sample.every <- as.integer(sample.every)
     tune.every <- as.integer(tune.every)
+    pi.param1 <- as.double(pi.param1)
+    pi.param2 <- as.double(pi.param2)
     quiet <- as.integer(quiet)
 
     .C("R_outbreaker",
        dnaraw, dates, n.ind, n.nucl,
        w.dens, w.trunc,
-       ances, n.iter, sample.every, tune.every, quiet,
+       ances, n.iter, sample.every, tune.every, pi.param1, pi.param2, quiet,
        PACKAGE="outbreaker")
 
     cat("\nComputations finished.\n\n")
