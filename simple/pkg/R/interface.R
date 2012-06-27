@@ -4,14 +4,21 @@
 #######################
 
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
-                       init.tree=c("seqTrack","random"),
+                       init.tree=c("seqTrack","random","star"),
                        n.iter=1e5, sample.every=1000, tune.every=1000, quiet=FALSE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
     if(!is.matrix(dna)) dna <- as.matrix(dna)
     if(is.character(dates)) stop("dates are characters; they must be integers or dates with POSIXct format (see ?as.POSIXct)")
-    init.tree <- match.arg(init.tree)
+    if(is.character(init.tree)) {
+        init.tree <- match.arg(init.tree)
+    } else {
+        if(length(init.tree) != length(dates)) stop("inconvenient length for init.tree")
+        init.tree[is.na(init.tree)|init.tree<1] <- 0
+        if(max(init.tree)>length(dates)) stop("inconvenient values in init.tree (some indices > n)")
+        ances <- as.integer(init.tree-1) # translate indices on C scale (0:(n-1))
+    }
     if(length(w.dens)<w.trunc) stop(paste("incomplete w.dens: values needed from t=0 to t=", w.trunc-1,sep=""))
 
 
@@ -50,21 +57,30 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     canBeAnces <- outer(dates,dates,FUN="<=")
     diag(canBeAnces) <- FALSE
 
-    ## seqTrack init
-    if(init.tree=="seqTrack"){
-        D <- as.matrix(dist.dna(dna, model="TN93"))
-        D[!canBeAnces] <- 1e15
-        ances <- apply(D,2,which.min)-1 # -1 for compatibility with C
-        ances[which.min(dates)] <- -1 # unknown ancestor
-        ances <- as.integer(ances)
-    }
+    if(is.character(init.tree)){
+        ## seqTrack init
+        if(init.tree=="seqTrack"){
+            D <- as.matrix(dist.dna(dna, model="TN93"))
+            D[!canBeAnces] <- 1e15
+            ances <- apply(D,2,which.min)-1 # -1 for compatibility with C
+            ances[which.min(dates)] <- -1 # unknown ancestor
+            ances <- as.integer(ances)
+        }
 
-    ## random init
-    if(init.tree=="random"){
-        ances <- apply(canBeAnces, 2, function(e) ifelse(length(which(e))>0, sample(which(e),1), NA) )
-        ances <- ances-1
-        ances[is.na(ances)] <- -1L
-        ances <- as.integer(ances)
+        ## random init
+        if(init.tree=="random"){
+            ances <- apply(canBeAnces, 2, function(e) ifelse(length(which(e))>0, sample(which(e),1), NA) )
+            ances <- ances-1
+            ances[is.na(ances)] <- -1L
+            ances <- as.integer(ances)
+        }
+
+        ## star-shape init
+        if(init.tree=="star"){
+            ances <- rep(which.min(dates), length(dates))
+            ances[dates==min(dates)] <- 0
+            ances <- as.integer(ances-1) # put on C scale
+        }
     }
 
     ## coerce type for remaining arguments ##

@@ -29,7 +29,7 @@ void init_gentime(gentime *in, double *values){
     double sumDens=0.0;
     int i,j;
 
-   
+
     /* PRE-COMPUTE DENSITIES */
     /* for kappa=1 */
     /* copy densities provided by user (from R) */
