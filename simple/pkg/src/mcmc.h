@@ -27,6 +27,9 @@ double update_get_accept_rate(mcmc_param *in);
 
 void tune_mu1(mcmc_param * in, gsl_rng *rng);
 
+void tune_gamma(mcmc_param * in, gsl_rng *rng);
+
+/* void tune_Tinf(mcmc_param * in, gsl_rng *rng); */
 
 
 

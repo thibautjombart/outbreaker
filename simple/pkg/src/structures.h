@@ -69,6 +69,7 @@ typedef struct{
     int n_move_Tinf, n_move_alpha, n_move_kappa; /* number of Tinf, kappa and alpha to move at each chain */
     double sigma_mu1; /* sigma for normal proposal for mu1 */
     double sigma_gamma; /* sigma for normal proposal for gamma */
+    double lambda_Tinf; /* lambda for Poisson movements of Tinf */
     double sigma_pi; /* sigma for normal proposal for pi */
     vec_int *idx_move_Tinf; /* vector of length n_move_Tinf giving indices of Tinf_i to move */
     vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
