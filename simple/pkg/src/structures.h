@@ -53,6 +53,7 @@ typedef struct{
     double mu1; /* rate of transitions */
     double gamma; /* so that rate of transversions mu2 = gamma x mu1 */
     double pi; /* proportion of observed cases */
+    double pi_param1, pi_param2; /* parameters of the Beta prior for pi */
 } param;
 
 
@@ -63,6 +64,7 @@ typedef struct{
     int n_accept, n_reject; /* global accept/reject*/
     int n_accept_mu1, n_reject_mu1; /* accept/reject for mu1 */
     int n_accept_gamma, n_reject_gamma; /* accept/reject for gamma */
+    int n_accept_pi, n_reject_pi; /* accept/reject for pi */
     int n_accept_Tinf, n_reject_Tinf; /* accept/reject for Tinf */
     int n_accept_alpha, n_reject_alpha; /* accept/reject for alpha */
     int n_accept_kappa, n_reject_kappa; /* accept/reject for kappa */

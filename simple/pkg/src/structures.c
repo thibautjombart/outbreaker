@@ -186,6 +186,8 @@ param *alloc_param(int n){
     out->mu1 = 0.0001;
     out->gamma = 1.0;
     out->pi = 1.0;
+    out->pi_param1 = 0.0;
+    out->pi_param2 = 0.0;
 
     /* return */
     return out;
@@ -214,8 +216,10 @@ void print_param(param *in){
     print_vec_int(in->kappa);
     printf("\n= mu1, mu2, gamma (transi, transver, coef) =\n");
     printf("%.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma);
-    printf("\n= pi (proportion of observed cases =\n");
+    printf("\n= pi (proportion of observed cases) =\n");
     printf("%.5f", in->pi);
+    printf("\n= priors on pi (parameter of beta distribution) =\n");
+    printf("%.5f  %.5f", in->pi_param1, in->pi_param2);
     fflush(stdout);
 } /* end print_param*/
 
@@ -228,6 +232,8 @@ void copy_param(param *in, param *out){
     out->mu1 = in->mu1;
     out->gamma = in->gamma;
     out->pi = in->pi;
+    out->pi_param1 = in->pi_param1;
+    out->pi_param2 = in->pi_param2;
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
@@ -293,6 +299,7 @@ mcmc_param *alloc_mcmc_param(int n){
     /* FILL IN DOUBLES */
     out->sigma_mu1 = 0.0;
     out->sigma_gamma = 0.0;
+    out->sigma_pi = 0.0;
     out->lambda_Tinf = 0.0;
 
 
@@ -319,6 +326,7 @@ void print_mcmc_param(mcmc_param *in){
     fflush(stdout);
     printf("\nsigma for mu1: %.10f",in->sigma_mu1);
     printf("\nsigma for gamma: %.10f",in->sigma_gamma);
+    printf("\nsigma for pi: %.10f",in->sigma_pi);
     printf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
     printf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     printf("\nnb moves for alpha: %d",in->n_move_alpha);
@@ -329,6 +337,8 @@ void print_mcmc_param(mcmc_param *in){
     printf("\nmu1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_mu1, in->n_reject_mu1, (double) in->n_accept_mu1 / in->n_reject_mu1);
 
     printf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
+
+    printf("\npi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_pi, in->n_reject_pi, (double) in->n_accept_pi / in->n_reject_pi);
 
     printf("\nTinf: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_Tinf, in->n_reject_Tinf, (double) in->n_accept_Tinf / in->n_reject_Tinf);
 

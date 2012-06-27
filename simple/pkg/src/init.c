@@ -52,7 +52,7 @@ void init_gentime(gentime *in, double *values){
 
 
 
-void init_param(param *par, data *dat,  gentime *gen, int *ances){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, gsl_rng *rng){
     int i, TmaxLike;
 
     /* Tinf */
@@ -74,7 +74,9 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances){
     /* doubles*/
     par->mu1 = 1e-5;
     par->gamma = 1.0;
-    par->pi = 0.5;
+    par->pi = gsl_ran_beta (rng,pi_param1,pi_param2);
+    par->pi_param1 = pi_param1;
+    par->pi_param2 = pi_param2;
 }
 
 
@@ -105,6 +107,7 @@ void init_mcmc_param(mcmc_param *in, data *dat){
     /* in->sigma_mu1 = 0.000001; */
     in->sigma_mu1 = 0.0001;
     in->sigma_gamma = 1;
+    in->sigma_pi = 0.0001;
     in->lambda_Tinf = 1;
 
     /* FILL IN VECTOR OF ALL INDICES */

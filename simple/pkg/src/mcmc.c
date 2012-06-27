@@ -82,6 +82,8 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_gamma / (double) (mcmcPar->n_accept_gamma + mcmcPar->n_reject_gamma);
     fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_pi / (double) (mcmcPar->n_accept_pi + mcmcPar->n_reject_pi);
+    fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_Tinf / (double) (mcmcPar->n_accept_Tinf + mcmcPar->n_reject_Tinf);
     fprintf(file,"\t%.5f", temp);
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
@@ -99,8 +101,8 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
    UPDATE GLOBAL ACCEPTANCE RATE
 */
 double update_get_accept_rate(mcmc_param *in){
-    in->n_accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_Tinf + in->n_accept_alpha + in->n_accept_kappa;
-    in->n_reject = in->n_reject_mu1 + in->n_reject_gamma + in->n_reject_Tinf + in->n_reject_alpha + in->n_reject_kappa;
+    in->n_accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_pi + in->n_accept_Tinf + in->n_accept_alpha + in->n_accept_kappa;
+    in->n_reject = in->n_reject_mu1 + in->n_reject_gamma + in->n_reject_pi + in->n_reject_Tinf + in->n_reject_alpha + in->n_reject_kappa;
     return (double) in->n_accept / (double) (in->n_accept+in->n_reject);
 }
 
@@ -142,6 +144,18 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
     if(paccept<0.35) {
 	in->sigma_gamma /= 1.5;
     } else if (paccept>0.45) in->sigma_gamma *= 1.5;
+}
+
+
+
+void tune_pi(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_pi / (double) (in->n_accept_pi + in->n_reject_pi);
+
+    /* acceptable zone: 35-45% acceptance */
+    if(paccept<0.35) {
+	in->sigma_pi /= 1.5;
+    } else if (paccept>0.45) in->sigma_pi *= 1.5;
 }
 
 
@@ -196,7 +210,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept\tp_accept_mu1\tp_accept_gamma\tp_accept_Tinf");
+    fprintf(mcmcFile, "step\tp_accept\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tlambda_Tinf\tn_like_zero");
 
 
@@ -243,6 +257,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* move gamma */
 	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+
+	/* move pi */
+	move_pi(par, tempPar, dat, mcmcPar, rng);
 
 	/* move Tinf */
 	/* printf("\nTinf:"); */

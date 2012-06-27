@@ -62,7 +62,7 @@ wdens <- c(0.5,0.5,2,0.2,0)
 ##wdens <- c(1,1,1,1,1)
 
 ## run outbreaker
-outbreaker(as.DNAbin(gen), dates, wdens, n.iter=5e5, sample.every=1000, init.tree="star",quiet=TRUE)
+system.time(outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000, init.tree="star",quiet=TRUE))
 
 
 ## read chains outputs
@@ -77,14 +77,14 @@ legend("topright",fill=c("blue","red"),leg=c("transition","transversion"), title
 plot(density(res$mu1[-(1:100)]),main="mu1 posterior")
 plot(density(res$mu2[-(1:100)]),main="mu2 posterior")
 
-plot(param$step, param[,3], type="l", main="p accept mu",ylim=c(0,1))
+plot(param$step, param$p_accept_mu1, type="l", main="p accept mu",ylim=c(0,1))
 
 
 ## check gamma
 plot(res$step,res$gamma,type="l", main="gamma")
 plot(density(tail(res$gamma,round(nrow(res)/2))),main="gamma")
 
-plot(param$step, param[,4], type="l", main="p accept gamma",ylim=c(0,1))
+plot(param$step, param$p_accept_gamma, type="l", main="p accept gamma",ylim=c(0,1))
 
 
 ## check kappa
@@ -92,7 +92,7 @@ library(UsingR)
 kappa <- tail(res[,18:23],round(nrow(res)/2))
 apply(kappa,2,mean)
 violinplot(kappa)
-title("kappa")
+title("kappa posterior")
 
 
 ## check alpha
@@ -105,9 +105,10 @@ assign # this should be 3-1-4-0-3-5
 
 ## check infection dates
 infdates <- tail(res[,6:11],round(nrow(res)/2))
-violinplot(infdates)
-title("Infection dates")
+violinplot(infdates,ylim=c(-3,5),ylab="date")
+title("Infection dates posterior")
 points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
+mtext(3, text="red = actual date")
 
 plot(param$step, param$p_accept_Tinf, type="l",main="acceptance Tinf",ylim=c(0,1))
 

@@ -298,7 +298,8 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
 /* MOVE VALUES OF PI */
-void move_pi(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mcmc_param *mcmcPar, gsl_rng *rng){
+void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
+    int i;
     double logRatio=0.0;
 
     /* GENERATE CANDIDATE VALUE FOR PI */
@@ -306,14 +307,17 @@ void move_pi(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mc
     /* 	tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi); */
     /* } while(tempPar->pi < 0.0); /\* avoid negative values *\/ */
     tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi);
-    if(tempPar->pi < 0.0) {
-	tempPar->pi = 0.0;
+    /* limit unobserved cases to 90% (i.e. 10% observed cases - should suck big time)*/
+    if(tempPar->pi < 0.1) {
+	tempPar->pi = 0.1;
     } else if(tempPar->pi > 1.0) tempPar->pi = 1.0;
 
 
     /* ACCEPT / REJECT */
-    logRatio += loglikelihood_all(dat, dnainfo, tempPar);
-    logRatio -= loglikelihood_all(dat, dnainfo, currentPar);
+    /* pi only impacts the prior of kappa_i (but for all 'i') */
+    for(i=0;i<dat->n;i++){
+	logRatio += logprior_kappa_i(i,tempPar) - logprior_kappa_i(i,currentPar);
+    }
     logRatio += logprior_pi(tempPar);
     logRatio -= logprior_pi(currentPar);
 
