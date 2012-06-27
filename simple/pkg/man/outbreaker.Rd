@@ -89,7 +89,7 @@ plot(param$step, param[,4], type="l", main="p accept gamma",ylim=c(0,1))
 
 ## check kappa
 library(UsingR)
-kappa <- tail(res[,17:22],round(nrow(res)/2))
+kappa <- tail(res[,18:23],round(nrow(res)/2))
 apply(kappa,2,mean)
 violinplot(kappa)
 title("kappa")
@@ -97,14 +97,14 @@ title("kappa")
 
 ## check alpha
 f1 <- function(x) {table(x)/length(x)}
-alpha <- tail(res[,11:16],round(nrow(res)/2))
+alpha <- tail(res[,12:17],round(nrow(res)/2))
 apply(alpha,2,f1)
 
 assign <- sapply(apply(alpha,2,f1),function(e) names(e)[which.max(e)])
 assign # this should be 3-1-4-0-3-5
 
 ## check infection dates
-infdates <- tail(res[,5:10],round(nrow(res)/2))
+infdates <- tail(res[,6:11],round(nrow(res)/2))
 violinplot(infdates)
 title("Infection dates")
 points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
