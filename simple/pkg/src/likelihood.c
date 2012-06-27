@@ -18,9 +18,10 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     double out=0.0;
 
 
-    /* IF ANCESTOR UNKNOWN, ONLY COMPUTE PROBA OF SAMPLING TIME */
+    /* IF ANCESTOR UNKNOWN, RETURN 0.0 */
     if(ances < 0){
 	return 0.0;
+	/* ONLY COMPUTE PROBA OF SAMPLING TIME */
 	/* out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1)); */
 	/* filter_logprob(&out); */
 	/* return out; */

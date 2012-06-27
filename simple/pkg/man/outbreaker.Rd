@@ -77,14 +77,14 @@ legend("topright",fill=c("blue","red"),leg=c("transition","transversion"), title
 plot(density(res$mu1[-(1:100)]),main="mu1 posterior")
 plot(density(res$mu2[-(1:100)]),main="mu2 posterior")
 
-matplot(param$step, param[,3], type="l", main="p accept mu")
+plot(param$step, param[,3], type="l", main="p accept mu",ylim=c(0,1))
 
 
 ## check gamma
 plot(res$step,res$gamma,type="l", main="gamma")
 plot(density(tail(res$gamma,round(nrow(res)/2))),main="gamma")
 
-matplot(param$step, param[,4], type="l", main="p accept gamma")
+plot(param$step, param[,4], type="l", main="p accept gamma",ylim=c(0,1))
 
 
 ## check kappa
@@ -108,6 +108,8 @@ infdates <- tail(res[,5:10],round(nrow(res)/2))
 violinplot(infdates)
 title("Infection dates")
 points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
+
+plot(param$step, param$p_accept_Tinf, type="l",main="acceptance Tinf",ylim=c(0,1))
 
 
 ## check mcmc param

@@ -105,6 +105,7 @@ void init_mcmc_param(mcmc_param *in, data *dat){
     /* in->sigma_mu1 = 0.000001; */
     in->sigma_mu1 = 0.0001;
     in->sigma_gamma = 1;
+    in->lambda_Tinf = 1;
 
     /* FILL IN VECTOR OF ALL INDICES */
     for(i=0;i<N;i++) in->all_idx->values[i] = i;
