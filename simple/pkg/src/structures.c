@@ -107,7 +107,7 @@ gentime *alloc_gentime(int maxK, int trunc){
     out->maxK = maxK>0 ? maxK : 1;
 
     /* allocate vector of densities */
-    out->dens = alloc_mat_double(out->maxK, out->trunc*out->maxK);
+    out->dens = alloc_mat_double(out->maxK, out->trunc*(out->maxK+2)); /* +2 to be on the safe side */
 
     /* return */
     return out;

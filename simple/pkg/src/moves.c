@@ -137,7 +137,10 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 
 	/* move i-th Tinf */
 	tempPar->Tinf->values[toMove] += gsl_rng_uniform(rng) >= 0.5 ? 1 : -1;
+	/* constraint: Tinf_i <= t_i */
 	if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
+	/* constraint: Tinf_i >= -trunc */
+	if(vec_int_i(tempPar->Tinf,toMove) < -gen->trunc) tempPar->Tinf->values[toMove] = -gen->trunc;
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood (no priors for Tinf) */
