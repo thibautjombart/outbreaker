@@ -18,28 +18,27 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     double out=0.0;
 
 
-    /* IF ANCESTOR UNKNOWN, RETURN LOG(1) = 0 */
-    if(ances < 0) return 0.0;
-
+    /* IF ANCESTOR UNKNOWN, ONLY COMPUTE PROBA OF SAMPLING TIME */
+    if(ances < 0){
+	return 0.0;
+	/* out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1)); */
+	/* filter_logprob(&out); */
+	/* return out; */
+    }
 
     /* GENETIC LIKELIHOOD */
     /* dpois(0,0) returns -NaN, not 1! */
     if(mat_int_ij(dnainfo->nbcommon, i, ances)>0){
 	/* transitions */
-	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
-
 	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1));
 
 	/* transversions */
-	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
-
 	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1));
     }
 
 
     /* EPIDEMIOLOGICAL LIKELIHOOD */
     /* likelihood of collection date */
-    /* printf("\ncollec date: %.10f\n", log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1))); */
     out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
 
     /* likelihood of infection time */
