@@ -56,40 +56,40 @@ gen[6,c(256,503,504)] <- c('a','g','g')
 dates <- c(4,6,2,0,4,6)
 
 ## density function
-wdens <- c(0.5,0.5,2,0.2,0)
+wdens <- c(0.5,1,2,1,0)
 
 ## shit density function
 ##wdens <- c(1,1,1,1,1)
 
 ## run outbreaker
-system.time(outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000, init.tree="star",quiet=TRUE))
+res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000, init.tree="star",quiet=TRUE)
 
 
-## read chains outputs
-res <- read.table("output.txt",header=TRUE)
+## read outputs
+chains <- res$chains
 param <- read.table("mcmcOutput.txt",header=TRUE)
 
 ## check mu1/mu2
-matplot(res$step, res[,2:3], type="l", col=c("blue","red"), lty=1, ylim=c(0,0.003))
+matplot(chains$step, chains[,2:3], type="l", col=c("blue","red"), lty=1, ylim=c(0,0.003))
 abline(h=c(0.001,0.002), col=c("blue","red"), lty=2)
 legend("topright",fill=c("blue","red"),leg=c("transition","transversion"), title="mutation rates")
 
-plot(density(res$mu1[-(1:100)]),main="mu1 posterior")
-plot(density(res$mu2[-(1:100)]),main="mu2 posterior")
+plot(density(chains$mu1[-(1:100)]),main="mu1 posterior")
+plot(density(chains$mu2[-(1:100)]),main="mu2 posterior")
 
 plot(param$step, param$p_accept_mu1, type="l", main="p accept mu",ylim=c(0,1))
 
 
 ## check gamma
-plot(res$step,res$gamma,type="l", main="gamma")
-plot(density(tail(res$gamma,round(nrow(res)/2))),main="gamma")
+plot(chains$step,chains$gamma,type="l", main="gamma")
+plot(density(tail(chains$gamma,round(nrow(chains)/2))),main="gamma")
 
 plot(param$step, param$p_accept_gamma, type="l", main="p accept gamma",ylim=c(0,1))
 
 
 ## check kappa
 library(UsingR)
-kappa <- tail(res[,18:23],round(nrow(res)/2))
+kappa <- tail(chains[,18:23],round(nrow(chains)/2))
 apply(kappa,2,mean)
 violinplot(kappa)
 title("kappa posterior")
@@ -97,14 +97,14 @@ title("kappa posterior")
 
 ## check alpha
 f1 <- function(x) {table(x)/length(x)}
-alpha <- tail(res[,12:17],round(nrow(res)/2))
+alpha <- tail(chains[,12:17],round(nrow(chains)/2))
 apply(alpha,2,f1)
 
 assign <- sapply(apply(alpha,2,f1),function(e) names(e)[which.max(e)])
 assign # this should be 3-1-4-0-3-5
 
 ## check infection dates
-infdates <- tail(res[,6:11],round(nrow(res)/2))
+infdates <- tail(chains[,6:11],round(nrow(chains)/2))
 violinplot(infdates,ylim=c(-3,5),ylab="date")
 title("Infection dates posterior")
 points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
@@ -117,5 +117,10 @@ plot(param$step, param$p_accept_Tinf, type="l",main="acceptance Tinf",ylim=c(0,1
 head(param,50)
 tail(param,10)
 
+
+## plot results ##
+x <- get.TTree.simple(res)
+x
+plot(x, main="Reconstructed outbreak")
 
 }
