@@ -20,7 +20,7 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
 		  double *gentimeDens, int *wTrunc, 
 		  int *ances, int *nIter, int *outputEvery, int *tuneEvery, 
-		  double *pi_param1, double *pi_param2, int *quiet){
+		  double *pi_param1, double *pi_param2, int *quiet, int *vecDist){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
     gsl_rng *rng;
@@ -29,6 +29,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     param *par;
     dna_dist * dnainfo;
     mcmc_param * mcmcPar;
+    int i,j, counter;
 
     double logPrior, logLike, logPost;
 
@@ -89,6 +90,15 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, "output.txt", "mcmcOutput.txt", *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+
+
+    /* FILL IN GENETIC DISTANCE VECTOR */
+    counter = 0;
+    for(i=0;i<(dat->n-1);i++){
+	for(j=i+1;j<dat->n;j++){
+	    vecDist[counter++] = mat_int_ij(dnainfo->transi,i,j) + mat_int_ij(dnainfo->transv,i,j);
+	}
+    }
 
 
     /* FREE MEMORY */
