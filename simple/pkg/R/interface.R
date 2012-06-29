@@ -5,7 +5,7 @@
 
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star"),
-                       n.iter=1e5, sample.every=1000, tune.every=1000,
+                       n.iter=1e5, sample.every=1000, tune.every=200,
                        pi.param1=10, pi.param2=1, quiet=FALSE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
@@ -94,13 +94,17 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 
     ## create empty output vector for genetic distances ##
     dna.dist <- integer(n.ind*(n.ind-1)/2)
+    stopTuneAt <- integer(1)
 
-    D <- .C("R_outbreaker",
+    temp <- .C("R_outbreaker",
        dnaraw, dates, n.ind, n.nucl,
        w.dens, w.trunc,
        ances, n.iter, sample.every, tune.every, pi.param1, pi.param2, quiet,
-       dna.dist,
-       PACKAGE="outbreaker")[[14]]
+       dna.dist, stopTuneAt,
+       PACKAGE="outbreaker")
+
+    D <- temp[[14]]
+    stopTuneAt <- temp[[15]]
 
     cat("\nComputations finished.\n\n")
 
@@ -114,7 +118,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     ## BUILD OUTPUT ##
     chains <- read.table("output.txt",header=TRUE)
     call <- match.call()
-    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, call=call)
+    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt, call=call)
 
     return(res)
 }

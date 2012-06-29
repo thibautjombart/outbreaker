@@ -56,7 +56,7 @@ gen[6,c(256,503,504)] <- c('a','g','g')
 dates <- c(4,6,2,0,4,6)
 
 ## density function
-wdens <- c(0.5,1,2,1,0)
+wdens <- c(0.05,1,2,1,0)
 
 ## shit density function
 ##wdens <- c(1,1,1,1,1)

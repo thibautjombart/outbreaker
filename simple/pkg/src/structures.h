@@ -78,6 +78,8 @@ typedef struct{
     vec_int *all_idx; /* vector of integers 0:(n-1) */
     vec_int *candid_ances; /* vector of candidate ancestors used to move alpha_i */
     int n_like_zero; /* number of times likelihood was zero */
+    bool tune_all, tune_mu1, tune_gamma, tune_pi; /* logical indicating whether these proposals should be tuned */
+    int step_notune; /* step at which all tuning stopped */
 } mcmc_param;
 
 
