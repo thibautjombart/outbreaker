@@ -87,7 +87,7 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
-    fprintf(file,"\t%.15f", mcmcPar->lambda_Tinf);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
 }
 
@@ -131,7 +131,11 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
     /* acceptable zone: 35-45% acceptance */
     if(paccept<0.35) {
 	in->sigma_mu1 /= 1.5;
-    } else if (paccept>0.45) in->sigma_mu1 *= 1.5;
+    } else if (paccept>0.45) {
+	in->sigma_mu1 *= 1.5;
+    } else {
+	in->tune_mu1 = FALSE;
+    }
 }
 
 
@@ -143,7 +147,11 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
     /* acceptable zone: 35-45% acceptance */
     if(paccept<0.35) {
 	in->sigma_gamma /= 1.5;
-    } else if (paccept>0.45) in->sigma_gamma *= 1.5;
+    } else if (paccept>0.45) {
+	in->sigma_gamma *= 1.5;
+    } else {
+	in->tune_gamma = FALSE;
+    }
 }
 
 
@@ -155,7 +163,11 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
     /* acceptable zone: 35-45% acceptance */
     if(paccept<0.35) {
 	in->sigma_pi /= 1.5;
-    } else if (paccept>0.45) in->sigma_pi *= 1.5;
+    } else if (paccept>0.45) {
+	in->sigma_pi *= 1.5;
+    } else {
+	in->tune_pi = FALSE;
+    }
 }
 
 
@@ -211,7 +223,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\t\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tlambda_Tinf\tn_like_zero");
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
@@ -236,6 +248,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     param *tempPar = alloc_param(dat->n);
     copy_param(par,tempPar);
 
+    mcmcPar->step_notune = nIter;
 
     /* RUN NITER CHAINS */
     for(i=2;i<=nIter;i++){
@@ -245,10 +258,15 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
 
 	/* TUNING */
-	if(i % tuneEvery == 0){
+	if(i % tuneEvery == 0 && mcmcPar->tune_all){
 	    tune_mu1(mcmcPar,rng);
 	    tune_gamma(mcmcPar,rng);
 	    tune_pi(mcmcPar,rng);
+	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi;
+	    if(!mcmcPar->tune_all) {
+		mcmcPar->step_notune = i;
+		printf("\nStopped tuning at chain %d\n",i);fflush(stdout);
+	    }
 	}
 
 	/* MOVEMENTS */

@@ -293,6 +293,11 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_accept_kappa = 0;
     out->n_reject_kappa = 0;
     out->n_like_zero = 0;
+    out->tune_all = TRUE;
+    out->tune_mu1 = TRUE;
+    out->tune_gamma = TRUE;
+    out->tune_pi = TRUE;
+    out->step_notune = -1;
 
     /* FILL IN DOUBLES */
     out->sigma_mu1 = 0.0;
@@ -354,6 +359,12 @@ void print_mcmc_param(mcmc_param *in){
 
     printf("\nVector of candidate ancestors:\n");
     print_vec_int(in->candid_ances);
+
+    printf("\nTuned parameters:");
+    if(in->tune_mu1) printf("mu1 ");
+    if(in->tune_gamma) printf("gamma ");
+    if(in->tune_pi) printf("pi ");
+    printf("\nTuning stopped at step %d\n", in->step_notune);
 
     fflush(stdout);
 } /* end print_mcmc_param */
