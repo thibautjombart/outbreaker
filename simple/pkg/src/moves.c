@@ -51,7 +51,9 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     double logRatio=0.0;
 
     /* GENERATE CANDIDATE VALUE FOR MU1 ACCORDING TO LOGNORMAL DISTRIBUTION */
-    tempPar->mu1 = currentPar->mu1 * gsl_ran_lognormal(rng,0,mcmcPar->sigma_mu1);
+    tempPar->mu1 = gsl_ran_lognormal(rng,log(currentPar->mu1),mcmcPar->sigma_mu1);
+    /* which should be the same as:
+    tempPar->mu1 = currentPar->mu1 * gsl_ran_lognormal(rng,0,mcmcPar->sigma_mu1); */
 
     /* other possibility for proposal */
     /*tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1);
@@ -94,7 +96,9 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
     double logRatio=0.0;
 
     /* GENERATE CANDIDATE VALUE FOR GAMMA ACCORDING TO LOGNORMAL DISTRIBUTION */
-      tempPar->gamma = currentPar->gamma * gsl_ran_lognormal(rng,0,mcmcPar->sigma_gamma);
+    tempPar->gamma = gsl_ran_lognormal(rng,log(currentPar->gamma),mcmcPar->sigma_gamma);
+    /* which should be the same as:
+    tempPar->gamma = currentPar->gamma * gsl_ran_lognormal(rng,0,mcmcPar->sigma_gamma); */
 
       /* other possibility for proposal */
       /* tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma);
@@ -333,7 +337,9 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
     /* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*/
     do
     {
-    	tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi);
+    	tempPar->pi = gsl_ran_lognormal(rng,log(currentPar->pi),mcmcPar->sigma_pi);
+    	/* which should be the same as:
+    	tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi); */
     }while(tempPar->pi>1);
 
     /* other possibility for proposal */
