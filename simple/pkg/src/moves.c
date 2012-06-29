@@ -50,11 +50,12 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mcmc_param *mcmcPar, gsl_rng *rng){
     double logRatio=0.0;
 
-    /* GENERATE CANDIDATE VALUE FOR MU1 */
-    /* change proposal to logNormal */
-    tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1);
-    if(tempPar->mu1 < 0.0) tempPar->mu1 = 0.0;
+    /* GENERATE CANDIDATE VALUE FOR MU1 ACCORDING TO LOGNORMAL DISTRIBUTION */
+    tempPar->mu1 = currentPar->mu1 * gsl_ran_lognormal(rng,0,mcmcPar->sigma_mu1);
 
+    /* other possibility for proposal */
+    /*tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1);
+    if(tempPar->mu1 < 0.0) tempPar->mu1 = 0.0;*/
 
     /* ACCEPT / REJECT */
     /* only likelihood as priors are flat for mu1 */
@@ -62,8 +63,8 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
     logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
 
-    /* ANNE: add correction (MH) for lognormal proposal */
-
+    /* add correction (MH) for lognormal proposal */
+    logRatio += log(tempPar->mu1) - log(currentPar->mu1);
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
@@ -92,18 +93,20 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
 void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mcmc_param *mcmcPar, gsl_rng *rng){
     double logRatio=0.0;
 
-    /* GENERATE CANDIDATE VALUE FOR GAMMA */
-    /* change proposal to logNormal */
-    tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma);
-    if(tempPar->gamma < 0.0) tempPar->gamma = 0.0;
+    /* GENERATE CANDIDATE VALUE FOR GAMMA ACCORDING TO LOGNORMAL DISTRIBUTION */
+      tempPar->gamma = currentPar->gamma * gsl_ran_lognormal(rng,0,mcmcPar->sigma_gamma);
 
+      /* other possibility for proposal */
+      /* tempPar->gamma += gsl_ran_gaussian(rng, mcmcPar->sigma_gamma);
+    if(tempPar->gamma < 0.0) tempPar->gamma = 0.0;*/
 
     /* ACCEPT / REJECT */
     /* compute only genetic part as the epi part is unchanged */
     logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
     logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
  
-   /* ANNE: add correction (MH) for lognormal proposal */
+   /* add correction (MH) for lognormal proposal */
+    logRatio += log(tempPar->gamma) - log(currentPar->gamma);
 
     /* compute the priors */
     logRatio += logprior_gamma(tempPar);
@@ -324,16 +327,21 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
     int i;
     double logRatio=0.0;
+    double QCur, QTemp;
 
     /* GENERATE CANDIDATE VALUE FOR PI */
-    /* HERE REPLACE WITH TRUNCATED LOGNORMAL */
+    /* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*/
+    do
+    {
+    	tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi);
+    }while(tempPar->pi>1);
 
-    tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi);
-    /* limit unobserved cases to 90% (i.e. 10% observed cases - should suck big time)*/
+    /* other possibility for proposal */
+    /*tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi);
+    // limit unobserved cases to 90% (i.e. 10% observed cases - should suck big time)
     if(tempPar->pi < 0.1) {
 	tempPar->pi = 0.1;
-    } else if(tempPar->pi > 1.0) tempPar->pi = 1.0;
-
+    } else if(tempPar->pi > 1.0) tempPar->pi = 1.0;*/
 
     /* ACCEPT / REJECT */
     /* pi only impacts the prior of kappa_i (but for all 'i') */
@@ -343,7 +351,11 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
     logRatio += logprior_pi(tempPar);
     logRatio -= logprior_pi(currentPar);
 
-    /* ANNE ADD CORRECTION FOR MH */
+    /* ADD CORRECTION FOR MH truncated lognormal */
+    QCur = gsl_cdf_gaussian_P(-log(currentPar->pi),mcmcPar->sigma_pi);
+    QTemp = gsl_cdf_gaussian_P(-log(tempPar->pi),mcmcPar->sigma_pi);
+    logRatio +=  log(tempPar->pi) - log(currentPar->pi); /* correction for lognormal */
+    logRatio +=   log(QCur) - log(QTemp); /* correction for truncation (no values >1) */
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
