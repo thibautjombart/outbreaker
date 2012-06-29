@@ -71,6 +71,7 @@ double logprior_all(param *par){
     /* out += logprior_pi(par); */
     out += logprior_mu1();
     out += logprior_gamma(par);
+    out += logprior_pi(par);
 
     filter_logprob(&out);
 

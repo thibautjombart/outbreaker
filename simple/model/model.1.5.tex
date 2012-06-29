@@ -189,13 +189,16 @@ The likelihood can be decomposed as (hyperparameter $\pi$ is dropped as it only 
 \begin{eqnarray}
 & & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}|  w,  \alpha, \kappa, \mu_1, \gamma) \\
 & = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf} | \{s_k, t_k, T_k^{inf} \}_{(k=1,\ldots,i-1)}, w,  \alpha, \kappa, \mu_1, \gamma) 
-  \times p(s_1, t_1, T_1^{inf})\\
+  \times p(s_1, t_1, T_1^{inf}|w)\\
 & = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) 
-  \times p(s_1, t_1, T_1^{inf})
+  \times p(s_1, t_1 , T_1^{inf}|w)\\
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) 
+  \times p(t_1 | T_1^{inf},w) p(T_1^{inf}) p(s_1) 
 \end{eqnarray}
 
 
-The term $p(s_1, t_1, T_1^{inf})$ is the probability of the data of the first case, treated as a constant.
+$p(t_1 | T_1^{inf},w)$ is the probability of the first collection time given the first infection time. 
+The term $p(T_1^{inf}) p(s_1)$ is the probability of the first infection date and of the first sequence, treated as a constant.
 This will need to be modified if we explicitely model infections from outside the system.
 The term for case $i$ ($i=2,\ldots,n$) is:
 \begin{equation}

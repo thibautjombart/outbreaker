@@ -282,7 +282,6 @@ mcmc_param *alloc_mcmc_param(int n){
 
 
     /* FILL OUT INTEGERS */
-    out->n_reject = 0;
     out->n_accept_mu1 = 0;
     out->n_reject_mu1 = 0;
     out->n_accept_gamma = 0;
@@ -293,7 +292,6 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_reject_alpha = 0;
     out->n_accept_kappa = 0;
     out->n_reject_kappa = 0;
-    out->n_accept = 0;
     out->n_like_zero = 0;
 
     /* FILL IN DOUBLES */
@@ -331,8 +329,6 @@ void print_mcmc_param(mcmc_param *in){
     printf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     printf("\nnb moves for alpha: %d",in->n_move_alpha);
     printf("\nnb moves for kappa: %d",in->n_move_kappa);
-
-    printf("\nglobal nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept, in->n_reject, (double) in->n_accept / in->n_reject);
 
     printf("\nmu1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_mu1, in->n_reject_mu1, (double) in->n_accept_mu1 / in->n_reject_mu1);
 
