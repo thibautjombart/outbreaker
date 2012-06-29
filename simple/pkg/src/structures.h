@@ -61,7 +61,6 @@ typedef struct{
 
 /* mcmc_param: contains parameters of mcmc */
 typedef struct{
-    int n_accept, n_reject; /* global accept/reject*/
     int n_accept_mu1, n_reject_mu1; /* accept/reject for mu1 */
     int n_accept_gamma, n_reject_gamma; /* accept/reject for gamma */
     int n_accept_pi, n_reject_pi; /* accept/reject for pi */

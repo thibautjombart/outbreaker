@@ -77,7 +77,6 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
     /* OUTPUT TO FILE */
     fprintf(file,"\n%d\t", step);
-    fprintf(file,"\t%.lf", update_get_accept_rate(mcmcPar));
     temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_gamma / (double) (mcmcPar->n_accept_gamma + mcmcPar->n_reject_gamma);
@@ -101,9 +100,10 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
    UPDATE GLOBAL ACCEPTANCE RATE
 */
 double update_get_accept_rate(mcmc_param *in){
-    in->n_accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_pi + in->n_accept_Tinf + in->n_accept_alpha + in->n_accept_kappa;
-    in->n_reject = in->n_reject_mu1 + in->n_reject_gamma + in->n_reject_pi + in->n_reject_Tinf + in->n_reject_alpha + in->n_reject_kappa;
-    return (double) in->n_accept / (double) (in->n_accept+in->n_reject);
+    int accept, reject;
+    accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_pi + in->n_accept_Tinf + in->n_accept_alpha + in->n_accept_kappa;
+    reject = in->n_reject_mu1 + in->n_reject_gamma + in->n_reject_pi + in->n_reject_Tinf + in->n_reject_alpha + in->n_reject_kappa;
+    return (double) accept / (double) (accept+reject);
 }
 
 
@@ -210,7 +210,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
+    fprintf(mcmcFile, "step\t\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tlambda_Tinf\tn_like_zero");
 
 
@@ -248,7 +248,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	if(i % tuneEvery == 0){
 	    tune_mu1(mcmcPar,rng);
 	    tune_gamma(mcmcPar,rng);
-	    /* tune_Tinf(mcmcPar,rng); */
+	    tune_pi(mcmcPar,rng);
 	}
 
 	/* MOVEMENTS */

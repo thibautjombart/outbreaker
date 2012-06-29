@@ -32,8 +32,8 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 
     ## dates in numeric ##
     if(is.numeric(dates)){
+        if(sum(abs(dates-round(dates))>1e-15)) warning("dates have been rounded to nearest integers")
         dates <- as.integer(round(dates))
-        warning("dates have been rounded to nearest integers")
     }
 
     ## if dates are in POSIXct format ##
