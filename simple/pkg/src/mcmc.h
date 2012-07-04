@@ -10,11 +10,9 @@
   ===================
 */
 
-void fprint_param(FILE *file, param *par, int step, bool quiet);
+void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param *par, int step, bool quiet);
 
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step);
-
-double update_get_accept_rate(mcmc_param *in);
 
 
 

@@ -19,23 +19,34 @@
 */
 
 /* parameters are output in the following order:
-   iteration-number, mu1, mu2, gamma, Tinf_1, ..., Tinf_n, alpha_1, ..., alpha_n, kappa_1, ..., kappa_n
+   chain-number, posterior, likelihood, prior, mu1, mu2, gamma, pi, Tinf_1, ..., Tinf_n, alpha_1, ..., alpha_n, kappa_1, ..., kappa_n
 
    notes:
    - the output text file ("output.txt") is tab-delimited
    - indices are provided from 1 to n, i.e. not as C indices (from 0 to n-1)
 */
 
-void fprint_param(FILE *file, param *par, int step, bool quiet){
+void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param *par, int step, bool quiet){
     int i;
+    double like, prior;
 
     /* OUTPUT TO FILE */
-    fprintf(file,"\n%d\t", step);
+    /* chain number */
+    fprintf(file,"\n%d", step);
+
+    /* posterior, likelihood, prior */
+    like = loglikelihood_all(dat, dnainfo, gen, par);
+    prior = logprior_all(par);
+    fprintf(file,"\t%.15f", like + prior);
+    fprintf(file,"\t%.15f", like);
+    fprintf(file,"\t%.15f", prior);
+
+    /* parameters */
     fprintf(file,"\t%.15f", par->mu1);
     fprintf(file,"\t%.15f", par->mu1 * par->gamma);
     fprintf(file,"\t%.15f", par->gamma);
     fprintf(file,"\t%.15f", par->pi);
-   for(i=0;i<par->Tinf->length;i++){
+    for(i=0;i<par->Tinf->length;i++){
 	fprintf(file, "\t%d", vec_int_i(par->Tinf, i));
     }
     for(i=0;i<par->Tinf->length;i++){
@@ -48,6 +59,9 @@ void fprint_param(FILE *file, param *par, int step, bool quiet){
     /* OUTPUT TO SCREEN */
     if(!quiet){
 	printf("\n%d\t", step);
+	fprintf(file,"\t%.15f", like*prior);
+	fprintf(file,"\t%.15f", like);
+	fprintf(file,"\t%.15f", prior);
 	printf("\t%.15f", par->mu1);
 	printf("\t%.15f", par->mu1 * par->gamma);
 	printf("\t%.15f", par->gamma);
@@ -62,7 +76,7 @@ void fprint_param(FILE *file, param *par, int step, bool quiet){
 	    printf("\t%d", vec_int_i(par->kappa, i));
 	}
     }
-} /* end fprint_param */
+} /* end fprint_chains */
 
 
 
@@ -96,22 +110,6 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
 
 
 
-/*
-   UPDATE GLOBAL ACCEPTANCE RATE
-*/
-double update_get_accept_rate(mcmc_param *in){
-    int accept, reject;
-    accept = in->n_accept_mu1 + in->n_accept_gamma + in->n_accept_pi + in->n_accept_Tinf + in->n_accept_alpha + in->n_accept_kappa;
-    reject = in->n_reject_mu1 + in->n_reject_gamma + in->n_reject_pi + in->n_reject_Tinf + in->n_reject_alpha + in->n_reject_kappa;
-    return (double) accept / (double) (accept+reject);
-}
-
-
-
-
-
-
-
 
 
 
@@ -133,7 +131,7 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
 	in->sigma_mu1 /= 1.5;
 	in->n_accept_mu1 = 0;
 	in->n_reject_mu1 = 0;
-    } else if (paccept>0.55) {
+    } else if (paccept>0.50) {
 	in->sigma_mu1 *= 1.5;
 	in->n_accept_mu1 = 0;
 	in->n_reject_mu1 = 0;
@@ -160,7 +158,7 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
 	in->sigma_gamma /= 1.5;
 	in->n_accept_gamma = 0;
 	in->n_reject_gamma = 0;
-    } else if (paccept>0.55) {
+    } else if (paccept>0.50) {
 	in->sigma_gamma *= 1.5;
 	in->n_accept_gamma = 0;
 	in->n_reject_gamma = 0;
@@ -187,7 +185,7 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
 	in->sigma_pi /= 1.5;
 	in->n_accept_pi = 0;
 	in->n_reject_pi = 0;
-    } else if (paccept>0.55) {
+    } else if (paccept>0.50) {
 	in->sigma_pi *= 1.5;
 	in->n_accept_pi = 0;
 	in->n_reject_pi = 0;
@@ -242,7 +240,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* OUTPUT TO OUTFILE - HEADER */
-    fprintf(file, "step\tmu1\tmu2\tgamma\tpi");
+    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
     }
@@ -254,13 +252,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\t\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	printf("step\tmu1\tmu2\tgamma");
+	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
 	for(i=0;i<dat->n;i++){
 	    printf("\tTinf_%d", i+1);
 	}
@@ -272,7 +270,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
     }
 
-    fprint_param(file, par, 1, quiet);
+    fprint_chains(file, dat, dnainfo, gen, par, 1, quiet);
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
 
 
@@ -285,7 +283,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     /* RUN NITER CHAINS */
     for(i=2;i<=nIter;i++){
 	if(i % outEvery == 0){
-	    fprint_param(file, par, i, quiet);
+	    fprint_chains(file, dat, dnainfo, gen, par, i, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
 	}
 
@@ -323,8 +321,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move kappa_i*/
 	move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
-	/* /\* move alpha and kappa *\/ */
-	/* move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
     }
 
 
