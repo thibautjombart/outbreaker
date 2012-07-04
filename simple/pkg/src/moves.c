@@ -48,16 +48,18 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 /* MOVE VALUES OF MU1 */
 void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, mcmc_param *mcmcPar, gsl_rng *rng){
-    double logRatio=0.0;
+    double logRatio=0.0, QCur, QTemp;
 
     /* GENERATE CANDIDATE VALUE FOR MU1 ACCORDING TO LOGNORMAL DISTRIBUTION */
-    tempPar->mu1 = gsl_ran_lognormal(rng,log(currentPar->mu1),mcmcPar->sigma_mu1);
+    do{
+	tempPar->mu1 = gsl_ran_lognormal(rng,log(currentPar->mu1),mcmcPar->sigma_mu1);
+    } while(tempPar->mu1>1.0);
     /* which should be the same as:
     tempPar->mu1 = currentPar->mu1 * gsl_ran_lognormal(rng,0,mcmcPar->sigma_mu1); */
 
     /* other possibility for proposal */
-    /*tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1);
-    if(tempPar->mu1 < 0.0) tempPar->mu1 = 0.0;*/
+    /* tempPar->mu1 += gsl_ran_gaussian(rng, mcmcPar->sigma_mu1); */
+    /* if(tempPar->mu1 < 0.0) tempPar->mu1 = 0.0;*/
 
     /* ACCEPT / REJECT */
     /* only likelihood as priors are flat for mu1 */
@@ -65,8 +67,12 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
     logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
 
-    /* add correction (MH) for lognormal proposal */
-    logRatio += log(tempPar->mu1) - log(currentPar->mu1);
+    /* ADD CORRECTION FOR MH truncated lognormal */
+    QCur = gsl_cdf_gaussian_P(-log(currentPar->mu1),mcmcPar->sigma_mu1);
+    QTemp = gsl_cdf_gaussian_P(-log(tempPar->mu1),mcmcPar->sigma_mu1);
+    logRatio +=  log(tempPar->mu1) - log(currentPar->mu1); /* correction for lognormal */
+    logRatio +=   log(QCur) - log(QTemp); /* correction for truncation (no values >1) */
+
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
@@ -227,8 +233,8 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 		/* GET MOST LIKELY KAPPA_I */
 		/* T: Tinf_i - Tinf_ances */
-		T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
-		tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen);
+		/* T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]); */
+		/* tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen); */
 
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
@@ -338,24 +344,23 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
     do
     {
     	tempPar->pi = gsl_ran_lognormal(rng,log(currentPar->pi),mcmcPar->sigma_pi);
-    	/* which should be the same as:
-    	tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi); */
-    }while(tempPar->pi>1);
+    	/* which should be the same as: */
+	/* tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi); */
+    } while(tempPar->pi>1.0);
 
     /* other possibility for proposal */
-    /*tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi);
-    // limit unobserved cases to 90% (i.e. 10% observed cases - should suck big time)
-    if(tempPar->pi < 0.1) {
-	tempPar->pi = 0.1;
-    } else if(tempPar->pi > 1.0) tempPar->pi = 1.0;*/
+    /* tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi); */
+    /*  /\* limit unobserved cases to 90% (i.e. 10% observed cases - should suck big time) *\/ */
+    /* if(tempPar->pi < 0.1) { */
+    /* 	tempPar->pi = 0.1; */
+    /* } else if(tempPar->pi > 1.0) tempPar->pi = 1.0; */
 
     /* ACCEPT / REJECT */
     /* pi only impacts the prior of kappa_i (but for all 'i') */
     for(i=0;i<dat->n;i++){
 	logRatio += logprior_kappa_i(i,tempPar) - logprior_kappa_i(i,currentPar);
     }
-    logRatio += logprior_pi(tempPar);
-    logRatio -= logprior_pi(currentPar);
+    logRatio += logprior_pi(tempPar) - logprior_pi(currentPar);
 
     /* ADD CORRECTION FOR MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->pi),mcmcPar->sigma_pi);
