@@ -56,7 +56,8 @@ gen[6,c(256,503,504)] <- c('a','g','g')
 dates <- c(4,6,2,0,4,6)
 
 ## density function
-wdens <- c(0.1,1,2,1,0)
+wdens <- c(0,1,2,1,0.1,0.1,0.1,0.1,0.1,0.1,0.1)
+wdens <- c(0.01,1,2,1,0.1,0)
 
 ## shit density function
 ##wdens <- c(1,1,1,1,1)
@@ -68,6 +69,19 @@ res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000, i
 ## read outputs
 chains <- res$chains
 param <- read.table("mcmcOutput.txt",header=TRUE)
+
+
+## posterior ##
+plot(chains$step, chains$post, type="l",main="posterior")
+plot(chains$step[-(1:100)], chains$post[-(1:100)], type="l",main="posterior (removed first 100 values")
+plot(density(chains$post[-(1:200)]),main="posterior density")
+points(chains$post[-(1:200)],rep(0,length(chains$post[-(1:200)])),pch="|")
+
+## likelihood ##
+plot(chains$step, chains$like, type="l",main="likelihood")
+plot(chains$step[-(1:100)], chains$like[-(1:100)], type="l",main="likelihood (removed first 100 values")
+plot(density(chains$like[-(1:200)]),main="likelihood density")
+points(chains$like[-(1:200)],rep(0,length(chains$like[-(1:200)])),pch="|")
 
 ## check mu1/mu2
 matplot(chains$step, chains[,c("mu1","mu2")], type="l", col=c("blue","red"), lty=1, ylim=c(0,0.005))
@@ -120,16 +134,6 @@ plot(param$step, param$p_accept_Tinf, type="l",main="acceptance Tinf",ylim=c(0,1
 head(param,50)
 tail(param,10)
 
-
-## posterior ##
-plot(chains$step, chains$post, type="l",main="posterior")
-plot(chains$step[-(1:100)], chains$post[-(1:100)], type="l",main="posterior (removed first 100 values")
-plot(density(chains$post[-(1:200)]),main="posterior density")
-
-## likelihood ##
-plot(chains$step, chains$like, type="l",main="likelihood")
-plot(chains$step[-(1:100)], chains$like[-(1:100)], type="l",main="likelihood (removed first 100 values")
-plot(density(chains$like[-(1:200)]),main="likelihood density")
 
 
 ## plot results ##
