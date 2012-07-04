@@ -233,8 +233,8 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 		/* GET MOST LIKELY KAPPA_I */
 		/* T: Tinf_i - Tinf_ances */
-		/* T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]); */
-		/* tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen); */
+		T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
+		tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen);
 
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
