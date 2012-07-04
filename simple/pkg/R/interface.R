@@ -5,7 +5,7 @@
 
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star"),
-                       n.iter=1e5, sample.every=1000, tune.every=200,
+                       n.iter=1e5, sample.every=1000, tune.every=1000,
                        pi.param1=10, pi.param2=1, quiet=FALSE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")

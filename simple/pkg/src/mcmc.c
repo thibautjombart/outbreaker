@@ -129,14 +129,25 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
     double paccept = (double) in->n_accept_mu1 / (double) (in->n_accept_mu1 + in->n_reject_mu1);
 
     /* acceptable zone: 35-45% acceptance */
-    if(paccept<0.35) {
+    if(paccept<0.25) {
 	in->sigma_mu1 /= 1.5;
-    } else if (paccept>0.45) {
+	in->n_accept_mu1 = 0;
+	in->n_reject_mu1 = 0;
+    } else if (paccept>0.55) {
 	in->sigma_mu1 *= 1.5;
+	in->n_accept_mu1 = 0;
+	in->n_reject_mu1 = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_mu1>1.0){
+	    in->sigma_mu1 = 1.0;
+	    in->tune_mu1 = FALSE;
+	}
     } else {
 	in->tune_mu1 = FALSE;
     }
 }
+
+
 
 
 
@@ -145,14 +156,25 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
     double paccept = (double) in->n_accept_gamma / (double) (in->n_accept_gamma + in->n_reject_gamma);
 
     /* acceptable zone: 35-45% acceptance */
-    if(paccept<0.35) {
+    if(paccept<0.25) {
 	in->sigma_gamma /= 1.5;
-    } else if (paccept>0.45) {
+	in->n_accept_gamma = 0;
+	in->n_reject_gamma = 0;
+    } else if (paccept>0.55) {
 	in->sigma_gamma *= 1.5;
+	in->n_accept_gamma = 0;
+	in->n_reject_gamma = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_gamma>1.0){
+	    in->sigma_gamma = 1.0;
+	    in->tune_gamma = FALSE;
+	}
     } else {
 	in->tune_gamma = FALSE;
     }
 }
+
+
 
 
 
@@ -161,14 +183,24 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
     double paccept = (double) in->n_accept_pi / (double) (in->n_accept_pi + in->n_reject_pi);
 
     /* acceptable zone: 35-45% acceptance */
-    if(paccept<0.35) {
+    if(paccept<0.25) {
 	in->sigma_pi /= 1.5;
-    } else if (paccept>0.45) {
+	in->n_accept_pi = 0;
+	in->n_reject_pi = 0;
+    } else if (paccept>0.55) {
 	in->sigma_pi *= 1.5;
+	in->n_accept_pi = 0;
+	in->n_reject_pi = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_pi>1.0){
+	    in->sigma_pi = 1.0;
+	    in->tune_pi = FALSE;
+	}
     } else {
 	in->tune_pi = FALSE;
     }
 }
+
 
 
 
@@ -277,7 +309,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
 	/* move pi */
-	move_pi(par, tempPar, dat, mcmcPar, rng);
+	/* move_pi(par, tempPar, dat, mcmcPar, rng); */
 
 	/* move Tinf */
 	/* printf("\nTinf:"); */
