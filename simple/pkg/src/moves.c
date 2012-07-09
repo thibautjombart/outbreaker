@@ -38,6 +38,43 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 
+/* SAMPLE KAPPA_I USING PROB */
+/* sample a value of kappa_i according to respective proba */
+/* of kappa_1, kappa_2, ..., kappa_maxK */
+int choose_kappa_i(int T, gentime *gen, gsl_rng *rng){
+    int i;
+    double probVec[gen->maxK], sumKappa=0.0, cumSum=0.0, rnd;
+
+    /* STANDARDIZE P(KAPPA_I) TO GET PROBA */
+    for(i=1;i<gen->maxK;i++){
+	probVec[i-1] = gentime_dens(gen, T, i);
+	sumKappa += probVec[i-1];
+    }
+
+    for(i=0;i<gen->maxK;i++){
+	probVec[i] = probVec[i]/sumKappa;
+    }
+
+
+    /* CHOOSE KAPPA_I WITH PROBA PROBVEC[I] */
+    rnd = gsl_rng_uniform(rng);
+    i=0;
+    do{
+	cumSum += probVec[i++];
+    } while(rnd>=cumSum);
+
+    if(i>gen->maxK){
+	fprintf(stderr, "\n[in: moves.c->choose_kappa_i]\nInvalid value of kappa_i returned (%d, but maxK=%d).\n", i, gen->maxK);
+	exit(1);
+    }
+
+    return i;
+} /* end choose_kappa_i */
+
+
+
+
+
 
 
 /*
@@ -231,10 +268,10 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	    /* PROCEED ONLY IF ALPHA HAS CHANGED */
 	    if(vec_int_i(tempPar->alpha,toMove) != vec_int_i(currentPar->alpha,toMove)){
 
-		/* GET MOST LIKELY KAPPA_I */
+		/* MOVE KAPPA_I - MULTINOMIAL */
 		/* T: Tinf_i - Tinf_ances */
 		T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
-		tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen);
+		tempPar->kappa->values[toMove] = choose_kappa_i(T, gen, rng);
 
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
