@@ -1,12 +1,11 @@
 
-#######################
-## auxiliary functions
-#######################
-
+##################
+## main functions
+##################
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star"),
-                       n.iter=1e5, sample.every=1000, tune.every=1000,
-                       pi.param1=10, pi.param2=1, quiet=FALSE){
+                       n.iter=2e6, sample.every=1000, tune.every=1000,
+                       pi.param1=10, pi.param2=1, quiet=TRUE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -121,22 +120,52 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt, call=call)
 
     return(res)
-}
+} # end outbreaker
 
 
 
-## ##################
-## ## test functions
-## ##################
-## testrawtoC <- function(x){
-##     if(!require(ape)) stop("ape package is required.")
 
-##     n <- as.integer(nrow(x))
-##     p <- as.integer(ncol(x))
-##     x <- unlist(as.list(x),use.names=FALSE)
 
-##     .C("DNAbin2list_dnaseq", x, n, p, PACKAGE="outbreaker")
-##     return()
-## }
 
+
+
+
+###############################
+## version with multiple runs
+###############################
+outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=NULL,
+                                dna, dates, w.dens, w.trunc=length(w.dens),
+                                init.tree=c("seqTrack","random","star"),
+                                n.iter=2e6, sample.every=1000, tune.every=1000,
+                                pi.param1=10, pi.param2=1, quiet=TRUE){
+
+    ## SOME CHECKS ##
+    if(multicore && !require(multicore)) stop("multicore package requested but not installed")
+    if(multicore && is.null(n.cores)){
+        n.cores <- parallel:::detectCores()
+    }
+
+
+    ## COMPUTATIONS ##
+    if(multicore){
+        res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
+                                                                 init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
+                                                                 tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
+                                                                 quiet=TRUE),
+                        mc.cores=n.cores, mc.silent=TRUE, mc.cleanup=TRUE, mc.preschedule=FALSE)
+    } else {
+         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
+                                                                 init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
+                                                                 tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
+                                                         quiet=TRUE))
+    }
+
+
+    ## NAME RUNS ##
+    names(res) <- paste("run",1:n.runs,paste="")
+
+
+    ## RETURN RESULTS ##
+    return(res)
+} # end outbreaker.parallel
 
