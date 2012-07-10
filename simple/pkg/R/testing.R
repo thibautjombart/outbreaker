@@ -10,9 +10,11 @@ test.outbreaker <- function(){
 
     dat <- haploGen(seq.length=1e4, mu=1e-4, t.max=20,
                    gen.time=genTime,
-                   repro=function(){round(rnorm(1,2,1))}, max.nb.haplo=1e5,
+                   repro=function(){round(rpois(1,1.5))}, max.nb.haplo=1e5,
                    geo.sim=FALSE)
 
-    outbreaker()
+    plot(as.igraph(dat))
+
+    res <- outbreaker(dna=dat$seq, dates=dat$dates, w.dens=w, n.iter=10e6, quiet=TRUE)
 
 }
