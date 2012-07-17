@@ -52,3 +52,40 @@ get.TTree.simple <- function(x, burnin=1e5){
     class(res) <- "TTree.simple"
     return(res)
 } # end get.TTree.simple
+
+
+
+
+
+
+#############
+## as.igraph
+#############
+as.igraph.TTree.simple <- function(x, arr.width=c("proba", "mutations"), ...){
+    if(!require(igraph)) stop("package igraph is required for this operation")
+    arr.width <- match.arg(arr.width)
+
+     ## GET DAG ##
+    from <- x$ances
+    to <- x$idx
+    isNotNA <- !is.na(from) & !is.na(to)
+    dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
+    vnames <- as.character(unique(unlist(dat)))
+    out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$inf.dates[vnames]))
+
+    ## SET WEIGHTS ##
+    E(out)$weight <- x$nb.mut[isNotNA]
+
+    ## SET ARROW WIDTH ##
+    if(arr.width=="proba"){
+        E(out)$width <- round(4*x$p.ances)+1
+    }
+
+    if(arr.width=="mutations"){
+        temp <- max(E(out)$weight) - E(out)$weight
+        temp <- temp/max(temp) * 4
+        E(out)$width <- round(temp)+1
+    }
+    
+    return(out)
+}
