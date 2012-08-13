@@ -200,11 +200,13 @@ as.igraph.simOutbreak <- function(x, ...){
     if(!require(ape)) stop("package ape is required for this operation")
 
     ## GET DAG ##
-    from <- x$ances
-    to <- x$id
-    isNotNA <- !is.na(from) & !is.na(to)
+    from.old <- x$ances
+    to.old <- x$id
+    isNotNA <- !is.na(from.old) & !is.na(to.old)
+    vnames <- sort(unique(c(from.old,to.old)))
+    from <- match(from.old,vnames)
+    to <- match(to.old,vnames)
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
-    vnames <- as.character(unique(unlist(dat)))
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$dates[vnames]))
 
     ## SET WEIGHTS ##
