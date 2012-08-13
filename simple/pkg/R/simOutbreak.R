@@ -219,8 +219,11 @@ as.igraph.simOutbreak <- function(x, ...){
     temp <- temp/max(temp) * 4
     E(out)$width <- round(temp)+1
 
+    ## SET LAYOUT ##
+    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$dates, maxx=x$dates))
+
     return(out)
-}
+} # end as.igraph.simOutbreak
 
 
 
@@ -231,12 +234,14 @@ as.igraph.simOutbreak <- function(x, ...){
 ####################
 ## plot.simOutbreak
 ####################
-plot.simOutbreak <- function(x, y=NULL, cex=1, col=num2col(x$dates), label=x$id,
+plot.simOutbreak <- function(x, y=NULL, cex=1, label=x$id,
                              edge.col=num2col(x$nmut[-1], col.pal=seasun), lwd=1, ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(ape)) stop("package ape is required for this operation")
-    plot(as.igraph(x), vertex.size=15*cex, vertex.color=col, vertex.label=label,
-         vertex.label.cex=cex, edge.color=edge.col, edge.width=lwd, ...)
+    g <- as.igraph(x)
+    plot(g, vertex.size=15*cex, vertex.label=label,
+         vertex.label.cex=cex, edge.color=edge.col, edge.width=lwd,
+         layout=attr(g,"layout"),...)
 } # end plot.simOutbreak
 
 
