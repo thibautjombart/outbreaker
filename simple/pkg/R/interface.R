@@ -3,7 +3,7 @@
 ## main functions
 ##################
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
-                       init.tree=c("seqTrack","random","star"),
+                       init.tree=c("seqTrack","random","star","none"),
                        n.iter=2e6, sample.every=1000, tune.every=1000,
                        pi.param1=10, pi.param2=1, quiet=TRUE){
     ## CHECKS ##
@@ -20,6 +20,9 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         ances <- as.integer(init.tree-1) # translate indices on C scale (0:(n-1))
     }
     if(length(w.dens)<w.trunc) stop(paste("incomplete w.dens: values needed from t=0 to t=", w.trunc-1,sep=""))
+    w[1] <- 0 # force w_0 = 0
+    w[w<0] <- 0
+    if(sum(w) < 1e-14) stop("w.dens is zero everywhere")
 
 
     ## PROCESS INPUTS ##
@@ -80,6 +83,11 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
             ances <- rep(which.min(dates), length(dates))
             ances[dates==min(dates)] <- 0
             ances <- as.integer(ances-1) # put on C scale
+        }
+
+        ## no ancestry init
+        if(init.tree=="none"){
+            ances <- as.integer(rep(-1,length(dates)))
         }
     }
 
