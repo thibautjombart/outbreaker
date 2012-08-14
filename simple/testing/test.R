@@ -1,13 +1,13 @@
 
 ## load packages ##
-library(outbreaker)
 library(adegenet)
+library(outbreaker)
 
 ## get simulated outbreak, >=15 cases
 dat <- list(n=0)
 
 ## curve of infectiousness from t=0 to...
-w.dens <- c(0,1,2,1)
+w.dens <- c(0,1,2,1,seq(.001,.0001,le=20))
 
 while(dat$n<15){
     dat <- simOutbreak(R0=2, infec.curve=w.dens, n.hosts=30,tree=FALSE)
@@ -22,12 +22,15 @@ dat
 plot(dat, main="simulated outbreak")
 
 ## make collection dates
-collecDates <- dat$dates + sample(0:3, dat$n, prob=w.dens, replace=TRUE)
+collecDates <- dat$dates + sample(0:(length(w.dens)-1), dat$n, prob=w.dens, replace=TRUE)
 
 
 ## try to reconstruct outbreak using outbreaker ##
 ## ! THIS TAKES TIME ! ##
 res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree="seqTrack", n.iter=3e5)
+
+## sanity check: test init with exact tree
+res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=1)
 
 
 ## check that we got off zero likelihood

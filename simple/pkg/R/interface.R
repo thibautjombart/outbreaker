@@ -20,9 +20,9 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         ances <- as.integer(init.tree-1) # translate indices on C scale (0:(n-1))
     }
     if(length(w.dens)<w.trunc) stop(paste("incomplete w.dens: values needed from t=0 to t=", w.trunc-1,sep=""))
-    w[1] <- 0 # force w_0 = 0
-    w[w<0] <- 0
-    if(sum(w) < 1e-14) stop("w.dens is zero everywhere")
+    w.dens[1] <- 0 # force w_0 = 0
+    w.dens[w.dens<0] <- 0
+    if(sum(w.dens) < 1e-14) stop("w.dens is zero everywhere")
 
 
     ## PROCESS INPUTS ##

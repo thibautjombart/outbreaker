@@ -95,10 +95,17 @@ double loglikelihood_gen_i(int i, dna_dist *dnainfo, param *par){
 /* LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
 double loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
     int i;
-    double out=0.0;
+    double out=0.0, temp;
 
     for(i=0;i<dat->n;i++){
 	out += loglikelihood_i(i, dat, dnainfo, gen, par);
+	/* debugging version */
+	temp=loglikelihood_i(i, dat, dnainfo, gen, par);
+	filter_logprob(&temp);
+	if(temp <= NEARMINUSINF){
+	    printf("\nlikelihood for ancestry of %d is zero", i);
+	    fflush(stdout);
+	}
     }
 
     filter_logprob(&out);
