@@ -141,15 +141,18 @@ double logposterior_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
 
 
 /* CHECK LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
-void check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
+/* returns TRUE if all is fine, FALSE if likelihood is zero */
+bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
     int i, ances;
     double temp;
+    bool out=TRUE;
 
     for(i=0;i<dat->n;i++){
 	temp = loglikelihood_i(i, dat, dnainfo, gen, par);
 	filter_logprob(&temp);
 
 	if(temp <= NEARMINUSINF){
+	    out = FALSE;
 	    printf("\nlikelihood for ancestry of %d is zero", i+1);
 	    fflush(stdout);
 
@@ -182,7 +185,8 @@ void check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 
 	}
     }
-
+    
+    return out;
 } /* end check_loglikelihood_all */
 
 
