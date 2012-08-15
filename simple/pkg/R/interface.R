@@ -57,7 +57,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 
     ## get temporal ordering constraint:
     ## canBeAnces[i,j] is 'i' can be ancestor of 'j'
-    canBeAnces <- outer(dates,dates,FUN="<=")
+    canBeAnces <- outer(dates,dates,FUN="<") # strict < is needed as we impose w(0)=0
     diag(canBeAnces) <- FALSE
 
     if(is.character(init.tree)){
@@ -66,7 +66,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
             D <- as.matrix(dist.dna(dna, model="TN93"))
             D[!canBeAnces] <- 1e15
             ances <- apply(D,2,which.min)-1 # -1 for compatibility with C
-            ances[which.min(dates)] <- -1 # unknown ancestor
+            ances[dates==min(dates)] <- -1 # unknown ancestor
             ances <- as.integer(ances)
         }
 
