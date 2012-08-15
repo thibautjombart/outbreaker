@@ -33,6 +33,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     double logPrior, logLike, logPost;
 
+    bool checkLike;
+
+
     /* INITIALIZE RNG */
     rng = create_gsl_rng(time(NULL));
 
@@ -88,10 +91,17 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* OPTIONAL - fix some parameters */
 
-    /* COMPUTE LIKELIHOOD */
-    logLike = loglikelihood_all(dat, dnainfo, gen, par);
-    printf("\n\n = Initial Log-likelihood value (before mcmc call): %f\n", logLike);
-    fflush(stdout);
+    /* /\* COMPUTE LIKELIHOOD *\/ */
+    /* logLike = loglikelihood_all(dat, dnainfo, gen, par); */
+    /* printf("\n\n = Initial Log-likelihood value (before mcmc call): %f\n", logLike); */
+    /* fflush(stdout); */
+
+    /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
+    checkLike = check_loglikelihood_all(dat, dnainfo, gen, par);
+    if(!checkLike){
+	fprintf(stderr, "\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
+	fflush(stdout);
+    }
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, "output.txt", "mcmcOutput.txt", *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);

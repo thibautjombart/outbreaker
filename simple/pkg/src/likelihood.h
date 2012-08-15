@@ -12,6 +12,6 @@ double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par);
 
 double logposterior_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par);
 
-void check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par);
+bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par);
 
 #endif
