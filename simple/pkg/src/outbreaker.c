@@ -71,9 +71,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
    /*  logPrior = logprior_all(par); */
    /*  printf("\nPrior value (log): %.10f\n", logPrior); */
 
-   /* /\* COMPUTE LIKELIHOOD *\/ */
-   /*  logLike = loglikelihood_all(dat, dnainfo, gen, par); */
-   /*  printf("\nLog-likelihood value: %.10f\n", logLike); */
+   /* COMPUTE LIKELIHOOD */
+    logLike = loglikelihood_all(dat, dnainfo, gen, par);
+    printf("\n\n = Initial Log-likelihood value: %f\n", logLike);
 
    /*  /\* COMPUTE POSTERIOR *\/ */
    /*  logPost = logposterior_all(dat, dnainfo, gen, par); */

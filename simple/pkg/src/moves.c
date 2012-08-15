@@ -286,7 +286,7 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		/* if p(new/old) > 1, accept new */
 		if(logRatio>=0.0) {
 		    /* debugging */
-		    printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
+		    printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
 		    fflush(stdout);
 
 		    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
@@ -295,7 +295,7 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		} else { /* else accept new with proba (new/old) */
 		    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 			/* debugging */
-			printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
+			printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
 			fflush(stdout);
 
 			currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
