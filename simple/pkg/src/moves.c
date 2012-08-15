@@ -232,7 +232,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 /* MOVE VALUES OF ALPHA */
 void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
     int i, j, oldestDate = 0, nCandidates=0, toMove=0, T;
-    double logRatio = 0.0;
+    double logRatio = 0.0, ll1, ll2;
 
 
     /* DETERMINE WHICH alpha_i TO MOVE */
@@ -276,17 +276,28 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
 		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar);
+		/* debugging */
+		ll1=loglikelihood_all(dat, dnainfo, gen, currentPar);
+		ll2=loglikelihood_all(dat, dnainfo, gen, tempPar);
 
 		/* compute the priors */
 		logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar);
 
 		/* if p(new/old) > 1, accept new */
 		if(logRatio>=0.0) {
+		    /* debugging */
+		    printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
+		    fflush(stdout);
+
 		    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 		    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
 		    mcmcPar->n_accept_alpha += 1;
 		} else { /* else accept new with proba (new/old) */
 		    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+			/* debugging */
+			printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
+			fflush(stdout);
+
 			currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 			currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
 			mcmcPar->n_accept_alpha += 1;
