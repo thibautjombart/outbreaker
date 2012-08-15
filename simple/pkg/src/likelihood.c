@@ -94,17 +94,45 @@ double loglikelihood_gen_i(int i, dna_dist *dnainfo, param *par){
 
 /* LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
 double loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
-    int i;
+    int i, ances;
     double out=0.0, temp;
 
     for(i=0;i<dat->n;i++){
 	out += loglikelihood_i(i, dat, dnainfo, gen, par);
 	/* debugging version */
-	temp=loglikelihood_i(i, dat, dnainfo, gen, par);
+	temp = loglikelihood_i(i, dat, dnainfo, gen, par);
 	filter_logprob(&temp);
 	if(temp <= NEARMINUSINF){
-	    printf("\nlikelihood for ancestry of %d is zero", i);
+	    printf("\nlikelihood for ancestry of %d is zero", i+1);
 	    fflush(stdout);
+
+	    /* display genetic likelihood */
+	    temp = loglikelihood_gen_i(i, dnainfo, par);
+	    filter_logprob(&temp);
+	    printf("\ni=%d: genetic like is: %f", i+1, temp);
+	    fflush(stdout);
+	    if(temp <= NEARMINUSINF) printf(" (i.e., zero)");
+	    fflush(stdout);
+
+	    /* display epi likelihood */
+	    ances=vec_int_i(par->alpha,i);
+
+	    /* likelihood of collection date */
+	    temp = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
+	    filter_logprob(&temp);
+	    printf("\ni=%d: collection date like is: %f", i+1, temp);
+	    fflush(stdout);
+	    if(temp <= NEARMINUSINF) printf(" (i.e., zero)");
+	    fflush(stdout);
+
+	    /* likelihood of infection time */
+	    temp = log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
+	    filter_logprob(&temp);
+	    printf("\ni=%d: infection time like is: %f", i+1, temp);
+	    fflush(stdout);
+	    if(temp <= NEARMINUSINF) printf(" (i.e., zero)");
+	    fflush(stdout);
+
 	}
     }
 
