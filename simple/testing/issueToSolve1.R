@@ -8,8 +8,11 @@ library(ape)
 load("Robjects/data1.RData")
 
 
-## run outbreaker with only a few iterations
-res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=1)
+## run outbreaker with only a few iterations, use collection dates
+#res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=1)
+
+## run outbreaker with only a few iterations, use actual infection dates
+res <- outbreaker(dna=dat$dna, dates=dat$dates+2, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=5)
 
 res$chain$post
 

@@ -71,9 +71,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
    /*  logPrior = logprior_all(par); */
    /*  printf("\nPrior value (log): %.10f\n", logPrior); */
 
-   /* COMPUTE LIKELIHOOD */
-    logLike = loglikelihood_all(dat, dnainfo, gen, par);
-    printf("\n\n = Initial Log-likelihood value: %f\n", logLike);
+   /* /\* COMPUTE LIKELIHOOD *\/ */
+   /*  logLike = loglikelihood_all(dat, dnainfo, gen, par); */
+   /*  printf("\n\n = Initial Log-likelihood value: %f\n", logLike); */
 
    /*  /\* COMPUTE POSTERIOR *\/ */
    /*  logPost = logposterior_all(dat, dnainfo, gen, par); */
@@ -87,6 +87,11 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     /* mcmcPar->sigma_mu1 = *sigma_mu1; */
 
     /* OPTIONAL - fix some parameters */
+
+    /* COMPUTE LIKELIHOOD */
+    logLike = loglikelihood_all(dat, dnainfo, gen, par);
+    printf("\n\n = Initial Log-likelihood value (before mcmc call): %f\n", logLike);
+    fflush(stdout);
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, "output.txt", "mcmcOutput.txt", *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
