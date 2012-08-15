@@ -282,6 +282,10 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* RUN NITER CHAINS */
     for(i=2;i<=nIter;i++){
+	/* debugging */
+	printf("\n\n = MCMC iteration %d =\n",i);
+	fflush(stdout);
+
 	if(i % outEvery == 0){
 	    fprint_chains(file, dat, dnainfo, gen, par, i, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
