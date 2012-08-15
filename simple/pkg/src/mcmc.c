@@ -308,6 +308,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	printf("\n\n = Initial Log-likelihood value (in mcmc, before movement): %f\n", logLike);
 	fflush(stdout);
 
+	check_loglikelihood_all(dat, dnainfo, gen, par);
+
 	/* MOVEMENTS */
 	/* move mu1 */
 	move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
@@ -328,7 +330,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move kappa_i*/
-	/* move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
+	move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
     }
 

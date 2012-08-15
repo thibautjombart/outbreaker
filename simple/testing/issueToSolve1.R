@@ -8,11 +8,17 @@ library(ape)
 load("Robjects/data1.RData")
 
 
-## run outbreaker with only a few iterations, use collection dates
-#res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=1)
-
-## run outbreaker with only a few iterations, use actual infection dates
+## init with actual tree and non-random, most likely collection dates
 res <- outbreaker(dna=dat$dna, dates=dat$dates+2, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=5)
+
+
+## init with actual tree and random collection dates
+res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree=dat$ances, n.iter=5)
+
+
+## init with seqTrack and random collection dates
+res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w.dens+.001, init.tree="seqTrack", n.iter=5)
+
 
 res$chain$post
 
