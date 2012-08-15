@@ -89,13 +89,6 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     /* SET MCMC_PARAM */
     /* mcmcPar->sigma_mu1 = *sigma_mu1; */
 
-    /* OPTIONAL - fix some parameters */
-
-    /* /\* COMPUTE LIKELIHOOD *\/ */
-    /* logLike = loglikelihood_all(dat, dnainfo, gen, par); */
-    /* printf("\n\n = Initial Log-likelihood value (before mcmc call): %f\n", logLike); */
-    /* fflush(stdout); */
-
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnainfo, gen, par);
     if(!checkLike){
