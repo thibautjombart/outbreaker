@@ -76,7 +76,6 @@ The model is inspired by \textit{SeqTrack} in some of the key assumptions it mak
 \item within-host evolution is considered negligible and mutations only occur during transmission events
 \item a single pathogen is considered for each patient (no multi-infection, no within-host diversity)
 \item reverse mutations are negligible
-\item the probability of observing infection from the outside is constant over time
 % \item all cases but the first one trace their ancestry back within the system studied (i.e., no infection from the outside except for the initial case)
 \end{itemize}
 
@@ -156,14 +155,14 @@ We use the following functions of the data/augmented data:
 This model assumes that cases are ordered by increasing infection dates ($T_i^{inf} \leq T_{i+1}^{inf}$).
 Parameters are indicated using greek letters:
 \begin{itemize}
-         \item $\alpha_i$: the closest observed ancestor of $i$ in the infection tree; $\alpha_i=j$ indicates that $j$ has infected $i$, either directly, or with one or several intermediate generations, which were unobserved. 
-We note the tree topology $\alpha = \{\alpha_2, \ldots, \alpha_n\}$.
+         \item $\alpha_i$: the closest observed ancestor of $i$ in the infection tree; $\alpha_i=j$ indicates that $j$ has infected $i$, either directly, or with one or several intermediate generations, which were unobserved. $\alpha_i=0$ indicates that the infection was imported from the outside (by definition,$\alpha_1=0$). 
+We note the tree topology $\alpha = \{\alpha_1, \ldots, \alpha_n\}$.
  	\item $\kappa_i$: an integer $\geq 1$ indicating how many generations separate $\alpha_i$ and $i$: $\kappa_i=1$ indicates that $\alpha_i$ infected $i$; $\kappa_i=2$ indicates that $\alpha_i$ has infected an unobserved individual, who has in turn infected $i$.
-We note $\kappa = \{\kappa_2, \ldots, \kappa_n\}$.
+We note $\kappa = \{\kappa_1, \ldots, \kappa_n\}$.
 	\item $\mu_1$: rates of transitions, given per site and per transmission event.
 	\item $\mu_2 $: rate of transversions, parametrised as $\mu_2 = \gamma \mu_1$ (with $\gamma \in \mathbb{R}_+$) to account for the correlation between the two rates.
 	\item $\pi$: an hyperparameter corresponding to the proportion of observed cases, used to define the priors of $\kappa_i$.
-	\item $\phi$: the probability that a case has been seeded by an external source.
+	\item $\phi$: an hyperparameter corresponding to the probability for an observed case to have been imported from the outside, used to define the priors on $\alpha_i$.
 \end{itemize}
 
 
@@ -187,32 +186,31 @@ The posterior distribution is proportional to the joint distribution:
 & = & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}| w,  \alpha, \kappa, \mu_1, \gamma, \pi, \phi) \times p( w,  \alpha, \kappa, \mu_1, \gamma, \pi, \phi)
 \end{eqnarray}
 where the first term is the likelihood of observed and augmented data, and the second, the prior.
-The likelihood can be decomposed as (hyperparameter $\pi$ is dropped as it only affects the likelihood through $\kappa$):
+The likelihood can be decomposed as (the hyperparameters $\pi$ and $\phi$ are dropped as they only affect the priors on $\kappa$ and $\alpha$):
 
 \begin{eqnarray}
-& & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}|  w,  \alpha, \kappa, \mu_1, \gamma, \phi) \\
-& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf} | \{s_k, t_k, T_k^{inf} \}_{(k=1,\ldots,i-1)}, w,  \alpha, \kappa, \mu_1, \gamma, \phi) 
-  \times p(s_1, t_1, T_1^{inf}|w, \phi)\\
-& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma, \phi) 
-  \times p(s_1, t_1 , T_1^{inf}|w, \phi)\\
-& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma, \phi) 
-  \times p(t_1 | T_1^{inf},w) p(T_1^{inf}) p(s_1) p(\phi)
+& & p(\{s_i, t_i, T_i^{inf}\}_{(i=1,\ldots,n)}|  w,  \alpha, \kappa, \mu_1, \gamma) \\
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf} | \{s_k, t_k, T_k^{inf} \}_{(k=1,\ldots,i-1)}, w,  \alpha, \kappa, \mu_1, \gamma) 
+  \times p(s_1, t_1, T_1^{inf} |w)\\
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) 
+  \times p(s_1, t_1 , T_1^{inf} |w)\\
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) 
+  \times p(t_1 | T_1^{inf},w) p(T_1^{inf}) p(s_1)
 \end{eqnarray}
 
 
-$p(t_1 | T_1^{inf},w)$ is the probability of the first collection time given the first infection time. 
+$p(t_1 | T_1^{inf},w)$ is the probability of the first collection time given the first infection time.
 The term $p(T_1^{inf}) p(s_1)$ is the probability of the first infection date and of the first sequence, treated as a constant.
-$p(\phi)$ is the probability of observing an index case.
 % This will need to be modified if we explicitely model infections from outside the system.
 The term for case $i$ ($i=2,\ldots,n$) is:
 \begin{equation}
- p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma, \phi)
+ p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma)
 \end{equation}
 which can be decomposed into:
 \begin{eqnarray}
-& & p(s_i | t_i, T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma, \phi) \nonumber \\
-& &  \times  p(t_i | T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma, \phi) \nonumber \\
-& & \times  p(T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma, \phi) \nonumber \\
+& & p(s_i | t_i, T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
+& &  \times  p(t_i | T_i^{inf}, s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
+& & \times  p(T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w,  \alpha_i, \kappa_i, \mu_1, \gamma) \nonumber \\
 % & & \times  p(\alpha_i, \kappa_i| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \alpha_i, \kappa_i, \mu_1, \gamma)  \\
 & = & 
 \underbrace{p(s_i | \alpha_i, s_{\alpha_i}, \kappa_i, \mu_1, \gamma)}_{\Omega_i^1} 
@@ -254,6 +252,8 @@ This is approximated by:
  \underbrace{\mathcal{P}\left(g(s_i,s_{\alpha_i}) | l(s_i,s_{\alpha_i}) \kappa_i \gamma \mu_1 \right)}_{\mbox{transversions}}
  \end{equation}
 where $\mathcal{P}(. | \lambda)$ is the density of a Poisson distribution of parameter $\lambda$.
+
+In the absence of genetic information (including external infections where $\alpha_i=0$), $\Omega_i^1 = 1$.
 ~\\
 
 
@@ -268,6 +268,11 @@ $\Omega_i^2$ is determined by the distribution of the generation time, and the d
 \end{eqnarray}
 where the first term is the likelihood of the collection date, and the second, the likelihood of the infection time.
 $w^{\left(k\right)} = \underbrace{w*w*\ldots*w}_{k \text{ times}} $, where $*$ denotes the convolution operator, defined, for two positive discrete distributions $a$ and $b$, by $\left(a*b\right)\left(t\right) = \sum_{u=0}^{t} a\left(t-u\right)b\left(u\right)$. 
+
+In the case of external infections ($\alpha_i=0$), $\Omega_i^2$ is simply computed as:
+\begin{eqnarray}
+\Omega_i^2 & = & p(t_i | T_i^{inf}, w) = f_w(t_i - T_i^{inf})
+\end{eqnarray}
 \\
 
 % 
@@ -333,8 +338,10 @@ $w^{\left(k\right)} = \underbrace{w*w*\ldots*w}_{k \text{ times}} $, where $*$ d
 For all model parameters, independent prior distributions have been chosen:
 \begin{itemize}
 	\item $p(w) = \mathbf{1}_{\{w=w_0\}}$: the distribution of the generation time will be fixed to a given distribution ($w_0$) by default; this can be parameterized later in a more complex model.
-	\item $p(\alpha_i) = \mathbf{1}_{\{k\neq i\}}\frac{1}{n-1}$.
-	\item $p(\kappa_i - 1) = \mathcal{NB}(1,1-\pi)$, the probability mass function of a negative binomial distribution counting the number of unobserved cases before one observed case; $1-\pi$ is the proportion of unobserved (unsampled) cases in the outbreak. If we assume that the entire outbreak has been sampled, $\pi=1$ and $p(\kappa_i) = \mathbf{1}_{\left\lbrace \kappa_i=1\right\rbrace}$. Otherwise, $\pi$ will be assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(4,3)$).
+	\item $p(\alpha_i) = \mathbf{1}_{\{k=0\}}\phi +  \mathbf{1}_{\{k\neq i, k>0\}}\frac{1-\phi}{n-1}$, where $\phi$ is the probability of cases imported from the outside. $\phi$ will be assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(1.5,10)$ to allow for around 10\% of external infections).
+% 	\item $p(\alpha_i = 0) = \phi$, by definition. For $\alpha_i>0$, $p(\alpha_i = k) = \mathbf{1}_{\{k\neq i\}}\frac{1-\phi}{n-1}$.
+% 	\item $p(\alpha_i) = \mathbf{1}_{\{k\neq i\}}\frac{1}{n-1}$.
+	\item $p(\kappa_i - 1) = \mathcal{NB}(1,1-\pi)$, the probability mass function of a negative binomial distribution counting the number of unobserved cases before one observed case; $1-\pi$ is the proportion of unobserved (unsampled) cases in the outbreak. If we assume that the entire outbreak has been sampled, $\pi=1$ and $p(\kappa_i) = \mathbf{1}_{\left\lbrace \kappa_i=1\right\rbrace}$. Otherwise, $\pi$ will be assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(10,1)$ for an a priori densely sampled outbreak).
 %       \kappa, \mu_1, \gamma uniform
 	\item $p(\mu_1) = Unif(0,1)$.
 	\item $p(\gamma) = log\mathcal{N}(1,1.25)$ where $log\mathcal{N}(\mu,\sigma)$ is the log-normal distribution with mean $\mu$ and standard deviation $\sigma$ (values are the default in BEAST).
