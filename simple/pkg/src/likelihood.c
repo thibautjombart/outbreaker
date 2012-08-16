@@ -18,7 +18,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     double out=0.0;
 
 
-    /* IF ANCESTOR UNKNOWN, RETURN 0.0 */
+    /* = EXTERNAL CASES = */
     if(ances < 0){
 	/* ONLY COMPUTE PROBA OF SAMPLING TIME */
 	out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
@@ -26,6 +26,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 	return out;
     }
 
+    /* = INTERNAL CASES = */
     /* GENETIC LIKELIHOOD */
     /* dpois(0,0) returns -NaN, not 1! */
     if(mat_int_ij(dnainfo->nbcommon, i, ances)>0){

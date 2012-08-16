@@ -10,6 +10,8 @@ double logprior_kappa_i(int i, param *par);
 
 double logprior_pi(param *par);
 
+double logprior_phi(param *par);
+
 double logprior_mu1();
 
 double logprior_gamma(param *par);

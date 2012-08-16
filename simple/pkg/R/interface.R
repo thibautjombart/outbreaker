@@ -5,7 +5,7 @@
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        n.iter=2e6, sample.every=1000, tune.every=1000,
-                       pi.param1=10, pi.param2=1, quiet=TRUE){
+                       pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,quiet=TRUE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -97,6 +97,8 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     tune.every <- as.integer(tune.every)
     pi.param1 <- as.double(pi.param1)
     pi.param2 <- as.double(pi.param2)
+    phi.param1 <- as.double(phi.param1)
+    phi.param2 <- as.double(phi.param2)
     quiet <- as.integer(quiet)
 
     ## create empty output vector for genetic distances ##
@@ -104,11 +106,12 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     stopTuneAt <- integer(1)
 
     temp <- .C("R_outbreaker",
-       dnaraw, dates, n.ind, n.nucl,
-       w.dens, w.trunc,
-       ances, n.iter, sample.every, tune.every, pi.param1, pi.param2, quiet,
-       dna.dist, stopTuneAt,
-       PACKAGE="outbreaker")
+               dnaraw, dates, n.ind, n.nucl,
+               w.dens, w.trunc,
+               ances, n.iter, sample.every, tune.every, pi.param1, pi.param2,
+               phi.param1, phi.param2, quiet,
+               dna.dist, stopTuneAt,
+               PACKAGE="outbreaker")
 
     D <- temp[[14]]
     stopTuneAt <- temp[[15]]
