@@ -18,15 +18,14 @@ void filter_logprob(double *in){
 */
 double logprior_alpha_i(int i, param *par){
     /* double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1.0/(par->n-1.0); */
-    switch(vec_int_i(par->alpha,i)){
-    case 0:
+    double out;
+    int ances = vec_int_i(par->alpha,i);
+    if(ances==0){ /* external infection */
 	out = par->phi;
-	break;
-    case i:
-	out = 0.0;
-	break;
-    default:
-	out =  (1.0 - par->phi)/(par->n-1.0);
+    } else if(ances==i){
+	out = 0.0; /* auto-infection (impossible) */
+    } else {
+	out =  (1.0 - par->phi)/(par->n - 1.0); /* 'regular' infection */
     }
 
     /* put on log scale, filter, return */
