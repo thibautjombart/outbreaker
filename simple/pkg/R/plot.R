@@ -1,5 +1,37 @@
-plot.TTree.simple <- function (x, y=NULL, col=NULL, bg="lightgrey", line.col="white", coef=1, max.arr=5,...) {
+#####################
+## plot.TTree.simple
+#####################
+
+plot.TTree.simple <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
+                              col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
+    if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
+    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+    if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
+
+    ## get graph ##
+    g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, col.pal=col.pal, annot=annot, sep=sep)
+
+     ## make plot ##
+    plot(g, layout=attr(g,"layout"), ...)
+
+    ## return graph invisibly ##
+    return(invisible(g))
+
+} # end plot.TTree.simple
+
+
+
+
+
+
+
+#############
+## epicurves
+#############
+epicurves <- function (x, col=NULL, bg="lightgrey", line.col="white", coef=1, max.arr=5,...) {
+    if(!require(adegenet)) stop("adegenet is required")
+    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
 
     ## GET USEFUL INFO ##
     N <- length(x$idx)
@@ -40,4 +72,4 @@ plot.TTree.simple <- function (x, y=NULL, col=NULL, bg="lightgrey", line.col="wh
     arr.w[arr.w<0.5] <- 0.5
     arrows(x$inf.date,x$ances, x$inf.dates, x$idx, angle=15, col=col[x$ances], lwd=arr.w)
 
-} # end plot.TTree.simple
+} # end epicurves

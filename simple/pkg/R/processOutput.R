@@ -61,9 +61,12 @@ get.TTree.simple <- function(x, burnin=1e5){
 #############
 ## as.igraph
 #############
-as.igraph.TTree.simple <- function(x, arr.width=c("proba", "mutations"), ...){
+as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
+                              col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
-    arr.width <- match.arg(arr.width)
+    if(!require(adegenet)) stop("adegenet is required")
+    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+    if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
      ## GET DAG ##
     from.old <- x$ances
@@ -79,24 +82,35 @@ as.igraph.TTree.simple <- function(x, arr.width=c("proba", "mutations"), ...){
     ## SET VARIOUS INFO ##
     E(out)$dist <- x$nb.mut[isNotNA]
     E(out)$prob <- x$p.ances[isNotNA]
-    E(out)$kappa <- x$n.gen[isNotNA]
+    E(out)$n.gen <- x$n.gen[isNotNA]
     E(out)$p.kappa <- x$p.gen[isNotNA]
 
-
-    ## SET ARROW WIDTH ##
-    if(arr.width=="proba"){
-        E(out)$width <- round(4*x$p.ances[isNotNA])+1
+   ## SET EDGE COLORS ##
+    if(is.null(col.pal)){
+        col.pal <- function(n){
+            return(grey(seq(0.75,0,length=n)))
+        }
     }
+    if(col.edge.by=="prob") edge.col <- num2col(E(out)$prob, col.pal=col.pal, x.min=0, x.max=1)
+    if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=col.pal, x.min=0, x.max=1)
+    if(col.edge.by=="n.gen") edge.col <- num2col(E(out)$n.gen, col.pal=col.pal, x.min=0, x.max=1)
 
-    if(arr.width=="mutations"){
-        temp <- max(E(out)$weight) - E(out)$weight
-        temp <- temp/max(temp) * 4
-        E(out)$width <- round(temp)+1
+    E(out)$color <- edge.col
+
+    ## SET EDGE LABELS ##
+    n.annot <- sum(annot %in% c("dist","n.gen","prob"))
+    lab <- ""
+    if(!is.null(annot) && n.annot>0){
+        if("dist" %in% annot) lab <- E(out)$dist
+        if("n.gen" %in% annot) lab <- paste(lab, E(out)$n.gen, sep=sep)
+        if("prob" %in% annot) lab <- paste(lab, round(E(out)$prob,2), sep=sep)
     }
+    lab <- sub(paste("^",sep,sep=""),"",lab)
+    E(out)$label <- lab
+
 
     ## SET LAYOUT ##
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$inf.dates, maxx=x$inf.dates))
-
 
     return(out)
 } # end as.igraph.TTree.simple
