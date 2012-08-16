@@ -405,12 +405,6 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
 	/* tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi); */
     } while(tempPar->pi>1.0);
 
-    /* other possibility for proposal */
-    /* tempPar->pi += gsl_ran_gaussian(rng, mcmcPar->sigma_pi); */
-    /*  /\* limit unobserved cases to 90% (i.e. 10% observed cases - should suck big time) *\/ */
-    /* if(tempPar->pi < 0.1) { */
-    /* 	tempPar->pi = 0.1; */
-    /* } else if(tempPar->pi > 1.0) tempPar->pi = 1.0; */
 
     /* ACCEPT / REJECT */
     /* pi only impacts the prior of kappa_i (but for all 'i') */
@@ -443,6 +437,69 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
     }
 
 } /* end move_pi */
+
+
+
+
+
+
+
+
+/* MOVE VALUES OF PHI */
+void move_phi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
+    int i;
+    double logRatio=0.0;
+    double QCur, QTemp;
+
+    /* GENERATE CANDIDATE VALUE FOR PHI */
+    /* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*/
+    do
+    {
+    	tempPar->phi = gsl_ran_lognormal(rng,log(currentPar->phi),mcmcPar->sigma_phi);
+    	/* which should be the same as: */
+	/* tempPar->phi = currentPar->phi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_phi); */
+    } while(tempPar->phi>1.0);
+
+
+    /* ACCEPT / REJECT */
+    /* phi only impacts the prior of kappa_i (but for all 'i') */
+    for(i=0;i<dat->n;i++){
+	logRatio += logprior_kappa_i(i,tempPar) - logprior_kappa_i(i,currentPar);
+    }
+    logRatio += logprior_phi(tempPar) - logprior_phi(currentPar);
+
+    /* ADD CORRECTION FOR MH truncated lognormal */
+    QCur = gsl_cdf_gaussian_P(-log(currentPar->phi),mcmcPar->sigma_phi);
+    QTemp = gsl_cdf_gaussian_P(-log(tempPar->phi),mcmcPar->sigma_phi);
+    logRatio +=  log(tempPar->phi) - log(currentPar->phi); /* correction for lognormal */
+    logRatio +=   log(QCur) - log(QTemp); /* correction for truncation (no values >1) */
+
+    /* if p(new/old) > 1, accept new */
+    if(logRatio>=0.0) {
+	currentPar->phi = tempPar->phi;
+	mcmcPar->n_accept_phi += 1;
+	/* printf("\nAccepting new value\n"); */
+    } else { /* else accept new with proba (new/old) */
+	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	    currentPar->phi = tempPar->phi;
+	    mcmcPar->n_accept_phi += 1;
+	    /* printf("\nAccepting new value\n"); */
+	} else { /* reject */
+	    tempPar->phi = currentPar->phi;
+	    mcmcPar->n_reject_phi += 1;
+	    /* printf("\nRejecting new value\n"); */
+	}
+    }
+
+} /* end move_phi */
+
+
+
+
+
+
+
+
 
 
 

@@ -54,6 +54,8 @@ typedef struct{
     double gamma; /* so that rate of transversions mu2 = gamma x mu1 */
     double pi; /* proportion of observed cases */
     double pi_param1, pi_param2; /* parameters of the Beta prior for pi */
+    double phi; /* proba of external case */
+    double phi_param1, phi_param2; /* parameters of the Beta prior for phi */
 } param;
 
 
@@ -64,6 +66,7 @@ typedef struct{
     int n_accept_mu1, n_reject_mu1; /* accept/reject for mu1 */
     int n_accept_gamma, n_reject_gamma; /* accept/reject for gamma */
     int n_accept_pi, n_reject_pi; /* accept/reject for pi */
+    int n_accept_phi, n_reject_phi; /* accept/reject for phi */
     int n_accept_Tinf, n_reject_Tinf; /* accept/reject for Tinf */
     int n_accept_alpha, n_reject_alpha; /* accept/reject for alpha */
     int n_accept_kappa, n_reject_kappa; /* accept/reject for kappa */
@@ -72,13 +75,14 @@ typedef struct{
     double sigma_gamma; /* sigma for normal proposal for gamma */
     double lambda_Tinf; /* lambda for Poisson movements of Tinf */
     double sigma_pi; /* sigma for normal proposal for pi */
+    double sigma_phi; /* sigma for normal proposal for phi */
     vec_int *idx_move_Tinf; /* vector of length n_move_Tinf giving indices of Tinf_i to move */
     vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
     vec_int *idx_move_kappa; /* vector of length n_move_kappa giving indices of kappa_i to move */
     vec_int *all_idx; /* vector of integers 0:(n-1) */
     vec_int *candid_ances; /* vector of candidate ancestors used to move alpha_i */
     int n_like_zero; /* number of times likelihood was zero */
-    bool tune_all, tune_mu1, tune_gamma, tune_pi; /* logical indicating whether these proposals should be tuned */
+    bool tune_all, tune_mu1, tune_gamma, tune_pi, tune_phi; /* logical indicating whether these proposals should be tuned */
     int step_notune; /* step at which all tuning stopped */
 } mcmc_param;
 

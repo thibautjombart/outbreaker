@@ -188,6 +188,9 @@ param *alloc_param(int n){
     out->pi = 1.0;
     out->pi_param1 = 0.0;
     out->pi_param2 = 0.0;
+    out->phi = 0.5;
+    out->phi_param1 = 0.0;
+    out->phi_param2 = 0.0;
 
     /* return */
     return out;
@@ -220,6 +223,10 @@ void print_param(param *in){
     printf("%.5f", in->pi);
     printf("\n= priors on pi (parameter of beta distribution) =\n");
     printf("%.5f  %.5f", in->pi_param1, in->pi_param2);
+    printf("\n= phi (proportion of external cases) =\n");
+    printf("%.5f", in->phi);
+    printf("\n= priors on phi (parameter of beta distribution) =\n");
+    printf("%.5f  %.5f", in->phi_param1, in->phi_param2);
     fflush(stdout);
 } /* end print_param*/
 
@@ -234,6 +241,9 @@ void copy_param(param *in, param *out){
     out->pi = in->pi;
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
+    out->phi = in->phi;
+    out->phi_param1 = in->phi_param1;
+    out->phi_param2 = in->phi_param2;
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
@@ -297,12 +307,14 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_mu1 = TRUE;
     out->tune_gamma = TRUE;
     out->tune_pi = TRUE;
+    out->tune_phi = TRUE;
     out->step_notune = -1;
 
     /* FILL IN DOUBLES */
     out->sigma_mu1 = 0.0;
     out->sigma_gamma = 0.0;
     out->sigma_pi = 0.0;
+    out->sigma_phi = 0.0;
     out->lambda_Tinf = 0.0;
 
 
@@ -330,6 +342,7 @@ void print_mcmc_param(mcmc_param *in){
     printf("\nsigma for mu1: %.10f",in->sigma_mu1);
     printf("\nsigma for gamma: %.10f",in->sigma_gamma);
     printf("\nsigma for pi: %.10f",in->sigma_pi);
+    printf("\nsigma for phi: %.10f",in->sigma_phi);
     printf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
     printf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     printf("\nnb moves for alpha: %d",in->n_move_alpha);
@@ -340,6 +353,8 @@ void print_mcmc_param(mcmc_param *in){
     printf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
 
     printf("\npi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_pi, in->n_reject_pi, (double) in->n_accept_pi / in->n_reject_pi);
+
+    printf("\nphi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_phi, in->n_reject_phi, (double) in->n_accept_phi / in->n_reject_phi);
 
     printf("\nTinf: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_Tinf, in->n_reject_Tinf, (double) in->n_accept_Tinf / in->n_reject_Tinf);
 
@@ -364,6 +379,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_mu1) printf("mu1 ");
     if(in->tune_gamma) printf("gamma ");
     if(in->tune_pi) printf("pi ");
+    if(in->tune_phi) printf("phi ");
     printf("\nTuning stopped at step %d\n", in->step_notune);
 
     fflush(stdout);

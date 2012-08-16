@@ -20,7 +20,8 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
 		  double *gentimeDens, int *wTrunc, 
 		  int *ances, int *nIter, int *outputEvery, int *tuneEvery, 
-		  double *pi_param1, double *pi_param2, int *quiet, int *vecDist, int *stepStopTune){
+		  double *pi_param1, double *pi_param2, double *phi_param1, double *phi_param2, 
+		  int *quiet, int *vecDist, int *stepStopTune){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
     gsl_rng *rng;

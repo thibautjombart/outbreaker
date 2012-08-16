@@ -19,7 +19,7 @@
 */
 
 /* parameters are output in the following order:
-   chain-number, posterior, likelihood, prior, mu1, mu2, gamma, pi, Tinf_1, ..., Tinf_n, alpha_1, ..., alpha_n, kappa_1, ..., kappa_n
+   chain-number, posterior, likelihood, prior, mu1, mu2, gamma, pi, phi, Tinf_1, ..., Tinf_n, alpha_1, ..., alpha_n, kappa_1, ..., kappa_n
 
    notes:
    - the output text file ("output.txt") is tab-delimited
@@ -46,6 +46,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
     fprintf(file,"\t%.15f", par->mu1 * par->gamma);
     fprintf(file,"\t%.15f", par->gamma);
     fprintf(file,"\t%.15f", par->pi);
+    fprintf(file,"\t%.15f", par->phi);
     for(i=0;i<par->Tinf->length;i++){
 	fprintf(file, "\t%d", vec_int_i(par->Tinf, i));
     }
@@ -66,6 +67,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
 	printf("\t%.15f", par->mu1 * par->gamma);
 	printf("\t%.15f", par->gamma);
 	printf("\t%.15f", par->pi);
+	printf("\t%.15f", par->phi);
 	for(i=0;i<par->Tinf->length;i++){
 	    printf("\t%d", vec_int_i(par->Tinf, i));
 	}
@@ -97,11 +99,14 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_pi / (double) (mcmcPar->n_accept_pi + mcmcPar->n_reject_pi);
     fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_phi / (double) (mcmcPar->n_accept_phi + mcmcPar->n_reject_phi);
+    fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_Tinf / (double) (mcmcPar->n_accept_Tinf + mcmcPar->n_reject_Tinf);
     fprintf(file,"\t%.5f", temp);
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_phi);
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
 }
 
@@ -202,6 +207,34 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
 
 
 
+
+
+void tune_phi(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_phi / (double) (in->n_accept_phi + in->n_reject_phi);
+
+    /* acceptable zone: 35-45% acceptance */
+    if(paccept<0.25) {
+	in->sigma_phi /= 1.5;
+	in->n_accept_phi = 0;
+	in->n_reject_phi = 0;
+    } else if (paccept>0.50) {
+	in->sigma_phi *= 1.5;
+	in->n_accept_phi = 0;
+	in->n_reject_phi = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_phi>1.0){
+	    in->sigma_phi = 1.0;
+	    in->tune_phi = FALSE;
+	}
+    } else {
+	in->tune_phi = FALSE;
+    }
+}
+
+
+
+
 /* void tune_Tinf(mcmc_param * in, gsl_rng *rng){ */
 /*     /\* get acceptance proportion *\/ */
 /*     double paccept = (double) in->n_accept_Tinf / (double) (in->n_accept_Tinf + in->n_reject_Tinf); */
@@ -240,7 +273,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* OUTPUT TO OUTFILE - HEADER */
-    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi");
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
     }
@@ -252,13 +285,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tn_like_zero");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_phi\tp_accept_Tinf");
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_phi\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi");
 	for(i=0;i<dat->n;i++){
 	    printf("\tTinf_%d", i+1);
 	}
@@ -296,7 +329,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    tune_mu1(mcmcPar,rng);
 	    tune_gamma(mcmcPar,rng);
 	    tune_pi(mcmcPar,rng);
-	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi;
+	    tune_phi(mcmcPar,rng);
+	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi;
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
 		printf("\nStopped tuning at chain %d\n",i);fflush(stdout);
@@ -319,6 +353,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* move pi */
 	move_pi(par, tempPar, dat, mcmcPar, rng);
+
+	/* move phi */
+	move_phi(par, tempPar, dat, mcmcPar, rng);
 
 	/* move Tinf */
 	/* printf("\nTinf:"); */

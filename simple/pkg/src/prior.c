@@ -11,9 +11,25 @@ void filter_logprob(double *in){
 
 
 
-/* p(alpha_i): = 1/(n-1) if alpha_i \neq i, and zero otherwise */
+/* p(alpha_i) = ...
+   ...phi if alpha_i=0
+   ...0 if alpha_i=i
+   ...(1-phi)/(n-1) in other cases
+*/
 double logprior_alpha_i(int i, param *par){
-    double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1.0/(par->n-1.0);
+    /* double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1.0/(par->n-1.0); */
+    switch(vec_int_i(par->alpha,i)){
+    case 0:
+	out = par->phi;
+	break;
+    case i:
+	out = 0.0;
+	break;
+    default:
+	out =  (1.0 - par->phi)/(par->n-1.0);
+    }
+
+    /* put on log scale, filter, return */
     out = log(out);
     filter_logprob(&out);
     return out;
@@ -31,9 +47,19 @@ double logprior_kappa_i(int i, param *par){
 
 
 
-/* p(pi) = beta(4,3) */
+/* p(pi) = beta(...,...) */
 double logprior_pi(param *par){
     double out = gsl_ran_beta_pdf(par->pi, par->pi_param1, par->pi_param2);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
+}
+
+
+
+/* p(phi) = beta(...,...) */
+double logprior_phi(param *par){
+    double out = gsl_ran_beta_pdf(par->phi, par->phi_param1, par->phi_param2);
     out = log(out);
     filter_logprob(&out);
     return out;
@@ -68,10 +94,10 @@ double logprior_all(param *par){
 	out += logprior_kappa_i(i,par);
     }
 
-    /* out += logprior_pi(par); */
     out += logprior_mu1();
     out += logprior_gamma(par);
     out += logprior_pi(par);
+    out += logprior_phi(par);
 
     filter_logprob(&out);
 
