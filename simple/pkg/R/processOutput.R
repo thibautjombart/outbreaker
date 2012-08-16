@@ -1,3 +1,6 @@
+####################
+## get.TTree.simple
+####################
 get.TTree.simple <- function(x, burnin=1e5){
     if(all(x$chains$step<=burnin)) stop("requested burn-in exeeds the number of chains")
 
