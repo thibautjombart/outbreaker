@@ -212,15 +212,15 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 
 	    /* if p(new/old) > 1, accept new */
 	    if(logRatio>=0.0) {
-		printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2);
-		fflush(stdout);
+		/* printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
+		/* fflush(stdout); */
 
 		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		mcmcPar->n_accept_Tinf += 1;
 	    } else { /* else accept new with proba (new/old) */
 		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-		    printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2);
-		fflush(stdout);
+		/*     printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
+		/* fflush(stdout); */
 
 		    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		    mcmcPar->n_accept_Tinf += 1;
@@ -294,18 +294,18 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 		/* if p(new/old) > 1, accept new */
 		if(logRatio>=0.0) {
-		    /* debugging */
-		    printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2);
-		    fflush(stdout);
+		    /* /\* debugging *\/ */
+		    /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+		    /* fflush(stdout); */
 
 		    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 		    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
 		    mcmcPar->n_accept_alpha += 1;
 		} else { /* else accept new with proba (new/old) */
 		    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-			/* debugging */
-			printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2);
-			fflush(stdout);
+			/* /\* debugging *\/ */
+			/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+			/* fflush(stdout); */
 
 			currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 			currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
