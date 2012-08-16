@@ -61,7 +61,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, *pi_param1, *pi_param2, rng);
+    init_param(par, dat,  gen, ances, *pi_param1, *pi_param2, *phi_param1, *phi_param2, rng);
     print_param(par);
 
 

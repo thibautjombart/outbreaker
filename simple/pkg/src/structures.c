@@ -188,7 +188,7 @@ param *alloc_param(int n){
     out->pi = 1.0;
     out->pi_param1 = 0.0;
     out->pi_param2 = 0.0;
-    out->phi = 0.5;
+    out->phi = 0.1;
     out->phi_param1 = 0.0;
     out->phi_param2 = 0.0;
 
