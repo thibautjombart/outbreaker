@@ -66,19 +66,26 @@ as.igraph.TTree.simple <- function(x, arr.width=c("proba", "mutations"), ...){
     arr.width <- match.arg(arr.width)
 
      ## GET DAG ##
-    from <- x$ances
-    to <- x$idx
-    isNotNA <- !is.na(from) & !is.na(to)
+    from.old <- x$ances
+    to.old <- x$id
+    isNotNA <- !is.na(from.old) & !is.na(to.old)
+    vnames <- sort(unique(c(from.old,to.old)))
+    from <- match(from.old,vnames)
+    to <- match(to.old,vnames)
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
-    vnames <- as.character(unique(unlist(dat)))
+    vnames <- sort(unique(unlist(dat)))
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$inf.dates[vnames]))
 
-    ## SET WEIGHTS ##
-    E(out)$weight <- x$nb.mut[isNotNA]
+    ## SET VARIOUS INFO ##
+    E(out)$dist <- x$nb.mut[isNotNA]
+    E(out)$prob <- x$p.ances[isNotNA]
+    E(out)$kappa <- x$n.gen[isNotNA]
+    E(out)$p.kappa <- x$p.gen[isNotNA]
+
 
     ## SET ARROW WIDTH ##
     if(arr.width=="proba"){
-        E(out)$width <- round(4*x$p.ances)+1
+        E(out)$width <- round(4*x$p.ances[isNotNA])+1
     }
 
     if(arr.width=="mutations"){
@@ -86,6 +93,10 @@ as.igraph.TTree.simple <- function(x, arr.width=c("proba", "mutations"), ...){
         temp <- temp/max(temp) * 4
         E(out)$width <- round(temp)+1
     }
-    
+
+    ## SET LAYOUT ##
+    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$inf.dates, maxx=x$inf.dates))
+
+
     return(out)
-}
+} # end as.igraph.TTree.simple
