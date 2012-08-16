@@ -63,7 +63,7 @@ wdens <- c(0.01,1,2,1,0.1,0)
 ##wdens <- c(1,1,1,1,1)
 
 ## run outbreaker
-#res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=10e6, sample.every=1000, init.tree="star",quiet=TRUE)
+#res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000, init.tree="star",quiet=TRUE)
 res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=100, sample.every=10, init.tree="star",quiet=TRUE)
 
 ## read outputs
