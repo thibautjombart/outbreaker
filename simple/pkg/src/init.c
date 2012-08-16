@@ -58,7 +58,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
     int i, out=1;
     double temp=0.0, currentMax=0.0;
 
-    printf("\nKappa_i values:\n");fflush(stdout);
+    printf("\nKappa_i values (T=%d):",T);fflush(stdout);
     for(i=1;i<gen->maxK;i++){
 	temp = gentime_dens(gen, T, i);
 	printf("\nkappa_i=%d: %f",i,temp);fflush(stdout);
@@ -94,6 +94,8 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
     }
 
     /* kappa */
+    printf("\nGeneration time data\n");fflush(stdout);
+    print_gentime(gen);
     for(i=0;i<dat->n;i++){
 	/* par->kappa->values[i] = 1; */
 	ancesId = vec_int_i(par->alpha,i);
