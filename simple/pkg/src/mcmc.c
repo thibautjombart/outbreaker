@@ -315,9 +315,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* RUN NITER CHAINS */
     for(i=2;i<=nIter;i++){
-	/* debugging */
-	printf("\n\n = MCMC iteration %d =\n",i);
-	fflush(stdout);
+	/* /\* debugging *\/ */
+	/* printf("\n\n = MCMC iteration %d =\n",i); */
+	/* fflush(stdout); */
 
 	if(i % outEvery == 0){
 	    fprint_chains(file, dat, dnainfo, gen, par, i, quiet);
@@ -337,12 +337,12 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    }
 	}
 
-	/* debugging */
-	double logLike = loglikelihood_all(dat, dnainfo, gen, par);
-	printf("\n\n = Initial Log-likelihood value (in mcmc, before movement): %f\n", logLike);
-	fflush(stdout);
+	/* /\* debugging *\/ */
+	/* double logLike = loglikelihood_all(dat, dnainfo, gen, par); */
+	/* printf("\n\n = Initial Log-likelihood value (in mcmc, before movement): %f\n", logLike); */
+	/* fflush(stdout); */
 
-	check_loglikelihood_all(dat, dnainfo, gen, par);
+	/* check_loglikelihood_all(dat, dnainfo, gen, par); */
 
 	/* MOVEMENTS */
 	/* move mu1 */

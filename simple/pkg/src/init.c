@@ -58,13 +58,17 @@ int find_maxLike_kappa_i(int T, gentime *gen){
     int i, out=1;
     double temp=0.0, currentMax=0.0;
 
+    printf("\nKappa_i values:\n");fflush(stdout);
     for(i=1;i<gen->maxK;i++){
 	temp = gentime_dens(gen, T, i);
+	printf("\nkappa_i=%d: %f",i,temp);fflush(stdout);
 	if(currentMax < temp) {
 	    currentMax = temp;
-	    out = i+1;
+	    out = i;
 	}
     }
+    
+    printf("\nReturned value of kappa: %d\n",out);fflush(stdout);
 
     return out;
 } /* end find_maxLike_kappa_i */
