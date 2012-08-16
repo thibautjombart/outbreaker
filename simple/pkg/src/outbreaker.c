@@ -87,9 +87,6 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     mcmcPar = alloc_mcmc_param(dat->n);
     init_mcmc_param(mcmcPar, dat);
 
-    /* SET MCMC_PARAM */
-    /* mcmcPar->sigma_mu1 = *sigma_mu1; */
-
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnainfo, gen, par);
     if(!checkLike){

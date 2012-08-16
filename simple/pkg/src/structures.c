@@ -152,8 +152,6 @@ double gentime_dens(gentime *in, int t, int kappa_i){
     }
 
     /* otherwise fetch density value */
-    if(t >= in->trunc || t < 0) return 0.0;
-
     double out=mat_double_ij(in->dens, kappa_i-1, t);
     return out;
 }
