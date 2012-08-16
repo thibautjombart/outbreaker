@@ -10,8 +10,6 @@
   ===================
 */
 
-int find_maxLike_kappa_i(int T, gentime *gen);
-
 int choose_kappa_i(int T, gentime *gen, gsl_rng *rng);
 
 
