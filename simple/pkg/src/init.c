@@ -52,8 +52,31 @@ void init_gentime(gentime *in, double *values){
 
 
 
+
+/* FIND MOST LIKELY KAPPA_I (given time to infection 'T') */
+int find_maxLike_kappa_i(int T, gentime *gen){
+    int i, out=1;
+    double temp=0.0, currentMax=0.0;
+
+    for(i=1;i<gen->maxK;i++){
+	temp = gentime_dens(gen, T, i);
+	if(currentMax < temp) {
+	    currentMax = temp;
+	    out = i+1;
+	}
+    }
+
+    return out;
+} /* end find_maxLike_kappa_i */
+
+
+
+
+
+
+/* INITIALIZE PARAMETERS */
 void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, double phi_param1, double phi_param2, gsl_rng *rng){
-    int i, TmaxLike;
+    int i, ancesId, T, TmaxLike;
 
     /* Tinf */
     TmaxLike = which_max_vec_double(gen->dens->rows[0]);
@@ -68,7 +91,14 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
 
     /* kappa */
     for(i=0;i<dat->n;i++){
-	par->kappa->values[i] = 1;
+	/* par->kappa->values[i] = 1; */
+	ancesId = vec_int_i(par->alpha,i);
+	if(ancesId>-1){
+	    T = vec_int_i(par->Tinf, i) - vec_int_i(par->Tinf, ancesId);
+	    par->kappa->values[i] = find_maxLike_kappa_i(T, gen);
+	} else {
+	    par->kappa->values[i] = 1;
+	}
     }
 
     /* doubles*/
