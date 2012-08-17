@@ -195,9 +195,13 @@ labels.simOutbreak <- function(object, ...){
 #########################
 ## as.igraph.simOutbreak
 #########################
-as.igraph.simOutbreak <- function(x, ...){
+as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
+                              col.pal=NULL, annot="dist", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(ape)) stop("package ape is required for this operation")
+    if(!inherits(x,"simOutbreak")) stop("x is not a TTree.simple object")
+    if(!require(adegenet)) stop("adegenet is required")
+    if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
     ## GET DAG ##
     from.old <- x$ances
@@ -209,15 +213,21 @@ as.igraph.simOutbreak <- function(x, ...){
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$dates[vnames]))
 
-    ## SET WEIGHTS ##
+    ## SET VARIOUS INFO ##
     D <- as.matrix(dist.dna(x$dna,model="raw")*ncol(x$dna))
     temp <- mapply(function(i,j) return(D[i,j]), as.integer(from), as.integer(to))
-    E(out)$weight <- temp[isNotNA]
+    E(out)$dist <- temp[isNotNA]
 
-    ## SET ARROW WIDTH ##
-    temp <- max(E(out)$weight) - E(out)$weight
-    temp <- temp/max(temp) * 4
-    E(out)$width <- round(temp)+1
+    ## SET EDGE COLORS ##
+    if(is.null(col.pal)){
+        col.pal <- function(n){
+            return(grey(seq(0.75,0,length=n)))
+        }
+    }
+    if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=col.pal, x.min=0, x.max=1)
+
+    ## SET EDGE LABELS ##
+    if("dist" %in% annot) E(out)$label <- E(out)$dist
 
     ## SET LAYOUT ##
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$dates, maxx=x$dates))
@@ -231,22 +241,26 @@ as.igraph.simOutbreak <- function(x, ...){
 
 
 
-####################
-## plot.simOutbreak
-####################
-plot.simOutbreak <- function(x, y=NULL, cex=1, label=x$id,
-                             edge.col=num2col(x$nmut[-1], col.pal=seasun), lwd=1, ...){
-    if(!require(igraph)) stop("package igraph is required for this operation")
-    if(!require(ape)) stop("package ape is required for this operation")
-    g <- as.igraph(x)
-    plot(g, vertex.size=15*cex, vertex.label=label,
-         vertex.label.cex=cex, edge.color=edge.col, edge.width=lwd,
-         layout=attr(g,"layout"),...)
+#####################
+## plot.TTree.simple
+#####################
+plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
+                              col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
+    if(!require(igraph)) stop("igraph is required")
+    if(!require(adegenet)) stop("adegenet is required")
+    if(!inherits(x,"simOutbreak")) stop("x is not a simOutbreak object")
+    if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
+
+    ## get graph ##
+    g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, col.pal=col.pal, annot=annot, sep=sep)
+
+     ## make plot ##
+    plot(g, layout=attr(g,"layout"), ...)
+
+    ## return graph invisibly ##
+    return(invisible(g))
+
 } # end plot.simOutbreak
-
-
-
-
 
 
 

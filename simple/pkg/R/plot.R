@@ -1,7 +1,6 @@
 #####################
 ## plot.TTree.simple
 #####################
-
 plot.TTree.simple <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
                               col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
     if(!require(igraph)) stop("igraph is required")
