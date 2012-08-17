@@ -71,7 +71,7 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
     if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
-     ## GET DAG ##
+    ## GET DAG ##
     from.old <- x$ances
     to.old <- x$id
     isNotNA <- !is.na(from.old) & !is.na(to.old)
@@ -79,7 +79,6 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
     from <- match(from.old,vnames)
     to <- match(to.old,vnames)
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
-    vnames <- sort(unique(unlist(dat)))
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$inf.dates[vnames]))
 
     ## SET VARIOUS INFO ##
