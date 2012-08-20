@@ -8,7 +8,7 @@ library(ape)
 ## used the make the data
 w <- c(0,.2,.3,1,.8,.2,.1,.05)
 full <- simOutbreak(R0=2, infec.curve=w)
-dat <- full[1:30]
+dat <- full[1:20]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 #save(w, full, dat, collecDates, file="Robjects/data2big.RData")
 
@@ -17,7 +17,7 @@ collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE
 
 
 ## run outbreaker, init with seqTrack
-system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=1e6))
+system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree=dat$ances, n.iter=5e5))
 
 res$chain$post
 
