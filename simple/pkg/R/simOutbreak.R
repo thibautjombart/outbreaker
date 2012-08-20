@@ -103,7 +103,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             res$ances <- c(res$ances,newAnces)
 
             ## dna sequences of the new infections
-            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], t-res$dates[i])))
+            ##newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], t-res$dates[i]))) # code with molecular clock
+            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1))) # code with molecular clock
             res$dna <- rbind(res$dna, newSeq)
         }
 
@@ -172,6 +173,7 @@ print.simOutbreak <- function(x, ...){
     res$ances[!res$ances %in% res$id] <- NA
     res$dates <- res$dates[i]
     res$n <- nrow(res$dna)
+    res$nmut <- res$nmut[i]
 
     return(res)
 }

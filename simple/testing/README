@@ -1,0 +1,12 @@
+This document lists the content of the directory.
+
+- test.R: old test file, obsolete.
+
+- issueToSolve1.R:
+related to initial zero likelihood; fixed.
+
+- simpleExample:
+base code for simulating data using simOutbreak and running outbreaker.
+
+- issueToSolve2.R:
+code showing very poor results on a selected example; likely due to the simulation tool itself (mutations vary from 0 to 12 for a single ancestry).
