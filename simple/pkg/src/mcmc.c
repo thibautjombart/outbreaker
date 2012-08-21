@@ -333,7 +333,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi;
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
-		printf("\nStopped tuning at chain %d\n",i);fflush(stdout);
+		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
 	    }
 	}
 
