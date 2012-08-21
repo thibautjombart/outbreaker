@@ -104,12 +104,9 @@ system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tre
 ## check results
 plot(res$chains$step, res$chain$post, type="l", main="posterior")
 
-x <- get.TTree.simple(res)
-
 toKeep <- grep("Tinf",names(res$chains))
 Tinf <- res$chains[res$chains$step>1e5, toKeep]
-points(dat$dates, col="red")
-
+points(dat$dates, col="red", pch="x",cex=2)
 
 
 
