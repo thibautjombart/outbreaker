@@ -345,29 +345,30 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* check_loglikelihood_all(dat, dnainfo, gen, par); */
 
 	/* MOVEMENTS */
-	/* move mu1 */
-	move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	if(mcmcPar->move_mut){/* move mu1 */
+	    move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
-	/* move gamma */
-	move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    /* move gamma */
+	    move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	}
 
 	/* move pi */
-	move_pi(par, tempPar, dat, mcmcPar, rng);
+	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
 
 	/* move phi */
-	move_phi(par, tempPar, dat, mcmcPar, rng);
+	if(mcmcPar->move_phi) move_phi(par, tempPar, dat, mcmcPar, rng);
 
 	/* move Tinf */
 	/* printf("\nTinf:"); */
 	/* print_vec_int(par->Tinf); */
 	/* fflush(stdout); */
-	move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move alpha_i*/
-	move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	if(mcmcPar->move_alpha) move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move kappa_i*/
-	move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	if(mcmcPar->move_kappa) move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
     }
 

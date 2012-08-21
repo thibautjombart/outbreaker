@@ -89,7 +89,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
         ## global force of infection (R0 \sum_j I_t^j / N)
         globForce <- sum(indivForce)*R0/n.hosts
-
+        globForce <- min(1,globForce) # globForce is used as a proba, limit to 1
+        
         ## number of new infections
         nbNewInf <- rbinom(1, size=res$dynam$nsus[t], prob=globForce)
 
