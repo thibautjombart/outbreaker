@@ -9,7 +9,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                       quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt"){
+                       quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -48,7 +48,6 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         dates <- difftime(dates, min(dates), units="days")
     }
     dates <- as.integer(dates)
-
 
     ## check generation time function ##
     w.dens <- as.double(w.dens)
@@ -95,6 +94,11 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         }
     }
 
+    ## handle seed ##
+    if(is.null(seed)){
+        seed <- as.integer(runif(1,min=0,max=2e9))
+    }
+
     ## coerce type for remaining arguments ##
     n.iter <- as.integer(n.iter)
     sample.every <- as.integer(sample.every)
@@ -115,6 +119,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
 
+
     ## create empty output vector for genetic distances ##
     dna.dist <- integer(n.ind*(n.ind-1)/2)
     stopTuneAt <- integer(1)
@@ -126,7 +131,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                phi.param1, phi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.phi, quiet,
-               dna.dist, stopTuneAt, res.file.name, tune.file.name,
+               dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
     D <- temp[[24]]
@@ -168,7 +173,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                 init.mu1=1e-5, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                                quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt"){
+                                quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
 
     ## SOME CHECKS ##
     if(multicore && !require(multicore)) stop("multicore package requested but not installed")
@@ -181,17 +186,26 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
     res.file.names <- paste("run", 1:n.runs, "-", res.file.name, sep="")
     tune.file.names <- paste("run", 1:n.runs, "-", tune.file.name, sep="")
 
+
+    ## HANDLE SEED ##
+    if(is.null(seed)){
+        seed <- as.integer(runif(n.runs,min=0,max=2e9))
+    } else {
+        seed <- rep(seed, length=n.runs)
+    }
+
+
     ## COMPUTATIONS ##
     if(multicore){
-        res <- mclapply(1:n.runs, function(i)  {Sys.sleep(1);outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
+        res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
                                                           init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
                                                           tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
                                                           phi.param1=phi.param1, phi.param2=phi.param2,
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
-                                                          quiet=TRUE, res.file.names[i], tune.file.names[i])},
-                        mc.cores=n.cores, mc.silent=TRUE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
+                                                          quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]),
+                        mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
          res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
                                                           init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
@@ -200,7 +214,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
-                                                          quiet=TRUE, res.file.names[i], tune.file.names[i]))
+                                                          quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]))
     }
 
 
