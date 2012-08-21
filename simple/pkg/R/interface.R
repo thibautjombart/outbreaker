@@ -160,9 +160,13 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 ###############################
 outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=NULL,
                                 dna, dates, w.dens, w.trunc=length(w.dens),
-                                init.tree=c("seqTrack","random","star"),
+                                init.tree=c("seqTrack","random","star","none"),
                                 n.iter=2e6, sample.every=1000, tune.every=1000,
-                                pi.param1=10, pi.param2=1, quiet=TRUE){
+                                pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
+                                init.mu1=1e-5, init.gamma=1,
+                                move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
+                                move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
+                                quiet=TRUE){
 
     ## SOME CHECKS ##
     if(multicore && !require(multicore)) stop("multicore package requested but not installed")
@@ -174,15 +178,23 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
     ## COMPUTATIONS ##
     if(multicore){
         res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
-                                                                 init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
-                                                                 tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
-                                                                 quiet=TRUE),
+                                                          init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
+                                                          tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
+                                                          phi.param1=phi.param1, phi.param2=phi.param2,
+                                                          init.mu1=init.mu1, init.gamma=init.gamma,
+                                                          move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
+                                                          move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
+                                                          quiet=TRUE),
                         mc.cores=n.cores, mc.silent=TRUE, mc.cleanup=TRUE, mc.preschedule=FALSE)
     } else {
          res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
-                                                                 init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
-                                                                 tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
-                                                         quiet=TRUE))
+                                                          init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
+                                                          tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
+                                                          phi.param1=phi.param1, phi.param2=phi.param2,
+                                                          init.mu1=init.mu1, init.gamma=init.gamma,
+                                                          move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
+                                                          move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
+                                                          quiet=TRUE))
     }
 
 
