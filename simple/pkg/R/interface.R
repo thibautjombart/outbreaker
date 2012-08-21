@@ -168,7 +168,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                 init.mu1=1e-5, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                                quiet=TRUE){
+                                quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt"){
 
     ## SOME CHECKS ##
     if(multicore && !require(multicore)) stop("multicore package requested but not installed")
@@ -177,17 +177,21 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
     }
 
 
+    ## GET FILE NAMES ##
+    res.file.names <- paste("run", 1:n.runs, "-", res.file.name, sep="")
+    tune.file.names <- paste("run", 1:n.runs, "-", tune.file.name, sep="")
+
     ## COMPUTATIONS ##
     if(multicore){
-        res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
+        res <- mclapply(1:n.runs, function(i)  {Sys.sleep(1);outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
                                                           init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
                                                           tune.every=tune.every, pi.param1=pi.param1, pi.param2=pi.param2,
                                                           phi.param1=phi.param1, phi.param2=phi.param2,
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
-                                                          quiet=TRUE),
-                        mc.cores=n.cores, mc.silent=TRUE, mc.cleanup=TRUE, mc.preschedule=FALSE)
+                                                          quiet=TRUE, res.file.names[i], tune.file.names[i])},
+                        mc.cores=n.cores, mc.silent=TRUE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
          res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
                                                           init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
@@ -196,13 +200,14 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
-                                                          quiet=TRUE))
+                                                          quiet=TRUE, res.file.names[i], tune.file.names[i]))
     }
 
 
     ## NAME RUNS ##
     names(res) <- paste("run",1:n.runs,paste="")
-
+    myCall <- match.call()
+    for(i in 1:n.runs) res[[i]]$call <- myCall
 
     ## RETURN RESULTS ##
     return(res)

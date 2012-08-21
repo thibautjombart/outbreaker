@@ -2,6 +2,17 @@
 ## get.TTree.simple
 ####################
 get.TTree.simple <- function(x, burnin=1e5){
+
+    ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
+    temp <- all(grep("run", names(x))==1:length(x))
+    if(is.list(x) && temp){
+        n.runs <- length(x)
+        old.x <- x
+        x <- x[[1]]
+        temp <- lapply(old.x, function(e) e$chains[e$chains$step>burnin,])
+        x$chains <- Reduce("rbind", temp)
+    }
+
     if(all(x$chains$step<=burnin)) stop("requested burn-in exeeds the number of chains")
 
     ## CREATE OUTPUT LIST ##
@@ -9,10 +20,6 @@ get.TTree.simple <- function(x, burnin=1e5){
     res$idx <- 1:length(x$collec.dates)
     res$collec.dates <- x$collec.dates
 
-    ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
-    ## temp
-    ## if(is.list(x) & )
-    
     ## PROCESS CHAINS ##
     chains <- x$chains[x$chains$step>burnin, ] # discard burn-in
 
