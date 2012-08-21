@@ -38,19 +38,17 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     dnaraw <- unlist(as.list(dna),use.names=FALSE)
     if(n.ind != length(dates)) stop(paste("dna and dates have different number of individuals -",n.ind,"versus",length(dates)))
 
-    ## dates in numeric ##
+    ## handle dates ##
     if(is.numeric(dates)){
         if(sum(abs(dates-round(dates))>1e-15)) warning("dates have been rounded to nearest integers")
         dates <- as.integer(round(dates))
     }
 
-    ## if dates are in POSIXct format ##
     if(inherits(dates, "POSIXct")){
-        dates <- as.integer(difftime(dates, min(dates), units="days"))
+        dates <- difftime(dates, min(dates), units="days")
     }
+    dates <- as.integer(dates)
 
-    ## make sure minimugit pum date is 0 ##
-    dates <- as.integer(dates-min(dates))
 
     ## check generation time function ##
     w.dens <- as.double(w.dens)
