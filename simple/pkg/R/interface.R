@@ -148,8 +148,9 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 
     ## BUILD OUTPUT ##
     chains <- read.table(res.file.name, header=TRUE)
+    chains$run <- rep(1, nrow(chains))
     call <- match.call()
-    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt, call=call)
+    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt, call=call, n.runs=1)
 
     return(res)
 } # end outbreaker
@@ -218,10 +219,14 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
     }
 
 
-    ## NAME RUNS ##
-    names(res) <- paste("run",1:n.runs,paste="")
-    myCall <- match.call()
-    for(i in 1:n.runs) res[[i]]$call <- myCall
+    ## MERGE RESULTS ##
+    res.old <- res
+    res <- res[[1]]
+    res$tune.end <- max(sapply(res.old, function(e) e$tune.end))
+    res$chains <- Reduce(rbind, lapply(res.old, function(e) e$chains))
+    res$chains$run <- rep(1:n.runs, each=nrow(res.old[[1]]$chains))
+    res$n.runs <- n.runs
+    res$call <- match.call()
 
     ## RETURN RESULTS ##
     return(res)
