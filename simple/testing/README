@@ -8,8 +8,8 @@ related to initial zero likelihood; fixed.
 - simpleExample:
 base code for simulating data using simOutbreak and running outbreaker.
 
-- issueToSolve2.R:
+- testWonly:
 investigating results when there is no genetic information.
 
-- issueToSolve3.R:
+- testEach:
 investigating results when fixing each parameter in turn, on a fixed toy example
