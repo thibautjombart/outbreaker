@@ -72,3 +72,56 @@ epicurves <- function (x, col=NULL, bg="lightgrey", line.col="white", coef=1, ma
     arrows(x$inf.date,x$ances, x$inf.dates, x$idx, angle=15, col=col[x$ances], lwd=arr.w)
 
 } # end epicurves
+
+
+
+
+
+
+
+
+
+
+
+##############
+## plot.chains
+##############
+plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0, dens.all=TRUE,
+                        col=rainbow(x$n.runs), lty=1, lwd=1, main=what, ...){
+    ## HANDLE ARGUMENTS ##
+    type <- match.arg(type)
+    n.runs <- x$n.runs
+    if(!what %in% names(x$chains)) stop(paste(what,"is not a column of x$chains"))
+    if(!is.null(col)) col <- rep(col, length = n.runs)
+    if(!is.null(lty)) lty <- rep(lty, length = n.runs)
+    if(!is.null(lwd)) lwd <- rep(lwd, length = n.runs)
+
+    ## GET DATA TO PLOT ##
+    dat <- cbind(x$chains$step[x$chains$run==1],data.frame(split(x$chains[,what], x$chains$run)))
+    names(dat) <- c("step", paste(what, 1:n.runs,sep=""))
+    if(!any(dat$step>omit.first)) stop("omit.first is greater than the number of steps in x")
+    dat <- dat[dat$step>omit.first,]
+
+    ## MAKE PLOT ##
+    if(type=="series"){
+        matplot(dat$step, dat[,-1], type="l", col=col, lty=lty, xlab="MCMC iteration", ylab="value", main=main, ...)
+    }
+
+    if(type=="density"){
+        ## add general density if needed ##
+        temp <- lapply(dat[, -1], density)
+        if(dens.all){
+            temp[[n.runs+1]] <- density(unlist(dat[,-1]))
+            col <- c(col, "black")
+            lty <- c(lty, 1)
+            lwd <- c(lwd, 3)
+            n.runs <- n.runs+1
+        }
+        range.x <- range(sapply(temp, function(e) e$x))
+        range.y <- range(sapply(temp, function(e) e$y))
+        plot(1,type="n", xlim=range.x, ylim=range.y, xlab="value", ylab="density", main=main, ...)
+        invisible(lapply(1:n.runs, function(i) lines(temp[[i]], col=col[i], lty=lty[i], lwd=lwd[i])))
+    }
+
+    return(invisible())
+} # end plot.chains

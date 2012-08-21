@@ -3,15 +3,15 @@
 ####################
 get.TTree.simple <- function(x, burnin=1e5){
 
-    ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
-    temp <- all(grep("run", names(x))==1:length(x))
-    if(is.list(x) && temp){
-        n.runs <- length(x)
-        old.x <- x
-        x <- x[[1]]
-        temp <- lapply(old.x, function(e) e$chains[e$chains$step>burnin,])
-        x$chains <- Reduce("rbind", temp)
-    }
+    ## ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
+    ## temp <- all(grep("run", names(x))==1:length(x))
+    ## if(is.list(x) && temp){
+    ##     n.runs <- length(x)
+    ##     old.x <- x
+    ##     x <- x[[1]]
+    ##     temp <- lapply(old.x, function(e) e$chains[e$chains$step>burnin,])
+    ##     x$chains <- Reduce("rbind", temp)
+    ## }
 
     if(all(x$chains$step<=burnin)) stop("requested burn-in exeeds the number of chains")
 
