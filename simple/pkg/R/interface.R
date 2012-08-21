@@ -4,12 +4,12 @@
 ##################
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
-                       n.iter=2e6, sample.every=1000, tune.every=1000,
+                       n.iter=1e6, sample.every=1000, tune.every=1000,
                        pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                       quiet=TRUE){
+                       quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt"){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -112,6 +112,8 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     move.pi <- as.integer(move.pi)
     move.phi <- as.integer(move.phi)
     quiet <- as.integer(quiet)
+    res.file.name <- as.character(res.file.name)[1]
+    tune.file.name <- as.character(tune.file.name)[1]
 
     ## create empty output vector for genetic distances ##
     dna.dist <- integer(n.ind*(n.ind-1)/2)
@@ -124,7 +126,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                phi.param1, phi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.phi, quiet,
-               dna.dist, stopTuneAt,
+               dna.dist, stopTuneAt, res.file.name, tune.file.name,
                PACKAGE="outbreaker")
 
     D <- temp[[24]]
@@ -140,7 +142,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 
 
     ## BUILD OUTPUT ##
-    chains <- read.table("output.txt",header=TRUE)
+    chains <- read.table(res.file.name, header=TRUE)
     call <- match.call()
     res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt, call=call)
 
@@ -161,7 +163,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=NULL,
                                 dna, dates, w.dens, w.trunc=length(w.dens),
                                 init.tree=c("seqTrack","random","star","none"),
-                                n.iter=2e6, sample.every=1000, tune.every=1000,
+                                n.iter=1e6, sample.every=1000, tune.every=1000,
                                 pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
                                 init.mu1=1e-5, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,

@@ -9,7 +9,10 @@ get.TTree.simple <- function(x, burnin=1e5){
     res$idx <- 1:length(x$collec.dates)
     res$collec.dates <- x$collec.dates
 
-
+    ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
+    ## temp
+    ## if(is.list(x) & )
+    
     ## PROCESS CHAINS ##
     chains <- x$chains[x$chains$step>burnin, ] # discard burn-in
 

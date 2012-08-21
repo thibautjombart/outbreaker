@@ -23,7 +23,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 		  double *pi_param1, double *pi_param2, double *phi_param1, double *phi_param2, 
 		  double *init_mu1, double *init_gamma, 
 		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, int *move_pi, int *move_phi, 
-		  int *quiet, int *vecDist, int *stepStopTune){
+		  int *quiet, int *vecDist, int *stepStopTune,
+		  char **res_file_name, char **tune_file_name){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
     gsl_rng *rng;
@@ -97,7 +98,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     }
 
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, "output.txt", "mcmcOutput.txt", *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+    mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
 
 
     /* FILL IN GENETIC DISTANCE VECTOR */
