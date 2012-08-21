@@ -1,6 +1,6 @@
 ## TRY TO SEE HOW THE METHOD BEHAVES ##
 
-
+############################################
 ## DATA SIMULATION ##
 
 ## load packages and data
@@ -16,12 +16,13 @@ library(ape)
 
 load("Robjects/data4.RData")
 plot(dat, main="Data")
+############################################
 
 
 
 
 
-
+############################################
 ## ESTIMATE MUTATION RATES ONLY ##
 ## run outbreaker
 system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree=dat$ances, n.iter=5e5, move.mut = TRUE,
@@ -38,12 +39,13 @@ abline(v=1e-4, col="blue")
 
 x <- get.TTree.simple(res)
 mean(x$ances==dat$ances,na.rm=TRUE)
+############################################
 
 
 
 
 
-
+############################################
 ## ESTIMATE ALPHA ONLY ##
 ## run outbreaker
 system.time(res <- outbreaker(dna=dat$dna, dates=dat$dates+4, w.dens=w, init.tree="none", n.iter=5e5, init.mu1=2e-4,
@@ -62,13 +64,13 @@ if(length(notOk)>0) v.col[notOk] <- "red"
 plot(dat,main="data", vertex.color=v.col)
 x11();
 plot(x,main="reconstruction", vertex.color=v.col)
+############################################
 
 
 
 
 
-
-
+############################################
 ## ESTIMATE KAPPA ONLY (FLAT PRIOR ON PI) ##
 ## run outbreaker
 system.time(res <- outbreaker(dna=dat$dna, dates=dat$dates+4, w.dens=w, init.tree=dat$ances, n.iter=5e5, init.mu1=2e-4,
@@ -87,14 +89,13 @@ if(length(notOk)>0) v.col[notOk] <- "red"
 plot(dat,main="data", vertex.color=v.col)
 x11();
 plot(x,main="reconstruction", vertex.color=v.col)
+############################################
 
 
 
 
 
-
-
-
+############################################
 ## ESTIMATE TINF ONLY ##
 ## run outbreaker
 system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree=dat$ances, n.iter=5e5, init.mu1=2e-4,
@@ -106,9 +107,42 @@ plot(res$chains$step, res$chain$post, type="l", main="posterior")
 
 toKeep <- grep("Tinf",names(res$chains))
 Tinf <- res$chains[res$chains$step>1e5, toKeep]
+boxplot(Tinf, col="grey")
 points(dat$dates, col="red", pch="x",cex=2)
+############################################
 
 
 
 
 
+############################################
+## ESTIMATE PI ONLY ##
+## run outbreaker
+system.time(res <- outbreaker(dna=dat$dna, dates=dat$dates, w.dens=w, init.tree=dat$ances, n.iter=5e5, init.mu1=2e-4,
+                              init.gamma=0.5, move.mut = FALSE, move.ances = FALSE,
+                              move.kappa = FALSE, move.Tinf = FALSE, move.pi = TRUE, move.phi = FALSE))
+
+## check results
+plot(res$chains$step, res$chain$post, type="l", main="posterior")
+
+plot(density(res$chains$pi[res$chains$step>1e5]), main="prop. obs. cases", xlim=0:1)
+abline(v=1,col="blue")
+############################################
+
+
+
+
+
+############################################
+## ESTIMATE PHI ONLY ##
+## run outbreaker
+system.time(res <- outbreaker(dna=dat$dna, dates=dat$dates, w.dens=w, init.tree=dat$ances, n.iter=5e5, init.mu1=2e-4,
+                              init.gamma=0.5, move.mut = FALSE, move.ances = FALSE,
+                              move.kappa = FALSE, move.Tinf = FALSE, move.pi = FALSE, move.phi = TRUE))
+
+## check results
+plot(res$chains$step, res$chain$post, type="l", main="posterior")
+
+plot(density(res$chains$phi[res$chains$step>1e5]), main="prop. external cases", xlim=0:1)
+abline(v=1/20,col="blue")
+############################################
