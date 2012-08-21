@@ -289,7 +289,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->candid_ances = alloc_vec_int(n);
 
 
-    /* FILL OUT INTEGERS */
+    /* FILL IN INTEGERS */
     out->n_accept_mu1 = 0;
     out->n_reject_mu1 = 0;
     out->n_accept_gamma = 0;
@@ -307,6 +307,11 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_pi = TRUE;
     out->tune_phi = TRUE;
     out->step_notune = -1;
+    out->move_mut = TRUE;
+    out->move_alpha = TRUE;
+    out->move_kappa = TRUE;
+    out->move_pi = TRUE;
+    out->move_phi = TRUE;
 
     /* FILL IN DOUBLES */
     out->sigma_mu1 = 0.0;
@@ -379,6 +384,14 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_pi) printf("pi ");
     if(in->tune_phi) printf("phi ");
     printf("\nTuning stopped at step %d\n", in->step_notune);
+
+    printf("\nMoved parameters:");
+    if(in->move_mut) printf("mu1 gamma ");
+    if(in->move_alpha) printf("alpha ");
+    if(in->move_kappa) printf("kappa ");
+    if(in->move_Tinf) printf("Tinf ");
+    if(in->move_pi) printf("pi ");
+    if(in->move_phi) printf("phi ");
 
     fflush(stdout);
 } /* end print_mcmc_param */

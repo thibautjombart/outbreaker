@@ -79,7 +79,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, double phi_param1, double phi_param2, gsl_rng *rng){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, gsl_rng *rng){
     int i, ancesId, T, TmaxLike;
 
     /* Tinf */
@@ -108,8 +108,8 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
     }
 
     /* doubles*/
-    par->mu1 = 1e-5;
-    par->gamma = 1.0;
+    par->mu1 = init_mu1;
+    par->gamma = init_gamma;
     par->pi = gsl_ran_beta (rng,pi_param1,pi_param2);
     par->pi_param1 = pi_param1;
     par->pi_param2 = pi_param2;
@@ -122,7 +122,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat){
+void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, bool move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool move_phi){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -151,6 +151,23 @@ void init_mcmc_param(mcmc_param *in, data *dat){
 
     /* FILL IN VECTOR OF ALL INDICES */
     for(i=0;i<N;i++) in->all_idx->values[i] = i;
+
+    /* FILL IN BOOLEANS */
+    in->move_mut = move_mut;
+    in->move_alpha = move_alpha;
+    in->move_kappa = move_kappa;
+    in->move_Tinf = move_Tinf;
+    in->move_pi = move_pi;
+    in->move_phi = move_phi;
+
+    /* ENSURE MOVE-TUNING CONSISTENCY */
+    if(!move_mut) {
+	in->tune_mu1 = FALSE;
+	in->tune_gamma = FALSE;
+    }
+    if(!move_pi) in->tune_pi = FALSE;
+    if(!move_phi) in->tune_phi = FALSE;
+
 } /* end init_mcmc_param */
 
 

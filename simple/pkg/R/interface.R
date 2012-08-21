@@ -5,7 +5,11 @@
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        n.iter=2e6, sample.every=1000, tune.every=1000,
-                       pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10, quiet=TRUE){
+                       pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
+                       init.mu1=1e-5, init.gamma=1,
+                       move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
+                       quiet=TRUE){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -23,6 +27,8 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     w.dens[1] <- 0 # force w_0 = 0
     w.dens[w.dens<0] <- 0
     if(sum(w.dens) < 1e-14) stop("w.dens is zero everywhere")
+    if(init.mu1<0) stop("init.mu1 < 0")
+    if(init.gamma<0) stop("init.gamma < 0")
 
 
     ## PROCESS INPUTS ##
@@ -99,6 +105,14 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     pi.param2 <- as.double(pi.param2)
     phi.param1 <- as.double(phi.param1)
     phi.param2 <- as.double(phi.param2)
+    init.mu1 <- as.double(init.mu1)
+    init.gamma <- as.double(init.gamma)
+    move.mut <- as.integer(move.mut)
+    move.ances <- as.integer(move.ances)
+    move.kappa <- as.integer(move.kappa)
+    move.Tinf <- as.integer(move.Tinf)
+    move.pi <- as.integer(move.pi)
+    move.phi <- as.integer(move.phi)
     quiet <- as.integer(quiet)
 
     ## create empty output vector for genetic distances ##
@@ -109,12 +123,14 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                dnaraw, dates, n.ind, n.nucl,
                w.dens, w.trunc,
                ances, n.iter, sample.every, tune.every, pi.param1, pi.param2,
-               phi.param1, phi.param2, quiet,
+               phi.param1, phi.param2, init.mu1, init.gamma,
+               move.mut, move.ances, move.kappa, move.Tinf,
+               move.pi, move.phi, quiet,
                dna.dist, stopTuneAt,
                PACKAGE="outbreaker")
 
-    D <- temp[[16]]
-    stopTuneAt <- temp[[17]]
+    D <- temp[[24]]
+    stopTuneAt <- temp[[25]]
 
     cat("\nComputations finished.\n\n")
 
