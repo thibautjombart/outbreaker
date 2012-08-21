@@ -24,7 +24,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 		  double *init_mu1, double *init_gamma, 
 		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, int *move_pi, int *move_phi, 
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **res_file_name, char **tune_file_name){
+		  char **res_file_name, char **tune_file_name, int *seed){
     /* DECLARATIONS */
     int N = *n, TIMESPAN;
     gsl_rng *rng;
@@ -41,7 +41,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
 
     /* INITIALIZE RNG */
-    rng = create_gsl_rng(time(NULL));
+    /* rng = create_gsl_rng((time_t) time(NULL)); */
+    rng = create_gsl_rng((time_t) *seed);
 
 
     /* CONVERT DATA */
