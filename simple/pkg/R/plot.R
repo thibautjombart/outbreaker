@@ -100,18 +100,18 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
     dat <- cbind(x$chains$step[x$chains$run==1],data.frame(split(x$chains[,what], x$chains$run)))
     names(dat) <- c("step", paste(what, 1:n.runs,sep=""))
     if(!any(dat$step>omit.first)) stop("omit.first is greater than the number of steps in x")
-    dat <- dat[dat$step>omit.first,]
+    dat <- dat[dat$step>omit.first,,drop=FALSE]
 
     ## MAKE PLOT ##
     if(type=="series"){
-        matplot(dat$step, dat[,-1], type="l", col=col, lty=lty, xlab="MCMC iteration", ylab="value", main=main, ...)
+        matplot(dat$step, dat[,-1,drop=FALSE], type="l", col=col, lty=lty, xlab="MCMC iteration", ylab="value", main=main, ...)
     }
 
     if(type=="density"){
         ## add general density if needed ##
-        temp <- lapply(dat[, -1], density)
+        temp <- lapply(dat[, -1, drop=FALSE], density)
         if(dens.all){
-            temp[[n.runs+1]] <- density(unlist(dat[,-1]))
+            temp[[n.runs+1]] <- density(unlist(dat[,-1,drop=FALSE]))
             col <- c(col, "black")
             lty <- c(lty, 1)
             lwd <- c(lwd, 3)
