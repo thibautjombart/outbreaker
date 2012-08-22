@@ -27,12 +27,12 @@ plot(dat, main="Data")
 system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="none", n.iter=5e5))
 
 ## check results ##
-plot.chains(res, what="post")
+plot.chains(res)
 
 par(mfrow=c(2,1))
-plot(density(res$chains$mu1[res$chains$step>2e5]), main="mu1")
+plot.chains(res, "mu1",type="dens", omit=1e5)
 abline(v=2e-4, col="blue")
-plot(density(res$chains$mu2[res$chains$step>2e5]), main="mu2")
+plot.chains(res, "mu2",type="dens", omit=1e5)
 abline(v=1e-4, col="blue")
 
 
@@ -68,15 +68,21 @@ points(dat$dates, col="red", pch="x",cex=2)
 
 
 
+
 ## check Pi
-plot(density(res$chains$pi[res$chains$step>1e5]), main="prop. obs. cases", xlim=0:1)
-abline(v=1,col="blue")
+plot.chains(res, "pi", omit=1e5, type="de")
+abline(v=1)
 
 
 
 ## check Phi
-plot(density(res$chains$phi[res$chains$step>1e5]), main="prop. external cases", xlim=0:1)
-abline(v=1/20,col="blue")
+plot.chains(res, "phi", omit=1e5, type="de")
+abline(v=1/20)
+
+
+## get Rt
+get.Rt(res)
+
 ############################################
 
 
