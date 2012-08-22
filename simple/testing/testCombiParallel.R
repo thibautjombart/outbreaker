@@ -19,10 +19,10 @@ plot(dat, main="Data")
 ############################################
 
 
-## w <- c(0,.1,.2,.5,2,.5,.2,.1)
-## full <- simOutbreak(R0=2, infec.curve=w, mu.transi=2e-4, mu.transv=1e-4)
-## dat <- full[1:20]
-## collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
+w <- c(0,.1,.2,.5,2,.5,.2,.1)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=2e-4, mu.transv=1e-4)
+dat <- full[1:20]
+collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 
 
 
