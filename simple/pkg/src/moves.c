@@ -289,8 +289,8 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		ll1=loglikelihood_all(dat, dnainfo, gen, currentPar);
 		ll2=loglikelihood_all(dat, dnainfo, gen, tempPar);
 
-		/* compute the priors */
-		logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar);
+		/* /\* compute the priors *\/ */
+		/* logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar); */
 
 		/* if p(new/old) > 1, accept new */
 		if(logRatio>=0.0) {
@@ -360,8 +360,8 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		/* compute the likelihood */
 		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar);
 
-		/* compute the priors */
-		logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar);
+		/* /\* compute the priors *\/ */
+		/* logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar); */
 
 		/* if p(new/old) > 1, accept new */
 		if(logRatio>=0.0) {
@@ -392,7 +392,6 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 /* MOVE VALUES OF PI */
 void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i;
     double logRatio=0.0;
     double QCur, QTemp;
 
@@ -407,10 +406,10 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
 
 
     /* ACCEPT / REJECT */
-    /* pi only impacts the prior of kappa_i (but for all 'i') */
-    for(i=0;i<dat->n;i++){
-	logRatio += logprior_kappa_i(i,tempPar) - logprior_kappa_i(i,currentPar);
-    }
+    /* likelihood */
+    logRatio += loglike_kappa_all(tempPar) - loglike_kappa_all(currentPar);
+
+    /* prior */
     logRatio += logprior_pi(tempPar) - logprior_pi(currentPar);
 
     /* ADD CORRECTION FOR MH truncated lognormal */
@@ -462,10 +461,10 @@ void move_phi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar,
 
 
     /* ACCEPT / REJECT */
-    /* phi only impacts the prior of kappa_i (but for all 'i') */
-    for(i=0;i<dat->n;i++){
-	logRatio += logprior_kappa_i(i,tempPar) - logprior_kappa_i(i,currentPar);
-    }
+   /* likelihood */
+    logRatio += loglike_alpha_all(tempPar) - loglike_alpha_all(currentPar);
+
+    /* prior */
     logRatio += logprior_phi(tempPar) - logprior_phi(currentPar);
 
     /* ADD CORRECTION FOR MH truncated lognormal */
