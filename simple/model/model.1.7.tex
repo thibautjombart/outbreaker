@@ -271,13 +271,19 @@ In the case of internal infection, it is computed as:
  \Omega_i^2 & = & p(t_i | T_i^{inf}, w) \times p(T_i^{inf}| \alpha_i, T_{\alpha_i}^{inf}, \kappa_i, w)  
     \times p(\alpha_i | \phi) \times p(\kappa_i | \pi)\nonumber \\
 & = &  f_w(t_i - T_i^{inf}) \times  w^{\left(\kappa_i\right)}(T_i^{inf} - T_{\alpha_i}^{inf})
-  \times (1 -\phi) \pi^{\kappa_i}
+  \times (1 -\phi) \times f_{\mathcal{NB}}(1 |\kappa_i-1, \pi)
 %  & & \times (\mathbf{1}_{\{ \alpha_i=0\}} \phi + \mathbf{1}_{\{ \alpha_i>0\}} (1-\phi)) \times \pi^{\kappa_i-1}
 \end{eqnarray}
-where the first term is the likelihood of the collection date, the second, the likelihood of the infection time, and the third, the probability of external and unsampled cases.
+where the first term is the likelihood of the collection date, the second, the likelihood of the infection time, the third, the probability of external cases, and the last, the probability of unobserved intermediate cases.
 $w^{\left(k\right)} = \underbrace{w*w*\ldots*w}_{k \text{ times}} $, where $*$ denotes the convolution operator, defined, for two positive discrete distributions $a$ and $b$, by $\left(a*b\right)\left(t\right) = \sum_{u=0}^{t} a\left(t-u\right)b\left(u\right)$. 
+$f_{\mathcal{NB}}(1 | r, p)$ is the probability mass function of a negative binomial distribution indicating the probability of getting 1 success after $r$ failures, with a probability of success $p$ (here, ``\textit{success}'' refers to successful sampling of a case, and ``failure'' to an unsampled case).
+% This term is defined as:
+% \begin{eqnarray}
+%  f_{\mathcal{NB}}(1 | \kappa_i-1, \pi) = \frac{(\kappa_i-1)!}{(\kappa_i-2)!} (1-\pi)^{\kappa_i-1} \pi
+% \end{eqnarray}
 
-In the case of external infections ($\alpha_i=0$), $\Omega_i^2$ is simply computed as:
+
+In the case of infections from the outside ($\alpha_i=0$), $\Omega_i^2$ is simply defined by the collection date and the probability of external infections:
 \begin{eqnarray}
 \Omega_i^2 & = & p(t_i | T_i^{inf}, w) \times p(\alpha_i | \phi) = f_w(t_i - T_i^{inf}) \phi
 \end{eqnarray}
@@ -317,7 +323,7 @@ In the case of external infections ($\alpha_i=0$), $\Omega_i^2$ is simply comput
 
 For all model parameters, independent prior distributions have been chosen:
 \begin{itemize}
-	\item $p(w) = \mathbf{1}_{\{w=w_0\}}$: the distribution of the generation time will be fixed to a given distribution ($w_0$) by default; this can be parameterized later in a more complex model.
+	\item $p(w) = \mathbf{1}_{\{w=w_0\}}$: the distribution of the generation time is fixed to a given distribution ($w_0$) by default; this can be parameterized later in a more complex model.
 % 	\item $p(\alpha_i) = \mathbf{1}_{\{k=0\}}\phi +  \mathbf{1}_{\{k\neq i, k>0\}}\frac{1-\phi}{n-1}$, where $\phi$ is the probability of cases imported from the outside. $\phi$ will be assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(1.5,10)$ to allow for around 10\% of external infections).
 % 	\item $p(\alpha_i = 0) = \phi$, by definition. For $\alpha_i>0$, $p(\alpha_i = k) = \mathbf{1}_{\{k\neq i\}}\frac{1-\phi}{n-1}$.
 % 	\item $p(\alpha_i) = \mathbf{1}_{\{k\neq i\}}\frac{1}{n-1}$.
@@ -325,8 +331,8 @@ For all model parameters, independent prior distributions have been chosen:
 %       \kappa, \mu_1, \gamma uniform
 	\item $p(\mu_1) = Unif(0,1)$.
 	\item $p(\gamma) = log\mathcal{N}(1,1.25)$ where $log\mathcal{N}(\mu,\sigma)$ is the log-normal distribution with mean $\mu$ and standard deviation $\sigma$ (values are the default in BEAST).
-% 	\item $p(\mu_1) = Exp(\lambda1)$, an exponential distribution of parameter $\lambda1$.
-% 	\item $p(\gamma)$
+	\item $p(\pi) = \beta(a,b)$: the proportion of unobserved cases is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(10,1)$ for an a priori densely sampled outbreak.
+	\item $p(\phi) = \beta(a,b)$: the proportion of external infections is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(1.5,10)$ to allow for around 10\% of external infections).	
 \end{itemize}
 
 
