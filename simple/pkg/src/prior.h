@@ -4,9 +4,9 @@
 
 void filter_logprob(double *in);
 
-double logprior_alpha_i(int i, param *par);
+/* double logprior_alpha_i(int i, param *par); */
 
-double logprior_kappa_i(int i, param *par);
+/* double logprior_kappa_i(int i, param *par); */
 
 double logprior_pi(param *par);
 

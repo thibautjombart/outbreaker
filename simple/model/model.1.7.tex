@@ -194,7 +194,7 @@ The likelihood can be decomposed as:
 & & p(\{s_i, t_i, T_i^{inf}, \alpha_i, \kappa_i\}_{(i=1,\ldots,n)}|  w, \mu_1, \gamma, \pi, \phi) \\
 & = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}, \alpha_i, \kappa_i | \{s_k, t_k, T_k^{inf} \}_{(k=1,\ldots,i-1)}, w, \mu_1, \gamma, \pi, \phi) 
   \times p(s_1, t_1, T_1^{inf}, \alpha_1, \kappa_1 |w)\\
-& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \mu_1, \gamma, \pi, \phi) 
+& = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}, \alpha_i, \kappa_i| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \mu_1, \gamma, \pi, \phi) 
   \times p(s_1, t_1 , T_1^{inf}, \alpha_1, \kappa_1 |w, \pi, \phi)\\
 & = & \prod_{i=2}^n p(s_i, t_i, T_i^{inf}, \alpha_i, \kappa_i | s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \mu_1, \gamma, \pi, \phi)\\ 
  & & \times p(t_1 | T_1^{inf},w) p(\alpha_1 | \phi) p(s_1) p(T_1^{inf}) p(\kappa_1) 
@@ -206,7 +206,7 @@ The term $p(T_1^{inf}) p(s_1) p(\kappa_1)$ is treated as a constant.
 % This will need to be modified if we explicitely model infections from outside the system.
 The term for case $i$ ($i=2,\ldots,n$) is:
 \begin{equation}
- p(s_i, t_i, T_i^{inf}, \alpha_i, \kappa_i| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \alpha_i, \kappa_i, \mu_1, \gamma, \pi, \phi)
+ p(s_i, t_i, T_i^{inf}, \alpha_i, \kappa_i| s_{\alpha_i}, t_{\alpha_i}, T_{\alpha_i}^{inf},  w, \mu_1, \gamma, \pi, \phi)
 \end{equation}
 which can be decomposed into:
 \begin{eqnarray}
@@ -266,7 +266,7 @@ In the absence of genetic information (including external infections where $\alp
 
 
 $\Omega_i^2$ is determined by the distribution of the generation time, the dates of collection and infection, and the proportion of unobserved or unsampled cases.
-In the case of internal infection, it is computed as:
+In the case of non-imported cases, it is computed as:
 \begin{eqnarray}
  \Omega_i^2 & = & p(t_i | T_i^{inf}, w) \times p(T_i^{inf}| \alpha_i, T_{\alpha_i}^{inf}, \kappa_i, w)  
     \times p(\alpha_i | \phi) \times p(\kappa_i | \pi)\nonumber \\
@@ -332,7 +332,7 @@ For all model parameters, independent prior distributions have been chosen:
 	\item $p(\mu_1) = Unif(0,1)$.
 	\item $p(\gamma) = log\mathcal{N}(1,1.25)$ where $log\mathcal{N}(\mu,\sigma)$ is the log-normal distribution with mean $\mu$ and standard deviation $\sigma$ (values are the default in BEAST).
 	\item $p(\pi) = \beta(a,b)$: the proportion of unobserved cases is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(10,1)$ for an a priori densely sampled outbreak.
-	\item $p(\phi) = \beta(a,b)$: the proportion of external infections is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(1.5,10)$ to allow for around 10\% of external infections).	
+	\item $p(\phi) = \beta(c,d)$: the proportion of external infections is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(1.5,10)$ to allow for around 10\% of external infections).	
 \end{itemize}
 
 

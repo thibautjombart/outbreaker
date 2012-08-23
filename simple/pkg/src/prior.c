@@ -11,38 +11,38 @@ void filter_logprob(double *in){
 
 
 
-/* p(alpha_i) = ...
-   ...phi if alpha_i=0
-   ...0 if alpha_i=i
-   ...(1-phi)/(n-1) in other cases
-*/
-double logprior_alpha_i(int i, param *par){
-    /* double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1.0/(par->n-1.0); */
-    double out;
-    int ances = vec_int_i(par->alpha,i);
-    if(ances==0){ /* external infection */
-	out = par->phi;
-    } else if(ances==i){
-	out = 0.0; /* auto-infection (impossible) */
-    } else {
-	out =  (1.0 - par->phi)/(par->n - 1.0); /* 'regular' infection */
-    }
+/* /\* p(alpha_i) = ... */
+/*    ...phi if alpha_i=0 */
+/*    ...0 if alpha_i=i */
+/*    ...(1-phi)/(n-1) in other cases */
+/* *\/ */
+/* double logprior_alpha_i(int i, param *par){ */
+/*     /\* double out = (i==vec_int_i(par->alpha,i)) ? 0.0 : (double) 1.0/(par->n-1.0); *\/ */
+/*     double out; */
+/*     int ances = vec_int_i(par->alpha,i); */
+/*     if(ances==0){ /\* external infection *\/ */
+/* 	out = par->phi; */
+/*     } else if(ances==i){ */
+/* 	out = 0.0; /\* auto-infection (impossible) *\/ */
+/*     } else { */
+/* 	out =  (1.0 - par->phi)/(par->n - 1.0); /\* 'regular' infection *\/ */
+/*     } */
 
-    /* put on log scale, filter, return */
-    out = log(out);
-    filter_logprob(&out);
-    return out;
-}
+/*     /\* put on log scale, filter, return *\/ */
+/*     out = log(out); */
+/*     filter_logprob(&out); */
+/*     return out; */
+/* } */
 
 
 
-/* p(kappa_i) = NB(1, 1-pi) with pi: prop obs cases */
-double logprior_kappa_i(int i, param *par){
-    double out = gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0);
-    out = log(out);
-    filter_logprob(&out);
-    return out;
-}
+/* /\* p(kappa_i) = NB(1, 1-pi) with pi: prop obs cases *\/ */
+/* double logprior_kappa_i(int i, param *par){ */
+/*     double out = gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0); */
+/*     out = log(out); */
+/*     filter_logprob(&out); */
+/*     return out; */
+/* } */
 
 
 
@@ -84,14 +84,14 @@ double logprior_gamma(param *par){
 
 
 double logprior_all(param *par){
-    int i;
+    /* int i; */
     double out=0.0;
 
-    /* result is the sum of priors over all parameters and individuals */
-    for(i=0;i<par->n;i++){
-	out += logprior_alpha_i(i,par);
-	out += logprior_kappa_i(i,par);
-    }
+    /* /\* result is the sum of priors over all parameters and individuals *\/ */
+    /* for(i=0;i<par->n;i++){ */
+    /* 	out += logprior_alpha_i(i,par); */
+    /* 	out += logprior_kappa_i(i,par); */
+    /* } */
 
     out += logprior_mu1();
     out += logprior_gamma(par);

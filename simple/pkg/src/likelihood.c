@@ -20,8 +20,13 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
     /* = EXTERNAL CASES = */
     if(ances < 0){
-	/* ONLY COMPUTE PROBA OF SAMPLING TIME */
+	/* PROBA OF SAMPLING TIME */
 	out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
+
+	/* PROBA OF EXTERNAL CASE */
+	out += log(par->phi);
+
+	/* FILTER AND RETURN */
 	filter_logprob(&out);
 	return out;
     }
@@ -44,11 +49,15 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
     /* likelihood of infection time */
     /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
-
     out += log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
 
+    /* PROBA OF NON-EXTERNAL INFECTION */
+    out += log(1-par->phi);
 
-    /* RETURN */
+    /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
+    out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
+
+    /* FILTER AND RETURN */
     filter_logprob(&out);
 
     return out;
@@ -124,6 +133,38 @@ double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par){
 
     return out;
 }
+
+
+
+
+
+/* LOG-LIKELIHOOD KAPPA FOR ALL INDIVIDUALS */
+double loglike_kappa_all(param *par){
+    double out = 0.0;
+    int i;
+    for(i=0;i<par->n;i++){
+	out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
+    }
+    filter_logprob(&out);
+    return out;
+}
+
+
+
+
+
+
+/* LOG-LIKELIHOOD ALPHA FOR ALL INDIVIDUALS */
+double loglike_alpha_all(param *par){
+    double out = 0.0;
+    int i;
+    for(i=0;i<par->n;i++){
+	out += (vec_int_i(par->alpha,i)<0) ? log(par->phi) : log(1-par->phi);
+    }
+    filter_logprob(&out);
+    return out;
+}
+
 
 
 
