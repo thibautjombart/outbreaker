@@ -49,15 +49,15 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
 
     /* EPIDEMIOLOGICAL LIKELIHOOD */
-    /* likelihood of collection date */
+    /* LIKELIHOOD OF COLLECTION DATE */
     out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
 
-    /* likelihood of infection time */
+    /* LIKELIHOOD OF INFECTION TIME */
     /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
     out += log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
 
     /* PROBA OF NON-EXTERNAL INFECTION */
-    out += log(1-par->phi);
+    out += log(1.0 - par->phi);
 
     /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
     out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
