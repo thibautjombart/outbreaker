@@ -29,6 +29,7 @@
      int n, length; /* n: number of observations; length: sequence length */
      vec_int * dates; /* collection dates*/
      list_dnaseq * dna; /* sequences */
+     int timespan; /* timespan of the data */
  } data;
 
 
