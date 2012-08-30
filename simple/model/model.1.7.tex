@@ -283,10 +283,12 @@ $f_{\mathcal{NB}}(1 | r, p)$ is the probability mass function of a negative bino
 % \end{eqnarray}
 
 
-In the case of infections from the outside ($\alpha_i=0$), $\Omega_i^2$ is simply defined by the collection date and the probability of external infections:
+In the case of infections from the outside ($\alpha_i=0$), $\Omega_i^2$ is simply defined by the collection date and the probability of external infections, with a uniform distribution probability for $T_i^{inf}$ over the the time span of the outbreak:
 \begin{eqnarray}
-\Omega_i^2 & = & p(t_i | T_i^{inf}, w) \times p(\alpha_i | \phi) = f_w(t_i - T_i^{inf}) \phi
+\Omega_i^2 & = & p(t_i | T_i^{inf}, w) \times p(T_i^{inf}| \alpha_i, T_{\alpha_i}^{inf}, \kappa_i, w) 
+  \times p(\alpha_i | \phi) = f_w(t_i - T_i^{inf}) \frac{\phi}{D}
 \end{eqnarray}
+where $D$ is the fixed time span of the outbreak (approximated by the timespan of the collection dates).
 \\
 
 % 

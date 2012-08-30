@@ -3,7 +3,7 @@
 ###############
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
-                        tree=TRUE){
+                        rate.import.case=0.1, diverg.import=20, tree=TRUE){
 
     ## CHECKS ##
     if(!require(ape)) stop("The ape package is required.")
@@ -79,23 +79,31 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$dynam$ninf[1] <- 1
     res$dates[1] <- 0
     res$ances <- NA
-    res$dna <- matrix(seq.gen(),nrow=1)
+    EVE <- seq.gen()
+    res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
     class(res$dna) <- "DNAbin"
 
     ## run outbreak ##
     for(t in 1:duration){
+        ## INTERNAL INFECTIONS ##
         ## individual force of infection
         indivForce <- infec.curve[t-res$dates+1]
 
         ## global force of infection (R0 \sum_j I_t^j / N)
-        globForce <- sum(indivForce)*R0/n.hosts
-        globForce <- min(1,globForce) # globForce is used as a proba, limit to 1
-        
-        ## number of new infections
-        nbNewInf <- rbinom(1, size=res$dynam$nsus[t], prob=globForce)
+        N <- res$dynam$nrec[t] + res$dynam$ninf[t] + res$dynam$nsus[t]
+        globForce <- sum(indivForce)*R0/N
 
-        ## dates of new infections
+        ## stop if no ongoing infection in the population
+        if(globForce < 1e-12) break;
+
+        ## compute proba of infection for each susceptible
+        p <- 1-exp(-globForce)
+
+        ## number of new infections
+        nbNewInf <- rbinom(1, size=res$dynam$nsus[t], prob=p)
+
         if(nbNewInf>0){
+            ## dates of new infections
             res$dates <- c(res$dates, rep(t,nbNewInf))
 
             ## ancestries of the new infections
@@ -104,14 +112,30 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             res$ances <- c(res$ances,newAnces)
 
             ## dna sequences of the new infections
-            ##newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], t-res$dates[i]))) # code with molecular clock
-            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1))) # code with molecular clock
+            ##newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], t-res$dates[i]))) # mol. clock per unit time
+            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1))) # mol. clock per generation
+            res$dna <- rbind(res$dna, newSeq)
+        }
+
+
+        ## IMPORTED CASES ##
+        ## number of imported cases
+        nbImpCases <- rpois(1, rate.import.case)
+        if(nbImpCases>0){
+            ## dates of imported cases
+            res$dates <- c(res$dates, rep(t, nbImpCases))
+
+            ## ancestries of the imported cases
+            res$ances <- c(res$ances, rep(NA, nbImpCases))
+
+            ## dna sequences of the new infections
+            newSeq <- t(sapply(1:nbImpCases, function(i) seq.dupli(EVE, diverg.import)))
             res$dna <- rbind(res$dna, newSeq)
         }
 
         ## update nb of infected, recovered, etc.
         res$dynam$nrec[t+1] <- sum(res$dates>=t.clear)
-        res$dynam$ninf[t+1] <- sum(res$dates>=0 & res$dates < t.clear)
+        res$dynam$ninf[t+1] <- sum(res$dates>=0 & (t-res$dates) < t.clear)
         res$dynam$nsus[t+1] <- res$dynam$nsus[t] - nbNewInf
     } # end for
 
@@ -119,7 +143,18 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     ## SHAPE AND RETURN OUTPUT ##
     res$n <- nrow(res$dna)
     res$id <- 1:res$n
-    res$nmut <- sapply(1:res$n, function(i) dist.dna(res$dna[c(res$id[i],res$ances[i]),], model="raw"))*ncol(res$dna)
+
+    findNmut <- function(i){
+        if(!is.na(ances[i]) && ances[i]>0){
+            out <- dist.dna(res$dna[c(res$id[i],res$ances[i]),], model="raw")*ncol(res$dna)
+        } else {
+            out <- NA
+        }
+        return(out)
+    }
+
+    ##res$nmut <- sapply(1:res$n, function(i) dist.dna(res$dna[c(res$id[i],res$ances[i]),], model="raw"))*ncol(res$dna)
+    res$nmut <- sapply(1:res$n, function(i) findNmut)
     res$call <- match.call()
     if(tree){
         res$tree <- fastme.ols(dist.dna(res$dna, model="TN93"))

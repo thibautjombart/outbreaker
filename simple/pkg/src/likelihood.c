@@ -26,10 +26,15 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 	/* PROBA OF EXTERNAL CASE */
 	out += log(par->phi);
 
+	/* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
+	out -= log((double) dat->timespan);
+
 	/* FILTER AND RETURN */
 	filter_logprob(&out);
+	printf("\nlikelihood (imported case): %f\n", out);fflush(stdout);
 	return out;
     }
+
 
     /* = INTERNAL CASES = */
     /* GENETIC LIKELIHOOD */
@@ -59,6 +64,8 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
     /* FILTER AND RETURN */
     filter_logprob(&out);
+
+    printf("\nlikelihood (internal case): %f\n", out);fflush(stdout);
 
     return out;
 } /* end loglikelihood_i */

@@ -45,7 +45,7 @@ void free_data(data *in){
 
 void print_data(data *in){
     fflush(stdout);
-    printf("\n= Collection dates =\n");
+    printf("\n= Collection dates (timespan: %d)=\n",in->timespan);
     print_vec_int(in->dates);
     printf("\n= Sequences =");
     print_list_dnaseq(in->dna);
@@ -64,6 +64,9 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *lengt
     for(i=0;i<*n;i++){
 	out->dates->values[i] = Tcollec[i];
     }
+
+    out->timespan = max_vec_int(out->dates) - min_vec_int(out->dates);
+
 
     /* FILL IN DNA DATA */
     /* avoid using DNAbin2list_dnaseq here as it re-allocates memory */
@@ -286,7 +289,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->idx_move_alpha = alloc_vec_int(out->n_move_alpha);
     out->idx_move_kappa = alloc_vec_int(out->n_move_kappa);
     out->all_idx = alloc_vec_int(n);
-    out->candid_ances = alloc_vec_int(n);
+    out->candid_ances = alloc_vec_int(n+1);
 
 
     /* FILL IN INTEGERS */

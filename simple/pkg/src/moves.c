@@ -258,7 +258,9 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	/* move only isolates with an ancestor in the sample */
 	if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){
 	    /* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) */
-	    nCandidates=0;
+	    /* nCandidates=0; */
+	    nCandidates=1;
+	    mcmcPar->candid_ances->values[0] = -1;
 	    for(j=0;j<dat->n;j++){
 		if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,toMove))
 		    mcmcPar->candid_ances->values[nCandidates++] =  j;
@@ -277,10 +279,14 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	    /* PROCEED ONLY IF ALPHA HAS CHANGED */
 	    if(vec_int_i(tempPar->alpha,toMove) != vec_int_i(currentPar->alpha,toMove)){
 
-		/* MOVE KAPPA_I - MULTINOMIAL */
-		/* T: Tinf_i - Tinf_ances */
-		T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
-		tempPar->kappa->values[toMove] = choose_kappa_i(T, gen, rng);
+		if(vec_int_i(tempPar->alpha,toMove)>=0){
+		    /* MOVE KAPPA_I - MULTINOMIAL */
+		    /* T: Tinf_i - Tinf_ances */
+		    T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
+		    tempPar->kappa->values[toMove] = choose_kappa_i(T, gen, rng);
+		} else {
+		    tempPar->kappa->values[toMove] = 1;
+		}
 
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
@@ -343,7 +349,8 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	toMove = vec_int_i(mcmcPar->idx_move_kappa,i);
 
 	/* move only isolates with an ancestor in the sample */
-	if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){
+	/* if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){ */
+	if(vec_int_i(currentPar->alpha, toMove) >= 0){
 	    /* GET PROPOSED KAPPA_I */
 	    /* needs to be on [1;maxK]*/
 	    temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
