@@ -28,7 +28,7 @@ plot(dat, main="Data")
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=1, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=2e3))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=5e4))
 
 ## check results ##
 plot.chains(res)

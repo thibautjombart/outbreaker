@@ -151,7 +151,7 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
     /* compute only genetic part as the epi part is unchanged */
     logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
     logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
- 
+
    /* add correction (MH) for lognormal proposal */
     logRatio += log(tempPar->gamma) - log(currentPar->gamma);
 
@@ -258,9 +258,9 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	/* move only isolates with an ancestor in the sample */
 	if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){
 	    /* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) */
-	    nCandidates=0;
-	    /* nCandidates=1; */
-	    /* mcmcPar->candid_ances->values[0] = -1; */
+	    /* nCandidates=0; */
+	    nCandidates=1;
+	    mcmcPar->candid_ances->values[0] = -1;
 	    for(j=0;j<dat->n;j++){
 		if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,toMove))
 		    mcmcPar->candid_ances->values[nCandidates++] =  j;

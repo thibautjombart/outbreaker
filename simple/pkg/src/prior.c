@@ -46,6 +46,24 @@ void filter_logprob(double *in){
 
 
 
+
+/* p(mu_1) = Unif(0,1) = 1*/
+double logprior_mu1(){
+    return 0.0; /* log(1) = 0 */
+}
+
+
+
+/* p(gamma) = logN(1,1.25) */
+double logprior_gamma(param *par){
+    double out = gsl_ran_lognormal_pdf(par->gamma, 1.0, 1.25);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
+}
+
+
+
 /* p(pi) = beta(...,...) */
 double logprior_pi(param *par){
     double out = gsl_ran_beta_pdf(par->pi, par->pi_param1, par->pi_param2);
@@ -65,21 +83,6 @@ double logprior_phi(param *par){
 }
 
 
-
-/* p(mu_1) = Unif(0,1) = 1*/
-double logprior_mu1(){
-    return 0.0; /* log(1) = 0 */
-}
-
-
-
-/* p(gamma) = logN(1,1.25) */
-double logprior_gamma(param *par){
-    double out = gsl_ran_lognormal_pdf(par->gamma, 1.0, 1.25);
-    out = log(out);
-    filter_logprob(&out);
-    return out;
-}
 
 
 
