@@ -24,6 +24,8 @@ plot(dat, main="Data")
 
 load("Robjects/talkCF-res.RData")
 
+
+
 ## PLOT POSTERIOR ##
 pdf("figures/talkCF-post.pdf")
 par(mfrow=c(2,1), mar=c(4,3,3,2))
