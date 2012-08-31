@@ -31,7 +31,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
 	/* FILTER AND RETURN */
 	filter_logprob(&out);
-	printf("\nlikelihood (imported case): %f\n", out);fflush(stdout);
+	/* printf("\nlikelihood (imported case): %f\n", out);fflush(stdout); */
 	return out;
     }
 
@@ -65,7 +65,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     /* FILTER AND RETURN */
     filter_logprob(&out);
 
-    printf("\nlikelihood (internal case): %f\n", out);fflush(stdout);
+    /* printf("\nlikelihood (internal case): %f\n", out);fflush(stdout); */
 
     return out;
 } /* end loglikelihood_i */
@@ -166,7 +166,7 @@ double loglike_alpha_all(param *par){
     double out = 0.0;
     int i;
     for(i=0;i<par->n;i++){
-	out += (vec_int_i(par->alpha,i)<0) ? log(par->phi) : log(1-par->phi);
+	out += (vec_int_i(par->alpha,i)<0) ? log(par->phi) : log(1.0-par->phi);
     }
     filter_logprob(&out);
     return out;
