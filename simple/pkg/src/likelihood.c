@@ -29,8 +29,8 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 	/* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
 	out -= log((double) dat->timespan);
 
-	/* SIMULATED GENETIC PROBA */
-	out += sim_loglike_gen(dat, par, rng);
+	/* /\* SIMULATED GENETIC PROBA *\/ */
+	/* out += sim_loglike_gen(dat, par, rng); */
 
 	/* FILTER AND RETURN */
 	filter_logprob(&out);

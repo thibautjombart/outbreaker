@@ -28,7 +28,7 @@ plot(dat, main="Data")
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=5e4))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=5e5))
 
 ## check results ##
 plot.chains(res)
@@ -50,6 +50,11 @@ par(mfrow=c(1,1))
 plot(dat,main="data", vertex.color=v.col)
 x11();
 plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
+
+## check frequency of external infections
+alpha <- res$chains[,grep("alpha", names(res$chains))]
+barplot(apply(alpha,2, function(e) mean(e==0)), main="Proportion of inferred external case")
+
 
 
 
@@ -80,4 +85,5 @@ abline(v=1)
 ## check Phi
 plot.chains(res, "phi", omit=1e5, type="de")
 abline(v=1/20)
+
 ############################################
