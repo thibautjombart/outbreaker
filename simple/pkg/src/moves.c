@@ -247,20 +247,23 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
     /* DETERMINE WHICH alpha_i TO MOVE */
     sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng);
 
-    /* FIND OLDEST INFECTION (it has no ancestor) */
+    /* FIND OLDEST INFECTION (A FORCED IMPORTED CASE) */
     oldestDate = min_vec_int(currentPar->Tinf);
 
     /* MOVE EACH alpha_i TO MOVE */
-    /* !!! need to propose a new kappa at the same time */
+    /* need to propose a new kappa at the same time */
     for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
 	toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
 
-	/* move only isolates with an ancestor in the sample */
-	if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){
+	/* MOVE ALPHA */
+	/* ALPHA MOVED TO -1 (IMPORTED CASE) */
+	/* if case index, or randomly based on phi */
+	/* if(vec_int_i(currentPar->Tinf, toMove)==oldestDate || gsl_rng_uniform(rng) < currentPar->phi){ */
+	if(vec_int_i(currentPar->Tinf, toMove)==oldestDate){
+	    tempPar->alpha->values[toMove] = -1;
+	} else { /* ALPHA CHOSEN FROM THE SAMPLE */
 	    /* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) */
-	    /* nCandidates=0; */
-	    nCandidates=1;
-	    mcmcPar->candid_ances->values[0] = -1;
+	    nCandidates=0;
 	    for(j=0;j<dat->n;j++){
 		if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,toMove))
 		    mcmcPar->candid_ances->values[nCandidates++] =  j;
@@ -275,55 +278,55 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 	    /* GET PROPOSED ALPHA_I */
 	    tempPar->alpha->values[toMove] = vec_int_i(mcmcPar->candid_ances, gsl_rng_uniform_int(rng, nCandidates));
+	}
 
-	    /* PROCEED ONLY IF ALPHA HAS CHANGED */
-	    if(vec_int_i(tempPar->alpha,toMove) != vec_int_i(currentPar->alpha,toMove)){
 
-		if(vec_int_i(tempPar->alpha,toMove)>=0){
-		    /* MOVE KAPPA_I - MULTINOMIAL */
-		    /* T: Tinf_i - Tinf_ances */
-		    T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
-		    tempPar->kappa->values[toMove] = choose_kappa_i(T, gen, rng);
-		} else {
-		    tempPar->kappa->values[toMove] = 1;
-		}
+	/* MOVE KAPPA */
+	/* proceed only if alpha has changed */
+	if(vec_int_i(tempPar->alpha,toMove) != vec_int_i(currentPar->alpha,toMove)){
 
-		/* ACCEPT/REJECT STEP */
-		/* compute the likelihood */
-		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
-		/* debugging */
-		ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
-		ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng);
+	    if(vec_int_i(tempPar->alpha,toMove)>=0){
+		/* move kappa_i - multinomial */
+		/* T: Tinf_i - Tinf_ances */
+		T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
+		tempPar->kappa->values[toMove] = choose_kappa_i(T, gen, rng);
+	    } else {
+		tempPar->kappa->values[toMove] = 1;
+	    }
 
-		/* /\* compute the priors *\/ */
-		/* logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar); */
+	    /* ACCEPT/REJECT STEP */
+	    /* compute the likelihood */
+	    logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
+	    /* debugging */
+	    ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
+	    ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng);
 
-		/* if p(new/old) > 1, accept new */
-		if(logRatio>=0.0) {
+	    /* if p(new/old) > 1, accept new */
+	    if(logRatio>=0.0) {
+		/* /\* debugging *\/ */
+		/* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+		/* fflush(stdout); */
+
+		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
+		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
+		mcmcPar->n_accept_alpha += 1;
+	    } else { /* else accept new with proba (new/old) */
+		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 		    /* /\* debugging *\/ */
-		    /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+		    /* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
 		    /* fflush(stdout); */
 
 		    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 		    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
 		    mcmcPar->n_accept_alpha += 1;
-		} else { /* else accept new with proba (new/old) */
-		    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-			/* /\* debugging *\/ */
-			/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
-			/* fflush(stdout); */
-
-			currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
-			currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-			mcmcPar->n_accept_alpha += 1;
-		    } else { /* reject */
-			tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
-			tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove);
-			mcmcPar->n_reject_alpha += 1;
-		    }
-		} /* end  ACCEPT/REJECT STEP */
-	    } /* end if ancestor has changed */
-	} /* end if isolate is not the oldest one */
+		} else { /* reject */
+		    tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
+		    tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove);
+		    mcmcPar->n_reject_alpha += 1;
+		}
+	    } /* end  ACCEPT/REJECT STEP */
+	} /* end if ancestor has changed */
+	/* } /\* end if isolate is not the oldest one *\/ */
     } /* end for loop (for all 'i' to move) */
 } /* end move_alpha */
 
