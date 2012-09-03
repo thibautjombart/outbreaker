@@ -26,7 +26,7 @@
    - indices are provided from 1 to n, i.e. not as C indices (from 0 to n-1)
 */
 
-void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param *par, int step, bool quiet){
+void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
     int i;
     double like, prior;
 
@@ -35,7 +35,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
     fprintf(file,"\n%d", step);
 
     /* posterior, likelihood, prior */
-    like = loglikelihood_all(dat, dnainfo, gen, par);
+    like = loglikelihood_all(dat, dnainfo, gen, par, rng);
     prior = logprior_all(par);
     fprintf(file,"\t%.15f", like + prior);
     fprintf(file,"\t%.15f", like);
@@ -303,7 +303,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
     }
 
-    fprint_chains(file, dat, dnainfo, gen, par, 1, quiet);
+    fprint_chains(file, dat, dnainfo, gen, par, 1, rng, quiet);
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
 
 
@@ -320,7 +320,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* fflush(stdout); */
 
 	if(i % outEvery == 0){
-	    fprint_chains(file, dat, dnainfo, gen, par, i, quiet);
+	    fprint_chains(file, dat, dnainfo, gen, par, i, rng, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
 	}
 
