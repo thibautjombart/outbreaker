@@ -13,7 +13,7 @@
 
 
 /* LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
-double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param *par){
+double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
     int ances=vec_int_i(par->alpha,i);
     double out=0.0;
 
@@ -28,6 +28,9 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
 	/* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
 	out -= log((double) dat->timespan);
+
+	/* SIMULATED GENETIC PROBA */
+	out += sim_loglike_gen(dat, par, rng);
 
 	/* FILTER AND RETURN */
 	filter_logprob(&out);
@@ -75,24 +78,25 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
 
 /* GENETIC LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
-double loglikelihood_gen_i(int i, dna_dist *dnainfo, param *par){
+double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_rng *rng){
     int ances=vec_int_i(par->alpha,i);
     double out=0.0;
 
+    /* IMPORTED CASES */
+    if(ances < 0) {
+	return sim_loglike_gen(dat, par, rng);
+    }
 
-    /* IF ANCESTOR UNKNOWN, RETURN LOG(1) = 0 */
-    if(ances < 0) return 0.0;
 
-
-    /* GENETIC LIKELIHOOD */
+    /* NON-IMPORTED CASES */
     /* dpois(0,0) returns -NaN, not 1! */
     if(mat_int_ij(dnainfo->nbcommon, i, ances)>0){
-	/* transitions */
+	/* TRANSITIONS */
 	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
 
 	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1));
 
-	/* transversions */
+	/* TRANSVERSIONS */
 	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
 
 	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1));
@@ -110,12 +114,12 @@ double loglikelihood_gen_i(int i, dna_dist *dnainfo, param *par){
 
 
 /* LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
-double loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
+double loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
     int i;
     double out=0.0;
 
     for(i=0;i<dat->n;i++){
-	out += loglikelihood_i(i, dat, dnainfo, gen, par);
+	out += loglikelihood_i(i, dat, dnainfo, gen, par, rng);
     }
 
     filter_logprob(&out);
@@ -128,12 +132,12 @@ double loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par)
 
 
 /* GENETIC LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
-double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par){
+double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par, gsl_rng *rng){
     int i;
     double out=0.0;
 
     for(i=0;i<dat->n;i++){
-	out += loglikelihood_gen_i(i, dnainfo, par);
+	out += loglikelihood_gen_i(i, dat, dnainfo, par, rng);
     }
 
     filter_logprob(&out);
@@ -177,8 +181,8 @@ double loglike_alpha_all(param *par){
 
 
 /* LOG-POSTERIOR FOR ALL INDIVIDUALS */
-double logposterior_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
-    double out = logprior_all(par) + loglikelihood_all(dat, dnainfo, gen, par);
+double logposterior_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
+    double out = logprior_all(par) + loglikelihood_all(dat, dnainfo, gen, par, rng);
 
     filter_logprob(&out);
 
@@ -189,15 +193,37 @@ double logposterior_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
 
 
 
+/* SIMULATE GENETIC LOG-LIKELIHOOD */
+double sim_loglike_gen(data *dat, param *par, gsl_rng *rng){
+    double out = 0.0, lambda1, lambda2;
+
+    /* compute param of the Poisson distributions */
+    lambda1 = (double) dat->length * par->mu1;
+    lambda2 = (double) dat->length * par->mu1 * par->gamma;
+
+    /* compute log-likelihood */
+    out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda1) , lambda1));
+    out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda2) , lambda2));
+
+    /* filter and return */
+    filter_logprob(&out);
+
+    return out;
+} /* end sim_loglike_gen */
+
+
+
+
+
 /* CHECK LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
 /* returns TRUE if all is fine, FALSE if likelihood is zero */
-bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par){
+bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
     int i, ances;
     double temp;
     bool out=TRUE;
 
     for(i=0;i<dat->n;i++){
-	temp = loglikelihood_i(i, dat, dnainfo, gen, par);
+	temp = loglikelihood_i(i, dat, dnainfo, gen, par, rng);
 	filter_logprob(&temp);
 
 	if(temp <= NEARMINUSINF){
@@ -206,7 +232,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    fflush(stdout);
 
 	    /* display genetic likelihood */
-	    temp = loglikelihood_gen_i(i, dnainfo, par);
+	    temp = loglikelihood_gen_i(i, dat, dnainfo, par, rng);
 	    filter_logprob(&temp);
 	    printf("\ni=%d: genetic like is: %f", i+1, temp);
 	    fflush(stdout);
@@ -234,7 +260,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 
 	}
     }
-    
+
     return out;
 } /* end check_loglikelihood_all */
 

@@ -101,8 +101,8 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     /* ACCEPT / REJECT */
     /* only likelihood as priors are flat for mu1 */
     /* compute only genetic part as the epi part is unchanged */
-    logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
-    logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
+    logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar, rng);
+    logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar, rng);
 
     /* ADD CORRECTION FOR MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->mu1),mcmcPar->sigma_mu1);
@@ -149,8 +149,8 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
     /* ACCEPT / REJECT */
     /* compute only genetic part as the epi part is unchanged */
-    logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar);
-    logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar);
+    logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar, rng);
+    logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar, rng);
 
    /* add correction (MH) for lognormal proposal */
     logRatio += log(tempPar->gamma) - log(currentPar->gamma);
@@ -205,10 +205,10 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
 	    /* ACCEPT/REJECT STEP */
 	    /* compute the likelihood (no priors for Tinf) */
-	    logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar);
+	    logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
 
-	    ll1 = loglikelihood_all(dat, dnainfo, gen, currentPar);
-	    ll2 = loglikelihood_all(dat, dnainfo, gen, tempPar);
+	    ll1 = loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
+	    ll2 = loglikelihood_all(dat, dnainfo, gen, tempPar, rng);
 
 	    /* if p(new/old) > 1, accept new */
 	    if(logRatio>=0.0) {
@@ -290,10 +290,10 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
-		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar);
+		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
 		/* debugging */
-		ll1=loglikelihood_all(dat, dnainfo, gen, currentPar);
-		ll2=loglikelihood_all(dat, dnainfo, gen, tempPar);
+		ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
+		ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng);
 
 		/* /\* compute the priors *\/ */
 		/* logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar); */
@@ -365,7 +365,7 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	    if(vec_int_i(tempPar->kappa,toMove) != vec_int_i(currentPar->kappa,toMove)){
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
-		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar);
+		logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
 
 		/* /\* compute the priors *\/ */
 		/* logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar); */

@@ -92,7 +92,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     init_mcmc_param(mcmcPar, dat, *move_mut, *move_alpha, *move_kappa, *move_Tinf, *move_pi, *move_phi);
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
-    checkLike = check_loglikelihood_all(dat, dnainfo, gen, par);
+    checkLike = check_loglikelihood_all(dat, dnainfo, gen, par, rng);
     if(!checkLike){
 	fprintf(stderr, "\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
 	fflush(stdout);
