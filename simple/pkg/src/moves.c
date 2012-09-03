@@ -262,8 +262,10 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	if(vec_int_i(currentPar->Tinf, toMove)==oldestDate){
 	    tempPar->alpha->values[toMove] = -1;
 	} else { /* ALPHA CHOSEN FROM THE SAMPLE */
+	    /* nCandidates=0; */
 	    /* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) */
-	    nCandidates=0;
+	    nCandidates=1;
+	    mcmcPar->candid_ances->values[0] = 0;
 	    for(j=0;j<dat->n;j++){
 		if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,toMove))
 		    mcmcPar->candid_ances->values[nCandidates++] =  j;
