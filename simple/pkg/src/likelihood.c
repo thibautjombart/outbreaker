@@ -29,8 +29,8 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 	/* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
 	out -= log((double) dat->timespan);
 
-	/* SIMULATED GENETIC PROBA */
-	out += sim_loglike_gen(dat, par, rng);
+	/* /\* SIMULATED GENETIC PROBA *\/ */
+	/* out += sim_loglike_gen(dat, par, rng); */
 
 	/* FILTER AND RETURN */
 	filter_logprob(&out);
@@ -84,7 +84,8 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
 
     /* IMPORTED CASES */
     if(ances < 0) {
-	return sim_loglike_gen(dat, par, rng);
+	/* return sim_loglike_gen(dat, par, rng); */
+	return 0.0;
     }
 
 
@@ -204,6 +205,9 @@ double sim_loglike_gen(data *dat, param *par, gsl_rng *rng){
     /* compute log-likelihood */
     out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda1) , lambda1));
     out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda2) , lambda2));
+
+    /* /\* penalize the likelihood *\/ */
+    /* out -= 100.0; */
 
     /* filter and return */
     filter_logprob(&out);
