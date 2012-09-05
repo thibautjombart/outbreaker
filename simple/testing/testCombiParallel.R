@@ -23,7 +23,7 @@ library(ape)
 
 w <- c(0,.1,.5,2,.5,.1)
 ####w <- c(0,1,1,1,.5,.2,.1)
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=2e-4, mu.transv=1e-4)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4)
 dat <- full[1:20]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
@@ -40,7 +40,7 @@ plot.chains(res)
 
 par(mfrow=c(2,1))
 plot.chains(res, "mu1",type="dens", omit=1e5)
-abline(v=2e-4, col="blue")
+abline(v=1e-4, col="blue")
 plot.chains(res, "mu2",type="dens", omit=1e5)
 abline(v=1e-4, col="blue")
 
@@ -48,10 +48,13 @@ abline(v=1e-4, col="blue")
 x <- get.TTree.simple(res)
 temp <- x
 temp$ances[is.na(temp$ances)] <- 0
-mean(temp$ances==dat$ances,na.rm=TRUE)
+temp2 <- dat$ances
+temp2[is.na(temp2)] <- 0
+temp2[1] <- NA
+mean(temp$ances==temp2,na.rm=TRUE)
 
 v.col <- rep("lightblue",length(x$ances))
-notOk <- which(x$ances!=dat$ances)
+notOk <- which(temp$ances!=temp2)
 if(length(notOk)>0) v.col[notOk] <- "red"
 par(mfrow=c(1,1))
 plot(dat,main="data", vertex.color=v.col)
