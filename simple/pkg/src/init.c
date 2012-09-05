@@ -147,6 +147,8 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, bool move_alpha, 
     in->sigma_phi = 0.01;
     in->lambda_Tinf = 1;
     in->step_notune = 0;
+    in->Pmove_alpha_old = 1.0;
+    in->Pmove_alpha_new = 1.0;
 
 
     /* FILL IN VECTOR OF ALL INDICES */
