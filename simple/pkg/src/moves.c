@@ -74,6 +74,45 @@ int choose_kappa_i(int T, gentime *gen, gsl_rng *rng){
 
 
 
+/*
+   SAMPLE ALPHA_I USING PROB BASED ON MUTATIONS
+   choose alpha from list of candidates
+   sampling favouring small nb of mutations
+   returned value is the index of the proposed ancestor
+*/
+int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_param *mcmcPar, gsl_rng *rng){
+    int j, nCandidates, nmut=0, idOut;
+
+    /* GET LIST OF CANDIDATES */
+    nCandidates=0;
+    for(j=0;j<dat->n;j++){
+	if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,i)){
+	    /* store 'j' as a candidate */
+	    mcmcPar->candid_ances->values[nCandidates] =  j;
+	    /* compute number of mutations between i-j */
+	    nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j);
+	    /* sampling proba are proportional to exp(-nmut) */
+	    mcmcPar->candid_ances_proba->values[nCandidates++] = exp((double) -nmut);
+	}
+    }
+
+    /* RETURN PROPOSED ALPHA_I */
+    /* no candidate = index case */
+    if(nCandidates==0) return -1;
+
+    /* one candidate */
+    if(nCandidates==1) return vec_int_i(mcmcPar->candid_ances,0);
+
+    /* >=2 candidates: use multinomial sampling */
+    idOut = draw_multinom_censored(mcmcPar->candid_ances_proba,nCandidates,rng);
+    return vec_int_i(mcmcPar->candid_ances, idOut);
+
+} /* end choose_alpha_i */
+
+
+
+
+
 
 
 

@@ -12,6 +12,7 @@
 
 int choose_kappa_i(int T, gentime *gen, gsl_rng *rng);
 
+int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_param *mcmcPar, gsl_rng *rng);
 
 
 
