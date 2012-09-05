@@ -409,7 +409,62 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
 
 
 
-/* 
+
+/*
+   make one draw from a vector of probabilities
+   returned value is (0,...,prob->length) with proba prob->values
+*/
+int draw_multinom(vec_double *prob, gsl_rng * rng){
+    int i;
+    double sumProb = sum_vec_double(prob), x, cumSum;
+
+    /* draw 'x' between 0.0 and sumProb */
+    x = gsl_rng_uniform(rng)*sumProb;
+
+    /* get item id (id = i-1) */
+    i=0;
+    cumSum=0.0;
+    do{
+	cumSum += vec_double_i(prob,i++);
+    } while(cumSum<x);
+
+    return i-1;
+} /* end draw_int_multinom */
+
+
+
+
+/*
+   same as above, using only the first 'n' items
+*/
+int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng){
+    int i;
+    double sumProb = 0.0, x, cumSum;
+
+    for(i=0;i<n;i++){
+	sumProb += vec_double_i(prob,i);
+    }
+
+    /* draw 'x' between 0.0 and sumProb */
+    x = gsl_rng_uniform(rng)*sumProb;
+
+    /* get item id (id = i-1) */
+    i=0;
+    cumSum=0.0;
+    do{
+	cumSum += vec_double_i(prob,i++);
+    } while(cumSum<x);
+
+    return i-1;
+} /* end draw_int_multinom */
+
+
+
+
+
+
+
+/*
    =========
    COPYING
    =========
@@ -663,8 +718,7 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 	    out->values[t] += vec_double_i(in_a, t-u) * vec_double_i(in_b, u);
 	}
     }
-   
-}
+} /* end convol_vec_double */
 
 
 
@@ -781,6 +835,24 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     /\* for(i=0;i<10;i++){ *\/ */
 /*     /\* 	printf("\n%d matches in a at position %d", i, in_vec_int(i,a)); *\/ */
 /*     /\* } *\/ */
+
+/*     /\* draw multinom *\/ */
+/*     a->values[0] = 1; */
+/*     a->values[1] = 1; */
+/*     a->values[2] = 2; */
+/*     a->values[3] = 4; */
+
+/*     printf("\n\n30 draws from multinom prob=(1,1,2,4) \n");fflush(stdout); */
+/*     for(i=0;i<30;i++){ */
+/* 	printf("%d ", draw_multinom(a, rng));fflush(stdout); */
+/*     } */
+
+/*     printf("\n\n30 draws from multinom prob=(1,1,2,4) censored to n=3 items \n");fflush(stdout); */
+/*     for(i=0;i<30;i++){ */
+/* 	printf("%d ", draw_multinom_censored(a, 3, rng));fflush(stdout); */
+/*     } */
+
+
 
 /*     free_vec_int(toto); */
 /*     free_vec_int(myVec); */

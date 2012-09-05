@@ -110,6 +110,10 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
 
 void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx);
 
+int draw_multinom(vec_double *prob, gsl_rng * rng);
+
+int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng);
+
 void copy_vec_int(vec_int *in, vec_int *out);
 
 void copy_vec_double(vec_double *in, vec_double *out);
