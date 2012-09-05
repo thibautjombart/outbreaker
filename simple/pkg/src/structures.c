@@ -290,6 +290,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->idx_move_kappa = alloc_vec_int(out->n_move_kappa);
     out->all_idx = alloc_vec_int(n);
     out->candid_ances = alloc_vec_int(n+1);
+    out->candid_ances_proba = alloc_vec_double(n+1);
 
 
     /* FILL IN INTEGERS */
@@ -337,6 +338,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_int(in->idx_move_kappa);
     free_vec_int(in->all_idx);
     free_vec_int(in->candid_ances);
+    free_vec_double(in->candid_ances_proba);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -380,6 +382,9 @@ void print_mcmc_param(mcmc_param *in){
 
     printf("\nVector of candidate ancestors:\n");
     print_vec_int(in->candid_ances);
+
+    printf("\nVector of candidate ancestors (proba):\n");
+    print_vec_double(in->candid_ances_proba);
 
     printf("\nTuned parameters:");
     if(in->tune_mu1) printf("mu1 ");
