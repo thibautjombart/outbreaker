@@ -24,7 +24,7 @@ library(ape)
 w <- c(0,.1,.5,2,.5,.1)
 ####w <- c(0,1,1,1,.5,.2,.1)
 full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4)
-dat <- full[1:20]
+dat <- full[1:50]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
@@ -33,19 +33,19 @@ plot(dat, main="Data")
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=2e5))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", n.iter=1e5))
 
 ## check results ##
 plot.chains(res)
 
 par(mfrow=c(2,1))
-plot.chains(res, "mu1",type="dens", omit=1e5)
+plot.chains(res, "mu1",type="dens", omit=2e4)
 abline(v=1e-4, col="blue")
-plot.chains(res, "mu2",type="dens", omit=1e5)
+plot.chains(res, "mu2",type="dens", omit=2e4)
 abline(v=1e-4, col="blue")
 
 ## check ancestries
-x <- get.TTree.simple(res)
+x <- get.TTree.simple(res, burn=2e4)
 temp <- x
 temp$ances[is.na(temp$ances)] <- 0
 temp2 <- dat$ances
