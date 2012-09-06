@@ -67,7 +67,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 	    out = i;
 	}
     }
-    
+
     /* printf("\nReturned value of kappa: %d\n",out);fflush(stdout); */
 
     return out;

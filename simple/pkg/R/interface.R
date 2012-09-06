@@ -2,21 +2,13 @@
 ##################
 ## main functions
 ##################
-## outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
-##                        init.tree=c("seqTrack","random","star","none"),
-##                        n.iter=1e6, sample.every=1000, tune.every=1000,
-##                        pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
-##                        init.mu1=1e-5, init.gamma=1,
-##                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-##                        move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-##                        quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        n.iter=1e6, sample.every=1000, tune.every=1000,
-                       pi.param1=10, pi.param2=1,
+                       pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                       move.Tinf=TRUE, move.pi=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
                        quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
@@ -122,7 +114,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     move.kappa <- as.integer(move.kappa)
     move.Tinf <- as.integer(move.Tinf)
     move.pi <- as.integer(move.pi)
-    move.phi <- as.integer(FALSE)
+    move.phi <- as.integer(move.phi)
     quiet <- as.integer(quiet)
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
