@@ -23,12 +23,12 @@ library(ape)
 
 w <- c(0,.1,.5,2,.5,.1)
 ####w <- c(0,1,1,1,.5,.2,.1)
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4)
-dat <- full[1:50]
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4, tree=FALSE)
+dat <- full[1:30]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
-
+BURNIN <- 2e4
 
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
@@ -37,12 +37,6 @@ system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates,
 
 ## check results ##
 plot.chains(res)
-
-par(mfrow=c(2,1))
-plot.chains(res, "mu1",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
-plot.chains(res, "mu2",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
 
 ## check ancestries
 x <- get.TTree.simple(res, burn=2e4)
@@ -66,6 +60,13 @@ alpha <- res$chains[,grep("alpha", names(res$chains))]
 barplot(apply(alpha,2, function(e) mean(e==0)), main="Proportion of inferred external case")
 
 
+## check mutation rates
+par(mfrow=c(2,1))
+plot.chains(res, "mu1",type="dens", omit=2e4)
+abline(v=1e-4, col="blue")
+plot.chains(res, "mu2",type="dens", omit=2e4)
+abline(v=1e-4, col="blue")
+
 
 
 ## check kappa
@@ -80,20 +81,20 @@ plot(x,main="reconstruction (red=wrong kappa)", vertex.color=v.col, annot="n.gen
 
 ## check Tinf
 toKeep <- grep("Tinf",names(res$chains))
-Tinf <- res$chains[res$chains$step>1e5, toKeep]
+Tinf <- res$chains[res$chains$step>BURNIN, toKeep]
 boxplot(Tinf, col="grey")
 points(dat$dates, col="red", pch="x",cex=2)
 
 
 
 ## check Pi
-plot.chains(res, "pi", omit=1e5, type="de")
+plot.chains(res, "pi", omit=BURNIN, type="de")
 abline(v=1)
 
 
 
 ## check Phi
-plot.chains(res, "phi", omit=1e5, type="de")
+plot.chains(res, "phi", omit=BURNIN, type="de")
 abline(v=1/20)
 
 ############################################
