@@ -258,7 +258,8 @@ void tune_phi(mcmc_param * in, gsl_rng *rng){
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i;
+    int i, nbTermsLike = 0;
+    double sumLogLike = 0.0, meanLogLike = 0.0;
 
     /* OPEN OUTPUT FILE */
     FILE *file = fopen(outputFile,"w"), *mcmcFile = fopen(mcmcOutputFile,"w");
@@ -314,6 +315,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     param *tempPar = alloc_param(dat->n);
     copy_param(par,tempPar);
 
+    /* CREATE TEMPORARY VECTOR STORING INDIVIDUAL LIKELIHOODS */
+    vec_double *indivLogLike = alloc_vec_double(dat->n);
+
     mcmcPar->step_notune = nIter;
 
     /* RUN NITER CHAINS */
@@ -325,6 +329,15 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	if(i % outEvery == 0){
 	    fprint_chains(file, dat, dnainfo, gen, par, i, rng, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
+
+	    /* collect information about individual likelihoods if needed */
+	    if(mcmcPar->find_import && i>=mcmcPar->burnin && i <mcmcPar->find_import_at){
+		for(i=0;i<dat->n;i++){
+		    indivLogLike->values[i] += loglikelihood_i(i,dat, dnainfo, gen, par, rng);
+		    sumLogLike += indivLogLike->values[i];
+		}
+		nbTermsLike++;
+	    }
 	}
 
 	/* TUNING */
@@ -338,6 +351,22 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
 		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
+	    }
+	}
+
+	/* FIND IMPORTED CASES */
+	if(mcmcPar->find_import && i==mcmcPar->find_import_at){
+	    /* compute general average log-like */
+	    meanLogLike = sumLogLike / ((double) nbTermsLike * dat->n);
+	    /* compute average for  each individual */
+	    printf("\n\nIndividual log-likelihoods:\n");
+	    for(i=0;i<dat->n;i++){
+		/* outliers = log-likelihood 10 times lower than the mean */
+		printf("Indiv %d, loglike ratio: %.5f", i+1, meanLogLike - (vec_double_i(indivLogLike,i)/(double) nbTermsLike));fflush(stdout);
+		if(meanLogLike - (vec_double_i(indivLogLike,i)/(double) nbTermsLike) > log(10)){
+		    par->alpha->values[i] = -1;
+		    mcmcPar->move_alpha->values[i] = 0.0;
+		}
 	    }
 	}
 
@@ -384,6 +413,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* FREE TEMPORARY PARAMETERS */
     free_param(tempPar);
+    free_vec_double(indivLogLike);
 } /* end mcmc */
 
 

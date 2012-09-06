@@ -4,7 +4,7 @@
 ##################
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
-                       n.iter=1e5, sample.every=200, tune.every=200,
+                       n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
                        pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
                        init.mu1=1e-5, init.gamma=1,
