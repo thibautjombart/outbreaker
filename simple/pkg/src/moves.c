@@ -87,24 +87,28 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
     double minNmut=1000000000.0;
 
     /* GET LIST OF CANDIDATES */
-    nCandidates=0;
+    /* nCandidates=0; */
+    nCandidates=1;
+    mcmcPar->candid_ances->values[nCandidates] =  -1;
     for(j=0;j<dat->n;j++){
 	if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,i)){
 	    /* store 'j' as a candidate */
 	    mcmcPar->candid_ances->values[nCandidates] =  j;
 	    /* compute number of mutations between i-j */
 	    nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j);
-	    /* /\* sampling proba positive if are proportional to exp(-nmut) *\/ */
 	    mcmcPar->candid_ances_proba->values[nCandidates] = (double) nmut;
 	    if(minNmut>nmut) minNmut = nmut;
 	    nCandidates++;
-	    /* sumProb += mcmcPar->candid_ances_proba->values[nCandidates]; */
 	}
     }
 
+
     /* DEFINE SAMPLING WEIGHTS FOR CANDIDATES */
+    /* need to add equal proba to imported cases */
+    mcmcPar->candid_ances_proba->values[0] = 1.0;
+
     /* weight = 1 if smallest distance, 0 otherwise */
-    for(j=0;j<nCandidates;j++){
+    for(j=1;j<nCandidates;j++){
 	if(vec_double_i(mcmcPar->candid_ances_proba,j)>minNmut){
 	    mcmcPar->candid_ances_proba->values[j] = 0.0;
 	} else {
@@ -238,7 +242,7 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
 void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    double logRatio=0.0, ll1, ll2;
+    double logRatio=0.0;
     int i, toMove = 0;
 
     /* DETERMINE WHICH Tinf_i TO MOVE */
@@ -263,8 +267,8 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	    /* compute the likelihood (no priors for Tinf) */
 	    logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
 
-	    ll1 = loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
-	    ll2 = loglikelihood_all(dat, dnainfo, gen, tempPar, rng);
+	    /* ll1 = loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
+	    /* ll2 = loglikelihood_all(dat, dnainfo, gen, tempPar, rng); */
 
 	    /* if p(new/old) > 1, accept new */
 	    if(logRatio>=0.0) {
@@ -303,9 +307,6 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
     /* DETERMINE WHICH ALPHA_I TO MOVE */
     sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng);
 
-    /* /\* FIND OLDEST INFECTION (A FORCED IMPORTED CASE) *\/ */
-    /* oldestDate = min_vec_int(currentPar->Tinf); */
-
     /* MOVE EACH ALPHA_I TO MOVE */
     /* need to propose a new kappa at the same time */
     for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
@@ -313,31 +314,6 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 	/* MOVE ALPHA */
 	tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, dnainfo, currentPar, mcmcPar, rng);
-
-	/* /\* ALPHA MOVED TO -1 (IMPORTED CASE) *\/ */
-	/* /\* if case index, or randomly based on phi *\/ */
-	/* /\* if(vec_int_i(currentPar->Tinf, toMove)==oldestDate || gsl_rng_uniform(rng) < currentPar->phi){ *\/ */
-	/* if(vec_int_i(currentPar->Tinf, toMove)==oldestDate){ */
-	/*     tempPar->alpha->values[toMove] = -1; */
-	/* } else { /\* ALPHA CHOSEN FROM THE SAMPLE *\/ */
-	/*     /\* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) *\/ */
-	/*     /\* nCandidates=1; *\/ */
-	/*     /\* mcmcPar->candid_ances->values[0] = -1; *\/ */
-	/*     nCandidates=0; */
-	/*     for(j=0;j<dat->n;j++){ */
-	/* 	if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,toMove)) */
-	/* 	    mcmcPar->candid_ances->values[nCandidates++] =  j; */
-	/*     } */
-
-	/*     /\* check that there is at least a candidate or issue error *\/ */
-	/*     if(nCandidates==0){ */
-	/* 	fprintf(stderr, "\n[in: moves.c->move_alpha]\nNo candidate ancestor for 'i' but still trying to move 'alpha_i' (i: %d).\n", toMove); */
-	/* 	exit(1); */
-	/*     } */
-	/*     /\* GET PROPOSED ALPHA_I *\/ */
-	/*     tempPar->alpha->values[toMove] = vec_int_i(mcmcPar->candid_ances, gsl_rng_uniform_int(rng, nCandidates)); */
-	/* } */
-
 
 	/* MOVE KAPPA */
 	/* proceed only if alpha has changed */
@@ -348,7 +324,7 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		/* T: Tinf_i - Tinf_ances */
 		T = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, tempPar->alpha->values[toMove]);
 		tempPar->kappa->values[toMove] = choose_kappa_i(T, gen, rng);
-	    } else {
+	    } else { /* default value for imported cases */
 		tempPar->kappa->values[toMove] = 1;
 	    }
 
@@ -570,168 +546,6 @@ void move_phi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar,
     }
 
 } /* end move_phi */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* /\* MOVE VALUES OF ALPHA AND KAPPA *\/ */
-/* void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){ */
-/*     int i, j, oldestDate = 0, nCandidates=0, toMove=0, T, ances; */
-/*     double logRatio = 0.0; */
-
-
-/*     /\* DETERMINE WHICH alpha_i/kappa_i TO MOVE *\/ */
-/*     /\*  - we change same kappa_i as alpha_i - *\/ */
-/*     sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng); */
-
-/*     /\* FIND OLDEST INFECTION (it has no ancestor) *\/ */
-/*     oldestDate = min_vec_int(currentPar->Tinf); */
-
-/*     /\* MOVE EACH alpha_i TO MOVE *\/ */
-/*     for(i=0;i<mcmcPar->idx_move_alpha->length;i++){ */
-/* 	toMove = vec_int_i(mcmcPar->idx_move_alpha,i); */
-
-/* 	/\* move only isolates with an ancestor in the sample *\/ */
-/* 	if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){ */
-/* 	    /\* find candidate ancestors ('alpha_i' so that T^inf_{alpha_i} < T^inf_i) *\/ */
-/* 	    nCandidates=0; */
-/* 	    for(j=0;j<dat->n;j++){ */
-/* 		if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,toMove)) */
-/* 		    mcmcPar->candid_ances->values[nCandidates++] =  j; */
-/* 	    } */
-
-/* 	    /\* check that there is at least a candidate or issue error *\/ */
-/* 	    if(nCandidates==0){ */
-/* 		fprintf(stderr, "\n[in: moves.c->move_alpha_kappa]\nNo candidate ancestor for 'i' but still trying to move 'alpha_i' (i: %d).\n", toMove); */
-/* 		exit(1); */
-/* 	    } */
-
-/* 	    /\* GET PROPOSED ALPHA_I *\/ */
-/* 	    tempPar->alpha->values[toMove] = vec_int_i(mcmcPar->candid_ances, gsl_rng_uniform_int(rng, nCandidates)); */
-
-/* 	    /\* GET PROPOSED KAPPA_I *\/ */
-/* 	    /\*  (GIBBS AS DISTRIBUTION IS NEG BIN) *\/ */
-/* 	    /\* ances: proposed ancestor for 'toMove' *\/ */
-/* 	    ances = vec_int_i(tempPar->alpha,toMove); */
-
-/* 	    /\* time between ancestor and descendent *\/ */
-/* 	    T = vec_int_i(tempPar->Tinf, toMove) - vec_int_i(tempPar->Tinf, ances); */
-
-/* 	    /\* most likely value of kappa *\/ */
-/* 	    /\* tempPar->kappa->values[toMove] = find_maxLike_kappa_i(T, gen); *\/ */
-
-
-/* 	    /\* ACCEPT/REJECT STEP *\/ */
-/* 	    /\* compute the likelihood *\/ */
-/* 	    logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar) - loglikelihood_all(dat, dnainfo, gen, currentPar); */
-
-/* 	    /\* compute the priors *\/ */
-/* 	    logRatio += logprior_alpha_i(toMove,tempPar) - logprior_alpha_i(toMove,currentPar); */
-/* 	    /\* logRatio += logprior_kappa_i(toMove,tempPar) - logprior_kappa_i(toMove,currentPar); *\/ */
-
-/* 	    /\* if p(new/old) > 1, accept new *\/ */
-/* 	    if(logRatio>=0.0) { */
-/* 		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove); */
-/* 		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove); */
-/* 		mcmcPar->n_accept_alpha += 1; */
-/* 		mcmcPar->n_accept_kappa += 1; */
-/* 	    } else { /\* else accept new with proba (new/old) *\/ */
-/* 		if(log(gsl_rng_uniform(rng)) <= logRatio){ /\* accept *\/ */
-/* 		    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove); */
-/* 		    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove); */
-/* 		    mcmcPar->n_accept_alpha += 1; */
-/* 		    mcmcPar->n_accept_kappa += 1; */
-/* 		} else { /\* reject *\/ */
-/* 		    tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove); */
-/* 		    tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove); */
-/* 		    mcmcPar->n_reject_alpha += 1; */
-/* 		    mcmcPar->n_reject_kappa += 1; */
-/* 		} */
-/* 	    } /\* end  ACCEPT/REJECT STEP *\/ */
-
-/* 	} /\* end if isolate is not the oldest one *\/ */
-/*     } /\* end for loop (for all 'i' to move) *\/ */
-/* } /\* end move_alpha *\/ */
-
-
-
-
-
-
-/*
-
-CODE MODEL FROM ANNE 
-
-*/
-/* void movePi(parameters * curParam, parameters * newParam, raw_data * data, aug_data *augData, acceptance *accept){ */
-/*     /\* updating Pi with a Gibbs sampler *\/ */
-/*     double ColonisedAtFirstAdmission=0; */
-/*     double NonColonisedAtFirstAdmission=0; */
-/*     int i; */
-
-/*     for(i=0;i<data->NbPatients;i++){ */
-/* 	if(augData->C[i]<gsl_vector_get(data->A[i],0)){ */
-/* 	    ColonisedAtFirstAdmission++; */
-/* 	} else { */
-/* 	    NonColonisedAtFirstAdmission++; */
-/* 	} */
-/*     } */
-
-/*     curParam->Pi = gsl_ran_beta (data->rng, ColonisedAtFirstAdmission+1, NonColonisedAtFirstAdmission+1); */
-/* } */
-
-
-
-
-
-
-/* void moveNu(mcmcInternals * MCMCSettings, parameters * curParam, parameters *newParam, raw_data * data, nb_data *nb, aug_data *augData, dna_dist *dnainfo, acceptance *accept, NbProposals *NbProp){ */
-/*     /\* updating nu1 with Metropolis algorithm *\/ */
-/*     /\* proposal distribution = lognormal *\/ */
-/*     double *newVal, *curVal; */
-/*     double * nbAccept; */
-/*     double * nbPropos; */
-/*     double sigmaProp; */
-/*     double r,z; */
-/*     double pAccept = 0; */
-/*     /\* double (* logPrior) (parameters *); *\/ */
-
-/*     curVal = &curParam->nu1; */
-/*     newVal = &newParam->nu1; */
-/*     sigmaProp = MCMCSettings->Sigma_nu1; */
-/*     nbAccept = &accept->PourcAcc_nu1; */
-/*     nbPropos = &NbProp->NbProp_nu1; */
-
-/*     *(newVal) = *(curVal)*gsl_ran_lognormal(data->rng,0,sigmaProp); */
-
-/*     pAccept += Colon(data, nb, augData, dnainfo, newParam); */
-/*     pAccept -= Colon(data, nb, augData, dnainfo, curParam); */
-
-/*     pAccept +=  logpriorNu1(newParam) - logpriorNu1(curParam); */
-
-/*     pAccept +=  log(*(newVal)) - log(*(curVal)); /\* correction for lognormal *\/ */
-
-/*     if (pAccept>0) r=0; else r=pAccept; /\* r=log(min(1,ratioOfMHalgo))*\/ */
-/*     z=gsl_rng_uniform(data->rng); */
-/*     if (log(z)<=r) { */
-/* 	*curVal = *newVal; */
-/* 	*nbAccept +=1; */
-/*     }else{ */
-/* 	*newVal = *curVal; */
-/*     } */
-/*     *nbPropos+=1; */
-
-/* } */
 
 
 
