@@ -206,6 +206,9 @@ double sim_loglike_gen(data *dat, param *par, gsl_rng *rng){
     out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda1) , lambda1));
     out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda2) , lambda2));
 
+    /* /\* penalize the likelihoood *\/ */
+    /* out -= 10; */
+
     /* filter and return */
     filter_logprob(&out);
 

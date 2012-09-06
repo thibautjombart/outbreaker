@@ -274,6 +274,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* OUTPUT TO OUTFILE - HEADER */
     fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi");
+    /* fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi"); */
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
     }
@@ -287,11 +288,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_phi\tp_accept_Tinf");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_phi\tn_like_zero");
+    /* fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf"); */
+    /* fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tn_like_zero"); */
 
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi");
+	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
 	for(i=0;i<dat->n;i++){
 	    printf("\tTinf_%d", i+1);
 	}
@@ -331,6 +334,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    tune_pi(mcmcPar,rng);
 	    tune_phi(mcmcPar,rng);
 	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi;
+	    /* mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi; */
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
 		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
@@ -365,7 +369,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move alpha_i*/
-	if(mcmcPar->move_alpha) move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	/* if(mcmcPar->move_alpha) move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
+	move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move kappa_i*/
 	if(mcmcPar->move_kappa) move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);

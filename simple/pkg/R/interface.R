@@ -2,13 +2,21 @@
 ##################
 ## main functions
 ##################
+## outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
+##                        init.tree=c("seqTrack","random","star","none"),
+##                        n.iter=1e6, sample.every=1000, tune.every=1000,
+##                        pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
+##                        init.mu1=1e-5, init.gamma=1,
+##                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
+##                        move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
+##                        quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        n.iter=1e6, sample.every=1000, tune.every=1000,
-                       pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
+                       pi.param1=10, pi.param2=1,
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                       move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE,
                        quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
@@ -105,16 +113,16 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     tune.every <- as.integer(tune.every)
     pi.param1 <- as.double(pi.param1)
     pi.param2 <- as.double(pi.param2)
-    phi.param1 <- as.double(phi.param1)
-    phi.param2 <- as.double(phi.param2)
+    phi.param1 <- as.double(1)
+    phi.param2 <- as.double(10)
     init.mu1 <- as.double(init.mu1)
     init.gamma <- as.double(init.gamma)
     move.mut <- as.integer(move.mut)
-    move.ances <- as.integer(move.ances)
+    move.ances <- as.integer(rep(move.ances, length=n.ind))
     move.kappa <- as.integer(move.kappa)
     move.Tinf <- as.integer(move.Tinf)
     move.pi <- as.integer(move.pi)
-    move.phi <- as.integer(move.phi)
+    move.phi <- as.integer(FALSE)
     quiet <- as.integer(quiet)
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]

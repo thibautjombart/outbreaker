@@ -87,9 +87,9 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
     double minNmut=1000000000.0;
 
     /* GET LIST OF CANDIDATES */
-    /* nCandidates=0; */
-    nCandidates=1;
-    mcmcPar->candid_ances->values[nCandidates] =  -1;
+    nCandidates=0;
+    /* nCandidates=1; */
+    /* mcmcPar->candid_ances->values[0] =  -1; */
     for(j=0;j<dat->n;j++){
 	if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,i)){
 	    /* store 'j' as a candidate */
@@ -104,11 +104,11 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
 
 
     /* DEFINE SAMPLING WEIGHTS FOR CANDIDATES */
-    /* need to add equal proba to imported cases */
-    mcmcPar->candid_ances_proba->values[0] = 1.0;
+    /* /\* add possibility of imported cases *\/ */
+    /* mcmcPar->candid_ances_proba->values[0] = 1.0; */
 
     /* weight = 1 if smallest distance, 0 otherwise */
-    for(j=1;j<nCandidates;j++){
+    for(j=0;j<nCandidates;j++){
 	if(vec_double_i(mcmcPar->candid_ances_proba,j)>minNmut){
 	    mcmcPar->candid_ances_proba->values[j] = 0.0;
 	} else {
@@ -125,8 +125,19 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
     if(nCandidates==1) return vec_int_i(mcmcPar->candid_ances,0);
 
     /* >=2 candidates: use multinomial */
+    /* printf("\nAncestor candidates:\n");fflush(stdout); */
+    /* print_vec_int(mcmcPar->candid_ances); */
+    /* printf("\nSampling proba:\n");fflush(stdout); */
+    /* print_vec_double(mcmcPar->candid_ances_proba); */
+
+    /* for(j=0;j<20;j++){ */
+    /* 	idOut = draw_multinom_censored(mcmcPar->candid_ances_proba, nCandidates, rng); */
+    /* 	out = vec_int_i(mcmcPar->candid_ances, idOut); */
+    /* 	printf("\nProposed alpha_i for %d: %d\n", i+1, out+1);fflush(stdout); */
+    /* } */
     idOut = draw_multinom_censored(mcmcPar->candid_ances_proba, nCandidates, rng);
     out = vec_int_i(mcmcPar->candid_ances, idOut);
+    
     return out;
 } /* end choose_alpha_i */
 
@@ -305,7 +316,8 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
     /* DETERMINE WHICH ALPHA_I TO MOVE */
-    sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng);
+    /* sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng); */
+    draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
 
     /* MOVE EACH ALPHA_I TO MOVE */
     /* need to propose a new kappa at the same time */

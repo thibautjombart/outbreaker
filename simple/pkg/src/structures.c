@@ -291,7 +291,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->all_idx = alloc_vec_int(n);
     out->candid_ances = alloc_vec_int(n+1);
     out->candid_ances_proba = alloc_vec_double(n+1);
-
+    out->move_alpha = alloc_vec_double(n);
 
     /* FILL IN INTEGERS */
     out->n_accept_mu1 = 0;
@@ -312,7 +312,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_phi = TRUE;
     out->step_notune = -1;
     out->move_mut = TRUE;
-    out->move_alpha = TRUE;
+    /* out->move_alpha = TRUE; */
     out->move_kappa = TRUE;
     out->move_pi = TRUE;
     out->move_phi = TRUE;
@@ -339,6 +339,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_int(in->all_idx);
     free_vec_int(in->candid_ances);
     free_vec_double(in->candid_ances_proba);
+    free_vec_double(in->move_alpha);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -395,11 +396,13 @@ void print_mcmc_param(mcmc_param *in){
 
     printf("\nMoved parameters:");
     if(in->move_mut) printf("mu1 gamma ");
-    if(in->move_alpha) printf("alpha ");
+    /* if(in->move_alpha) printf("alpha "); */
     if(in->move_kappa) printf("kappa ");
     if(in->move_Tinf) printf("Tinf ");
     if(in->move_pi) printf("pi ");
     if(in->move_phi) printf("phi ");
+    printf("\nMove alpha_i:");
+    print_vec_double(in->move_alpha);
 
     fflush(stdout);
 } /* end print_mcmc_param */

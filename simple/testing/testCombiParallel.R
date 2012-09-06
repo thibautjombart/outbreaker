@@ -24,7 +24,7 @@ library(ape)
 w <- c(0,.1,.5,2,.5,.1)
 ####w <- c(0,1,1,1,.5,.2,.1)
 full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4, tree=FALSE)
-dat <- full[1:30]
+dat <- full[1:100]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 

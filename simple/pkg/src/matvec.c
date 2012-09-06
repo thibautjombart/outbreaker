@@ -343,6 +343,61 @@ void permut_vec_int(vec_int *in, gsl_rng * rng){
 
 
 
+
+/*
+   make one draw from a vector of probabilities
+   returned value is (0,...,prob->length) with proba prob->values
+*/
+int draw_multinom(vec_double *prob, gsl_rng * rng){
+    int i;
+    double sumProb = sum_vec_double(prob), x, cumSum;
+
+    /* draw 'x' between 0.0 and sumProb */
+    x = gsl_rng_uniform(rng)*sumProb;
+
+    /* get item id (id = i-1) */
+    i=0;
+    cumSum=0.0;
+    do{
+	cumSum += vec_double_i(prob,i++);
+    } while(cumSum<x);
+
+    return i-1;
+} /* end draw_multinom */
+
+
+
+
+
+/*
+   same as above, using only the first 'n' items
+*/
+int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng){
+    int i;
+    double sumProb = 0.0, x, cumSum;
+
+    for(i=0;i<n;i++){
+	sumProb += vec_double_i(prob,i);
+    }
+
+    /* draw 'x' between 0.0 and sumProb */
+    x = gsl_rng_uniform(rng)*sumProb;
+
+    /* get item id (id = i-1) */
+    i=0;
+    cumSum=0.0;
+    do{
+	cumSum += vec_double_i(prob,i++);
+    } while(cumSum<x);
+
+    return i-1;
+} /* end draw_multinom */
+
+
+
+
+
+
 /* sample values of a vector of integers with/without replacement */
 void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
     if(in->length<1 || out->length<1) return;
@@ -356,8 +411,29 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
     } else {
 	gsl_ran_choose(rng, out->values, out->length, in->values, in->length, sizeof (int));
     }
-}
+} /* sample_vec_int */
 
+
+
+
+
+
+/* draw values of a vector of integers with replacement using defined probabilities */
+void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng * rng){
+    int i;
+    /* checks */
+    if(in->length<1 || out->length<1) return;
+    if(in->length != prob->length){
+  	fprintf(stderr, "\n[in: matvec.c->draw_vec_int_multinom]\nInput vector and vector of probabilities have different lengths (in:%d, prob:%d)", in->length, prob->length);
+    	exit(1);
+    }
+
+    /* draw values */
+    for(i=0;i<out->length;i++){
+	out->values[i] = vec_int_i(in, draw_multinom(prob, rng));
+    }
+    return;
+} /* end draw_vec_int_multinom */
 
 
 
@@ -407,56 +483,6 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
 } /* end sort_vec_int */
 
 
-
-
-
-/*
-   make one draw from a vector of probabilities
-   returned value is (0,...,prob->length) with proba prob->values
-*/
-int draw_multinom(vec_double *prob, gsl_rng * rng){
-    int i;
-    double sumProb = sum_vec_double(prob), x, cumSum;
-
-    /* draw 'x' between 0.0 and sumProb */
-    x = gsl_rng_uniform(rng)*sumProb;
-
-    /* get item id (id = i-1) */
-    i=0;
-    cumSum=0.0;
-    do{
-	cumSum += vec_double_i(prob,i++);
-    } while(cumSum<x);
-
-    return i-1;
-} /* end draw_int_multinom */
-
-
-
-
-/*
-   same as above, using only the first 'n' items
-*/
-int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng){
-    int i;
-    double sumProb = 0.0, x, cumSum;
-
-    for(i=0;i<n;i++){
-	sumProb += vec_double_i(prob,i);
-    }
-
-    /* draw 'x' between 0.0 and sumProb */
-    x = gsl_rng_uniform(rng)*sumProb;
-
-    /* get item id (id = i-1) */
-    i=0;
-    cumSum=0.0;
-    do{
-	cumSum += vec_double_i(prob,i++);
-    } while(cumSum<x);
-
-    return i-1;
-} /* end draw_int_multinom */
 
 
 

@@ -106,13 +106,15 @@ void print_gsl_vector(gsl_vector *in, char format[256]);
 
 void permut_vec_int(vec_int *in, gsl_rng * rng);
 
+int draw_multinom(vec_double *prob, gsl_rng * rng);
+
+int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng);
+
 void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
 
 void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx);
 
-int draw_multinom(vec_double *prob, gsl_rng * rng);
-
-int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng);
+void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng * rng);
 
 void copy_vec_int(vec_int *in, vec_int *out);
 

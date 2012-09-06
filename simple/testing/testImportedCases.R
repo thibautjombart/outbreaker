@@ -9,24 +9,28 @@ library(adegenet)
 library(ape)
 
 ## w <- c(0,.1,.2,.5,2,.5,.2,.1)
-## ####w <- c(0,1,1,1,.5,.2,.1)
 ## full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=0.2e-4)
 ## dat <- full[1:20]
 ## collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 ##save(w, full, dat, collecDates, file="Robjects/data4.RData")
 
-load("Robjects/data4.RData")
-plot(dat, main="Data")
+##load("Robjects/data5.RData")
+##plot(dat, main="Data")
 ############################################
 
 BURNIN <- 2e4
 
+w <- c(0,.1,.2,.5,2,.5,.2,.1)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=0.2e-4)
+dat <- full[1:50]
+collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
+plot(dat, main="Data")
 
 
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="none", n.iter=1e5))
+system.time(res <- outbreaker.parallel(n.runs=1, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
 
 ## check results ##
 plot.chains(res)
@@ -47,6 +51,7 @@ par(mfrow=c(1,1))
 plot(dat,main="data", vertex.color=v.col)
 x11();
 plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
+
 
 ## check frequency of external infections
 alpha <- res$chains[,grep("alpha", names(res$chains))]
