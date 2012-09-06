@@ -78,13 +78,13 @@ int choose_kappa_i(int T, gentime *gen, gsl_rng *rng){
 /*
    SAMPLE ALPHA_I USING PROB BASED ON MUTATIONS
    -> choose alpha from list of candidates
-   sampling favouring small nb of mutations
-   returned value is the index of the proposed ancestor
-   Pmove: proba of moving to proposed alpha_i; used later for accept ratio
+   -> 'alpha_i' is the most recent sampled ancestor of 'i'
+   -> candidates = genetically closest cases preceeding 'i' (all as likely)
+   -> returned value is the index of the proposed ancestor
 */
 int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_param *mcmcPar, gsl_rng *rng){
     int j, nCandidates, nmut=0, idOut, out;
-    double sumProb=0.0;
+    double minNmut=1000000000.0;
 
     /* GET LIST OF CANDIDATES */
     nCandidates=0;
@@ -94,12 +94,24 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
 	    mcmcPar->candid_ances->values[nCandidates] =  j;
 	    /* compute number of mutations between i-j */
 	    nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j);
-	    /* sampling proba are proportional to exp(-nmut) */
-	    mcmcPar->candid_ances_proba->values[nCandidates] = exp((double) -nmut);
-	    sumProb += mcmcPar->candid_ances_proba->values[nCandidates];
+	    /* /\* sampling proba positive if are proportional to exp(-nmut) *\/ */
+	    mcmcPar->candid_ances_proba->values[nCandidates] = (double) nmut;
+	    if(minNmut>nmut) minNmut = nmut;
 	    nCandidates++;
+	    /* sumProb += mcmcPar->candid_ances_proba->values[nCandidates]; */
 	}
     }
+
+    /* DEFINE SAMPLING WEIGHTS FOR CANDIDATES */
+    /* weight = 1 if smallest distance, 0 otherwise */
+    for(j=0;j<nCandidates;j++){
+	if(vec_double_i(mcmcPar->candid_ances_proba,j)>minNmut){
+	    mcmcPar->candid_ances_proba->values[j] = 0.0;
+	} else {
+	    mcmcPar->candid_ances_proba->values[j] = 1.0;
+	}
+    }
+
 
     /* RETURN PROPOSED ALPHA_I */
     /* no candidate = index case */
@@ -111,9 +123,6 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
     /* >=2 candidates: use multinomial */
     idOut = draw_multinom_censored(mcmcPar->candid_ances_proba, nCandidates, rng);
     out = vec_int_i(mcmcPar->candid_ances, idOut);
-    /* find proba of this move */
-    mcmcPar->Pmove_alpha_new = vec_double_i(mcmcPar->candid_ances_proba, idOut) / sumProb;
-
     return out;
 } /* end choose_alpha_i */
 
@@ -287,7 +296,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 
 /* MOVE VALUES OF ALPHA */
 void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, j, toMove=0, T, curMut, tempMut;
+    int i, j, toMove=0, T;
     double logRatio = 0.0, ll1, ll2;
 
 
@@ -347,13 +356,13 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	    /* compute the likelihood */
 	    logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng);
 
-	    /* MH correction */
-	    /* like ratio x ( Pmove(current)/Pmove(temp) ) */
+	    /* /\* MH correction *\/ */
+	    /* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
 
-	    curMut = mat_int_ij(dnainfo->transi, toMove, tempPar->alpha->values[toMove]) + mat_int_ij(dnainfo->transv, toMove, tempPar->alpha->values[toMove]);
-	    tempMut = mat_int_ij(dnainfo->transi, toMove, currentPar->alpha->values[toMove]) + mat_int_ij(dnainfo->transv, toMove, currentPar->alpha->values[toMove]);
+	    /* curMut = mat_int_ij(dnainfo->transi, toMove, tempPar->alpha->values[toMove]) + mat_int_ij(dnainfo->transv, toMove, tempPar->alpha->values[toMove]); */
+	    /* tempMut = mat_int_ij(dnainfo->transi, toMove, currentPar->alpha->values[toMove]) + mat_int_ij(dnainfo->transv, toMove, currentPar->alpha->values[toMove]); */
 
-	    logRatio += log(mcmcPar->Pmove_alpha_old/mcmcPar->Pmove_alpha_new);
+	    /* logRatio += log(mcmcPar->Pmove_alpha_old/mcmcPar->Pmove_alpha_new); */
 
 	    /* /\* debugging *\/ */
 	    /* ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
@@ -367,7 +376,7 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-		mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new;
+		/* mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new; */
 		mcmcPar->n_accept_alpha += 1;
 	    } else { /* else accept new with proba (new/old) */
 		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
@@ -377,7 +386,7 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 		    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 		    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-		    mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new;
+		    /* mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new; */
 		    mcmcPar->n_accept_alpha += 1;
 		} else { /* reject */
 		    tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
