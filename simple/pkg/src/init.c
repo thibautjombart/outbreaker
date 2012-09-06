@@ -68,7 +68,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 	}
     }
     
-    printf("\nReturned value of kappa: %d\n",out);fflush(stdout);
+    /* printf("\nReturned value of kappa: %d\n",out);fflush(stdout); */
 
     return out;
 } /* end find_maxLike_kappa_i */
@@ -122,7 +122,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, bool move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool move_phi){
+void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool move_phi){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -151,12 +151,17 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, bool move_alpha, 
     /* in->Pmove_alpha_new = 1.0; */
 
 
-    /* FILL IN VECTOR OF ALL INDICES */
-    for(i=0;i<N;i++) in->all_idx->values[i] = i;
+    /* FILL IN VECTORS */
+    for(i=0;i<N;i++) {
+	/* vector of all indices */
+	in->all_idx->values[i] = i;
+	/* vector of moved alpha_i*/
+	in->move_alpha->values[i] = move_alpha[i] > 0 ? 1.0 : 0.0;
+    }
 
     /* FILL IN BOOLEANS */
     in->move_mut = move_mut;
-    in->move_alpha = move_alpha;
+    /* in->move_alpha = move_alpha; */
     in->move_kappa = move_kappa;
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;

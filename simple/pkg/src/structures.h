@@ -87,7 +87,8 @@ typedef struct{
     int n_like_zero; /* number of times likelihood was zero */
     bool tune_all, tune_mu1, tune_gamma, tune_pi, tune_phi; /* logical indicating whether these proposals should be tuned */
     int step_notune; /* step at which all tuning stopped */
-    bool move_mut, move_alpha, move_kappa, move_Tinf, move_pi, move_phi; /* logical indicating what parameter should be moved */
+    bool move_mut, move_kappa, move_Tinf, move_pi, move_phi; /* logical indicating what parameter should be moved */
+    vec_double * move_alpha; /* vector indicating which alpha_i to move (1.0) or not (0.0) */
 } mcmc_param;
 
 
