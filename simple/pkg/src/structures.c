@@ -273,14 +273,14 @@ mcmc_param *alloc_mcmc_param(int n){
     }
 
     /* DETERMINE THE NUMBER OF Tinf */
-    /* set to N/10, minimum 1 */
-    out->n_move_Tinf = (int) n/4;
+    /* set to N/3, minimum 1 */
+    out->n_move_Tinf = (int) n/3;
     out->n_move_Tinf = out->n_move_Tinf < 1 ? 1 : out->n_move_Tinf;
 
 
     /* DETERMINE THE NUMBER OF KAPPA AND ALPHA TO MOVE */
-    /* set to N/10, minimum 1 */
-    out->n_move_alpha = (int) n/4;
+    /* set to N/3, minimum 1 */
+    out->n_move_alpha = (int) n/3;
     out->n_move_alpha = out->n_move_alpha < 1 ? 1 : out->n_move_alpha;
     out->n_move_kappa = out->n_move_alpha;
 
@@ -316,6 +316,9 @@ mcmc_param *alloc_mcmc_param(int n){
     out->move_kappa = TRUE;
     out->move_pi = TRUE;
     out->move_phi = TRUE;
+    out->burnin=0;
+    out->find_import_at=10000;
+    out->find_import=TRUE;
 
     /* FILL IN DOUBLES */
     out->sigma_mu1 = 0.0;
@@ -403,6 +406,9 @@ void print_mcmc_param(mcmc_param *in){
     if(in->move_phi) printf("phi ");
     printf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
+    if(in->find_import){
+	printf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
+    }
 
     fflush(stdout);
 } /* end print_mcmc_param */

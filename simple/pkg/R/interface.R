@@ -4,7 +4,8 @@
 ##################
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
-                       n.iter=1e6, sample.every=1000, tune.every=1000,
+                       n.iter=1e5, sample.every=200, tune.every=200,
+                       burnin=2e4, find.import=TRUE, find.import.n=50,
                        pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
@@ -29,7 +30,6 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     if(sum(w.dens) < 1e-14) stop("w.dens is zero everywhere")
     if(init.mu1<0) stop("init.mu1 < 0")
     if(init.gamma<0) stop("init.gamma < 0")
-
 
     ## PROCESS INPUTS ##
     ## dna ##
@@ -99,6 +99,13 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         seed <- as.integer(runif(1,min=0,max=2e9))
     }
 
+    ## handle find.import ##
+    if(find.import){
+        find.import.n <- max(find.import.n,30) # import at least based on 30 values
+        find.import.at <- as.integer(round(burnin + find.import.n*sample.every))
+        if(find.import.at>=n.iter) stop(paste("n.iter (", n.iter, ") is less than find.import.at (", find.import.at,")", sep=""))
+    }
+
     ## coerce type for remaining arguments ##
     n.iter <- as.integer(n.iter)
     sample.every <- as.integer(sample.every)
@@ -118,6 +125,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     quiet <- as.integer(quiet)
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
+    burnin <- as.integer(burnin)
 
 
     ## create empty output vector for genetic distances ##
@@ -130,12 +138,13 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                ances, n.iter, sample.every, tune.every, pi.param1, pi.param2,
                phi.param1, phi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
-               move.pi, move.phi, quiet,
+               move.pi, move.phi,
+               find.import, burnin, find.import.at, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[24]]
-    stopTuneAt <- temp[[25]]
+    D <- temp[[27]]
+    stopTuneAt <- temp[[28]]
 
     cat("\nComputations finished.\n\n")
 
@@ -150,7 +159,8 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     chains <- read.table(res.file.name, header=TRUE)
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
-    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt, call=call, n.runs=1)
+    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt,
+                find.import=find.import, burnin=burnin, find.import.at=find.import.at, n.runs=1, call=call)
 
     return(res)
 } # end outbreaker
@@ -205,6 +215,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
+                                                          find.import=find.import, burnin=find.import, find.import.at=find.import.at,
                                                           quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]),
                         mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
@@ -215,6 +226,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
+                                                          find.import=find.import, burnin=find.import, find.import.at=find.import.at,
                                                           quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]))
     }
 

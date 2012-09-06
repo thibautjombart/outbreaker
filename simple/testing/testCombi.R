@@ -24,7 +24,7 @@ plot(dat, main="Data")
 ############################################
 ## ESTIMATE EVERYTHING  ##
 ## run outbreaker
-system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="none", n.iter=5e5))
+system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="none", n.iter=1e5))
 
 ## check results ##
 plot.chains(res)
@@ -37,7 +37,7 @@ abline(v=1e-4, col="blue")
 
 
 ## check ancestries
-x <- get.TTree.simple(res)
+x <- get.TTree.simple(res, burnin=2e4)
 mean(x$ances==dat$ances,na.rm=TRUE)
 
 v.col <- rep("lightblue",length(x$ances))
