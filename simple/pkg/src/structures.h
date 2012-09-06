@@ -89,6 +89,8 @@ typedef struct{
     int step_notune; /* step at which all tuning stopped */
     bool move_mut, move_kappa, move_Tinf, move_pi, move_phi; /* logical indicating what parameter should be moved */
     vec_double * move_alpha; /* vector indicating which alpha_i to move (1.0) or not (0.0) */
+    int burnin, find_import_at; /* chains between 'burnin' and 'find_import_at' are used to find imported cases */
+    bool find_import; /* try to find and fix imported cases after 'burnin'? */
 } mcmc_param;
 
 

@@ -23,6 +23,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 		  double *pi_param1, double *pi_param2, double *phi_param1, double *phi_param2, 
 		  double *init_mu1, double *init_gamma, 
 		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, int *move_pi, int *move_phi, 
+		  int *find_import, int *burnin, int *find_import_at, 
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **res_file_name, char **tune_file_name, int *seed){
     /* DECLARATIONS */
