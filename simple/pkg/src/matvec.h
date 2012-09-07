@@ -114,6 +114,8 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng);
 
 void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx);
 
+void sort_vec_double(vec_double *in, vec_double *out, vec_int *idx);
+
 void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng * rng);
 
 void copy_vec_int(vec_int *in, vec_int *out);
@@ -138,6 +140,23 @@ void copy_mat_double(mat_double *in, mat_double *out);
 int sum_vec_int(vec_int *in);
 
 double sum_vec_double(vec_double *in);
+
+
+/*
+   MEANS
+*/
+double mean_vec_int(vec_int *in);
+
+double mean_vec_double(vec_double *in);
+
+
+/*
+   MEDIANS
+*/
+double median_vec_int(vec_int *in);
+
+double median_vec_double(vec_double *in);
+
 
 /*
    MINIMUMS

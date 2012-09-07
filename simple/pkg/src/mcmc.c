@@ -260,7 +260,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	  bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i, j, nbTermsLike = 0;
-    double sumLogLike = 0.0, meanLogLike = 0.0;
+    double medLogLike = 0.0;
 
     /* OPEN OUTPUT FILE */
     FILE *file = fopen(outputFile,"w"), *mcmcFile = fopen(mcmcOutputFile,"w");
@@ -335,8 +335,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    if(mcmcPar->find_import && i>=mcmcPar->burnin && i <mcmcPar->find_import_at){
 	    printf("\ni=%d - computing individual likelihoods\n",i);fflush(stdout);
 	    	for(j=0;j<dat->n;j++){
-	    	    indivLogLike->values[j] += loglikelihood_i(j,dat, dnainfo, gen, par, rng);
-	    	    sumLogLike += indivLogLike->values[j];
+	    	    /* indivLogLike->values[j] += loglikelihood_i(j,dat, dnainfo, gen, par, rng); */
+	    	    indivLogLike->values[j] += loglikelihood_gen_i(j,dat, dnainfo, par, rng);
 	    	}
 		printf("\nlikelihood vector:\n");fflush(stdout);
 		print_vec_double(indivLogLike);
@@ -360,14 +360,22 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* FIND IMPORTED CASES */
 	if(mcmcPar->find_import && i==mcmcPar->find_import_at){
-	    /* compute general average log-like */
-	    meanLogLike = sumLogLike / ((double) nbTermsLike * dat->n);
-	    /* compute average for  each individual */
-	    printf("\n\nIndividual log-likelihoods:\n");
+	    /* compute individual average log-like */
 	    for(j=0;j<dat->n;j++){
-		/* outliers = log-likelihood 10 times lower than the mean */
-		printf("\nIndiv %d: loglike difference= %.5f", j+1, meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike));fflush(stdout);
-		if((meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike)) > log(10)){
+		indivLogLike->values[j] = vec_double_i(indivLogLike,j)/((double) nbTermsLike);
+	    }
+
+	    /* compute general average log-like */
+	    medLogLike = mean_vec_double(indivLogLike);
+	    printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout);
+	    printf("\nIndividual loglike:\n");fflush(stdout);
+	    print_vec_double(indivLogLike);
+
+	    printf("\n\nLooking for outliers...\n");
+	    for(j=0;j<dat->n;j++){
+		/* outliers = likelihood 100 times lower than the median */
+		printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout);
+		if((medLogLike - vec_double_i(indivLogLike,j)) > log(100)){
 		    par->alpha->values[j] = -1;
 		    par->kappa->values[j] = 1;
 		    mcmcPar->move_alpha->values[j] = 0.0;
@@ -389,8 +397,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	    /* move gamma */
 	    move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
-	} else {
-	    printf("\n!!! move_mut is FALSE at iteration %d\n",i);fflush(stdout);
 	}
 
 	/* move pi */

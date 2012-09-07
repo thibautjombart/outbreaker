@@ -107,15 +107,22 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
     /* /\* add possibility of imported cases *\/ */
     /* mcmcPar->candid_ances_proba->values[0] = 1.0; */
 
+    /* CASE WHERE KAPPA_I = 1: KEEP ONLY GENETICALLY CLOSEST CANDIDATES */
     /* weight = 1 if smallest distance, 0 otherwise */
-    for(j=0;j<nCandidates;j++){
-	if(vec_double_i(mcmcPar->candid_ances_proba,j)>minNmut){
-	    mcmcPar->candid_ances_proba->values[j] = 0.0;
-	} else {
+    if(vec_int_i(currentPar->kappa, i) == 1){
+	for(j=0;j<nCandidates;j++){
+	    if(vec_double_i(mcmcPar->candid_ances_proba,j)>minNmut){
+		mcmcPar->candid_ances_proba->values[j] = 0.0;
+	    } else {
+		mcmcPar->candid_ances_proba->values[j] = 1.0;
+	    }
+	}
+    } else {
+	/* OTHER CASES: ALL FORMER CASES ARE CANDIDATES */
+	for(j=0;j<nCandidates;j++){
 	    mcmcPar->candid_ances_proba->values[j] = 1.0;
 	}
     }
-
 
     /* RETURN PROPOSED ALPHA_I */
     /* no candidate = index case */

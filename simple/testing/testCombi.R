@@ -14,7 +14,7 @@ library(ape)
 ## collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 ## save(w, full, dat, collecDates, file="Robjects/data4.RData")
 
-load("Robjects/data5.RData")
+load("Robjects/data4.RData")
 plot(dat, main="Data")
 ############################################
 
@@ -32,13 +32,6 @@ system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tre
 ## check results ##
 plot.chains(res)
 
-par(mfrow=c(2,1))
-plot.chains(res, "mu1",type="dens", omit=1e5)
-abline(v=2e-4, col="blue")
-plot.chains(res, "mu2",type="dens", omit=1e5)
-abline(v=1e-4, col="blue")
-
-
 ## check ancestries
 x <- get.TTree.simple(res, burnin=2e4)
 mean(x$ances==dat$ances,na.rm=TRUE)
@@ -51,6 +44,13 @@ plot(dat,main="data", vertex.color=v.col)
 x11();
 plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
 
+
+## check mutation rates
+par(mfrow=c(2,1))
+plot.chains(res, "mu1",type="dens")
+abline(v=2e-4, col="blue")
+plot.chains(res, "mu2",type="dens")
+abline(v=1e-4, col="blue")
 
 
 ## check kappa
@@ -65,7 +65,7 @@ plot(x,main="reconstruction (red=wrong kappa)", vertex.color=v.col, annot="n.gen
 
 ## check Tinf
 toKeep <- grep("Tinf",names(res$chains))
-Tinf <- res$chains[res$chains$step>1e5, toKeep]
+Tinf <- res$chains[res$chains$step>2e4, toKeep]
 boxplot(Tinf, col="grey")
 points(dat$dates, col="red", pch="x",cex=2)
 
@@ -73,13 +73,13 @@ points(dat$dates, col="red", pch="x",cex=2)
 
 
 ## check Pi
-plot.chains(res, "pi", omit=1e5, type="de")
+plot.chains(res, "pi", type="de")
 abline(v=1)
 
 
 
 ## check Phi
-plot.chains(res, "phi", omit=1e5, type="de")
+plot.chains(res, "phi", type="de")
 abline(v=1/20)
 
 
