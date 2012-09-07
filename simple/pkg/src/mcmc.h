@@ -37,8 +37,7 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng);
    METROPOLIS-HASTING ALGORITHM FOR ALL PARAMETERS
    ===============================================
 */
-
-void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, bool find_import, int burnin, int find_import_at, bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng);
+void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng);
 
 
 #endif

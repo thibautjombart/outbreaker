@@ -257,8 +257,7 @@ void tune_phi(mcmc_param * in, gsl_rng *rng){
    ===============================================
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
-	  bool find_import, int burnin, int find_import_at, bool quiet, 
-	  param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+	  bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i, j, nbTermsLike = 0;
     double sumLogLike = 0.0, meanLogLike = 0.0;
@@ -367,10 +366,12 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    printf("\n\nIndividual log-likelihoods:\n");
 	    for(j=0;j<dat->n;j++){
 		/* outliers = log-likelihood 10 times lower than the mean */
-		printf("Indiv %d, loglike ratio: %.5f", j+1, meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike));fflush(stdout);
-		if(meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike) > log(10)){
+		printf("\nIndiv %d: loglike difference= %.5f", j+1, meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike));fflush(stdout);
+		if((meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike)) > log(10)){
 		    par->alpha->values[j] = -1;
+		    par->kappa->values[j] = 1;
 		    mcmcPar->move_alpha->values[j] = 0.0;
+		    printf("\nSetting %d as imported case\n",j+1);fflush(stdout);
 		}
 	    }
 	}
@@ -388,6 +389,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	    /* move gamma */
 	    move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	} else {
+	    printf("\n!!! move_mut is FALSE at iteration %d\n",i);fflush(stdout);
 	}
 
 	/* move pi */

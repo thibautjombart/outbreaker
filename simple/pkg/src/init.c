@@ -122,7 +122,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool move_phi){
+void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool find_import, int burnin, int find_import_at){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -149,7 +149,8 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     in->step_notune = 0;
     /* in->Pmove_alpha_old = 1.0; */
     /* in->Pmove_alpha_new = 1.0; */
-
+    in->burnin = burnin;
+    in->find_import_at = find_import_at;
 
     /* FILL IN VECTORS */
     for(i=0;i<N;i++) {
@@ -166,9 +167,10 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;
     in->move_phi = move_phi;
+    in->find_import = find_import;
 
     /* ENSURE MOVE-TUNING CONSISTENCY */
-    if(!move_mut) {
+    if(!move_mut){
 	in->tune_mu1 = FALSE;
 	in->tune_gamma = FALSE;
     }

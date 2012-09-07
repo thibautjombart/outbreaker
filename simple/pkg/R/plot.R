@@ -86,7 +86,7 @@ epicurves <- function (x, col=NULL, bg="lightgrey", line.col="white", coef=1, ma
 ##############
 ## plot.chains
 ##############
-plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0, dens.all=TRUE,
+plot.chains <- function(x, what="post", type=c("series","density"), omit.first=NULL, dens.all=TRUE,
                         col=rainbow(x$n.runs), lty=1, lwd=1, main=what, ...){
     ## HANDLE ARGUMENTS ##
     type <- match.arg(type)
@@ -95,6 +95,9 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
     if(!is.null(col)) col <- rep(col, length = n.runs)
     if(!is.null(lty)) lty <- rep(lty, length = n.runs)
     if(!is.null(lwd)) lwd <- rep(lwd, length = n.runs)
+    if(is.null(omit.first)){
+        omit.first <- max(res$burnin, res$find.import.at, res$tune.end)
+    }
 
     ## GET DATA TO PLOT ##
     dat <- cbind(x$chains$step[x$chains$run==1],data.frame(split(x$chains[,what], x$chains$run)))
