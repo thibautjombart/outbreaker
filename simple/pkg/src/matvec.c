@@ -446,7 +446,7 @@ void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng 
 */
 void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
     if(out->length > in->length){
-	fprintf(stderr, "\n[in: matvec.c->sort_vec_int_index]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+	fprintf(stderr, "\n[in: matvec.c->sort_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
     	exit(1);
     }
 
@@ -481,6 +481,46 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
     }
 
 } /* end sort_vec_int */
+
+
+
+
+
+
+
+/* sort a vector of doubles (ascending order)
+   - in: input vector
+   - out: vector of sorted values
+   - idx: vector of indices (using R notation: out = in[idx])
+*/
+void sort_vec_double(vec_double *in, vec_double *out, vec_int *idx){
+    if(out->length > in->length){
+	fprintf(stderr, "\n[in: matvec.c->sort_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+    	exit(1);
+    }
+
+    int i, j, curMinIdx;
+    double curMin;
+    idx->length=0;
+
+    for(j=0;j<in->length;j++){
+	curMin=max_vec_double(in);
+	curMinIdx=0;
+
+	for(i=0;i<in->length;i++){
+	    if(in_vec_int(i, idx)<0 && curMin>=vec_double_i(in,i)) {
+		curMin=vec_double_i(in,i);
+		curMinIdx = i;
+	    }
+	}
+
+	/* update vectors */
+	out->values[j] = curMin;
+	idx->values[j] = curMinIdx;
+	idx->length = idx->length + 1;
+    }
+
+} /* end sort_vec_double */
 
 
 
@@ -596,6 +636,70 @@ double sum_vec_double(vec_double *in){
     return out;
 }
 
+
+
+/*
+   MEANS
+*/
+double mean_vec_int(vec_int *in){
+    double out=(double) sum_vec_int(in);
+    return (out/in->length);
+}
+
+
+double mean_vec_double(vec_double *in){
+    double out=(double) sum_vec_double(in);
+    return (out/in->length);
+}
+
+
+
+/*
+   MEDIANS
+*/
+double median_vec_int(vec_int *in){
+    /* handle specific cases */
+    if(in->length==0) return 0.0;
+    if(in->length==1) return ((double) vec_int_i(in,0));
+
+    /* allocate temporary vectors */
+    double out=0.0;
+    vec_int *sorted = alloc_vec_int(in->length), *idx=alloc_vec_int(in->length);
+
+    /* sort values */
+    sort_vec_int(in, sorted, idx);
+
+    /* get median */
+    out = 0.5 * (vec_int_i(in, floor(in->length/2.0)) + vec_int_i(in, 1+floor(in->length/2.0)));
+
+    /* free and return */
+    free_vec_int(idx);
+    free_vec_int(sorted);
+    return (out);
+}
+
+
+double median_vec_double(vec_double *in){
+    /* handle specific cases */
+    if(in->length==0) return 0.0;
+    if(in->length==1) return ((double) vec_double_i(in,0));
+
+    /* allocate temporary vectors */
+    double out=0.0;
+    vec_double *sorted = alloc_vec_double(in->length);
+    vec_int *idx=alloc_vec_int(in->length);
+
+    /* sort values */
+    sort_vec_double(in, sorted, idx);
+
+    /* get median */
+    out = 0.5 * (vec_double_i(in, floor(in->length/2.0)) + vec_double_i(in, 1+floor(in->length/2.0)));
+
+    /* free and return */
+    free_vec_int(idx);
+    free_vec_double(sorted);
+    return (out);
+}
 
 
 
@@ -781,9 +885,9 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
   
 /*     vec_double *a = alloc_vec_double(4); */
 /*     vec_double *convol = alloc_vec_double(4); */
-/*     a->values[1]=3; */
-/*     a->values[2]=2; */
-/*     a->values[3]=4; */
+/*     a->values[1]=3.0; */
+/*     a->values[2]=2.0; */
+/*     a->values[3]=4.0; */
 /*     convol_vec_double(a,a,convol); */
 /*     printf("\nvector 'a'\n"); */
 /*     print_vec_double(a); */
@@ -821,6 +925,7 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     printf("\n== sorting a vector ==\n"); */
 /*     vec_int *idx, *sortedVec; */
 /*     idx = alloc_vec_int(30); */
+/*     vec_double *sorta = alloc_vec_double(a->length); */
 /*     sortedVec = alloc_vec_int(30); */
 /*     sort_vec_int(myVec, sortedVec, idx); */
 /*     printf("\nvector to sort:"); */
@@ -829,6 +934,20 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     print_vec_int(sortedVec); */
 /*     printf("\nindices:"); */
 /*     print_vec_int(idx); */
+
+/*     a->values[0]=300.012; */
+/*     a->values[1]=-3.1; */
+/*     a->values[2]=2.8; */
+/*     a->values[3]=7.2; */
+ 
+/*     printf("\nSorting a double\n");fflush(stdout); */
+/*     printf("\nvector a:\n");fflush(stdout); */
+/*     print_vec_double(a); */
+/*     printf("\nsorted vector\n");fflush(stdout); */
+/*     sort_vec_double(a, sorta, idx); */
+/*     print_vec_double(sorta); */
+/*     printf("\nmean of a: %f\n", mean_vec_double(a));fflush(stdout); */
+/*     printf("\nmedian of a: %f\n", median_vec_double(a));fflush(stdout); */
     
 
 /*     /\* copies *\/ */
@@ -863,10 +982,10 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     /\* } *\/ */
 
 /*     /\* draw multinom *\/ */
-/*     a->values[0] = 1; */
-/*     a->values[1] = 1; */
-/*     a->values[2] = 2; */
-/*     a->values[3] = 4; */
+/*     a->values[0] = 1.0; */
+/*     a->values[1] = 1.0; */
+/*     a->values[2] = 2.0; */
+/*     a->values[3] = 4.0; */
 
 /*     printf("\n\n30 draws from multinom prob=(1,1,2,4) \n");fflush(stdout); */
 /*     for(i=0;i<30;i++){ */
@@ -879,13 +998,13 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     } */
 
 
-
 /*     free_vec_int(toto); */
 /*     free_vec_int(myVec); */
 /*     free_vec_int(idx); */
 /*     free_vec_int(sortedVec); */
 /*     free_vec_int(copyVec); */
 /*     free_vec_double(a); */
+/*     free_vec_double(sorta); */
 /*     free_vec_double(convol); */
 /*     free_mat_double(mat); */
 /*     free_mat_double(mat2); */
