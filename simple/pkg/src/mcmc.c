@@ -256,9 +256,11 @@ void tune_phi(mcmc_param * in, gsl_rng *rng){
    METROPOLIS-HASTING ALGORITHM FOR ALL PARAMETERS
    ===============================================
 */
-void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
+	  bool find_import, int burnin, int find_import_at, bool quiet, 
+	  param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i, nbTermsLike = 0;
+    int i, j, nbTermsLike = 0;
     double sumLogLike = 0.0, meanLogLike = 0.0;
 
     /* OPEN OUTPUT FILE */
@@ -332,11 +334,14 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	    /* collect information about individual likelihoods if needed */
 	    if(mcmcPar->find_import && i>=mcmcPar->burnin && i <mcmcPar->find_import_at){
-		for(i=0;i<dat->n;i++){
-		    indivLogLike->values[i] += loglikelihood_i(i,dat, dnainfo, gen, par, rng);
-		    sumLogLike += indivLogLike->values[i];
-		}
-		nbTermsLike++;
+	    printf("\ni=%d - computing individual likelihoods\n",i);fflush(stdout);
+	    	for(j=0;j<dat->n;j++){
+	    	    indivLogLike->values[j] += loglikelihood_i(j,dat, dnainfo, gen, par, rng);
+	    	    sumLogLike += indivLogLike->values[j];
+	    	}
+		printf("\nlikelihood vector:\n");fflush(stdout);
+		print_vec_double(indivLogLike);
+	    	nbTermsLike++;
 	    }
 	}
 
@@ -360,12 +365,12 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    meanLogLike = sumLogLike / ((double) nbTermsLike * dat->n);
 	    /* compute average for  each individual */
 	    printf("\n\nIndividual log-likelihoods:\n");
-	    for(i=0;i<dat->n;i++){
+	    for(j=0;j<dat->n;j++){
 		/* outliers = log-likelihood 10 times lower than the mean */
-		printf("Indiv %d, loglike ratio: %.5f", i+1, meanLogLike - (vec_double_i(indivLogLike,i)/(double) nbTermsLike));fflush(stdout);
-		if(meanLogLike - (vec_double_i(indivLogLike,i)/(double) nbTermsLike) > log(10)){
-		    par->alpha->values[i] = -1;
-		    mcmcPar->move_alpha->values[i] = 0.0;
+		printf("Indiv %d, loglike ratio: %.5f", j+1, meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike));fflush(stdout);
+		if(meanLogLike - (vec_double_i(indivLogLike,j)/(double) nbTermsLike) > log(10)){
+		    par->alpha->values[j] = -1;
+		    mcmcPar->move_alpha->values[j] = 0.0;
 		}
 	    }
 	}

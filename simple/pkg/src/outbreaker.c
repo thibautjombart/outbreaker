@@ -35,7 +35,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     dna_dist * dnainfo;
     mcmc_param * mcmcPar;
     int i,j, counter;
-
+    
     double logPrior, logLike, logPost;
 
     bool checkLike;
@@ -100,7 +100,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     }
 
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery, (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+    mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery,
+	 (bool) *find_import, *burnin, *find_import_at,
+	 (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
 
 
     /* FILL IN GENETIC DISTANCE VECTOR */

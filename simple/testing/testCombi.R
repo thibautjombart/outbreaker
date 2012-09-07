@@ -14,17 +14,20 @@ library(ape)
 ## collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 ## save(w, full, dat, collecDates, file="Robjects/data4.RData")
 
-load("Robjects/data4.RData")
+load("Robjects/data5.RData")
 plot(dat, main="Data")
 ############################################
 
 
-
+## w <- c(0,.1,.2,.5,2,.5,.2,.1)
+## full <- simOutbreak(R0=2, infec.curve=w, mu.transi=2e-4, mu.transv=1e-4)
+## dat <- full[1:20]
+## collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 
 ############################################
 ## ESTIMATE EVERYTHING  ##
 ## run outbreaker
-system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="none", n.iter=1e5))
+system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5, find.import=FALSE))
 
 ## check results ##
 plot.chains(res)

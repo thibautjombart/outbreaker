@@ -104,6 +104,8 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         find.import.n <- max(find.import.n,30) # import at least based on 30 values
         find.import.at <- as.integer(round(burnin + find.import.n*sample.every))
         if(find.import.at>=n.iter) stop(paste("n.iter (", n.iter, ") is less than find.import.at (", find.import.at,")", sep=""))
+    } else {
+        find.import.at <- as.integer(0)
     }
 
     ## coerce type for remaining arguments ##
@@ -126,7 +128,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
     burnin <- as.integer(burnin)
-
+    find.import.int <- as.integer(find.import)
 
     ## create empty output vector for genetic distances ##
     dna.dist <- integer(n.ind*(n.ind-1)/2)
@@ -139,7 +141,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                phi.param1, phi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.phi,
-               find.import, burnin, find.import.at, quiet,
+               find.import.int, burnin, find.import.at, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
@@ -215,7 +217,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
-                                                          find.import=find.import, burnin=find.import, find.import.at=find.import.at,
+                                                          find.import=find.import, burnin=burnin, find.import.at=find.import.at,
                                                           quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]),
                         mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
@@ -226,7 +228,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
-                                                          find.import=find.import, burnin=find.import, find.import.at=find.import.at,
+                                                          find.import=find.import, burnin=burnin, find.import.at=find.import.at,
                                                           quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]))
     }
 
