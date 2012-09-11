@@ -157,7 +157,7 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 	/* vector of all indices */
 	in->all_idx->values[i] = i;
 	/* vector of moved alpha_i*/
-	in->move_alpha->values[i] = move_alpha[i] > 0 ? 1.0 : 0.0;
+	in->move_alpha->values[i] = move_alpha[i] > 0.0 ? 1.0 : 0.0;
     }
 
     /* FILL IN BOOLEANS */

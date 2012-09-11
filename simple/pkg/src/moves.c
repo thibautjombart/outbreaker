@@ -88,30 +88,32 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
 
     /* GET LIST OF CANDIDATES */
     nCandidates=0;
-    /* nCandidates=1; */
-    /* mcmcPar->candid_ances->values[0] =  -1; */
+
+    /* candidates = infection time before T_i^inf*/
     for(j=0;j<dat->n;j++){
 	if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,i)){
 	    /* store 'j' as a candidate */
 	    mcmcPar->candid_ances->values[nCandidates] =  j;
-	    /* compute number of mutations between i-j */
-	    nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j);
-	    mcmcPar->candid_ances_proba->values[nCandidates] = (double) nmut;
-	    if(minNmut>nmut) minNmut = nmut;
+
+	    /* if kappa_i==1, need to get genetic distances to candidates */
+	    if(vec_int_i(currentPar->kappa,j)==1){
+		nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j);
+		mcmcPar->candid_ances_proba->values[nCandidates] = (double) nmut;
+		if(minNmut>nmut) minNmut = nmut;
+	    }
+
+	    /* increment number of candidates */
 	    nCandidates++;
 	}
     }
 
 
     /* DEFINE SAMPLING WEIGHTS FOR CANDIDATES */
-    /* /\* add possibility of imported cases *\/ */
-    /* mcmcPar->candid_ances_proba->values[0] = 1.0; */
-
-    /* CASE WHERE KAPPA_I = 1: KEEP ONLY GENETICALLY CLOSEST CANDIDATES */
-    /* weight = 1 if smallest distance, 0 otherwise */
+    /* case where kappa_i == 1: keep only genetically closest candidates:
+       weight = 1 if smallest distance, 0 otherwise */
     if(vec_int_i(currentPar->kappa, i) == 1){
 	for(j=0;j<nCandidates;j++){
-	    if(vec_double_i(mcmcPar->candid_ances_proba,j)>minNmut){
+	    if(vec_double_i(mcmcPar->candid_ances_proba,j) > minNmut){
 		mcmcPar->candid_ances_proba->values[j] = 0.0;
 	    } else {
 		mcmcPar->candid_ances_proba->values[j] = 1.0;
@@ -144,7 +146,7 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
     /* } */
     idOut = draw_multinom_censored(mcmcPar->candid_ances_proba, nCandidates, rng);
     out = vec_int_i(mcmcPar->candid_ances, idOut);
-    
+
     return out;
 } /* end choose_alpha_i */
 
@@ -401,23 +403,23 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 /* MOVE VALUES OF KAPPA */
 void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, j, oldestDate = 0, toMove=0, temp;
+    int i, j, toMove=0, temp;
     double logRatio = 0.0;
 
 
     /* DETERMINE WHICH kappa_i TO MOVE */
     sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_kappa, FALSE, rng);
 
-    /* FIND OLDEST INFECTION (it has no ancestor) */
-    oldestDate = min_vec_int(currentPar->Tinf);
-
     /* MOVE EACH kappa_i TO MOVE */
     for(i=0;i<mcmcPar->idx_move_kappa->length;i++){
 	toMove = vec_int_i(mcmcPar->idx_move_kappa,i);
 
-	/* move only isolates with an ancestor in the sample */
-	/* if(vec_int_i(currentPar->Tinf, toMove) > oldestDate){ */
-	if(vec_int_i(currentPar->alpha, toMove) >= 0){
+	/* IMPORTED CASE */
+	if(vec_int_i(currentPar->alpha, toMove) < 0){
+	/* set kappa_i to 1 if imported case */
+	    currentPar->kappa->values[toMove] = 1;
+	} else {
+	    /* INTERNAL CASE */
 	    /* GET PROPOSED KAPPA_I */
 	    /* needs to be on [1;maxK]*/
 	    temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);

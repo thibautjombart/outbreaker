@@ -33,7 +33,10 @@ BURNIN <- 2e4
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5, move.kappa=FALSE))
+
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5, find.import=FALSE))
+
 
 ## check results ##
 plot.chains(res)

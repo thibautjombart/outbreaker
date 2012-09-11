@@ -366,7 +366,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    }
 
 	    /* compute general average log-like */
-	    medLogLike = mean_vec_double(indivLogLike);
+	    medLogLike = median_vec_double(indivLogLike);
 	    printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout);
 	    printf("\nIndividual loglike:\n");fflush(stdout);
 	    print_vec_double(indivLogLike);
