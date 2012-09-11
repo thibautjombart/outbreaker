@@ -453,6 +453,7 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 		    }
 		} /* end  ACCEPT/REJECT STEP */
 	    }
+
 	} /* end if isolate is not the oldest one */
     } /* end for loop (for all 'i' to move) */
 } /* end move_kappa */
