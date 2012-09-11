@@ -252,9 +252,9 @@ void tune_phi(mcmc_param * in, gsl_rng *rng){
 
 
 /*
-   ===============================================
-   METROPOLIS-HASTING ALGORITHM FOR ALL PARAMETERS
-   ===============================================
+  ===============================================
+  METROPOLIS-HASTING ALGORITHM FOR ALL PARAMETERS
+  ===============================================
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
 	  bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
@@ -321,27 +321,118 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     mcmcPar->step_notune = nIter;
 
-    /* RUN NITER CHAINS */
+    printf("\nparam - before import case detection \n");fflush(stdout);
+    print_param(par);
+
+    printf("\nmcmParam - before import case detection \n");fflush(stdout);
+    print_mcmc_param(mcmcPar);
+
+
+    /* PRELIM STEP - FINDING OUTLIERS */
+    if(mcmcPar->find_import){
+	for(i=2;i<=mcmcPar->find_import_at;i++){
+	    /* COLLECT INFORMATION ABOUT INDIVIDUAL LIKELIHOODS */
+	    if(i>=mcmcPar->burnin && i % outEvery == 0){
+		printf("\ni=%d - computing individual likelihoods\n",i);fflush(stdout);
+		for(j=0;j<dat->n;j++){
+		    /* indivLogLike->values[j] += loglikelihood_i(j,dat, dnainfo, gen, par, rng); */
+		    indivLogLike->values[j] += loglikelihood_gen_i(j,dat, dnainfo, par, rng);
+		}
+		printf("\nlikelihood vector:\n");fflush(stdout);
+		print_vec_double(indivLogLike);
+		nbTermsLike++;
+	    }
+
+	    /* TUNING */
+	    if(i % tuneEvery == 0 && mcmcPar->tune_all){
+		tune_mu1(mcmcPar,rng);
+		tune_gamma(mcmcPar,rng);
+		tune_pi(mcmcPar,rng);
+		tune_phi(mcmcPar,rng);
+		mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi;
+		/* mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi; */
+	    }
+
+	    /* MOVEMENTS */
+	    /* move mutation rates */
+	    if(mcmcPar->move_mut){
+		/* move mu1 */
+		move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
+
+		/* move gamma */
+		move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    }
+
+	    /* move pi */
+	    if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
+
+	    /* move phi */
+	    if(mcmcPar->move_phi) move_phi(par, tempPar, dat, mcmcPar, rng);
+
+	    /* move Tinf */
+	    if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+
+	    /* move alpha_i*/
+	    move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+
+	    /* move kappa_i*/
+	    if(mcmcPar->move_kappa) move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+
+	} /* end of MCMC for finding outliers */
+
+
+	/* FIND IMPORTED CASES */
+	/* compute individual average log-like */
+	for(j=0;j<dat->n;j++){
+	    indivLogLike->values[j] = vec_double_i(indivLogLike,j)/((double) nbTermsLike);
+	}
+
+	/* compute general average log-like */
+	medLogLike = median_vec_double(indivLogLike);
+	printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout);
+	printf("\nIndividual loglike:\n");fflush(stdout);
+	print_vec_double(indivLogLike);
+
+	/* browse each likelihood, define outliers */
+	printf("\n\nLooking for outliers...\n");
+	for(j=0;j<dat->n;j++){
+	    /* outliers = likelihood 100 times lower than the median */
+	    printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout);
+	    if((medLogLike - vec_double_i(indivLogLike,j)) > log(100)){
+		par->alpha->values[j] = -1;
+		par->kappa->values[j] = 1;
+		mcmcPar->move_alpha->values[j] = 0.0;
+		printf("\nSetting %d as imported case\n",j+1);fflush(stdout);
+	    }
+	} /* end setting outliers */
+
+	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
+	mcmcPar->tune_all = TRUE;
+	copy_param(par,tempPar);
+	mcmcPar->step_notune = nIter;
+
+    } /* END PRELIM MCMC FOR FINDING OUTLIERS */
+
+
+    printf("\nparam - after import case detection \n");fflush(stdout);
+    print_param(par);
+
+    printf("\nmcmParam - after import case detection \n");fflush(stdout);
+    print_mcmc_param(mcmcPar);
+
+
+
+
+    /* RUN MAIN MCMC */
     for(i=2;i<=nIter;i++){
 	/* /\* debugging *\/ */
 	/* printf("\n\n = MCMC iteration %d =\n",i); */
 	/* fflush(stdout); */
 
+	/* OUTPUT TO FILES */
 	if(i % outEvery == 0){
 	    fprint_chains(file, dat, dnainfo, gen, par, i, rng, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
-
-	    /* collect information about individual likelihoods if needed */
-	    if(mcmcPar->find_import && i>=mcmcPar->burnin && i <mcmcPar->find_import_at){
-	    printf("\ni=%d - computing individual likelihoods\n",i);fflush(stdout);
-	    	for(j=0;j<dat->n;j++){
-	    	    /* indivLogLike->values[j] += loglikelihood_i(j,dat, dnainfo, gen, par, rng); */
-	    	    indivLogLike->values[j] += loglikelihood_gen_i(j,dat, dnainfo, par, rng);
-	    	}
-		printf("\nlikelihood vector:\n");fflush(stdout);
-		print_vec_double(indivLogLike);
-	    	nbTermsLike++;
-	    }
 	}
 
 	/* TUNING */
@@ -355,32 +446,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
 		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
-	    }
-	}
-
-	/* FIND IMPORTED CASES */
-	if(mcmcPar->find_import && i==mcmcPar->find_import_at){
-	    /* compute individual average log-like */
-	    for(j=0;j<dat->n;j++){
-		indivLogLike->values[j] = vec_double_i(indivLogLike,j)/((double) nbTermsLike);
-	    }
-
-	    /* compute general average log-like */
-	    medLogLike = median_vec_double(indivLogLike);
-	    printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout);
-	    printf("\nIndividual loglike:\n");fflush(stdout);
-	    print_vec_double(indivLogLike);
-
-	    printf("\n\nLooking for outliers...\n");
-	    for(j=0;j<dat->n;j++){
-		/* outliers = likelihood 100 times lower than the median */
-		printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout);
-		if((medLogLike - vec_double_i(indivLogLike,j)) > log(100)){
-		    par->alpha->values[j] = -1;
-		    par->kappa->values[j] = 1;
-		    mcmcPar->move_alpha->values[j] = 0.0;
-		    printf("\nSetting %d as imported case\n",j+1);fflush(stdout);
-		}
 	    }
 	}
 
@@ -421,11 +486,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
 
-    /* CLOSE OUTPUT OUTFILE */
+/* CLOSE OUTPUT OUTFILE */
     fclose(file);
     fclose(mcmcFile);
 
-    /* FREE TEMPORARY PARAMETERS */
+/* FREE TEMPORARY PARAMETERS */
     free_param(tempPar);
     free_vec_double(indivLogLike);
 } /* end mcmc */
