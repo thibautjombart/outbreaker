@@ -28,12 +28,12 @@ plot(dat, main="Data")
 
 
 
-## TRY SPECIFYING THE RIGHT OUTLIERS, SEE IF IT WORKS ##
-initree <- rep(1, dat$n)
-initree[is.na(dat$ances)] <- 0
-moveances <- !is.na(dat$ances)
+## ## TRY SPECIFYING THE RIGHT OUTLIERS, SEE IF IT WORKS ##
+## initree <- rep(1, dat$n)
+## initree[is.na(dat$ances)] <- 0
+## moveances <- !is.na(dat$ances)
 
-system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree=initree, n.iter=2e5, move.ances=moveances))
+## system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree=initree, n.iter=2e5, move.ances=moveances))
 
 
 
@@ -41,9 +41,9 @@ system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tre
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5))
+## system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
 
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
 
 ## check results ##
 plot.chains(res)
