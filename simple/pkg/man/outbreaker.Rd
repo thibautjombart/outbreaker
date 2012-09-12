@@ -26,12 +26,15 @@ library(ape)
 BURNIN <- 1e4
 
 w <- c(0,.1,.2,.5,2,.5,.2,.1)
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=0.2e-4)
-dat <- full[1:20]
+full <- list(n=0)
+while(full$n<30){
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4,mu.transv=0.2e-4)
+}
+dat <- full[1:30]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
-res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=4e5)
+res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=5e4)
 
 
 plot.chains(res)
@@ -50,12 +53,10 @@ notOk <- which(temp$ances!=temp2)
 if(length(notOk)>0) v.col[notOk] <- "red"
 par(mfrow=c(1,1))
 plot(dat,main="data", vertex.color=v.col)
-x11();
 plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
 
 
 ## check mutation rates
-par(mfrow=c(2,1))
 plot.chains(res, "mu1",type="dens", omit=2e4)
 abline(v=1e-4, col="blue")
 plot.chains(res, "mu2",type="dens", omit=2e4)
@@ -67,8 +68,8 @@ Tinf <- res$chains[res$chains$step>BURNIN, toKeep]
 colnames(Tinf) <- sub("Tinf_", "case ",colnames(Tinf))
 boxplot(Tinf, col=funky(20), horizontal=TRUE, las=1, xlab="Time", main="Inference of infection dates")
 mtext(side=3, text="(X = actual date)")
-points(dat$dates,1:20, col="black", pch="x",cex=2.5)
-points(dat$dates,1:20, col=funky(20), pch="x",cex=2)
+points(dat$dates,1:dat$n, col="black", pch="x",cex=2.5)
+points(dat$dates,1:dat$n, col=funky(20), pch="x",cex=2)
 
 
 ## get incidence curves
