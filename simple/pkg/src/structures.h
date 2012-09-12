@@ -168,6 +168,7 @@ void free_mcmc_param(mcmc_param *in);
 
 void print_mcmc_param(mcmc_param *in);
 
+void copy_mcmc_param(mcmc_param *in, mcmc_param *out);
 
 
 
