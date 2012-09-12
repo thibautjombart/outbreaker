@@ -19,129 +19,64 @@
 }
 \author{ Thibaut Jombart \email{t.jombart@imperial.ac.uk} }
 \examples{
-## generate toy dataset ##
-##
-##        -> 1 -> 2
-##       |
-##  4 -> 3
-##       |
-##        -> 5 -> 6
-##
-## transi: 0.001  transver: 0.002 (per site and generation)
-## generation time ~ Poisson(2)
-
+library(outbreaker)
+library(adegenet)
 library(ape)
 
-## genomes
-gen <- matrix(rep(rep(c('a','g','c','t'), each=250),6),byrow=TRUE,
-nrow=6)
+BURNIN <- 1e4
 
-gen[3,c(1,751,752)] <- c('g','a','a')
+w <- c(0,.1,.2,.5,2,.5,.2,.1)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=0.2e-4)
+dat <- full[1:20]
+collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
+plot(dat, main="Data")
 
-gen[1,] <- gen[3,]
-gen[1,c(2,251,252)] <- c('g','c','c')
-
-gen[2,] <- gen[1,]
-gen[2,c(3,253,254)] <- c('g','c','c')
-
-gen[5,] <- gen[3,]
-gen[5,c(255,501,502)] <- c('a','a','a')
-
-gen[6,] <- gen[5,]
-gen[6,c(256,503,504)] <- c('a','g','g')
-
-##plot(nj(dist.dna(as.DNAbin(gen), model="raw")), type="unr")
-
-## dates (collection; infection = 2 days before collection)
-dates <- c(4,6,2,0,4,6)
-
-## density function
-wdens <- c(0,1,2,1,0.1,0.1,0.1,0.1,0.1,0.1,0.1)
-wdens <- c(0.01,1,2,1,0.1,0)
-
-## shit density function
-##wdens <- c(1,1,1,1,1)
-
-## run outbreaker
-res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=1e6, sample.every=1000, init.tree="star",quiet=TRUE)
-#res <- outbreaker(as.DNAbin(gen), dates, wdens, n.iter=100, sample.every=10, init.tree="star",quiet=TRUE)
-
-## read outputs
-chains <- res$chains
-param <- read.table("mcmcOutput.txt",header=TRUE)
+res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=4e5)
 
 
-## posterior ##
-plot(chains$step, chains$post, type="l",main="posterior")
-plot(chains$step[-(1:100)], chains$post[-(1:100)], type="l",main="posterior (removed first 100 values")
-plot(density(chains$post[-(1:200)]),main="posterior density")
-points(chains$post[-(1:200)],rep(0,length(chains$post[-(1:200)])),pch="|")
+plot.chains(res)
 
-## likelihood ##
-plot(chains$step, chains$like, type="l",main="likelihood")
-plot(chains$step[-(1:100)], chains$like[-(1:100)], type="l",main="likelihood (removed first 100 values")
-plot(density(chains$like[-(1:200)]),main="likelihood density")
-points(chains$like[-(1:200)],rep(0,length(chains$like[-(1:200)])),pch="|")
+## check ancestries
+x <- get.TTree.simple(res, burn=BURNIN)
+temp <- x
+temp$ances[is.na(temp$ances)] <- 0
+temp2 <- dat$ances
+temp2[is.na(temp2)] <- 0
+temp2[1] <- NA
+mean(temp$ances==temp2,na.rm=TRUE)
 
-## check mu1/mu2
-matplot(chains$step, chains[,c("mu1","mu2")], type="l", col=c("blue","red"), lty=1, ylim=c(0,0.005))
-abline(h=c(0.001,0.002), col=c("blue","red"), lty=2)
-legend("topright",fill=c("blue","red"),leg=c("transition","transversion"), title="mutation rates")
-
-plot(density(chains$mu1[-(1:200)]),main="mu1 posterior")
-plot(density(chains$mu2[-(1:200)]),main="mu2 posterior")
-
-plot(param$step, param$p_accept_mu1, type="l", main="p accept mu",ylim=c(0,1))
+v.col <- rep("lightblue",length(x$ances))
+notOk <- which(temp$ances!=temp2)
+if(length(notOk)>0) v.col[notOk] <- "red"
+par(mfrow=c(1,1))
+plot(dat,main="data", vertex.color=v.col)
+x11();
+plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
 
 
-## check gamma
-plot(chains$step,chains$gamma,type="l", main="gamma")
-plot(density(tail(chains$gamma,round(nrow(chains)/2))),main="gamma")
-
-plot(param$step, param$p_accept_gamma, type="l", main="p accept gamma",ylim=c(0,1))
-
-
-## check kappa
-library(UsingR)
-idx <- grep("kappa",names(chains))
-kappa <- tail(chains[,idx],round(nrow(chains)/2))
-apply(kappa,2,mean)
-violinplot(kappa)
-title("kappa posterior")
-
-
-## check alpha
-f1 <- function(x) {table(x)/length(x)}
-idx <- grep("alpha",names(chains))
-alpha <- tail(chains[,idx],round(nrow(chains)/2))
-apply(alpha,2,f1)
-
-assign <- sapply(apply(alpha,2,f1),function(e) names(e)[which.max(e)])
-assign # this should be 3-1-4-0-3-5
+## check mutation rates
+par(mfrow=c(2,1))
+plot.chains(res, "mu1",type="dens", omit=2e4)
+abline(v=1e-4, col="blue")
+plot.chains(res, "mu2",type="dens", omit=2e4)
+abline(v=1e-4, col="blue")
 
 ## check infection dates
-idx <- grep("Tinf",names(chains))
-infdates <- tail(chains[,idx],round(nrow(chains)/2))
-violinplot(infdates,ylim=c(-3,5),ylab="date")
-title("Infection dates posterior")
-points(1:6, c(2,4,0,-2,2,4), col="red",lwd=3,cex=1)
-mtext(3, text="red = actual date")
+toKeep <- grep("Tinf",names(res$chains))
+Tinf <- res$chains[res$chains$step>BURNIN, toKeep]
+colnames(Tinf) <- sub("Tinf_", "case ",colnames(Tinf))
+boxplot(Tinf, col=funky(20), horizontal=TRUE, las=1, xlab="Time", main="Inference of infection dates")
+mtext(side=3, text="(X = actual date)")
+points(dat$dates,1:20, col="black", pch="x",cex=2.5)
+points(dat$dates,1:20, col=funky(20), pch="x",cex=2)
 
-plot(param$step, param$p_accept_Tinf, type="l",main="acceptance Tinf",ylim=c(0,1))
 
-
-## check mcmc param
-head(param,50)
-tail(param,10)
+## get incidence curves
+get.incid(res)
 
 
 
-## plot results ##
-x <- get.TTree.simple(res)
-x
-epicurves(x, main="Reconstructed outbreak - epi curves")
-
-plot(x, main="Reconstructed outbreak")
-
+## get effective reproduction numbers
+get.Rt(res)
 
 }
