@@ -421,6 +421,64 @@ void print_mcmc_param(mcmc_param *in){
 
 
 /*
+  Copy the content from one object to another.
+  Allocation of the objects is done externally
+*/
+void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
+    /* copy atomic elements */
+    out->n_accept_mu1 = in->n_accept_mu1;
+    out->n_reject_mu1 = in->n_reject_mu1;
+    out->n_accept_gamma = in->n_accept_gamma;
+    out->n_reject_gamma = in->n_reject_gamma;
+    out->n_accept_pi = in->n_accept_pi;
+    out->n_reject_pi = in->n_reject_pi;
+    out->n_accept_phi = in->n_accept_phi;
+    out->n_reject_phi = in->n_reject_phi;
+    out->n_accept_Tinf = in->n_accept_Tinf;
+    out->n_reject_Tinf = in->n_reject_Tinf;
+    out->n_accept_alpha = in->n_accept_alpha;
+    out->n_reject_alpha = in->n_reject_alpha;
+    out->n_accept_kappa = in->n_accept_kappa;
+    out->n_reject_kappa = in->n_reject_kappa;
+    out->n_move_Tinf = in->n_move_Tinf;
+    out->n_move_alpha = in->n_move_alpha;
+    out->n_move_kappa = in->n_move_kappa;
+    out->sigma_mu1 = in->sigma_mu1;
+    out->sigma_gamma = in->sigma_gamma;
+    out->lambda_Tinf = in->lambda_Tinf;
+    out->sigma_pi = in->sigma_pi;
+    out->sigma_phi = in->sigma_phi;
+    out->n_like_zero = in->n_like_zero;
+    out->tune_all = in->tune_all;
+    out->tune_mu1 = in->tune_mu1;
+    out->tune_gamma = in->tune_gamma;
+    out->tune_pi = in->tune_pi;
+    out->tune_phi = in->tune_phi;
+    out->step_notune = in->step_notune;
+    out->move_mut = in->move_mut;
+    out->move_kappa = in->move_kappa;
+    out->move_pi = in->move_pi;
+    out->move_phi = in->move_phi;
+    out->burnin = in->burnin;
+    out->find_import_at = in->find_import_at;
+    out->find_import = in->find_import;
+
+    /* copy vectors */
+    copy_vec_int(in->idx_move_Tinf, out->idx_move_Tinf);
+    copy_vec_int(in->idx_move_alpha, out->idx_move_alpha);
+    copy_vec_int(in->idx_move_kappa, out->idx_move_kappa);
+    copy_vec_int(in->all_idx, out->all_idx);
+    copy_vec_int(in->candid_ances, out->candid_ances);
+    copy_vec_double(in->candid_ances_proba, out->candid_ances_proba);
+    copy_vec_double(in->move_alpha, out->move_alpha);
+} /* end alloc_mcmc_param */
+
+
+
+
+
+
+/*
   ======================
   >>>>> TESTING <<<<<
   ======================

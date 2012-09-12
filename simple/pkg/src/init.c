@@ -176,6 +176,7 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     }
     if(!move_pi) in->tune_pi = FALSE;
     if(!move_phi) in->tune_phi = FALSE;
+    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_phi;
 
 } /* end init_mcmc_param */
 
