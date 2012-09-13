@@ -189,9 +189,9 @@ param *alloc_param(int n){
     out->pi = 1.0;
     out->pi_param1 = 0.0;
     out->pi_param2 = 0.0;
-    out->phi = 0.1;
-    out->phi_param1 = 0.0;
-    out->phi_param2 = 0.0;
+    /* out->phi = 0.1; */
+    /* out->phi_param1 = 0.0; */
+    /* out->phi_param2 = 0.0; */
 
     /* return */
     return out;
@@ -224,10 +224,10 @@ void print_param(param *in){
     printf("%.5f", in->pi);
     printf("\n= priors on pi (parameter of beta distribution) =\n");
     printf("%.5f  %.5f", in->pi_param1, in->pi_param2);
-    printf("\n= phi (proportion of external cases) =\n");
-    printf("%.5f", in->phi);
-    printf("\n= priors on phi (parameter of beta distribution) =\n");
-    printf("%.5f  %.5f", in->phi_param1, in->phi_param2);
+    /* printf("\n= phi (proportion of external cases) =\n"); */
+    /* printf("%.5f", in->phi); */
+    /* printf("\n= priors on phi (parameter of beta distribution) =\n"); */
+    /* printf("%.5f  %.5f", in->phi_param1, in->phi_param2); */
     fflush(stdout);
 } /* end print_param*/
 
@@ -242,9 +242,9 @@ void copy_param(param *in, param *out){
     out->pi = in->pi;
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
-    out->phi = in->phi;
-    out->phi_param1 = in->phi_param1;
-    out->phi_param2 = in->phi_param2;
+    /* out->phi = in->phi; */
+    /* out->phi_param1 = in->phi_param1; */
+    /* out->phi_param2 = in->phi_param2; */
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
@@ -309,13 +309,13 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_mu1 = TRUE;
     out->tune_gamma = TRUE;
     out->tune_pi = TRUE;
-    out->tune_phi = TRUE;
+    /* out->tune_phi = TRUE; */
     out->step_notune = -1;
     out->move_mut = TRUE;
     /* out->move_alpha = TRUE; */
     out->move_kappa = TRUE;
     out->move_pi = TRUE;
-    out->move_phi = TRUE;
+    /* out->move_phi = TRUE; */
     out->burnin=0;
     out->find_import_at=10000;
     out->find_import=TRUE;
@@ -324,7 +324,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->sigma_mu1 = 0.0;
     out->sigma_gamma = 0.0;
     out->sigma_pi = 0.0;
-    out->sigma_phi = 0.0;
+    /* out->sigma_phi = 0.0; */
     out->lambda_Tinf = 0.0;
 
 
@@ -354,7 +354,7 @@ void print_mcmc_param(mcmc_param *in){
     printf("\nsigma for mu1: %.10f",in->sigma_mu1);
     printf("\nsigma for gamma: %.10f",in->sigma_gamma);
     printf("\nsigma for pi: %.10f",in->sigma_pi);
-    printf("\nsigma for phi: %.10f",in->sigma_phi);
+    /* printf("\nsigma for phi: %.10f",in->sigma_phi); */
     printf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
     printf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     printf("\nnb moves for alpha: %d",in->n_move_alpha);
@@ -366,7 +366,7 @@ void print_mcmc_param(mcmc_param *in){
 
     printf("\npi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_pi, in->n_reject_pi, (double) in->n_accept_pi / in->n_reject_pi);
 
-    printf("\nphi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_phi, in->n_reject_phi, (double) in->n_accept_phi / in->n_reject_phi);
+    /* printf("\nphi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_phi, in->n_reject_phi, (double) in->n_accept_phi / in->n_reject_phi); */
 
     printf("\nTinf: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_Tinf, in->n_reject_Tinf, (double) in->n_accept_Tinf / in->n_reject_Tinf);
 
@@ -394,7 +394,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_mu1) printf("mu1 ");
     if(in->tune_gamma) printf("gamma ");
     if(in->tune_pi) printf("pi ");
-    if(in->tune_phi) printf("phi ");
+    /* if(in->tune_phi) printf("phi "); */
     printf("\nTuning stopped at step %d\n", in->step_notune);
 
     printf("\nMoved parameters:");
@@ -403,7 +403,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->move_kappa) printf("kappa ");
     if(in->move_Tinf) printf("Tinf ");
     if(in->move_pi) printf("pi ");
-    if(in->move_phi) printf("phi ");
+    /* if(in->move_phi) printf("phi "); */
     printf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
     if(in->find_import){
@@ -432,8 +432,8 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->n_reject_gamma = in->n_reject_gamma;
     out->n_accept_pi = in->n_accept_pi;
     out->n_reject_pi = in->n_reject_pi;
-    out->n_accept_phi = in->n_accept_phi;
-    out->n_reject_phi = in->n_reject_phi;
+    /* out->n_accept_phi = in->n_accept_phi; */
+    /* out->n_reject_phi = in->n_reject_phi; */
     out->n_accept_Tinf = in->n_accept_Tinf;
     out->n_reject_Tinf = in->n_reject_Tinf;
     out->n_accept_alpha = in->n_accept_alpha;
@@ -447,18 +447,18 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->sigma_gamma = in->sigma_gamma;
     out->lambda_Tinf = in->lambda_Tinf;
     out->sigma_pi = in->sigma_pi;
-    out->sigma_phi = in->sigma_phi;
+    /* out->sigma_phi = in->sigma_phi; */
     out->n_like_zero = in->n_like_zero;
     out->tune_all = in->tune_all;
     out->tune_mu1 = in->tune_mu1;
     out->tune_gamma = in->tune_gamma;
     out->tune_pi = in->tune_pi;
-    out->tune_phi = in->tune_phi;
+    /* out->tune_phi = in->tune_phi; */
     out->step_notune = in->step_notune;
     out->move_mut = in->move_mut;
     out->move_kappa = in->move_kappa;
     out->move_pi = in->move_pi;
-    out->move_phi = in->move_phi;
+    /* out->move_phi = in->move_phi; */
     out->burnin = in->burnin;
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;

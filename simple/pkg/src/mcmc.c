@@ -350,15 +350,15 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* compute general average log-like */
     medLogLike = mean_vec_double(indivLogLike);
-    printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout);
-    printf("\nIndividual loglike:\n");fflush(stdout);
-    print_vec_double(indivLogLike);
+    /* printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout); */
+    /* printf("\nIndividual loglike:\n");fflush(stdout); */
+    /* print_vec_double(indivLogLike); */
 
     /* browse each likelihood, define outliers */
     /* printf("\n\nLooking for outliers...\n"); */
     for(j=0;j<dat->n;j++){
 	/* outliers = likelihood 1000 times lower than the median */
-	printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout);
+	/* printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout); */
 	if((medLogLike - vec_double_i(indivLogLike,j)) > log(1000)){
 	    areOutliers->values[j] = 1;
 	    printf("\nIndividual %d identified as imported case\n",j+1);fflush(stdout);
@@ -455,8 +455,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* copy_param(par,tempPar); */
 	/* mcmcPar->step_notune = nIter; */
 
-	printf("\nContent of 'areOutliers:\n");fflush(stdout);
-	print_vec_int(areOutliers);
+	/* printf("\nContent of 'areOutliers:\n");fflush(stdout); */
+	/* print_vec_int(areOutliers); */
 	for(i=0;i<dat->n;i++){
 	    if(vec_int_i(areOutliers,i)==1){
 		par->alpha->values[i] = -1;

@@ -79,7 +79,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, gsl_rng *rng){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, double init_mu1, double init_gamma, gsl_rng *rng){
     int i, ancesId, T, TmaxLike;
 
     /* Tinf */
@@ -113,16 +113,16 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
     par->pi = gsl_ran_beta (rng,pi_param1,pi_param2);
     par->pi_param1 = pi_param1;
     par->pi_param2 = pi_param2;
-    par->phi = gsl_ran_beta (rng,phi_param1,phi_param2);
-    par->phi_param1 = phi_param1;
-    par->phi_param2 = phi_param2;
+    /* par->phi = gsl_ran_beta (rng,phi_param1,phi_param2); */
+    /* par->phi_param1 = phi_param1; */
+    /* par->phi_param2 = phi_param2; */
 }
 
 
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool find_import, int burnin, int find_import_at){
+void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool find_import, int burnin, int find_import_at){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -144,7 +144,7 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     in->sigma_mu1 = 0.0001;
     in->sigma_gamma = 1;
     in->sigma_pi = 0.01;
-    in->sigma_phi = 0.01;
+    /* in->sigma_phi = 0.01; */
     in->lambda_Tinf = 1;
     in->step_notune = 0;
     /* in->Pmove_alpha_old = 1.0; */
@@ -166,7 +166,7 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     in->move_kappa = move_kappa;
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;
-    in->move_phi = move_phi;
+    /* in->move_phi = move_phi; */
     in->find_import = find_import;
 
     /* ENSURE MOVE-TUNING CONSISTENCY */
@@ -175,8 +175,8 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 	in->tune_gamma = FALSE;
     }
     if(!move_pi) in->tune_pi = FALSE;
-    if(!move_phi) in->tune_phi = FALSE;
-    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_phi;
+    /* if(!move_phi) in->tune_phi = FALSE; */
+    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi;
 
 } /* end init_mcmc_param */
 
