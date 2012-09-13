@@ -74,13 +74,13 @@ double logprior_pi(param *par){
 
 
 
-/* p(phi) = beta(...,...) */
-double logprior_phi(param *par){
-    double out = gsl_ran_beta_pdf(par->phi, par->phi_param1, par->phi_param2);
-    out = log(out);
-    filter_logprob(&out);
-    return out;
-}
+/* /\* p(phi) = beta(...,...) *\/ */
+/* double logprior_phi(param *par){ */
+/*     double out = gsl_ran_beta_pdf(par->phi, par->phi_param1, par->phi_param2); */
+/*     out = log(out); */
+/*     filter_logprob(&out); */
+/*     return out; */
+/* } */
 
 
 
@@ -99,7 +99,7 @@ double logprior_all(param *par){
     out += logprior_mu1();
     out += logprior_gamma(par);
     out += logprior_pi(par);
-    out += logprior_phi(par);
+    /* out += logprior_phi(par); */
 
     filter_logprob(&out);
 

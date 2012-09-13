@@ -20,9 +20,9 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length, 
 		  double *gentimeDens, int *wTrunc, 
 		  int *ances, int *nIter, int *outputEvery, int *tuneEvery, 
-		  double *pi_param1, double *pi_param2, double *phi_param1, double *phi_param2, 
+		  double *pi_param1, double *pi_param2, 
 		  double *init_mu1, double *init_gamma, 
-		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, int *move_pi, int *move_phi, 
+		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, int *move_pi, 
 		  int *find_import, int *burnin, int *find_import_at, 
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **res_file_name, char **tune_file_name, int *seed){
@@ -66,7 +66,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, *pi_param1, *pi_param2, *phi_param1, *phi_param2, *init_mu1, *init_gamma, rng);
+    init_param(par, dat,  gen, ances, *pi_param1, *pi_param2, *init_mu1, *init_gamma, rng);
     print_param(par);
 
 
@@ -91,7 +91,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
     mcmcPar = alloc_mcmc_param(dat->n);
     init_mcmc_param(mcmcPar, dat, (bool) *move_mut, move_alpha, (bool) *move_kappa, (bool) *move_Tinf, 
-		    (bool) *move_pi, (bool) *move_phi, (bool) *find_import, *burnin, *find_import_at);
+		    (bool) *move_pi, (bool) *find_import, *burnin, *find_import_at);
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnainfo, gen, par, rng);

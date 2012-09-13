@@ -6,7 +6,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
-                       pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
+                       pi.param1=10, pi.param2=1,
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
@@ -123,7 +123,6 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     move.kappa <- as.integer(move.kappa)
     move.Tinf <- as.integer(move.Tinf)
     move.pi <- as.integer(move.pi)
-    move.phi <- as.integer(move.phi)
     quiet <- as.integer(quiet)
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
@@ -138,15 +137,15 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                dnaraw, dates, n.ind, n.nucl,
                w.dens, w.trunc,
                ances, n.iter, sample.every, tune.every, pi.param1, pi.param2,
-               phi.param1, phi.param2, init.mu1, init.gamma,
+               init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
-               move.pi, move.phi,
+               move.pi,
                find.import.int, burnin, find.import.at, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[27]]
-    stopTuneAt <- temp[[28]]
+    D <- temp[[24]]
+    stopTuneAt <- temp[[25]]
 
     cat("\nComputations finished.\n\n")
 
@@ -183,7 +182,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                 init.tree=c("seqTrack","random","star","none"),
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, find.import=TRUE, find.import.n=50,
-                                pi.param1=10, pi.param2=1, phi.param1=1, phi.param2=10,
+                                pi.param1=10, pi.param2=1,
                                 init.mu1=1e-5, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
@@ -216,10 +215,9 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           tune.every=tune.every, burnin=burnin,
                                                           find.import=find.import, find.import.n=find.import.n,
                                                           pi.param1=pi.param1, pi.param2=pi.param2,
-                                                          phi.param1=phi.param1, phi.param2=phi.param2,
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
-                                                          move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
+                                                          move.Tinf=move.Tinf, move.pi=move.pi,
                                                           quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]),
                         mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
@@ -228,10 +226,9 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                         tune.every=tune.every, , burnin=burnin,
                                                         find.import=find.import, find.import.n=find.import.n,
                                                         pi.param1=pi.param1, pi.param2=pi.param2,
-                                                        phi.param1=phi.param1, phi.param2=phi.param2,
                                                         init.mu1=init.mu1, init.gamma=init.gamma,
                                                         move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
-                                                        move.Tinf=move.Tinf, move.pi=move.pi, move.phi=move.phi,
+                                                        move.Tinf=move.Tinf, move.pi=move.pi,
                                                         quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]))
     }
 
