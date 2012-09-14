@@ -391,7 +391,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	  bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i, j, nbTermsLike = 0;
-    double medLogLike = 0.0;
     vec_int *areOutliers = alloc_vec_int(dat->n);
 
     /* OPEN OUTPUT FILE */
