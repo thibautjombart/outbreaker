@@ -320,8 +320,8 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 
 /* MOVE VALUES OF ALPHA */
 void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, j, toMove=0, T;
-    double logRatio = 0.0, ll1, ll2;
+    int i, toMove=0, T;
+    double logRatio = 0.0;
 
 
     /* DETERMINE WHICH ALPHA_I TO MOVE */

@@ -36,8 +36,6 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *length,
     mcmc_param * mcmcPar;
     int i,j, counter;
 
-    double logPrior, logLike, logPost;
-
     bool checkLike;
 
 
