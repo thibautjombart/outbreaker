@@ -3,7 +3,7 @@
 ###############
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
-                        rate.import.case=0.1, diverg.import=20, tree=TRUE){
+                        rate.import.case=0.1, diverg.import=20){
 
     ## CHECKS ##
     if(!require(ape)) stop("The ape package is required.")
@@ -145,7 +145,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$id <- 1:res$n
 
     findNmut <- function(i){
-        if(!is.na(ances[i]) && ances[i]>0){
+        if(!is.na(res$ances[i]) && res$ances[i]>0){
             out <- dist.dna(res$dna[c(res$id[i],res$ances[i]),], model="raw")*ncol(res$dna)
         } else {
             out <- NA
@@ -154,12 +154,13 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     }
 
     ##res$nmut <- sapply(1:res$n, function(i) dist.dna(res$dna[c(res$id[i],res$ances[i]),], model="raw"))*ncol(res$dna)
-    res$nmut <- sapply(1:res$n, function(i) findNmut)
+    res$nmut <- sapply(1:res$n, function(i) findNmut(i))
+    res$ngen <- rep(1, length(res$ances)) # number of generations
     res$call <- match.call()
-    if(tree){
-        res$tree <- fastme.ols(dist.dna(res$dna, model="TN93"))
-        res$tree <- root(res$tree,"1")
-    }
+    ## if(tree){
+    ##     res$tree <- fastme.ols(dist.dna(res$dna, model="TN93"))
+    ##     res$tree <- root(res$tree,"1")
+    ## }
     class(res) <- "simOutbreak"
     return(res)
 
@@ -203,16 +204,41 @@ print.simOutbreak <- function(x, ...){
 ##############
 "[.simOutbreak" <- function(x,i,j,drop=FALSE){
     res <- x
+    ## trivial subsetting ##
     res$dna <- res$dna[i,,drop=FALSE]
     res$id <- res$id[i]
-    res$ances <- res$ances[i]
-    res$ances[!res$ances %in% res$id] <- NA
     res$dates <- res$dates[i]
     res$n <- nrow(res$dna)
-    res$nmut <- res$nmut[i]
+    res$nmut <- x$nmut[i]
+    res$ngen <- x$ngen[i]
+
+    ## non-trivial subsetting ##
+    res$ances <- res$ances[i]
+    toFind <- !res$ances %in% res$id
+
+    ## function to find Most Recent Ancestor (MRA)
+    findMRA <- function(id){
+        out <- list(ances=x$ances[id], nmut=x$nmut[id], ngen=x$ngen[id])
+        if(is.na(out$ances)) return(out)
+        while(!is.na(out$ances) && !out$ances %in% res$id){
+            out$nmut <- out$nmut + x$nmut[out$ances]
+            out$ngen <- out$ngen + x$ngen[out$ances]
+            out$ances <- x$ances[out$ances]
+        }
+        if(is.na(out$ances)) return(list(ances=NA, nmut=NA, ngen=1))
+        return(out)
+    }
+
+    ## browse the tree to find indirect ancestries
+    if(any(toFind)){
+        temp <- sapply(res$id[toFind], findMRA)
+        res$ances[toFind] <- unlist(temp["ances",])
+        res$nmut[toFind] <- unlist(temp["nmut",])
+        res$ngen[toFind] <- unlist(temp["ngen",])
+    }
 
     return(res)
-}
+} # end subsetting method
 
 
 
@@ -234,7 +260,7 @@ labels.simOutbreak <- function(object, ...){
 ## as.igraph.simOutbreak
 #########################
 as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
-                              col.pal=NULL, annot="dist", ...){
+                              col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(ape)) stop("package ape is required for this operation")
     if(!inherits(x,"simOutbreak")) stop("x is not a TTree.simple object")
@@ -242,14 +268,20 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
     ## GET DAG ##
-    from.old <- x$ances
-    to.old <- x$id
-    isNotNA <- !is.na(from.old) & !is.na(to.old)
-    vnames <- sort(unique(c(from.old,to.old)))
-    from <- match(from.old,vnames)
-    to <- match(to.old,vnames)
-    dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
-    out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$dates[vnames]))
+    ## from.old <- x$ances
+    ## to.old <- x$id
+    ## isNotNA <- !is.na(from.old) & !is.na(to.old)
+    ## vnames <- sort(unique(c(from.old,to.old)))
+    ## from <- match(from.old,vnames)
+    ## to <- match(to.old,vnames)
+    ## dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
+    ## out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$dates[vnames]))
+
+    ## to finish
+    from <- as.character(x$ances)
+    to <- as.character(x$id)
+    dat <- data.frame(from,to,stringsAsFactors=FALSE)[!is.na(x$ances),]
+    graph.data.frame(dat, directed=TRUE)
 
     ## SET VARIOUS INFO ##
     D <- as.matrix(dist.dna(x$dna,model="raw")*ncol(x$dna))
@@ -265,7 +297,14 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=col.pal, x.min=0, x.max=1)
 
     ## SET EDGE LABELS ##
-    if("dist" %in% annot) E(out)$label <- E(out)$dist
+    n.annot <- sum(annot %in% c("dist","n.gen"))
+    lab <- ""
+    if(!is.null(annot) && n.annot>0){
+        if("dist" %in% annot) lab <- E(out)$dist
+        if("n.gen" %in% annot) lab <- paste(lab, x$ngen[isNotNA], sep=sep)
+    }
+    lab <- sub(paste("^",sep,sep=""),"",lab)
+    E(out)$label <- lab
 
     ## SET LAYOUT ##
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$dates, maxx=x$dates))
@@ -282,12 +321,12 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
 #####################
 ## plot.TTree.simple
 #####################
-plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
-                              col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
+plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist",
+                              col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
     if(!inherits(x,"simOutbreak")) stop("x is not a simOutbreak object")
-    if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
+    if(!col.edge.by %in% c("dist","n.gen")) stop("unknown col.edge.by specified")
 
     ## get graph ##
     g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, col.pal=col.pal, annot=annot, sep=sep)
