@@ -277,18 +277,28 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     ## dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
     ## out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$dates[vnames]))
 
-    ## to finish
     from <- as.character(x$ances)
     to <- as.character(x$id)
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[!is.na(x$ances),]
-    graph.data.frame(dat, directed=TRUE)
+    out <- graph.data.frame(dat, directed=TRUE)
 
-    ## SET VARIOUS INFO ##
-    D <- as.matrix(dist.dna(x$dna,model="raw")*ncol(x$dna))
-    temp <- mapply(function(i,j) return(D[i,j]), as.integer(from), as.integer(to))
-    E(out)$dist <- temp[isNotNA]
+    ## SET VERTICE INFO ##
+    ## labels
+    V(out)$label <- unique(unlist(dat))
 
-    ## SET EDGE COLORS ##
+    ## dates
+    names(x$dates) <- x$id
+    V(out)$date <- x$dates[V(out)$label]
+
+
+    ## SET EDGE INFO ##
+    ## genetic distances to ancestor
+    E(out)$dist <- x$nmut[!is.na(x$ances)]
+
+    ## number of generations to ancestor
+    E(out)$ngen <- x$ngen[!is.na(x$ances)]
+
+    ## colors
     if(is.null(col.pal)){
         col.pal <- function(n){
             return(grey(seq(0.75,0,length=n)))
@@ -296,18 +306,18 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     }
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=col.pal, x.min=0, x.max=1)
 
-    ## SET EDGE LABELS ##
+    ## labels
     n.annot <- sum(annot %in% c("dist","n.gen"))
     lab <- ""
     if(!is.null(annot) && n.annot>0){
         if("dist" %in% annot) lab <- E(out)$dist
-        if("n.gen" %in% annot) lab <- paste(lab, x$ngen[isNotNA], sep=sep)
+        if("n.gen" %in% annot) lab <- paste(lab, x$ngen[!is.na(x$ances)], sep=sep)
     }
     lab <- sub(paste("^",sep,sep=""),"",lab)
     E(out)$label <- lab
 
     ## SET LAYOUT ##
-    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$dates, maxx=x$dates))
+    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$date, maxx=V(out)$date))
 
     return(out)
 } # end as.igraph.simOutbreak
