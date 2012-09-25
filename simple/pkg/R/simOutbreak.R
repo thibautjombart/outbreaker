@@ -268,27 +268,26 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
     ## GET DAG ##
-    ## from.old <- x$ances
-    ## to.old <- x$id
-    ## isNotNA <- !is.na(from.old) & !is.na(to.old)
-    ## vnames <- sort(unique(c(from.old,to.old)))
-    ## from <- match(from.old,vnames)
-    ## to <- match(to.old,vnames)
-    ## dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
-    ## out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=x$dates[vnames]))
-
     from <- as.character(x$ances)
     to <- as.character(x$id)
-    dat <- data.frame(from,to,stringsAsFactors=FALSE)[!is.na(x$ances),]
-    out <- graph.data.frame(dat, directed=TRUE)
+    isNotNA <- !is.na(from) & !is.na(to)
+    vnames <- unique(c(from,to))
+    vnames <- vnames[!is.na(vnames)]
+    dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
+    out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames))
+
+    ## from <- as.character(x$ances)
+    ## to <- as.character(x$id)
+    ## dat <- data.frame(from,to,stringsAsFactors=FALSE)[!is.na(x$ances),]
+    ## out <- graph.data.frame(dat, directed=TRUE)
 
     ## SET VERTICE INFO ##
     ## labels
-    V(out)$label <- unique(unlist(dat))
+    V(out)$label <- V(out)$name
 
     ## dates
     names(x$dates) <- x$id
-    V(out)$date <- x$dates[V(out)$label]
+    V(out)$date <- x$dates[V(out)$name]
 
 
     ## SET EDGE INFO ##
