@@ -1,6 +1,3 @@
-###
-
-
 library(outbreaker)
 library(adegenet)
 library(ape)
