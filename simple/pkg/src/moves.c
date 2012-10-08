@@ -79,7 +79,8 @@ int choose_kappa_i(int T, gentime *gen, gsl_rng *rng){
    SAMPLE ALPHA_I USING PROB BASED ON MUTATIONS
    -> choose alpha from list of candidates
    -> 'alpha_i' is the most recent sampled ancestor of 'i'
-   -> candidates = genetically closest cases preceeding 'i' (all as likely)
+   -> candidates = any earlier case if kappa_i>1
+   -> or genetically closest cases preceeding 'i' (all as likely) if kappa_i=1
    -> returned value is the index of the proposed ancestor
 */
 int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_param *mcmcPar, gsl_rng *rng){
@@ -431,7 +432,7 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	    }
 	    tempPar->kappa->values[toMove] = temp;
 
-	    /* PROCEED TO ACCEPT/REJECT STEP ONLY IF ALPHA HAS CHANGED */
+	    /* PROCEED TO ACCEPT/REJECT STEP ONLY IF KAPPA HAS CHANGED */
 	    if(vec_int_i(tempPar->kappa,toMove) != vec_int_i(currentPar->kappa,toMove)){
 		/* ACCEPT/REJECT STEP */
 		/* compute the likelihood */
@@ -458,11 +459,6 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	} /* end if isolate is not the oldest one */
     } /* end for loop (for all 'i' to move) */
 } /* end move_kappa */
-
-
-
-
-
 
 
 
