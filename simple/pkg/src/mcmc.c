@@ -337,7 +337,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	move_alpha(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
 
 	/* move kappa_i*/
-	if(localMcmcPar->move_kappa) move_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
+	move_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
 
     } /* end of MCMC */
 
@@ -528,7 +528,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
 	/* move kappa_i*/
-	if(mcmcPar->move_kappa) move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
     } /* end of mcmc */
 

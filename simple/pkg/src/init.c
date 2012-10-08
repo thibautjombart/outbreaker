@@ -79,7 +79,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_param1, double pi_param2, double init_mu1, double init_gamma, gsl_rng *rng){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double init_mu1, double init_gamma, gsl_rng *rng){
     int i, ancesId, T, TmaxLike;
 
     /* Tinf */
@@ -99,13 +99,20 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
     for(i=0;i<dat->n;i++){
 	/* par->kappa->values[i] = 1; */
 	ancesId = vec_int_i(par->alpha,i);
+	printf("\nInitial kappa_%d: %d\n",i,init_kappa[i]);fflush(stdout);
 	if(ancesId>-1){
-	    T = vec_int_i(par->Tinf, i) - vec_int_i(par->Tinf, ancesId);
-	    par->kappa->values[i] = find_maxLike_kappa_i(T, gen);
-	} else {
+	    if(init_kappa[i]<1){ /* value < 1 => find ML kappa */
+		T = vec_int_i(par->Tinf, i) - vec_int_i(par->Tinf, ancesId);
+		par->kappa->values[i] = find_maxLike_kappa_i(T, gen);
+	    } else {
+		par->kappa->values[i] = init_kappa[i]; /* otherwise, use specified kappa */
+	    }
+	} else { /* kappa = 1 by convention for imported cases */
 	    par->kappa->values[i] = 1;
 	}
+	printf("\nInitialized kappa_%d: %d\n",i,par->kappa->values[i]);fflush(stdout);
     }
+
 
     /* doubles*/
     par->mu1 = init_mu1;
@@ -122,7 +129,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, double pi_para
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, bool move_kappa, bool move_Tinf, bool move_pi, bool find_import, int burnin, int find_import_at){
+void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool find_import, int burnin, int find_import_at){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -158,12 +165,12 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 	in->all_idx->values[i] = i;
 	/* vector of moved alpha_i*/
 	in->move_alpha->values[i] = move_alpha[i] > 0.0 ? 1.0 : 0.0;
+  	/* vector of moved kappa_i*/
+	in->move_kappa->values[i] = move_kappa[i] > 0.0 ? 1.0 : 0.0;
     }
 
     /* FILL IN BOOLEANS */
     in->move_mut = move_mut;
-    /* in->move_alpha = move_alpha; */
-    in->move_kappa = move_kappa;
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;
     /* in->move_phi = move_phi; */

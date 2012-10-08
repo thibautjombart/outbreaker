@@ -292,6 +292,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->candid_ances = alloc_vec_int(n+1);
     out->candid_ances_proba = alloc_vec_double(n+1);
     out->move_alpha = alloc_vec_double(n);
+    out->move_kappa = alloc_vec_double(n);
 
     /* FILL IN INTEGERS */
     out->n_accept_mu1 = 0;
@@ -313,7 +314,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->step_notune = -1;
     out->move_mut = TRUE;
     /* out->move_alpha = TRUE; */
-    out->move_kappa = TRUE;
+    /* out->move_kappa = TRUE; */
     out->move_pi = TRUE;
     /* out->move_phi = TRUE; */
     out->burnin=0;
@@ -343,6 +344,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_int(in->candid_ances);
     free_vec_double(in->candid_ances_proba);
     free_vec_double(in->move_alpha);
+    free_vec_double(in->move_kappa);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -400,12 +402,14 @@ void print_mcmc_param(mcmc_param *in){
     printf("\nMoved parameters:");
     if(in->move_mut) printf("mu1 gamma ");
     /* if(in->move_alpha) printf("alpha "); */
-    if(in->move_kappa) printf("kappa ");
+    /* if(in->move_kappa) printf("kappa "); */
     if(in->move_Tinf) printf("Tinf ");
     if(in->move_pi) printf("pi ");
     /* if(in->move_phi) printf("phi "); */
     printf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
+    printf("\nMove kappa_i:");
+    print_vec_double(in->move_kappa);
     if(in->find_import){
 	printf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
     }
@@ -456,7 +460,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     /* out->tune_phi = in->tune_phi; */
     out->step_notune = in->step_notune;
     out->move_mut = in->move_mut;
-    out->move_kappa = in->move_kappa;
+    /* out->move_kappa = in->move_kappa; */
     out->move_pi = in->move_pi;
     /* out->move_phi = in->move_phi; */
     out->burnin = in->burnin;
@@ -471,6 +475,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_vec_int(in->candid_ances, out->candid_ances);
     copy_vec_double(in->candid_ances_proba, out->candid_ances_proba);
     copy_vec_double(in->move_alpha, out->move_alpha);
+    copy_vec_double(in->move_kappa, out->move_kappa);
 } /* end alloc_mcmc_param */
 
 
