@@ -408,7 +408,8 @@ void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
     /* DETERMINE WHICH kappa_i TO MOVE */
-    sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_kappa, FALSE, rng);
+    /* sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_kappa, FALSE, rng); */
+    draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_kappa, mcmcPar->move_kappa, rng);
 
     /* MOVE EACH kappa_i TO MOVE */
     for(i=0;i<mcmcPar->idx_move_kappa->length;i++){

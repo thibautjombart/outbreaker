@@ -4,6 +4,7 @@
 ##################
 outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
+                       init.kappa=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
                        pi.param1=10, pi.param2=1,
@@ -55,9 +56,13 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     if(any(is.na(w.dens))) stop("NAs in w.dens after normalization")
     w.trunc <- as.integer(w.trunc)
 
+    ## init.kappa ##
+    ## if NULL, will be ML assigned (code is kappa_i<0)
+    if(is.null(init.kappa)) init.kappa <- rep(0L,n.ind)
+    init.kappa <- as.integer(rep(init.kappa, length=n.ind)) #recycle
+
 
     ## find initial tree ##
-
     ## get temporal ordering constraint:
     ## canBeAnces[i,j] is 'i' can be ancestor of 'j'
     canBeAnces <- outer(dates,dates,FUN="<") # strict < is needed as we impose w(0)=0
@@ -120,7 +125,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     init.gamma <- as.double(init.gamma)
     move.mut <- as.integer(move.mut)
     move.ances <- as.integer(rep(move.ances, length=n.ind))
-    move.kappa <- as.integer(move.kappa)
+    move.kappa <- as.integer(rep(move.kappa, length=n.ind))
     move.Tinf <- as.integer(move.Tinf)
     move.pi <- as.integer(move.pi)
     quiet <- as.integer(quiet)
@@ -136,16 +141,16 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.nucl,
                w.dens, w.trunc,
-               ances, n.iter, sample.every, tune.every, pi.param1, pi.param2,
-               init.mu1, init.gamma,
+               ances, init.kappa, n.iter, sample.every, tune.every,
+               pi.param1, pi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi,
                find.import.int, burnin, find.import.at, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[24]]
-    stopTuneAt <- temp[[25]]
+    D <- temp[[25]]
+    stopTuneAt <- temp[[26]]
 
     cat("\nComputations finished.\n\n")
 
@@ -180,6 +185,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=NULL,
                                 dna, dates, w.dens, w.trunc=length(w.dens),
                                 init.tree=c("seqTrack","random","star","none"),
+                                init.kappa=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, find.import=TRUE, find.import.n=50,
                                 pi.param1=10, pi.param2=1,
@@ -211,7 +217,8 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
     ## COMPUTATIONS ##
     if(multicore){
         res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
-                                                          init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
+                                                          init.tree=init.tree, init.kappa=init.kappa,
+                                                          n.iter=n.iter, sample.every=sample.every,
                                                           tune.every=tune.every, burnin=burnin,
                                                           find.import=find.import, find.import.n=find.import.n,
                                                           pi.param1=pi.param1, pi.param2=pi.param2,
@@ -222,7 +229,8 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                         mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
-                                                        init.tree=init.tree, n.iter=n.iter, sample.every=sample.every,
+                                                        init.tree=init.tree, , init.kappa=init.kappa,
+                                                        n.iter=n.iter, sample.every=sample.every,
                                                         tune.every=tune.every, , burnin=burnin,
                                                         find.import=find.import, find.import.n=find.import.n,
                                                         pi.param1=pi.param1, pi.param2=pi.param2,
