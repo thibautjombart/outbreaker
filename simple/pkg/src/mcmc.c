@@ -333,11 +333,14 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move Tinf */
 	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
 
-	/* move alpha_i*/
-	move_alpha(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
+	/* /\* move alpha_i*\/ */
+	/* move_alpha(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng); */
 
-	/* move kappa_i*/
-	move_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
+	/* /\* move kappa_i*\/ */
+	/* move_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng); */
+
+	/* move alpha_i and kappa_i*/
+	move_alpha_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
 
     } /* end of MCMC */
 
@@ -523,12 +526,14 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* fflush(stdout); */
 	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
-	/* move alpha_i*/
-	/* if(mcmcPar->move_alpha) move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
-	move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	/* /\* move alpha_i*\/ */
+	/* move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
 
-	/* move kappa_i*/
-	move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	/* /\* move kappa_i*\/ */
+	/* move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
+
+	/* move alpha_i and kappa_i*/
+	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
 
     } /* end of mcmc */
 
