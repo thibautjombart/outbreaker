@@ -23,7 +23,7 @@ library(ape)
 
 w <- c(0,.1,.5,2,.5,.1)
 ####w <- c(0,1,1,1,.5,.2,.1)
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4, tree=FALSE)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4)
 dat <- full[1:20]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
@@ -33,7 +33,7 @@ BURNIN <- 2e4
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5, move.kappa=FALSE))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5))
 
 system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5, find.import=FALSE))
 
@@ -95,9 +95,5 @@ plot.chains(res, "pi", omit=BURNIN, type="de")
 abline(v=1)
 
 
-
-## check Phi
-plot.chains(res, "phi", omit=BURNIN, type="de")
-abline(v=1/20)
 
 ############################################
