@@ -49,7 +49,7 @@ int transi_ij(int i, int j, data *dat, dna_dist *dnainfo){
     /* if 1 missing sequence, return -1 */
     if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
 
-    return mat_int_ij(dnainfo->transi, i, j);
+    return mat_int_ij(dnainfo->transi, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
 } /* end transi_ij */
 
 
@@ -64,7 +64,7 @@ int transv_ij(int i, int j, data *dat, dna_dist *dnainfo){
     /* if 1 missing sequence, return -1 */
     if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
 
-    return mat_int_ij(dnainfo->transv, i, j);
+    return mat_int_ij(dnainfo->transv, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
 } /* end transi_ij */
 
 
@@ -80,7 +80,7 @@ int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo){
     /* if 1 missing sequence, return -1 */
     if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
 
-    return mat_int_ij(dnainfo->nbcommon, i, j);
+    return mat_int_ij(dnainfo->nbcommon, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
 } /* end transi_ij */
 
 

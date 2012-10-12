@@ -46,8 +46,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna);
-    /* printf("\n>>> Data <<<\n"); */
-    /* print_data(dat); */
+    printf("\n>>> Data <<<\n");
+    print_data(dat);
 
 
     /* GET TIME SPAN */
@@ -65,13 +65,13 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
     init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, rng);
-    print_param(par);
+    /* print_param(par); */
 
 
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna);
-    /* printf("\n>>> DNA info <<<\n"); */
-    /* print_dna_dist(dnainfo); */
+    printf("\n>>> DNA info <<<\n");
+    print_dna_dist(dnainfo);
 
 
    /*  /\* COMPUTE PRIORS *\/ */
@@ -87,6 +87,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
    /*  printf("\nLog-posterior value: %.10f\n", logPost); */
 
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
+    printf("\nBefore check init LL\n");fflush(stdout);
+
     mcmcPar = alloc_mcmc_param(dat->n);
     init_mcmc_param(mcmcPar, dat, (bool) *move_mut, move_alpha, move_kappa, (bool) *move_Tinf, 
 		    (bool) *move_pi, (bool) *find_import, *burnin, *find_import_at);
@@ -98,16 +100,20 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 	fflush(stdout);
     }
 
+    printf("\nAfter check init LL\n");fflush(stdout);
+    printf("\nBefore MCMC\n");fflush(stdout);
+
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery,
 	 (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
 
+    printf("\nAfter MCMC\n");fflush(stdout);
 
     /* FILL IN GENETIC DISTANCE VECTOR */
     counter = 0;
-    for(i=0;i<(dat->n-1);i++){
-	for(j=i+1;j<dat->n;j++){
-	    vecDist[counter++] = mat_int_ij(dnainfo->transi,i,j) + mat_int_ij(dnainfo->transv,i,j);
+    for(i=0;i<(dat->nSeq-1);i++){
+	for(j=i+1;j<dat->nSeq;j++){
+	    vecDist[counter++] = transi_ij(i,j,dat,dnainfo) + transv_ij(i,j,dat,dnainfo);
 	}
     }
 
