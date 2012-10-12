@@ -2,7 +2,8 @@
 ##################
 ## main functions
 ##################
-outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
+outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
+                       w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        init.kappa=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
@@ -32,12 +33,14 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     if(init.mu1<0) stop("init.mu1 < 0")
     if(init.gamma<0) stop("init.gamma < 0")
 
+
     ## PROCESS INPUTS ##
     ## dna ##
-    n.ind <- as.integer(nrow(dna))
+    n.seq <- as.integer(nrow(dna))
+    n.ind <- as.integer(length(dates))
     n.nucl <- as.integer(ncol(dna))
     dnaraw <- unlist(as.list(dna),use.names=FALSE)
-    if(n.ind != length(dates)) stop(paste("dna and dates have different number of individuals -",n.ind,"versus",length(dates)))
+    ## if(n.ind != length(dates)) stop(paste("dna and dates have different number of individuals -",n.ind,"versus",length(dates)))
 
     ## handle dates ##
     if(is.numeric(dates)){
@@ -49,6 +52,18 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
         dates <- difftime(dates, min(dates), units="days")
     }
     dates <- as.integer(dates)
+
+
+    ## handle idx.dna ##
+    ## need to go from: id of case for each sequence
+    ## to: position of the sequence in DNA matrix for each case
+    ## -1 is used for missing sequences
+    if(any(!idx.dna %in% 1:n.ind)) stop("DNA sequences provided for unknown cases (some idx.dna not in 1:n.ind)")
+    if(length(idx.dna)!=nrow(dna)) stop("length of idx.dna does not match the number of DNA sequences")
+
+    idx.dna.for.cases <- match(1:n.ind, idx.dna)
+    idx.dna.for.cases[is.na(idx.dna.for.cases)] <- 0
+    idx.dna.for.cases <- as.integer(idx.dna.for.cases-1) # for C
 
     ## check generation time function ##
     w.dens <- as.double(w.dens)
@@ -135,11 +150,11 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
     find.import.int <- as.integer(find.import)
 
     ## create empty output vector for genetic distances ##
-    dna.dist <- integer(n.ind*(n.ind-1)/2)
+    dna.dist <- integer(n.seq*(n.seq-1)/2)
     stopTuneAt <- integer(1)
 
     temp <- .C("R_outbreaker",
-               dnaraw, dates, n.ind, n.nucl,
+               dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases,
                w.dens, w.trunc,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, init.mu1, init.gamma,
@@ -149,13 +164,13 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[25]]
-    stopTuneAt <- temp[[26]]
+    D <- temp[[26]]
+    stopTuneAt <- temp[[27]]
 
     cat("\nComputations finished.\n\n")
 
     ## make D a 'dist' object ##
-    attr(D,"Size") <- n.ind
+    attr(D,"Size") <- n.seq
     attr(D,"Diag") <- FALSE
     attr(D,"Upper") <- FALSE
     class(D) <- "dist"
@@ -183,7 +198,7 @@ outbreaker <- function(dna, dates, w.dens, w.trunc=length(w.dens),
 ## version with multiple runs
 ###############################
 outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=NULL,
-                                dna, dates, w.dens, w.trunc=length(w.dens),
+                                dna, dates, idx.dna=1:nrow(dna), w.dens, w.trunc=length(w.dens),
                                 init.tree=c("seqTrack","random","star","none"),
                                 init.kappa=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
@@ -216,7 +231,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
 
     ## COMPUTATIONS ##
     if(multicore){
-        res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
+        res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
                                                           init.tree=init.tree, init.kappa=init.kappa,
                                                           n.iter=n.iter, sample.every=sample.every,
                                                           tune.every=tune.every, burnin=burnin,
@@ -228,8 +243,8 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]),
                         mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
-        res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, w.dens=w.dens, w.trunc=w.trunc,
-                                                        init.tree=init.tree, , init.kappa=init.kappa,
+        res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+                                                        init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
                                                         tune.every=tune.every, , burnin=burnin,
                                                         find.import=find.import, find.import.n=find.import.n,

@@ -26,9 +26,10 @@
 
 /* data: contains only observed data */
  typedef struct{
-     int n, length; /* n: number of observations; length: sequence length */
+     int n, length, nSeq; /* n: number of observations; length: sequence length; nSeq: nb of sequences */
      vec_int * dates; /* collection dates*/
      list_dnaseq * dna; /* sequences */
+     vec_int * idxCasesInDna; /* indices DNA sequences for each case; -1 if missing */
      int timespan; /* timespan of the data */
  } data;
 
@@ -113,14 +114,13 @@ typedef struct{
    DATA
   ======
 */
-data *alloc_data(int n, int length);
+data *alloc_data(int n, int nSeq, int length);
 
 void free_data(data *in);
 
 void print_data(data *in);
 
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *length);
-
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna);
 
 
 

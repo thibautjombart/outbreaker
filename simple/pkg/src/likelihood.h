@@ -2,6 +2,27 @@
 #define __LIKELIHOOD_H
 
 
+
+/*
+  ===================
+  AUXILIARY FUNCTIONS
+  ===================
+*/
+int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par);
+
+int transi_ij(int i, int j, data *dat, dna_dist *dnainfo);
+
+int transv_ij(int i, int j, data *dat, dna_dist *dnainfo);
+
+int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo);
+
+
+/*
+  ====================
+  LIKELIHOOD FUNCTIONS
+  ====================
+*/
+
 double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng);
 
 double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_rng *rng);

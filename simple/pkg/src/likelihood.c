@@ -9,8 +9,90 @@
 
 
 
+/*
+  ===================
+  AUXILIARY FUNCTIONS
+  ===================
+*/
 
 
+/* FIND SEQUENCE TO USE FOR GENETIC LIKELIHOOD */
+/* i: index of the case for which we seek a sequenced ancestor */
+int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par){
+    int nbNuclCommon = -1, curAnces = i;
+
+    /* /\* debuging *\/ */
+    /* printf("\nLooking for sequenced ancestor of %d, start with %d\n",i,vec_int_i(par->alpha,curAnces)); */
+    /* fflush(stdout); */
+
+    do{
+	curAnces = vec_int_i(par->alpha,curAnces); /* move up the ancestry chain */
+	nbNuclCommon = com_nucl_ij(i, curAnces, dat, dnainfo);
+    } while(nbNuclCommon<1 && curAnces>=0); /* stop if ancestor sequenced found or ancestor is -1 */
+
+   /* /\* debuging *\/ */
+   /*  printf("\nReturned sequenced ancestor of %d: %d (%d common nucl)\n",i,curAnces,nbNuclCommon); */
+   /*  fflush(stdout); */
+
+    return curAnces;
+} /* end find_sequenced_ancestor */
+
+
+
+
+
+/* FIND NB TRANSITIONS BETWEEN CASES I AND J */
+int transi_ij(int i, int j, data *dat, dna_dist *dnainfo){
+    /* return -1 if i or j is unknown case */
+    if(i<0 || j<0) return -1;
+
+    /* if 1 missing sequence, return -1 */
+    if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
+
+    return mat_int_ij(dnainfo->transi, i, j);
+} /* end transi_ij */
+
+
+
+
+
+/* FIND NB TRANSVERSIONS BETWEEN CASES I AND J */
+int transv_ij(int i, int j, data *dat, dna_dist *dnainfo){
+    /* return -1 if i or j is unknown case */
+    if(i<0 || j<0) return -1;
+
+    /* if 1 missing sequence, return -1 */
+    if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
+
+    return mat_int_ij(dnainfo->transv, i, j);
+} /* end transi_ij */
+
+
+
+
+
+
+/* FIND NB OF COMPARABLE NUCLEOTIDES BETWEEN CASES I AND J */
+int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo){
+    /* return -1 if i or j is unknown case */
+    if(i<0 || j<0) return -1;
+
+    /* if 1 missing sequence, return -1 */
+    if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
+
+    return mat_int_ij(dnainfo->nbcommon, i, j);
+} /* end transi_ij */
+
+
+
+
+
+
+/*
+  ====================
+  LIKELIHOOD FUNCTIONS
+  ====================
+*/
 
 /* LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
 double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
@@ -41,16 +123,8 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
     /* = INTERNAL CASES = */
     /* GENETIC LIKELIHOOD */
-    /* dpois(0,0) returns -NaN, not 1! */
-    if(mat_int_ij(dnainfo->nbcommon, i, ances)>0){
-	/* transitions */
-	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1));
-
-	/* transversions */
-	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1));
-    }
-
-
+    out += loglikelihood_gen_i(i, dat, dnainfo, par, rng);
+ 
     /* EPIDEMIOLOGICAL LIKELIHOOD */
     /* LIKELIHOOD OF COLLECTION DATE */
     out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
@@ -79,28 +153,33 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
 /* GENETIC LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
 double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_rng *rng){
-    int ances=vec_int_i(par->alpha,i);
+    int ances;
     double out=0.0;
 
-    /* IMPORTED CASES */
+    /* FIND MOST RECENT SEQUENCED ANCESTOR */
+    ances = find_sequenced_ancestor(i, dat, dnainfo, par);
+
+    /* NO DNA INFO AVAIL (IMPORTED CASES/MISSING SEQUENCES) */
     if(ances < 0) {
 	/* return sim_loglike_gen(dat, par, rng); */
 	return 0.0;
     }
 
 
-    /* NON-IMPORTED CASES */
+    /* DNA INFO AVAILABLE */
     /* dpois(0,0) returns -NaN, not 1! */
-    if(mat_int_ij(dnainfo->nbcommon, i, ances)>0){
+    if(com_nucl_ij(i, ances, dat, dnainfo)>0){
 	/* TRANSITIONS */
+	out += log(gsl_ran_poisson_pdf((unsigned int) transi_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) vec_int_i(par->kappa,i) * par->mu1));
 	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
 
-	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1));
+	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1)); */
 
 	/* TRANSVERSIONS */
+	out += log(gsl_ran_poisson_pdf((unsigned int) transv_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) vec_int_i(par->kappa,i) * par->gamma * par->mu1));
 	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
 
-	out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1));
+	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1)); */
     }
 
 
