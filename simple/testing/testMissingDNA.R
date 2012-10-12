@@ -33,10 +33,12 @@ BURNIN <- 2e4
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5))
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
 
-## without imported cases
-##system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=2e5, find.import=FALSE))
+## run outbreaker with missing DNA info
+idxDna <- 1:nrow(dat$dna)
+idxDna[sample(idxDna,10)] <- 0
+system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
 
 
 ## check results ##

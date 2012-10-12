@@ -122,20 +122,20 @@ dna_dist * compute_dna_distances(list_dnaseq *in){
 	    /* for all pairs of nucleotides */
 	    for(k=0;k<L;k++){
 		if(is_atgc(in->list[i]->seq[k]) && is_atgc(in->list[j]->seq[k])){ /*if non-missing data*/
-				/* one more nucleotide was comparable */
-				out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;
-				if(in->list[i]->seq[k] != in->list[j]->seq[k]){
-					/* transitions */
-					if((in->list[i]->seq[k]=='a' && in->list[j]->seq[k]=='g')
-					   || (in->list[i]->seq[k]=='g' && in->list[j]->seq[k]=='a')
-					   || (in->list[i]->seq[k]=='c' && in->list[j]->seq[k]=='t')
-					   || (in->list[i]->seq[k]=='t' && in->list[j]->seq[k]=='c')) {
-						out->transi->rows[i]->values[j] = out->transi->rows[i]->values[j] + 1;
-					} else { /* else it is a transversion*/
-						out->transv->rows[i]->values[j] = out->transv->rows[i]->values[j] + 1;
-					}
-				}
-			} /* end if non-missing data*/
+		    /* one more nucleotide was comparable */
+		    out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;
+		    if(in->list[i]->seq[k] != in->list[j]->seq[k]){
+			/* transitions */
+			if((in->list[i]->seq[k]=='a' && in->list[j]->seq[k]=='g')
+			   || (in->list[i]->seq[k]=='g' && in->list[j]->seq[k]=='a')
+			   || (in->list[i]->seq[k]=='c' && in->list[j]->seq[k]=='t')
+			   || (in->list[i]->seq[k]=='t' && in->list[j]->seq[k]=='c')) {
+			    out->transi->rows[i]->values[j] = out->transi->rows[i]->values[j] + 1;
+			} else { /* else it is a transversion*/
+			    out->transv->rows[i]->values[j] = out->transv->rows[i]->values[j] + 1;
+			}
+		    }
+		} /* end if non-missing data*/
 	    } /* end for k */
 
 	    /* FILL IN THE SECOND HALF OF THE 'MATRIX' */

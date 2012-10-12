@@ -9,7 +9,7 @@
    DATA
   ======
 */
-data *alloc_data(int n, int length){
+data *alloc_data(int n, int nSeq, int length){
     /* allocate pointer */
     data *out = (data *) malloc(sizeof(data));
     if(out == NULL){
@@ -20,12 +20,16 @@ data *alloc_data(int n, int length){
     /* fill in integers */
     out->n = n;
     out->length = length;
+    out->nSeq = nSeq;
 
     /* dates: collection times for each sequence */
     out->dates = alloc_vec_int(n);
 
     /* dna: list of DNA sequences */
-    out->dna = alloc_list_dnaseq(n, length);
+    out->dna = alloc_list_dnaseq(nSeq, length);
+
+    /* indices of DNA sequence for each case */
+    out->idxCasesInDna = alloc_vec_int(n);
 
     return out;
 } /* end alloc_data */
@@ -37,6 +41,7 @@ data *alloc_data(int n, int length){
 void free_data(data *in){
     free_vec_int(in->dates);
     free_list_dnaseq(in->dna);
+    free_vec_int(in->idxCasesInDna);
     free(in);
 } /* end free_data*/
 
@@ -44,37 +49,46 @@ void free_data(data *in){
 
 
 void print_data(data *in){
-    fflush(stdout);
     printf("\n= Collection dates (timespan: %d)=\n",in->timespan);
     print_vec_int(in->dates);
     printf("\n= Sequences =");
     print_list_dnaseq(in->dna);
     fflush(stdout);
+    printf("\n= Indices of DNA sequences for each case=\n");
+    print_vec_int(in->idxCasesInDna);
 } /* end print_data*/
 
 
 
 
 /* Create a data object using inputs from R */
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n, int *length){
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
+		   int *nSeq, int *length, int *idxCasesInDna){
     int i, j, count=0;
-    data * out = alloc_data(*n, *length);
+    data * out = alloc_data(*n, *nSeq, *length);
 
-    /* FILL IN DATES */
+    /* FILL IN DATES AND INDICES OF DNA */
     for(i=0;i<*n;i++){
+	/* dates */
 	out->dates->values[i] = Tcollec[i];
+
+	/* indices of dna sequences for each case */
+	/* -1 if no sequence (index is not in 0:(nSeq-1)) */
+        out->idxCasesInDna->values[i] = (idxCasesInDna[i]<0||idxCasesInDna[i]>=*nSeq) ? -1 : idxCasesInDna[i];
     }
 
     out->timespan = max_vec_int(out->dates) - min_vec_int(out->dates);
 
 
     /* FILL IN DNA DATA */
+    /* dna sequences */
     /* avoid using DNAbin2list_dnaseq here as it re-allocates memory */
-    for(i=0;i<*n;i++){
+    for(i=0;i<*nSeq;i++){
 	for(j=0;j<*length;j++){
 	    out->dna->list[i]->seq[j] = DNAbin2char(DNAbinInput[count++]);
 	}
-    }
+  }
+
 
     /* RETURN */
     return out;
