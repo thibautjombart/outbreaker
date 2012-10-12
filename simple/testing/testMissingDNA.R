@@ -30,12 +30,7 @@ plot(dat, main="Data")
 
 BURNIN <- 2e4
 
-############################################
-## ESTIMATE EVERYTHING - PARALLEL VERSION ##
-## run outbreaker
-system.time(res1 <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
-
-## run outbreaker with missing DNA info
+## create some partial dna data
 idxDna <- sample(1:dat$n,dat$n)
 newDna <- dat$dna[idxDna,]
 
@@ -45,7 +40,19 @@ newDna <- dat$dna[idxDna,]
 load("/home/thibaut/dev/outbreaker/outbreaker-code/simple/testing/Robjects/data6.RData")
 
 
-##system.time(res2 <- outbreaker(dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
+
+
+############################################
+## ESTIMATE EVERYTHING - PARALLEL VERSION ##
+## run outbreaker
+system.time(res1 <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
+
+## system.time(res1 <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=6e4))
+
+## run outbreaker with missing DNA info
+
+
+## system.time(res2 <- outbreaker(dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=6e4))
 
 system.time(res2 <- outbreaker.parallel(n.runs=4, dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
 
