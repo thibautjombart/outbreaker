@@ -36,11 +36,18 @@ BURNIN <- 2e4
 system.time(res1 <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
 
 ## run outbreaker with missing DNA info
-idxDna <- sample(1:dat$n,15)
+idxDna <- sample(1:dat$n,dat$n)
 newDna <- dat$dna[idxDna,]
-system.time(res2 <- outbreaker(dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
 
-system.time(res2 <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
+##save(full,dat, w, collecDates, idxDna, newDna, file="/home/thibaut/dev/outbreaker/outbreaker-code/simple/testing/Robjects/data6.RData")
+
+## or:
+load("/home/thibaut/dev/outbreaker/outbreaker-code/simple/testing/Robjects/data6.RData")
+
+
+##system.time(res2 <- outbreaker(dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
+
+system.time(res2 <- outbreaker.parallel(n.runs=4, dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
 
 
 ## check results ##
