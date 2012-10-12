@@ -19,6 +19,7 @@ get.TTree.simple <- function(x, burnin=1e5){
     res <- list()
     res$idx <- 1:length(x$collec.dates)
     res$collec.dates <- x$collec.dates
+    res$idx.dna <- x$idx.dna
 
     ## PROCESS CHAINS ##
     chains <- x$chains[x$chains$step>burnin, ] # discard burn-in
@@ -39,7 +40,12 @@ get.TTree.simple <- function(x, burnin=1e5){
 
     ## get ancestor->descendent mutations ##
     D <- as.matrix(x$D)
-    res$nb.mut <- sapply(1:length(res$idx), function(i) D[res$idx[i],res$ances[i]])
+    findMut <- function(i){
+        if(!all(c(res$idx[i],res$ances[i]) %in% res$idx.dna)) return(NA)
+        return(D[res$idx[i],res$ances[i]])
+    }
+    res$nb.mut <- sapply(1:length(res$idx), function(i) findMut(i))
+    ##res$nb.mut <- sapply(1:length(res$idx), function(i) D[res$idx[i],res$ances[i]])
 
     ## get kappa ##
     temp <- chains[,grep("kappa",names(chains))]

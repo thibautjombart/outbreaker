@@ -86,6 +86,7 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
     if(is.character(init.tree)){
         ## seqTrack init
         if(init.tree=="seqTrack"){
+            if(!all(1:n.ind %in% idx.dna)) stop("can't use seqTrack initialization with missing DNA sequences")
             D <- as.matrix(dist.dna(dna, model="TN93"))
             D[!canBeAnces] <- 1e15
             ances <- apply(D,2,which.min)-1 # -1 for compatibility with C
@@ -180,7 +181,7 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
     chains <- read.table(res.file.name, header=TRUE)
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
-    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, tune.end=stopTuneAt,
+    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
                 find.import=find.import, burnin=burnin, find.import.at=find.import.at, n.runs=1, call=call)
 
     return(res)

@@ -51,8 +51,8 @@ void free_data(data *in){
 void print_data(data *in){
     printf("\n= Collection dates (timespan: %d)=\n",in->timespan);
     print_vec_int(in->dates);
-    printf("\n= Sequences =");
-    print_list_dnaseq(in->dna);
+    /* printf("\n= Sequences ="); */
+    /* print_list_dnaseq(in->dna); */
     fflush(stdout);
     printf("\n= Indices of DNA sequences for each case=\n");
     print_vec_int(in->idxCasesInDna);

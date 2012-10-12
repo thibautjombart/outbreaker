@@ -99,7 +99,8 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
 
 	    /* if kappa_i==1, need to get genetic distances to candidates */
 	    if(vec_int_i(currentPar->kappa,j)==1){
-		nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j);
+		/* nmut = mat_int_ij(dnainfo->transi, i, j) + mat_int_ij(dnainfo->transv, i, j); */
+		nmut = transi_ij(i,j,dat,dnainfo) + transv_ij(i,j,dat,dnainfo);
 		mcmcPar->candid_ances_proba->values[nCandidates] = (double) nmut;
 		if(minNmut>nmut) minNmut = nmut;
 	    }

@@ -293,6 +293,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* RUN MCMC */
     for(i=2;i<=localMcmcPar->find_import_at;i++){
+	/* printf("i: %d ",i);fflush(stdout); */
 	/* COLLECT INFORMATION ABOUT INDIVIDUAL LIKELIHOODS */
 	if(i>=localMcmcPar->burnin && i % outEvery == 0){
 	    /* printf("\ni=%d - computing individual likelihoods\n",i);fflush(stdout); */

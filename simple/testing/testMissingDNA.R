@@ -33,15 +33,20 @@ BURNIN <- 2e4
 ############################################
 ## ESTIMATE EVERYTHING - PARALLEL VERSION ##
 ## run outbreaker
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
+system.time(res1 <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
 
 ## run outbreaker with missing DNA info
-idxDna <- 1:nrow(dat$dna)
-idxDna[sample(idxDna,10)] <- 0
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
+idxDna <- sample(1:dat$n,15)
+newDna <- dat$dna[idxDna,]
+system.time(res2 <- outbreaker(dna=newDna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
+
+system.time(res2 <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, idx.dna=idxDna, w.dens=w, init.tree="star", n.iter=1e5))
 
 
 ## check results ##
+res <- res1
+res <- res2
+
 plot.chains(res)
 
 ## check ancestries
