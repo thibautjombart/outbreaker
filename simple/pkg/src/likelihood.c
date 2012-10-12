@@ -25,10 +25,14 @@ int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par){
     /* printf("\nLooking for sequenced ancestor of %d, start with %d\n",i,vec_int_i(par->alpha,curAnces)); */
     /* fflush(stdout); */
 
+    /* store nb of generations from i to its closest sequenced ancestor */
+    par->kappa_temp = 0;
+
     do{
 	curAnces = vec_int_i(par->alpha,curAnces); /* move up the ancestry chain */
+	par->kappa_temp += vec_int_i(par->kappa,curAnces);
 	nbNuclCommon = com_nucl_ij(i, curAnces, dat, dnainfo);
-    } while(nbNuclCommon<1 && curAnces>=0); /* stop if ancestor sequenced found or ancestor is -1 */
+    } while(nbNuclCommon<1 && curAnces>=0); /* stop if sequenced ancestor found or ancestor is -1 */
 
    /* /\* debuging *\/ */
    /*  printf("\nReturned sequenced ancestor of %d: %d (%d common nucl)\n",i,curAnces,nbNuclCommon); */
@@ -124,7 +128,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     /* = INTERNAL CASES = */
     /* GENETIC LIKELIHOOD */
     out += loglikelihood_gen_i(i, dat, dnainfo, par, rng);
- 
+
     /* EPIDEMIOLOGICAL LIKELIHOOD */
     /* LIKELIHOOD OF COLLECTION DATE */
     out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
@@ -170,13 +174,13 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
     /* dpois(0,0) returns -NaN, not 1! */
     if(com_nucl_ij(i, ances, dat, dnainfo)>0){
 	/* TRANSITIONS */
-	out += log(gsl_ran_poisson_pdf((unsigned int) transi_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) vec_int_i(par->kappa,i) * par->mu1));
+	out += log(gsl_ran_poisson_pdf((unsigned int) transi_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
 	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
 
 	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1)); */
 
 	/* TRANSVERSIONS */
-	out += log(gsl_ran_poisson_pdf((unsigned int) transv_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) vec_int_i(par->kappa,i) * par->gamma * par->mu1));
+	out += log(gsl_ran_poisson_pdf((unsigned int) transv_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
 	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
 
 	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1)); */

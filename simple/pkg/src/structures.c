@@ -191,6 +191,7 @@ param *alloc_param(int n){
 
     /* fill in integers */
     out->n = n;
+    out->kappa_temp = 0;
 
     /* allocates vectors of integers */
     out->Tinf = alloc_vec_int(n);
@@ -251,6 +252,7 @@ void print_param(param *in){
 void copy_param(param *in, param *out){
     /* copy atomic values */
     out->n = in->n;
+    out->kappa_temp = in->kappa_temp;
     out->mu1 = in->mu1;
     out->gamma = in->gamma;
     out->pi = in->pi;
