@@ -87,7 +87,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
    /*  printf("\nLog-posterior value: %.10f\n", logPost); */
 
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
-    printf("\nBefore check init LL\n");fflush(stdout);
+    /* printf("\nBefore check init LL\n");fflush(stdout); */
 
     mcmcPar = alloc_mcmc_param(dat->n);
     init_mcmc_param(mcmcPar, dat, (bool) *move_mut, move_alpha, move_kappa, (bool) *move_Tinf, 
@@ -100,14 +100,14 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 	fflush(stdout);
     }
 
-    printf("\nAfter check init LL\n");fflush(stdout);
-    printf("\nBefore MCMC\n");fflush(stdout);
+    /* printf("\nAfter check init LL\n");fflush(stdout); */
+    /* printf("\nBefore MCMC\n");fflush(stdout); */
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery,
 	 (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
 
-    printf("\nAfter MCMC\n");fflush(stdout);
+    /* printf("\nAfter MCMC\n");fflush(stdout); */
 
     /* FILL IN GENETIC DISTANCE VECTOR */
     counter = 0;
