@@ -61,10 +61,11 @@ system.time(res2 <- outbreaker.parallel(n.runs=4, dna=newDna, dates=collecDates,
 res <- res1
 res <- res2
 
-plot.chains(res)
+
+plot.chains(res, main="Posterior probabilities")
 
 ## check ancestries
-x <- get.TTree.simple(res, burn=2e4)
+x <- get.TTree.simple(res, burn=BURNIN)
 temp <- x
 temp$ances[is.na(temp$ances)] <- 0
 temp2 <- dat$ances
@@ -77,45 +78,51 @@ notOk <- which(temp$ances!=temp2)
 if(length(notOk)>0) v.col[notOk] <- "red"
 par(mfrow=c(1,1))
 plot(dat,main="data", vertex.color=v.col)
-x11();
 plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
 
-## check frequency of external infections
-alpha <- res$chains[,grep("alpha", names(res$chains))]
-barplot(apply(alpha,2, function(e) mean(e==0)), main="Proportion of inferred external case")
+
+## check nb of generations
+temp <- x
+temp$n.gen[is.na(temp$ances)] <- NA
+temp2 <- dat$ngen
+temp2[is.na(temp$ances)] <- NA
+temp2[1] <- NA
+mean(temp$n.gen==temp2,na.rm=TRUE)
+data.frame(ngen.true=dat$ngen, ngen.inf=x$n.gen)
+
+
+v.col <- rep("lightblue",length(x$ances))
+notOk <- which(temp$n.gen!=temp2)
+if(length(notOk)>0) v.col[notOk] <- "red"
+par(mfrow=c(1,1))
+plot(dat,main="data", vertex.color=v.col)
+plot(x,main="reconstruction (red=wrong number of generations)", vertex.color=v.col)
+
+
+## check pi
+plot.chains(res, "pi",type="dens", omit=2e4)
+abline(v=mean(dat$ngen==1))
 
 
 ## check mutation rates
+opar <- par()
 par(mfrow=c(2,1))
 plot.chains(res, "mu1",type="dens", omit=2e4)
 abline(v=1e-4, col="blue")
 plot.chains(res, "mu2",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
+abline(v=0.2e-4, col="blue")
 
-
-
-## check kappa
-v.col <- rep("lightblue",length(x$ances))
-notOk <- which(x$n.gen!=1)
-if(length(notOk)>0) v.col[notOk] <- "red"
-plot(dat,main="data", vertex.color=v.col)
-x11();
-plot(x,main="reconstruction (red=wrong kappa)", vertex.color=v.col, annot="n.gen")
-
-
-
-## check Tinf
+## check infection dates
+par(opar)
 toKeep <- grep("Tinf",names(res$chains))
 Tinf <- res$chains[res$chains$step>BURNIN, toKeep]
-boxplot(Tinf, col="grey")
-points(dat$dates, col="red", pch="x",cex=2)
+colnames(Tinf) <- sub("Tinf_", "case ",colnames(Tinf))
+boxplot(Tinf, col=funky(20), horizontal=TRUE, las=1, xlab="Time", main="Inference of infection dates")
+mtext(side=3, text="(X = actual date)")
+points(dat$dates,1:dat$n, col="black", pch="x",cex=2.5)
+points(dat$dates,1:dat$n, col=funky(20), pch="x",cex=2)
 
 
+## get incidence curves
+get.incid(res, main="Incidence curves")
 
-## check Pi
-plot.chains(res, "pi", omit=BURNIN, type="de")
-abline(v=1)
-
-
-
-############################################

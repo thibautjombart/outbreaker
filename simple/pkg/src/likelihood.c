@@ -24,25 +24,25 @@ int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par){
     /* escape if no sequence for i */
     if(vec_int_i(dat->idxCasesInDna, i)<0) return -1;
 
-    /* debuging */
-    printf("\nLooking for sequenced ancestor of %d, start with %d\n",i,vec_int_i(par->alpha,curAnces));
-    fflush(stdout);
+    /* /\* debuging *\/ */
+    /* printf("\nLooking for sequenced ancestor of %d, start with %d\n",i,vec_int_i(par->alpha,curAnces)); */
+    /* fflush(stdout); */
 
-    printf("%d",i);fflush(stdout);
+    /* printf("%d",i);fflush(stdout); */
 
     /* store nb of generations from i to its closest sequenced ancestor */
     par->kappa_temp = 0;
 
     do{
 	curAnces = vec_int_i(par->alpha,curAnces); /* move up the ancestry chain */
-	printf("<-%d",curAnces);fflush(stdout);
+	/* printf("<-%d",curAnces);fflush(stdout); */
 	par->kappa_temp += vec_int_i(par->kappa,curAnces);
 	nbNuclCommon = com_nucl_ij(i, curAnces, dat, dnainfo);
     } while(nbNuclCommon<1 && curAnces>=0); /* stop if sequenced ancestor found or ancestor is -1 */
 
-   /* debuging */
-    printf("\nSequenced ancestor found for %d: %d (%d generations)\n",i,curAnces,par->kappa_temp);
-    fflush(stdout);
+   /* /\* debuging *\/ */
+   /*  printf("\nSequenced ancestor found for %d: %d (%d generations)\n",i,curAnces,par->kappa_temp); */
+   /*  fflush(stdout); */
 
     return curAnces;
 } /* end find_sequenced_ancestor */

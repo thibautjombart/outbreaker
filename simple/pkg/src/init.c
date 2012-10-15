@@ -99,7 +99,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     for(i=0;i<dat->n;i++){
 	/* par->kappa->values[i] = 1; */
 	ancesId = vec_int_i(par->alpha,i);
-	printf("\nInitial kappa_%d: %d\n",i,init_kappa[i]);fflush(stdout);
+	/* printf("\nInitial kappa_%d: %d\n",i,init_kappa[i]);fflush(stdout); */
 	if(ancesId>-1){
 	    if(init_kappa[i]<1){ /* value < 1 => find ML kappa */
 		T = vec_int_i(par->Tinf, i) - vec_int_i(par->Tinf, ancesId);
@@ -110,7 +110,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 	} else { /* kappa = 1 by convention for imported cases */
 	    par->kappa->values[i] = 1;
 	}
-	printf("\nInitialized kappa_%d: %d\n",i,par->kappa->values[i]);fflush(stdout);
+	/* printf("\nInitialized kappa_%d: %d\n",i,par->kappa->values[i]);fflush(stdout); */
     }
 
 
