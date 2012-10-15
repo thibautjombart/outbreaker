@@ -41,6 +41,7 @@ get.TTree.simple <- function(x, burnin=1e5){
     ## get ancestor->descendent mutations ##
     D <- as.matrix(x$D)
     findMut <- function(i){
+        if(any(is.na(c(res$idx[i],res$ances[i])))) return(NA)
         if(!all(c(res$idx[i],res$ances[i]) %in% res$idx.dna)) return(NA)
         return(D[res$idx[i],res$ances[i]])
     }
@@ -89,7 +90,7 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 
     ## GET DAG ##
     from.old <- x$ances
-    to.old <- x$id
+    to.old <- x$idx
     isNotNA <- !is.na(from.old) & !is.na(to.old)
     vnames <- sort(unique(c(from.old,to.old)))
     from <- match(from.old,vnames)

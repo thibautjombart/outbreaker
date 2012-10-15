@@ -397,12 +397,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     int i, j, nbTermsLike = 0;
     vec_int *areOutliers = alloc_vec_int(dat->n);
 
-    /* OPEN OUTPUT FILE */
-    FILE *file = fopen(outputFile,"w"), *mcmcFile = fopen(mcmcOutputFile,"w");
+    /* OPEN OUTPUT FILES */
+    FILE *file = fopen(outputFile,"w");
     if(file==NULL){
 	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile);
 	exit(1);
     }
+    FILE *mcmcFile = fopen(mcmcOutputFile,"w");
     if(mcmcFile==NULL){
 	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile);
 	exit(1);
