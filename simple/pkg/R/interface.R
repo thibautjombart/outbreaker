@@ -165,8 +165,8 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[26]]
-    stopTuneAt <- temp[[27]]
+    D <- temp[[27]]
+    stopTuneAt <- temp[[28]]
 
     cat("\nComputations finished.\n\n")
 
