@@ -17,8 +17,12 @@
 
 /* FIND SEQUENCE TO USE FOR GENETIC LIKELIHOOD */
 /* i: index of the case for which we seek a sequenced ancestor */
+/* must return -1 if no ancestor sequenced (or i not sequenced) */
 int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par){
     int nbNuclCommon = -1, curAnces = i;
+
+    /* escape if no sequence for i */
+    if(vec_int_i(dat->idxCasesInDna, i)<0) return -1;
 
     /* debuging */
     printf("\nLooking for sequenced ancestor of %d, start with %d\n",i,vec_int_i(par->alpha,curAnces));
@@ -193,7 +197,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
     filter_logprob(&out);
 
     return out;
-} /* end loglikelihood_i */
+} /* end loglikelihood_gen_i */
 
 
 
