@@ -8,7 +8,7 @@
 
   \code{outbreaker}: basic implementation of the model.
   \code{outbreaker.parallel}: parallelized version, requiring the
-  package \code{multicore}.
+  package \code{parallel}.
 }
 \usage{
 outbreaker(dna, dates, w.dens, w.trunc=length(w.dens),
@@ -23,7 +23,7 @@ outbreaker(dna, dates, w.dens, w.trunc=length(w.dens),
            tune.file.name="mcmcOutput.txt", seed=NULL)
 
 
-outbreaker.parallel(n.runs, multicore=require("multicore"), n.cores=NULL,
+outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
                    dna, dates, w.dens, w.trunc=length(w.dens),
                    init.tree=c("seqTrack","random","star","none"),
                    n.iter=1e5, sample.every=500, tune.every=500,
@@ -96,10 +96,10 @@ outbreaker.parallel(n.runs, multicore=require("multicore"), n.cores=NULL,
     file used to store MCMC tuning parameters.}
   \item{seed}{an integer used to set the random seed of the C procedures.}
   \item{n.runs}{an integer indicating the number of independent MCMC to
-    run, either in parallel (if \code{multicore} is used), or serially
+    run, either in parallel (if \code{parallel} is used), or serially
     (otherwise).}
-  \item{multicore}{a logical indicating whether the package
-    \code{multicore} should be used to run parallelized computations; by
+  \item{parallel}{a logical indicating whether the package
+    \code{parallel} should be used to run parallelized computations; by
     default, this is used if available. This package is currently
     unavailable on Windows systems.}
   \item{n.cores}{an integer indicating the number of cores to be used
@@ -262,6 +262,7 @@ plot(x,main="reconstruction (red=wrong number of generations)", vertex.color=v.c
 
 ## check pi
 plot.chains(res, "pi",type="dens", omit=2e4)
+abline(v=mean(dat$ngen>1))
 
 
 ## check mutation rates
