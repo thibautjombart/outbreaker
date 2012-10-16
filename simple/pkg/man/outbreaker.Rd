@@ -142,10 +142,12 @@ library(ape)
 BURNIN <- 1e4
 
 w <- c(0,.1,.2,.5,2,.5,.2,.1)
+mu1 <- 1e-4
+mu2 <- 0.2e-4
 barplot(w/sum(w), names=0:7,  main="Generation time distribution")
 full <- list(n=0)
 while(full$n<30){
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4,mu.transv=0.2e-4)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=mu1,mu.transv=mu2)
 }
 
 
@@ -181,9 +183,10 @@ plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
 
 ## check mutation rates
 plot.chains(res, "mu1",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
+abline(v=mu1, col="blue")
 plot.chains(res, "mu2",type="dens", omit=2e4)
-abline(v=0.2e-4, col="blue")
+abline(v=mu2, col="blue")
+
 
 ## check infection dates
 toKeep <- grep("Tinf",names(res$chains))
@@ -263,9 +266,10 @@ plot.chains(res, "pi",type="dens", omit=2e4)
 
 ## check mutation rates
 plot.chains(res, "mu1",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
+abline(v=mu1, col="blue")
 plot.chains(res, "mu2",type="dens", omit=2e4)
-abline(v=0.2e-4, col="blue")
+abline(v=mu2, col="blue")
+
 
 ## check infection dates
 toKeep <- grep("Tinf",names(res$chains))
