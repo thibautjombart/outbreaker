@@ -151,7 +151,7 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
     find.import.int <- as.integer(find.import)
 
     ## create empty output vector for genetic distances ##
-    dna.dist <- integer(n.seq*(n.seq-1)/2)
+    dna.dist <- integer(n.ind*(n.ind-1)/2)
     stopTuneAt <- integer(1)
 
     temp <- .C("R_outbreaker",
@@ -166,12 +166,13 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
                PACKAGE="outbreaker")
 
     D <- temp[[27]]
+    D[D<0] <- NA
     stopTuneAt <- temp[[28]]
 
     cat("\nComputations finished.\n\n")
 
     ## make D a 'dist' object ##
-    attr(D,"Size") <- n.seq
+    attr(D,"Size") <- n.ind
     attr(D,"Diag") <- FALSE
     attr(D,"Upper") <- FALSE
     class(D) <- "dist"

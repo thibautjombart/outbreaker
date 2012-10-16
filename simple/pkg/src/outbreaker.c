@@ -111,8 +111,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* FILL IN GENETIC DISTANCE VECTOR */
     counter = 0;
-    for(i=0;i<(dat->nSeq-1);i++){
-	for(j=i+1;j<dat->nSeq;j++){
+    for(i=0;i<(N-1);i++){
+	for(j=i+1;j<N;j++){
 	    vecDist[counter++] = transi_ij(i,j,dat,dnainfo) + transv_ij(i,j,dat,dnainfo);
 	}
     }
