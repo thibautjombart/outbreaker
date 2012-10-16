@@ -22,8 +22,10 @@ library(ape)
 
 
 w <- c(0,.1,.5,2,.5,.1)
+mu1 <- 1e-4
+mu2 <- 0.5e-4
 ####w <- c(0,1,1,1,.5,.2,.1)
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=1e-4)
+full <- simOutbreak(R0=2, infec.curve=w, mu.transi=mu1, mu.transv=mu2)
 dat <- full[1:20]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
@@ -31,13 +33,13 @@ plot(dat, main="Data")
 BURNIN <- 2e4
 
 ## create some partial dna data
-idxDna <- sample(1:dat$n,dat$n)
+idxDna <- sample(1:dat$n,dat$n-5)
 newDna <- dat$dna[idxDna,]
 
 ##save(full,dat, w, collecDates, idxDna, newDna, file="/home/thibaut/dev/outbreaker/outbreaker-code/simple/testing/Robjects/data6.RData")
 
 ## or:
-load("/home/thibaut/dev/outbreaker/outbreaker-code/simple/testing/Robjects/data6.RData")
+##load("/home/thibaut/dev/outbreaker/outbreaker-code/simple/testing/Robjects/data6.RData")
 
 
 
@@ -105,12 +107,12 @@ abline(v=mean(dat$ngen==1))
 
 
 ## check mutation rates
-opar <- par()
+opar <- par(no.readonly=TRUE)
 par(mfrow=c(2,1))
 plot.chains(res, "mu1",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
+abline(v=mu1, col="blue")
 plot.chains(res, "mu2",type="dens", omit=2e4)
-abline(v=0.2e-4, col="blue")
+abline(v=mu2, col="blue")
 
 ## check infection dates
 par(opar)

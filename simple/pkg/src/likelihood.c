@@ -53,12 +53,10 @@ int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par){
 
 /* FIND NB TRANSITIONS BETWEEN CASES I AND J */
 int transi_ij(int i, int j, data *dat, dna_dist *dnainfo){
-    /* return -1 if i or j is unknown case */
-    if(i<0 || j<0) return -1;
+    /* if no nucleotide in common, return -1 */
+    if(com_nucl_ij(i, j, dat, dnainfo)<1) return -1;
 
-    /* if 1 missing sequence, return -1 */
-    if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
-
+    /* else read appropriate value in dnainfo */
     return mat_int_ij(dnainfo->transi, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
 } /* end transi_ij */
 
@@ -68,12 +66,10 @@ int transi_ij(int i, int j, data *dat, dna_dist *dnainfo){
 
 /* FIND NB TRANSVERSIONS BETWEEN CASES I AND J */
 int transv_ij(int i, int j, data *dat, dna_dist *dnainfo){
-    /* return -1 if i or j is unknown case */
-    if(i<0 || j<0) return -1;
+    /* if no nucleotide in common, return -1 */
+    if(com_nucl_ij(i, j, dat, dnainfo)<1) return -1;
 
-    /* if 1 missing sequence, return -1 */
-    if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
-
+    /* else read appropriate value in dnainfo */
     return mat_int_ij(dnainfo->transv, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
 } /* end transi_ij */
 
