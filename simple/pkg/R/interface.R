@@ -199,7 +199,7 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
 ###############################
 ## version with multiple runs
 ###############################
-outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=NULL,
+outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
                                 dna, dates, idx.dna=1:nrow(dna), w.dens, w.trunc=length(w.dens),
                                 init.tree=c("seqTrack","random","star","none"),
                                 init.kappa=NULL,
@@ -212,19 +212,15 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## SOME CHECKS ##
-    if(multicore && !require(multicore)) stop("multicore package requested but not installed")
-    if(multicore && is.null(n.cores)){
+    if(parallel && !require(parallel)) stop("parallel package requested but not installed")
+    if(parallel && is.null(n.cores)){
         n.cores <- parallel:::detectCores()
     }
 
-    cat("\ntune.file.name:\n")
-    print(tune.file.name)
 
     ## GET FILE NAMES ##
     res.file.names <- paste("run", 1:n.runs, "-", res.file.name, sep="")
     tune.file.names <- paste("run", 1:n.runs, "-", tune.file.name, sep="")
-    cat("\ntune.file.names:\n")
-    print(tune.file.names)
 
 
     ## HANDLE SEED ##
@@ -236,24 +232,47 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
 
 
     ## COMPUTATIONS ##
-    cat("\ntune.file.names:\n")
-    print(tune.file.names)
+    if(parallel){
+        ## create cluster ##
+        clust <- makeCluster(n.cores)
 
-    if(multicore){
-        cat("\ntune.file.names:\n")
-        print(tune.file.names)
-        res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
-                                                          init.tree=init.tree, init.kappa=init.kappa,
-                                                          n.iter=n.iter, sample.every=sample.every,
-                                                          tune.every=tune.every, burnin=burnin,
-                                                          find.import=find.import, find.import.n=find.import.n,
-                                                          pi.param1=pi.param1, pi.param2=pi.param2,
-                                                          init.mu1=init.mu1, init.gamma=init.gamma,
-                                                          move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
-                                                          move.Tinf=move.Tinf, move.pi=move.pi,
-                                                          quiet=TRUE, res.file.name=res.file.names[i],
-                                                          tune.file.name=tune.file.names[i], seed=seed[i]),
-                        mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
+        ## load outbreaker for each child ##
+        clusterEvalQ(clust, library(outbreaker))
+
+        ## transfer data onto each child ##
+        listArgs <- c("dna", "dates", "idx.dna", "w.dens", "w.trunc", "init.tree", "init.kappa", "n.iter", "sample.every", "tune.every", "burnin", "find.import", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.gamma", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.phi", "res.file.names", "tune.file.names", "seed")
+
+        clusterExport(clust, listArgs, envir=environment())
+
+        ## set calls to outbreaker on each child ##
+        res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+                                                           init.tree=init.tree, init.kappa=init.kappa,
+                                                           n.iter=n.iter, sample.every=sample.every,
+                                                           tune.every=tune.every, burnin=burnin,
+                                                           find.import=find.import, find.import.n=find.import.n,
+                                                           pi.param1=pi.param1, pi.param2=pi.param2,
+                                                           init.mu1=init.mu1, init.gamma=init.gamma,
+                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
+                                                           move.Tinf=move.Tinf, move.pi=move.pi,
+                                                           quiet=TRUE, res.file.name=res.file.names[i],
+                                                           tune.file.name=tune.file.names[i], seed=seed[i]))
+
+        ## close parallel processes ##
+        stopCluster(clust)
+
+        ## Version with mclapply - doesn't work on windows ##
+        ## res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+        ##                                                     init.tree=init.tree, init.kappa=init.kappa,
+        ##                                                     n.iter=n.iter, sample.every=sample.every,
+        ##                                                     tune.every=tune.every, burnin=burnin,
+        ##                                                     find.import=find.import, find.import.n=find.import.n,
+        ##                                                     pi.param1=pi.param1, pi.param2=pi.param2,
+        ##                                                     init.mu1=init.mu1, init.gamma=init.gamma,
+        ##                                                     move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
+        ##                                                     move.Tinf=move.Tinf, move.pi=move.pi,
+        ##                                                     quiet=TRUE, res.file.name=res.file.names[i],
+        ##                                                     tune.file.name=tune.file.names[i], seed=seed[i]),
+        ##                   mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
                                                         init.tree=init.tree, init.kappa=init.kappa,
