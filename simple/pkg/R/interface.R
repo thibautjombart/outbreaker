@@ -11,8 +11,8 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
                        pi.param1=10, pi.param2=1,
                        init.mu1=1e-5, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                       move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                       quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
+                       move.Tinf=TRUE, move.pi=TRUE,
+                       quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -209,7 +209,7 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                 init.mu1=1e-5, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                                quiet=TRUE, res.file.name="output.txt", tune.file.name="mcmcOutput.txt", seed=NULL){
+                                quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## SOME CHECKS ##
     if(multicore && !require(multicore)) stop("multicore package requested but not installed")
@@ -217,10 +217,14 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
         n.cores <- parallel:::detectCores()
     }
 
+    cat("\ntune.file.name:\n")
+    print(tune.file.name)
 
     ## GET FILE NAMES ##
     res.file.names <- paste("run", 1:n.runs, "-", res.file.name, sep="")
     tune.file.names <- paste("run", 1:n.runs, "-", tune.file.name, sep="")
+    cat("\ntune.file.names:\n")
+    print(tune.file.names)
 
 
     ## HANDLE SEED ##
@@ -232,7 +236,12 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
 
 
     ## COMPUTATIONS ##
+    cat("\ntune.file.names:\n")
+    print(tune.file.names)
+
     if(multicore){
+        cat("\ntune.file.names:\n")
+        print(tune.file.names)
         res <- mclapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
                                                           init.tree=init.tree, init.kappa=init.kappa,
                                                           n.iter=n.iter, sample.every=sample.every,
@@ -242,19 +251,21 @@ outbreaker.parallel <- function(n.runs, multicore=require("multicore"), n.cores=
                                                           init.mu1=init.mu1, init.gamma=init.gamma,
                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                           move.Tinf=move.Tinf, move.pi=move.pi,
-                                                          quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]),
+                                                          quiet=TRUE, res.file.name=res.file.names[i],
+                                                          tune.file.name=tune.file.names[i], seed=seed[i]),
                         mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
-                                                        tune.every=tune.every, , burnin=burnin,
+                                                        tune.every=tune.every, burnin=burnin,
                                                         find.import=find.import, find.import.n=find.import.n,
                                                         pi.param1=pi.param1, pi.param2=pi.param2,
                                                         init.mu1=init.mu1, init.gamma=init.gamma,
                                                         move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                         move.Tinf=move.Tinf, move.pi=move.pi,
-                                                        quiet=TRUE, res.file.names[i], tune.file.names[i], seed[i]))
+                                                        quiet=TRUE, res.file.name=res.file.names[i],
+                                                        tune.file.name=tune.file.names[i], seed=seed[i]))
     }
 
 

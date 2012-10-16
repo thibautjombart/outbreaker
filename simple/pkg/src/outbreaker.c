@@ -46,8 +46,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna);
-    printf("\n>>> Data <<<\n");
-    print_data(dat);
+    /* printf("\n>>> Data <<<\n"); */
+    /* print_data(dat); */
 
 
     /* GET TIME SPAN */
@@ -70,8 +70,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna);
-    printf("\n>>> DNA info <<<\n");
-    print_dna_dist(dnainfo);
+    /* printf("\n>>> DNA info <<<\n"); */
+    /* print_dna_dist(dnainfo); */
 
 
    /*  /\* COMPUTE PRIORS *\/ */
