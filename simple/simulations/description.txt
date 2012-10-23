@@ -136,7 +136,7 @@ seq_25, seq_50, seq_75
 and then, start a R session, and type:
 
 ##
-source("makeSimul.1.0.R")
+source("../makeSimul.1.0.R")
 makeSimul(10)
 ##
 

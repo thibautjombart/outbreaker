@@ -14,16 +14,16 @@ poolResults <- function(dir=getwd(), file="pooledResults.csv"){
 
 
     ## keep only files with inputs and outputs ##
-    temp1 <- sub("in.csv", in.files)
-    temp2 <- sub("out.csv", out.files)
+    temp1 <- sub("in.csv", "", in.files)
+    temp2 <- sub("out.csv", "", out.files)
     temp <- table(c(temp1,temp2))
     toKeep <- names(temp)[temp==2]
-    in.files <- in.files[in.files %in% toKeep]
-    out.files <- out.files[out.files %out% toKeep]
+    in.files <- in.files[in.files %in% paste(toKeep,"in.csv",sep="")]
+    out.files <- out.files[out.files %in% paste(toKeep,"out.csv",sep="")]
 
     ## compile results ##
+    res <- list()
     for(i in 1:length(in.files)){
-        res <- list()
         temp <- cbind.data.frame(read.csv(in.files[i], stringsAsFactors=FALSE),
                                  read.csv(out.files[i], stringsAsFactors=FALSE),
                              stringsAsFactors=FALSE)
