@@ -76,18 +76,19 @@ Each simulation produces its own output (a dataset and its analysis), including:
 - merr.pi: the mean error in posterior values of pi
 - time: the time taken by the analysis by outbreaker, in (rounded) seconds
 
-2) [name-of-simulation].in.txt: an in file indicating the parameters of the simulation, as a table
+2) [name-of-simulation].in.csv: an in file indicating the parameters of the simulation, as a table
 with one single row and the following columns:
 - R: the R0
 - w.mu: the mean used to generate w
 - w.sigma: the standard deviation used to generate w
+- w.k: the number of time steps for which w is defined
 - mu1: rate of transitions
 - mu2: rate of transversions
 - r.imp.cases: rate of imported cases
 - p.obs.cases: the proportion of sampled (observed) cases
 - p.seq.data: the proportion of observed cases with genetic sequences
 
-3) [name-of-simulation].out.txt: an output file based on 'stat', as a table with one single row and the
+3) [name-of-simulation].out.csv: an output file based on 'stat', as a table with one single row and the
 column named after 'stat'.
 
 

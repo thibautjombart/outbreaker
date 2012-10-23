@@ -14,7 +14,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
 
 
     ## AUXILIARY FUNCTIONS ##
-      w.dens.gen <- function(mu, sigma, max.k){
+    w.dens.gen <- function(mu, sigma, max.k){
         res <- sapply(0:max.k, DiscrSI, mu, sigma)
         names(res) <- 0:max.k
         return(res)
@@ -50,16 +50,16 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
 
     ## mutation rates
     if(type.head=="mu1"){
-       mu1 <- as.numeric(unlist(strsplit(type,"-"))[2])
-       mu2 <- 0.25*mu1
+        mu1 <- as.numeric(unlist(strsplit(type,"-"))[2])
+        mu2 <- 0.25*mu1
     } else {
         mu1 <- 0.8e-4
         mu2 <- 0.25*mu1
     }
 
     ## imported cases
-     if(type.head=="imp"){
-       r.imp <- as.numeric(unlist(strsplit(type,"-"))[2])
+    if(type.head=="imp"){
+        r.imp <- as.numeric(unlist(strsplit(type,"-"))[2])
     } else {
         r.imp <- 0.05
     }
@@ -87,7 +87,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
                             duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
         while(full$n < 10){
             full <- simOutbreak(R0=R0, infec.curve=w, mu.transi=mu1, mu.transv=mu2, rate.import.case=r.imp,
-                            duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
+                                duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
         }
 
         ## subset data ##
@@ -104,9 +104,19 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
 
         ## run outbreaker ##
         BURNIN <- 2e4
+
+        ## hash key
+        key <- paste(unlist(strsplit(digest(dat),""))[1:10], collapse="")
+
+        ## create dir and move to it
+        dir.create(key)
+        odir <- dir()
+        on.exit(setwd(odir))
+        setwd(key)
+
         timing <- system.time(res <- outbreaker(dna=dna, dates=collecDates, idx.dna=which.seq, w.dens=w, init.tree="star", init.kappa=NULL,
-                                      n.iter=1e5, sample.every=500,tune.every=500,burnin=BURNIN,find.import=TRUE, find.import.n=50,
-                                      pi.param1=1, pi.param2=1, init.mu1=1e-5, init.gamma=1, move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE))
+                                                n.iter=1e5, sample.every=500,tune.every=500,burnin=BURNIN,find.import=TRUE, find.import.n=50,
+                                                pi.param1=1, pi.param2=1, init.mu1=1e-5, init.gamma=1, move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE))
 
         ## extract information from results ##
         tre <- get.TTree.simple(res, burn=BURNIN)
@@ -149,8 +159,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
         ## timing
         stat$time <- round(timing[3])
 
-        ## hash key
-        key <- paste(unlist(strsplit(digest(dat),""))[1:10], collapse="")
+        ## turn stat into a data.frame
         stat <- data.frame(stat)
         row.names(stat) <- key
 
@@ -158,113 +167,28 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
         save(full,dat,collecDates,res,chains,tre,stat,key, file=paste(key,"Rdata",sep="."))
 
 
+        ## COMPILE/WRITE INPUT DATA ##
+        inputs <- list()
+        inputs$R <- R0
+        inputs$w.mu <- w.mu
+        inputs$w.sigma <- w.sigma
+        inputs$w.k <- w.k
+        inputs$mu1 <- mu1
+        inputs$mu2 <- mu2
+        inputs$r.imp.cases<- r.imp
+        inputs$p.obs.cases <- p.samp
+        inputs$p.seq.data <- p.seq
+
+        inputs <- data.frame(inputs)
+        row.names(inputs) <- key
+
+        write.csv(inputs, file=paste(key,".in.csv", sep=""))
+
+
+        ## WRITE STAT TO FILE ##
+        write.csv(stat, file=paste(key,".out.csv", sep=""))
+
+        ## remove temp files ##
+    } # end for loop
 
 } # end makeSimul
-
-## DATA SIMULATION ##
-
-## load packages and data
-library(outbreaker)
-library(adegenet)
-library(ape)
-
-## full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=0.2e-4)
-## dat <- full[1:20]
-## collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
-##save(w, full, dat, collecDates, file="Robjects/data4.RData")
-
-##load("Robjects/data5.RData")
-##plot(dat, main="Data")
-############################################
-
-BURNIN <- 2e4
-
-w <- c(0,.1,.2,.5,2,.5,.2,.1)
-full <- simOutbreak(R0=2, infec.curve=w, mu.transi=1e-4, mu.transv=0.2e-4)
-dat <- full[1:50]
-collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
-plot(dat, main="Data")
-
-
-
-## ## TRY SPECIFYING THE RIGHT OUTLIERS, SEE IF IT WORKS ##
-## initree <- rep(1, dat$n)
-## initree[is.na(dat$ances)] <- 0
-## moveances <- !is.na(dat$ances)
-
-## system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree=initree, n.iter=2e5, move.ances=moveances))
-
-
-
-
-############################################
-## ESTIMATE EVERYTHING - PARALLEL VERSION ##
-## run outbreaker
-## system.time(res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
-
-system.time(res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=1e5))
-
-## check results ##
-plot.chains(res)
-
-## check ancestries
-x <- get.TTree.simple(res, burn=5e4)
-temp <- x
-temp$ances[is.na(temp$ances)] <- 0
-temp2 <- dat$ances
-temp2[is.na(temp2)] <- 0
-temp2[1] <- NA
-mean(temp$ances==temp2,na.rm=TRUE)
-
-v.col <- rep("lightblue",length(x$ances))
-notOk <- which(temp$ances!=temp2)
-if(length(notOk)>0) v.col[notOk] <- "red"
-par(mfrow=c(1,1))
-plot(dat,main="data", vertex.color=v.col)
-x11();
-plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
-
-
-## check frequency of external infections
-alpha <- res$chains[,grep("alpha", names(res$chains))]
-barplot(apply(alpha,2, function(e) mean(e==0)), main="Proportion of inferred external case")
-
-
-## check mutation rates
-par(mfrow=c(2,1))
-plot.chains(res, "mu1",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
-plot.chains(res, "mu2",type="dens", omit=2e4)
-abline(v=1e-4, col="blue")
-
-
-
-## check kappa
-v.col <- rep("lightblue",length(x$ances))
-notOk <- which(x$n.gen!=1)
-if(length(notOk)>0) v.col[notOk] <- "red"
-plot(dat,main="data", vertex.color=v.col)
-x11();
-plot(x,main="reconstruction (red=wrong kappa)", vertex.color=v.col, annot="n.gen")
-
-
-
-## check Tinf
-toKeep <- grep("Tinf",names(res$chains))
-Tinf <- res$chains[res$chains$step>BURNIN, toKeep]
-boxplot(Tinf, col="grey")
-points(dat$dates, col="red", pch="x",cex=2)
-
-
-
-## check Pi
-plot.chains(res, "pi", omit=BURNIN, type="de")
-abline(v=1)
-
-
-
-## check Phi
-plot.chains(res, "phi", omit=BURNIN, type="de")
-abline(v=1/20)
-
-############################################
