@@ -8,8 +8,7 @@ poolResults <- function(dir=getwd(), file="pooledResults.csv"){
     ## get input files ##
     in.files <- list.files(path=dir, include=TRUE, pattern="in.csv", recursive=TRUE)
 
-
-    ## get output files ##
+   ## get output files ##
     out.files <- list.files(path=dir, include=TRUE, pattern="out.csv", recursive=TRUE)
 
 
@@ -27,6 +26,8 @@ poolResults <- function(dir=getwd(), file="pooledResults.csv"){
         temp <- cbind.data.frame(read.csv(in.files[i], stringsAsFactors=FALSE),
                                  read.csv(out.files[i], stringsAsFactors=FALSE),
                              stringsAsFactors=FALSE)
+        rownames(temp) <- temp$X
+        temp$X <- NULL
         temp$X <- NULL
         res <- rbind.data.frame(res, temp)
     }
