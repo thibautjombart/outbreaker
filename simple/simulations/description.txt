@@ -41,19 +41,55 @@ move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE
 OUTPUTS OF THE SIMULATIONS
 ==========================
 Each simulation produces its own output, including:
+
 1) [name-of-simulation].RData: a RData containing the full outbreak (full), the analysed data (dat),
 results of outbreaker (res), the consensus tree with a burnin of 2e4 (tre), and a list of statistics
-(stat)
+(stat).
 
 'stat' is a data.frame containing the following information (with a single line):
 - prop.ances.ok: the proportion of correct ancestries in the consensus tree
-- msup.ances: the mean support of the true ancestor in the posterior
-- msup.kappa: the mean support of the true kappa in the posterior
-- msup.date: the mean support of the true date of infection in the posterior
+- msup.ances: the mean support (frequency) of the true ancestor in the posterior
+- msup.kappa: the mean support (frequency) of the true kappa in the posterior
+- msup.date: the mean support (frequency) of the true date of infection in the posterior
 - prop.imp.ok: the proportion of successfully detected imported cases
 - mu1.ok: 1 if true value of mu1 is in the 95% CI, 0 otherwise
 - mu2.ok: 1 if true value of mu2 is in the 95% CI, 0 otherwise
 - pi.ok: 1 if true value of mu2 is in the 95% CI, 0 otherwise
+
+2) [name-of-simulation].in.txt: an in file indicating the parameters of the simulation, as a table
+with one single row and the following columns:
+- R: the R0
+- w.mu: the mean used to generate w
+- w.sigma: the standard deviation used to generate w
+- mu1: rate of transitions
+- mu2: rate of transversions
+- r.imp.cases: rate of imported cases
+- p.obs.cases: the proportion of sampled (observed) cases
+- p.seq.data: the proportion of observed cases with genetic sequences
+
+3) [name-of-simulation].out.txt: an output file based on 'stat', as a table with one single row and the
+column named after 'stat'.
+
+
+The name of the simulation ([name-of-simulation]) is coded as 10-characters hash key (SHA-1) based
+on the data ('dat').
+
+
+
+
+
+==========================
+OUTPUTS OF ALL SIMULATIONS
+==========================
+The script 'poolResults' (in poolResults.R) scans all sub-directory looking for '[...].in.txt' and
+'[...].out.txt' files, and compile these into a single data.frame. This data.frame is similar to a
+cbind of '[...].in.txt' and '[...].out.txt'.
+
+The script returns the pooled data.frame and writes its content to a file 'pooledResults.csv'. The
+rows of the data.frame are the 10-characters hash keys.
+
+
+
 
 
 
