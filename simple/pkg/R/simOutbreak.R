@@ -3,7 +3,7 @@
 ###############
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
-                        rate.import.case=0.1, diverg.import=20){
+                        rate.import.case=0.1, diverg.import=10){
 
     ## CHECKS ##
     if(!require(ape)) stop("The ape package is required.")
