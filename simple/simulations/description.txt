@@ -32,7 +32,7 @@ Values taken by parameters in different variations are:
 
 Variation simulations are stored in the directories indicating: the type of varied parameter (R, w,
 mu1, imp, samp, seq (see right above) followed by "-[value]"; therefore, directories will be:
-R-1.1, R-4, w-_, w-_, mu1-0, mu1-0.2, imp-0, imp-0.2, samp_25, samp_50, samp_75, seq_25, seq_50, seq_75.
+R-1.1, R-4, w-6_3_20, w-1.5_1_10, mu1-0, mu1-0.2, imp-0, imp-0.2, samp_25, samp_50, samp_75, seq_25, seq_50, seq_75.
 
 
 -----------------------
@@ -122,11 +122,24 @@ simulations, that is, generate the data, run outbreaker, derive results, and wri
 information to files. The script itself is not parallelized, so that multiple simultaneous
 executions can be made (easy to adapt to a cluster).
 
-'makeSimul' takes two argumentsL
+'makeSimul' takes two arguments:
 - 'N', the number of replicates to run, defaulting to 1.
 - 'type', a character string indicating the type of simulation, coded as the name of directories
 ('base', 'R-1.1', 'R-4', ...). This is by default taken from the root directory, so that the script
 run at the right place should do the right thing.
 
 
+In short, to run simulations, one can go to a directory named after the type of simulation:
+base, R-1.1, R-4, w-6_3_20, w-1.5_1_10, mu1-0, mu1-0.2, imp-0, imp-0.2, samp_25, samp_50, samp_75,
+seq_25, seq_50, seq_75
 
+and then, start a R session, and type:
+
+##
+source("makeSimul.1.0.R")
+makeSimul(10)
+##
+
+where '10' is the number of replicates run (replace for another number)
+
+To update the results, one can at any time run 'poolResults' from the root directory.

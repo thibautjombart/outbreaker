@@ -3,7 +3,7 @@
 ## FUNCTION MAKING SIMULATIONS:
 ## simulates data, runs outbreaker, derive results, write files
 ##
-makeSimul <- function(N=1, type=gsub(".*/","",getwd()){
+makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
     ## CHECKS ##
     if(!require(outbreaker)) stop("outbreaker is needed")
     if(!require(adegenet)) stop("adegenet is needed")
