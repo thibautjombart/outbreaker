@@ -13,6 +13,14 @@ poolResults <- function(dir=getwd(), file="pooledResults.csv"){
     out.files <- list.files(path=dir, include=TRUE, pattern="out.csv", recursive=TRUE)
 
 
+    ## keep only files with inputs and outputs ##
+    temp1 <- sub("in.csv", in.files)
+    temp2 <- sub("out.csv", out.files)
+    temp <- table(c(temp1,temp2))
+    toKeep <- names(temp)[temp==2]
+    in.files <- in.files[in.files %in% toKeep]
+    out.files <- out.files[out.files %out% toKeep]
+
     ## compile results ##
     for(i in 1:length(in.files)){
         res <- list()
