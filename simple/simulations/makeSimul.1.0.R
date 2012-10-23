@@ -111,7 +111,6 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
         ## create dir and move to it
         dir.create(key)
         odir <- dir()
-        on.exit(setwd(odir))
         setwd(key)
 
         timing <- system.time(res <- outbreaker(dna=dna, dates=collecDates, idx.dna=which.seq, w.dens=w, init.tree="star", init.kappa=NULL,
@@ -154,7 +153,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
         stat$mu2.ok <- as.numeric(mu2>quantile(chains$mu2, 0.05) & mu2<quantile(chains$mu2, 0.95))
 
         ## merr.pi: the mean error in posterior values of pi
-        stat$merr.pi <- mean(abs(chains$pi - p.samp))
+        stat$merr.pi <- abs(mean(chains$pi) - p.samp)
 
         ## timing
         stat$time <- round(timing[3])
@@ -188,7 +187,9 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
         ## WRITE STAT TO FILE ##
         write.csv(stat, file=paste(key,".out.csv", sep=""))
 
-        ## remove temp files ##
+        ## GO BACK TO PREVIOUS WORKING DIRECTORY ##
+        setwd(odir)
+
     } # end for loop
 
 } # end makeSimul
