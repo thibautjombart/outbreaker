@@ -110,8 +110,10 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
 
         ## create dir and move to it
         dir.create(key)
-        odir <- dir()
+        odir <- getwd()
         setwd(key)
+
+        cat("Ongoing computations", file="ONGOING")
 
         timing <- system.time(res <- outbreaker(dna=dna, dates=collecDates, idx.dna=which.seq, w.dens=w, init.tree="star", init.kappa=NULL,
                                                 n.iter=1e5, sample.every=500,tune.every=500,burnin=BURNIN,find.import=TRUE, find.import.n=50,
@@ -188,6 +190,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
         write.csv(stat, file=paste(key,".out.csv", sep=""))
 
         ## GO BACK TO PREVIOUS WORKING DIRECTORY ##
+        file.remove("ONGOING")
         setwd(odir)
 
     } # end for loop
