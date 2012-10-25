@@ -1,7 +1,7 @@
 ####################
 ## get.TTree.simple
 ####################
-get.TTree.simple <- function(x, burnin=1e5){
+get.TTree.simple <- function(x, burnin=2e4){
 
     ## ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
     ## temp <- all(grep("run", names(x))==1:length(x))
@@ -158,3 +158,32 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 
     return(res)
 }
+
+
+
+
+
+
+## ###################
+## ## refine.mutrate
+## ###################
+## refine.mutrates <- function(x, min.support=0.5){
+##     ## CHECKS ##
+##     if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+
+##     ## AUXILIARY FUNCTIONS ##
+
+##     ## REFINE THE MUTATION RATE ##
+##     ## get only retained ancestries
+##     kept <- which((x$p.ances >= min.support)[x$idx.dna])
+##     if(length(kept)<1) {
+##         warning("No information retained - min.support may be too high")
+##         return(NULL)
+##     }
+
+
+##     ## get mutation rate - per genome / per generation
+##     mu <- mean(x$nb.mut[kept]/x$n.gen[kept],na.rm=TRUE)
+
+
+## } # end refine.mutrates
