@@ -361,7 +361,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     /* browse each likelihood, define outliers */
     /* printf("\n\nLooking for outliers...\n"); */
     for(j=0;j<dat->n;j++){
-	/* outliers = likelihood 100 times lower than the median */
+	/* outliers = likelihood 100 times lower than the mean */
 	/* printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout); */
 	if((medLogLike - vec_double_i(indivLogLike,j)) > log(100)){
 	    areOutliers->values[j] = 1;

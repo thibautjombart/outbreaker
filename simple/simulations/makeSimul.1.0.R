@@ -43,7 +43,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
     } else {
         w.mu <- 2
         w.sigma <- 0.7
-        w.k <- 10
+        w.k <- 5
     }
 
     w <- w.dens.gen(w.mu, w.sigma, w.k)
@@ -87,7 +87,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
                             duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
         while(full$n < 10){
             full <- simOutbreak(R0=R0, infec.curve=w, mu.transi=mu1, mu.transv=mu2, rate.import.case=r.imp,
-                                duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
+                                duration=100, n.hosts=200, seq.length=1e4, diverg.import=20)
         }
 
         ## subset data ##
@@ -128,6 +128,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
         chains <- res$chains[res$chains$step>BURNIN,,drop=FALSE]
 
         stat <- list()
+        stat$type <- type
         stat$n <- dat$n
 
         ## prop of true ancestry in consensus
@@ -151,6 +152,11 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
 
         ## proportion of successfully detected imported cases
         stat$prop.imp.ok <- sum(is.na(tre$ances[-1]) & is.na(dat$ances[-1]))/sum(is.na(dat$ances[-1]))
+
+        ## mu.ok: 1 if true value of mu (=mu1+mu2) is in the 95% CI, 0 otherwise
+        mu <- mu1 + mu2
+        muDis <- chains$mu1 + chains$mu2
+        stat$mu.ok <- as.numeric(mu>quantile(muDis, 0.05) & mu<quantile(muDis, 0.95))
 
         ## mu1.ok: 1 if true value of mu1 is in the 95% CI, 0 otherwise
         stat$mu1.ok <- as.numeric(mu1>quantile(chains$mu1, 0.05) & mu1<quantile(chains$mu1, 0.95))
