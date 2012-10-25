@@ -92,14 +92,18 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
 
         ## subset data ##
         n.dat <- round(p.samp*full$n)
-        dat <- full[sort(sample(1:n.dat))]
+        dat <- full[sort(sample(1:full$n, n.dat, replace=FALSE))]
+
+        ## set new indices of data ##
+        dat$ances <- match(dat$ances,dat$id)
+        dat$id <- 1:length(dat$id)
 
         ## check which cases are sequenced ##
         temp <- as.logical(rbinom(dat$n, prob=p.seq, size=1))
         which.seq <- which(temp)
         dna <- dat$dna[which.seq,,drop=FALSE]
 
-        ## get collaction dates ##
+        ## get collection dates ##
         collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 
         ## run outbreaker ##
@@ -165,7 +169,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
         row.names(stat) <- key
 
         ## SAVE OBJECTS TO FILE ##
-        save(full,dat,collecDates,res,chains,tre,stat,key, file=paste(key,"Rdata",sep="."))
+        save(full,dat,collecDates,res,chains,tre,stat,key, file=paste(key,"RData",sep="."))
 
 
         ## COMPILE/WRITE INPUT DATA ##
