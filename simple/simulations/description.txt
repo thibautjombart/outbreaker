@@ -32,7 +32,7 @@ Values taken by parameters in different variations are:
 
 Variation simulations are stored in the directories indicating: the type of varied parameter (R, w,
 mu1, imp, samp, seq (see right above) followed by "-[value]"; therefore, directories will be:
-R-1.1, R-4, w-6_3_20, w-1.5_1_4, mu1-0, mu1-0.2, imp-0, imp-0.2, samp_0.25, samp_0.5, samp_0.75,
+R-1.1, R-4, w-6_3_20, w-1.5_1_4, mu1-0, mu1-0.0002, imp-0, imp-0.2, samp_0.25, samp_0.5, samp_0.75,
 seq_0.25, seq_0.50, seq_0.75.
 
 
