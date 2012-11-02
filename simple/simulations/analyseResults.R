@@ -8,13 +8,14 @@ x <- poolResults()
 
 
 ## ANALYSE RESULTS ##
+## nb of each simulation
+table(x$type)
+
 ## general results - consensus ancestry OK
 qplot(prop.ances.ok, data=x, color=type, geom="density")
 
-
 ## general results - actual ancestor support
 qplot(msup.ances, data=x, color=type, geom="density")
-
 
 ## support for actual kappa
 qplot(msup.kappa, data=x, color=type, geom="density")
