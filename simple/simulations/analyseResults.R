@@ -36,4 +36,4 @@ qplot(prop.imp.ok, data=x, fill=type, geom="bar")
 qplot(prop.imp.ok, data=x, fill=type, geom="bar")
 
 ## time vs n
-qplot(n, time, data=x, color=type, geom=c("point"))
+qplot(n, time/60, data=x, color=type, geom=c("point"), ylab="time (minutes)")
