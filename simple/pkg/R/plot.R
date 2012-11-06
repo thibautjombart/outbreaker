@@ -128,3 +128,77 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
 
     return(invisible())
 } # end plot.chains
+
+
+
+
+
+
+##############
+## transGraph
+##############
+transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE, ...){
+    ## CHECKS ##
+    if(!require(igraph)) stop("igraph is required")
+    if(!require(adegenet)) stop("adegenet is required")
+
+    ## HANDLE ARGUMENTS ##
+    if(omit.first> max(x$chains$step)) stop("omit.first exceeds the number of chains in the output")
+    if(is.null(col.pal)){
+        col.pal <- function(n){
+            return(grey(seq(1,0,length=n)))
+        }
+    }
+
+    ## GET ANCESTRY DATA ##
+    ances <- x$chains[x$chains$step>=omit.first, grep("alpha",names(x$chains)),drop=FALSE]
+    tabances <- apply(ances,2,table)
+    N <- ncol(ances)
+
+    ## GET DATA FOR GRAPH ##
+    ## ancestor, descendents, list of nodes
+    to.old <- rep(1:N, sapply(tabances,length))
+    from.old <- as.numeric(unlist(lapply(tabances,names)))
+    from.old[from.old<1] <- NA
+    to.old[to.old<1] <- NA
+    isNotNA <- !is.na(from.old) & !is.na(to.old)
+    vnames <- sort(unique(c(from.old,to.old)))
+    from <- match(from.old,vnames)
+    to <- match(to.old,vnames)
+
+    ## support for the ancestries
+    support <- unlist(lapply(tabances, function(e) e/sum(e)))[isNotNA]
+    edge.col <- num2col(support, col.pal=col.pal, x.min=0, x.max=1)
+
+    ## average dates of infection
+    Tinf <- x$chains[x$chains$step>=omit.first, grep("Tinf",names(x$chains)),drop=FALSE]
+    inf.dates <- apply(Tinf,2,mean)
+    names(inf.dates) <- 1:N
+
+    ## remove weakly supported ancestries
+    dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
+    if(sum(support>=threshold)==0) warning("threshold to high - no edge left")
+    dat <- dat[support>=threshold, , drop=FALSE]
+
+    ## convert to graph
+    out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=inf.dates[as.character(vnames)]))
+
+
+    ## SET PARAMETERS OF THE GRAPH ##
+    ## edges
+    E(out)$color <- edge.col[support>=threshold]
+    E(out)$support <- support[support>=threshold]
+    E(out)$curved <- curved.edges
+
+    ## set layout
+    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$dates, maxx=V(out)$dates), rescale=FALSE)
+
+
+    ## MAKE THE PLOT ##
+    plot(out, layout=attr(out, "layout"), ...)
+
+
+    ## RETURN OBJECT ##
+    return(invisible(out))
+
+} # end transGraph
