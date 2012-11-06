@@ -164,6 +164,50 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 
 
 
+
+#################
+## findMutations
+#################
+findMutations <- function(x, dna){
+    ## CHECKS ##
+    if(!require(ape)) stop("the ape package is needed")
+    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+
+    ## function to pull out mutations from sequence a to b ##
+    f1 <- function(a,b){
+        seqa <- as.character(dna[a,])
+        seqb <- as.character(dna[b,])
+        temp <- which(seqa != seqb)
+        ori <- seqa[temp]
+        mut <- seqb[temp]
+        names(ori) <- names(mut) <- temp
+        toRemove <- !ori %in% c('a','t','g','c') | !mut %in% c('a','t','g','c')
+        ori <- ori[!toRemove]
+        mut <- mut[!toRemove]
+        res <- data.frame(ori,mut)
+        names(res) <- rownames(dna)[c(a,b)]
+        res$short <- paste(row.names(res),":",res[,1],"->",res[,2],sep="")
+        return(res)
+    }
+
+    ## get mutations for each ancestry
+    isNotNA <- which(!(is.na(x$ances) | is.na(x$idx)))
+    out <- lapply(isNotNA, function(i) f1(x$ances[i], x$idx[i]))
+
+    return(out)
+
+} # end findMutations
+
+
+
+
+
+
+
+
+
+
+
 ## ###################
 ## ## refine.mutrate
 ## ###################

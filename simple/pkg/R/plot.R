@@ -137,7 +137,8 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
 ##############
 ## transGraph
 ##############
-transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE, ...){
+transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
+                       annot=c("dist","support"), sep="/", ...){
     ## CHECKS ##
     if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
@@ -154,6 +155,7 @@ transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.p
     ances <- x$chains[x$chains$step>=omit.first, grep("alpha",names(x$chains)),drop=FALSE]
     tabances <- apply(ances,2,table)
     N <- ncol(ances)
+
 
     ## GET DATA FOR GRAPH ##
     ## ancestor, descendents, list of nodes
@@ -183,12 +185,40 @@ transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.p
     ## convert to graph
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames, dates=inf.dates[as.character(vnames)]))
 
+    ## get ancestor->descendent mutations ##
+    D <- as.matrix(x$D)
+    findMut <- function(i){
+        if(any(is.na(c(to[i],from[i])))) return(NA)
+        return(D[to[i],from[i]])
+    }
+    nb.mut <- sapply(1:length(to), function(i) findMut(i))
+    nb.mut <- nb.mut[isNotNA]
+
 
     ## SET PARAMETERS OF THE GRAPH ##
+    ## vertices
+    if(is.null(labels)){
+        V(out)$label <- vnames
+    } else {
+        V(out)$label <- labels
+    }
+
+
     ## edges
     E(out)$color <- edge.col[support>=threshold]
     E(out)$support <- support[support>=threshold]
     E(out)$curved <- curved.edges
+    E(out)$nb.mut <- nb.mut[support>=threshold]
+
+    ## edge labels
+    lab <- ""
+    if(!is.null(annot) && length(annot)>0){
+        if(any(c("dist","nb.mut","mut") %in% annot)) lab <- E(out)$nb.mut
+        if(any(c("support","prob") %in% annot)) lab <- paste(lab, round(E(out)$support,2), sep=sep)
+    }
+    lab <- sub(paste("^",sep,sep=""),"",lab)
+    E(out)$label <- lab
+
 
     ## set layout
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$dates, maxx=V(out)$dates), rescale=FALSE)
