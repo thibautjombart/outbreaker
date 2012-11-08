@@ -173,26 +173,35 @@ findMutations.TTree.simple <- function(x, dna, ...){
     if(!require(ape)) stop("the ape package is needed")
     if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
 
-    ## function to pull out mutations from sequence a to b ##
-    f1 <- function(a,b){
-        seqa <- as.character(dna[a,])
-        seqb <- as.character(dna[b,])
-        temp <- which(seqa != seqb)
-        ori <- seqa[temp]
-        mut <- seqb[temp]
-        names(ori) <- names(mut) <- temp
-        toRemove <- !ori %in% c('a','t','g','c') | !mut %in% c('a','t','g','c')
-        ori <- ori[!toRemove]
-        mut <- mut[!toRemove]
-        res <- data.frame(ori,mut)
-        names(res) <- rownames(dna)[c(a,b)]
-        res$short <- paste(row.names(res),":",res[,1],"->",res[,2],sep="")
-        return(res)
-    }
+    ## ## function to pull out mutations from sequence a to b ##
+    ## f1 <- function(a,b){
+    ##     seqa <- as.character(dna[a,])
+    ##     seqb <- as.character(dna[b,])
+    ##     temp <- which(seqa != seqb)
+    ##     ori <- seqa[temp]
+    ##     mut <- seqb[temp]
+    ##     names(ori) <- names(mut) <- temp
+    ##     toRemove <- !ori %in% c('a','t','g','c') | !mut %in% c('a','t','g','c')
+    ##     ori <- ori[!toRemove]
+    ##     mut <- mut[!toRemove]
+    ##     res <- data.frame(ori,mut)
+    ##     names(res) <- rownames(dna)[c(a,b)]
+    ##     res$short <- paste(row.names(res),":",res[,1],"->",res[,2],sep="")
+    ##     return(res)
+    ## }
 
-    ## get mutations for each ancestry
+    ## ## get mutations for each ancestry
+    ## isNotNA <- which(!(is.na(x$ances) | is.na(x$idx)))
+    ## out <- lapply(isNotNA, function(i) f1(x$ances[i], x$idx[i]))
+
+    ## GET PAIRS TO COMPARE ##
+    pairs <- cbind(x$ances,x$idx)
     isNotNA <- which(!(is.na(x$ances) | is.na(x$idx)))
-    out <- lapply(isNotNA, function(i) f1(x$ances[i], x$idx[i]))
+    if(length(isNotNA)==0) return()
+    pairs <- pairs[isNotNA,,drop=FALSE]
+
+    ## CALL DNABIN METHOD ##
+    out <- findMutations(dna, pairs)
 
     return(out)
 
