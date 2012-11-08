@@ -284,7 +284,7 @@ For all model parameters, independent prior distributions have been chosen:
 	\item $p(w) = \mathbf{1}_{\{w=w_0\}}$: the distribution of the generation time is fixed to a given distribution ($w_0$) by default; this can be parameterized later in a more complex model.
 	\item $p(\mu_1) = Unif(0,1)$.
 	\item $p(\gamma) = log\mathcal{N}(1,1.25)$ where $log\mathcal{N}(\mu,\sigma)$ is the log-normal distribution with mean $\mu$ and standard deviation $\sigma$ (values are the default in BEAST).
-	\item $p(\pi) = \beta(a,b)$: the proportion of unobserved cases is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(10,1)$ for an a priori densely sampled outbreak.
+	\item $p(\pi) = \beta(a,b)$: the proportion of observed cases is assumed to follow a Beta distribution of fixed parameters (e.g. $p(\pi) = \beta(10,1)$ for an a priori densely sampled outbreak.
 \end{itemize}
 
 

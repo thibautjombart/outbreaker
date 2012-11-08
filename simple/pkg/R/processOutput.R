@@ -168,7 +168,7 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 #################
 ## findMutations
 #################
-findMutations <- function(x, dna){
+findMutations.TTree.simple <- function(x, dna, ...){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is needed")
     if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
