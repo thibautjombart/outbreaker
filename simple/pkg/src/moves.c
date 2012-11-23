@@ -188,10 +188,14 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, m
     /* ACCEPT / REJECT */
     /* only likelihood as priors are flat for mu1 */
     /* compute only genetic part as the epi part is unchanged */
+    /* likelihoods */
     logRatio += loglikelihood_gen_all(dat, dnainfo, tempPar, rng);
     logRatio -= loglikelihood_gen_all(dat, dnainfo, currentPar, rng);
+    /* priors */
+    logRatio += logprior_mu1(tempPar);
+    logRatio -= logprior_mu1(currentPar);
 
-    /* ADD CORRECTION FOR MH truncated lognormal */
+    /* add correction for MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->mu1),mcmcPar->sigma_mu1);
     QTemp = gsl_cdf_gaussian_P(-log(tempPar->mu1),mcmcPar->sigma_mu1);
     logRatio +=  log(tempPar->mu1) - log(currentPar->mu1); /* correction for lognormal */

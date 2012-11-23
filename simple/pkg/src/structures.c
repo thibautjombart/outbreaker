@@ -200,6 +200,7 @@ param *alloc_param(int n){
 
     /* fill in doubles */
     out->mu1 = 0.0001;
+    out->mu1_prior = 0.0001;
     out->gamma = 1.0;
     out->pi = 1.0;
     out->pi_param1 = 0.0;
@@ -233,8 +234,8 @@ void print_param(param *in){
     print_vec_int(in->alpha);
     printf("\n= Kappa_i (generations from nearest ancestor) =\n");
     print_vec_int(in->kappa);
-    printf("\n= mu1, mu2, gamma (transi, transver, coef) =\n");
-    printf("%.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma);
+    printf("\n= mu1, mu2, gamma (transi, transver, coef, prior mu1) =\n");
+    printf("%.5f   %.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma, in->mu1_prior);
     printf("\n= pi (proportion of observed cases) =\n");
     printf("%.5f", in->pi);
     printf("\n= priors on pi (parameter of beta distribution) =\n");
@@ -254,6 +255,7 @@ void copy_param(param *in, param *out){
     out->n = in->n;
     out->kappa_temp = in->kappa_temp;
     out->mu1 = in->mu1;
+    out->mu1_prior = in->mu1_prior;
     out->gamma = in->gamma;
     out->pi = in->pi;
     out->pi_param1 = in->pi_param1;

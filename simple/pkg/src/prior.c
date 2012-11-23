@@ -46,10 +46,14 @@ void filter_logprob(double *in){
 
 
 
-
-/* p(mu_1) = Unif(0,1) = 1*/
-double logprior_mu1(){
-    return 0.0; /* log(1) = 0 */
+/* p(mu_1) = exp(mu_init) */
+/* old version: p(mu_1) = Unif(0,1) = 1*/
+double logprior_mu1(param *par){
+    double out = gsl_ran_exponential_pdf(par->mu1, par->mu1_prior);
+    out = log(out);
+    filter_logprob(&out);
+    return out;
+    /* return 0.0; /\* log(1) = 0 *\/ */
 }
 
 
@@ -90,13 +94,7 @@ double logprior_all(param *par){
     /* int i; */
     double out=0.0;
 
-    /* /\* result is the sum of priors over all parameters and individuals *\/ */
-    /* for(i=0;i<par->n;i++){ */
-    /* 	out += logprior_alpha_i(i,par); */
-    /* 	out += logprior_kappa_i(i,par); */
-    /* } */
-
-    out += logprior_mu1();
+    out += logprior_mu1(par);
     out += logprior_gamma(par);
     out += logprior_pi(par);
     /* out += logprior_phi(par); */

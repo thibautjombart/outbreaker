@@ -116,6 +116,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
     /* doubles*/
     par->mu1 = init_mu1;
+    par->mu1_prior = init_mu1;
     par->gamma = init_gamma;
     par->pi = gsl_ran_beta (rng,pi_param1,pi_param2);
     par->pi_param1 = pi_param1;
@@ -149,6 +150,7 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 
     /* INITIALIZE MCMC PARAMETERS */
     in->sigma_mu1 = 0.0001;
+    /* in->sigma_mu1 = 0.001; */
     in->sigma_gamma = 1;
     in->sigma_pi = 0.01;
     /* in->sigma_phi = 0.01; */

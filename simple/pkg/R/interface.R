@@ -9,7 +9,7 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
                        pi.param1=10, pi.param2=1,
-                       init.mu1=1e-5, init.gamma=1,
+                       init.mu1=0.5/ncol(dna), init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE,
                        quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
@@ -206,7 +206,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, find.import=TRUE, find.import.n=50,
                                 pi.param1=10, pi.param2=1,
-                                init.mu1=1e-5, init.gamma=1,
+                                init.mu1=0.5/ncol(dna), init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
