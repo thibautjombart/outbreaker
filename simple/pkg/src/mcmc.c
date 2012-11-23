@@ -131,7 +131,7 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
     /* get acceptance proportion */
     double paccept = (double) in->n_accept_mu1 / (double) (in->n_accept_mu1 + in->n_reject_mu1);
 
-    /* acceptable zone: 35-45% acceptance */
+    /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
 	in->sigma_mu1 /= 1.5;
 	in->n_accept_mu1 = 0;
@@ -158,7 +158,7 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
     /* get acceptance proportion */
     double paccept = (double) in->n_accept_gamma / (double) (in->n_accept_gamma + in->n_reject_gamma);
 
-    /* acceptable zone: 35-45% acceptance */
+    /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
 	in->sigma_gamma /= 1.5;
 	in->n_accept_gamma = 0;
@@ -185,7 +185,7 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
     /* get acceptance proportion */
     double paccept = (double) in->n_accept_pi / (double) (in->n_accept_pi + in->n_reject_pi);
 
-    /* acceptable zone: 35-45% acceptance */
+    /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
 	in->sigma_pi /= 1.5;
 	in->n_accept_pi = 0;

@@ -52,7 +52,7 @@ typedef struct{
     vec_int *Tinf; /* times of infection */
     vec_int *alpha; /* idx of closest ancestor for each case; -1 = unknown */
     vec_int *kappa; /* number of generations before a case and its closest ancestor */
-    double mu1; /* rate of transitions */
+    double mu1, mu1_prior; /* rate of transitions and its prior */
     double gamma; /* so that rate of transversions mu2 = gamma x mu1 */
     double pi; /* proportion of observed cases */
     double pi_param1, pi_param2; /* parameters of the Beta prior for pi */

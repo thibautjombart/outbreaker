@@ -87,7 +87,7 @@ makeSimul <- function(N=1, type=gsub(".*/","",getwd())){
                             duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
         while(full$n < 10){
             full <- simOutbreak(R0=R0, infec.curve=w, mu.transi=mu1, mu.transv=mu2, rate.import.case=r.imp,
-                                duration=100, n.hosts=200, seq.length=1e4, diverg.import=20)
+                                duration=100, n.hosts=200, seq.length=1e4, diverg.import=10)
         }
 
         ## subset data ##
