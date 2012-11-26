@@ -3,13 +3,21 @@
 ###############
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
-                        rate.import.case=0.1, diverg.import=10){
+                        rate.import.case=0.1, diverg.import=10,
+                        group.freq=1){
 
     ## CHECKS ##
     if(!require(ape)) stop("The ape package is required.")
 
 
     ## HANDLE ARGUMENTS ##
+    ## handle group sizes
+    if(any(group.freq<0)) stop("negative group frequencies provided")
+    group.freq <- group.freq/sum(group.freq)
+    K <- length(group.freq)
+    ## host.group <- sample(1:K, size=n.hosts, prob=group.freq, replace=TRUE)
+    R0 <- rep(R0, length=K) # recycle R0
+
     ## normalize gen.time
     infec.curve <- infec.curve/sum(infec.curve)
     infec.curve <- c(infec.curve, rep(0, duration)) # make sure dates go all the way
@@ -69,6 +77,12 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         return(seq)
     }
 
+    ## define the group of 'n' hosts
+    choose.group <- function(n){
+        out <- sample(1:K, size=n, prob=group.freq, replace=TRUE)
+        return(out)
+    }
+
 
     ## MAIN FUNCTION ##
     ## initialize results ##
@@ -79,6 +93,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$dynam$ninf[1] <- 1
     res$dates[1] <- 0
     res$ances <- NA
+    res$group <- choose.group(1)
     EVE <- seq.gen()
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
     class(res$dna) <- "DNAbin"
@@ -87,11 +102,11 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     for(t in 1:duration){
         ## INTERNAL INFECTIONS ##
         ## individual force of infection
-        indivForce <- infec.curve[t-res$dates+1]
+        indivForce <- infec.curve[t-res$dates+1] * R0[res$group]
 
         ## global force of infection (R0 \sum_j I_t^j / N)
         N <- res$dynam$nrec[t] + res$dynam$ninf[t] + res$dynam$nsus[t]
-        globForce <- sum(indivForce)*R0/N
+        globForce <- sum(indivForce)/N
 
         ## stop if no ongoing infection in the population
         if(globForce < 1e-12) break;
@@ -106,12 +121,16 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             ## dates of new infections
             res$dates <- c(res$dates, rep(t,nbNewInf))
 
-            ## ancestries of the new infections
+            ## ancestries of the new cases
             temp <- as.vector(rmultinom(1, size=nbNewInf, prob=indivForce))
             newAnces <- rep(which(temp>0), temp[which(temp>0)])
             res$ances <- c(res$ances,newAnces)
 
-            ## dna sequences of the new infections
+            ## groups of the new cases
+            newGroup <- choose.group(nbNewInf)
+            res$group <- c(res$group,newGroup)
+
+            ## dna sequences of the new cases
             ##newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], t-res$dates[i]))) # mol. clock per unit time
             newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1))) # mol. clock per generation
             res$dna <- rbind(res$dna, newSeq)
@@ -127,6 +146,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
             ## ancestries of the imported cases
             res$ances <- c(res$ances, rep(NA, nbImpCases))
+
+            ## group of the imported cases
+            res$group <- c(res$group, choose.group(nbImpCases))
 
             ## dna sequences of the new infections
             newSeq <- t(sapply(1:nbImpCases, function(i) seq.dupli(EVE, diverg.import)))
@@ -186,6 +208,8 @@ print.simOutbreak <- function(x, ...){
     cat("\nSize :", x$n,"cases (out of", x$dynam$nsus[1],"susceptible hosts)")
     cat("\nGenome length :", ncol(x$dna),"nucleotids")
     cat("\nDate range :", min(x$dates),"-",max(x$dates))
+    cat("\nGroup distribution:")
+    print(table(x$group))
 
     cat("\nContent:\n")
     print(names(x))
@@ -208,6 +232,7 @@ print.simOutbreak <- function(x, ...){
     res$dna <- res$dna[i,,drop=FALSE]
     res$id <- res$id[i]
     res$dates <- res$dates[i]
+    res$group <- res$group[i]
     res$n <- nrow(res$dna)
     res$nmut <- x$nmut[i]
     res$ngen <- x$ngen[i]
@@ -259,8 +284,8 @@ labels.simOutbreak <- function(object, ...){
 #########################
 ## as.igraph.simOutbreak
 #########################
-as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
-                              col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
+as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", vertex.col.pal=funky,
+                                  edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(ape)) stop("package ape is required for this operation")
     if(!inherits(x,"simOutbreak")) stop("x is not a TTree.simple object")
@@ -289,6 +314,13 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     names(x$dates) <- x$id
     V(out)$date <- x$dates[V(out)$name]
 
+    ## groups
+    names(x$group) <- x$id
+    V(out)$group <- x$group[V(out)$name]
+
+    ## colors
+    V(out)$color <- fac2col(factor(V(out)$group), col.pal=vertex.col.pal)
+
 
     ## SET EDGE INFO ##
     ## genetic distances to ancestor
@@ -298,12 +330,12 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
     E(out)$ngen <- x$ngen[!is.na(x$ances)]
 
     ## colors
-    if(is.null(col.pal)){
-        col.pal <- function(n){
+    if(is.null(edge.col.pal)){
+        edge.col.pal <- function(n){
             return(grey(seq(0.75,0,length=n)))
         }
     }
-    if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=col.pal, x.min=0, x.max=1)
+    if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=edge.col.pal, x.min=0, x.max=1)
 
     ## labels
     n.annot <- sum(annot %in% c("dist","n.gen"))
@@ -328,17 +360,18 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist",
 
 
 #####################
-## plot.TTree.simple
+## plot.simOutbreak
 #####################
-plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist",
-                              col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
+plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", vertex.col.pal=funky,
+                              edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
     if(!inherits(x,"simOutbreak")) stop("x is not a simOutbreak object")
     if(!col.edge.by %in% c("dist","n.gen")) stop("unknown col.edge.by specified")
 
     ## get graph ##
-    g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, col.pal=col.pal, annot=annot, sep=sep)
+    g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, vertex.col.pal=vertex.col.pal,
+                   edge.col.pal=edge.col.pal, annot=annot, sep=sep)
 
      ## make plot ##
     plot(g, layout=attr(g,"layout"), ...)
