@@ -22,19 +22,23 @@ get.Rt <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=F
     emptyOut <- rep(NA, length(timeStep))
     names(emptyOut) <- timeStep
 
-    ## function to get Rt for one chain
+    ## function to get Rt for one chain 'i'
     f1 <- function(i){
         ## get nb of descendents per ancestor
-        e <- tabAnces[[i]][-1] # -1: remove '0's
+        e <- tabAnces[-1,i] # -1: remove '0's
 
         ## create empty output
         out <- emptyOut
 
-        ## get infection times of ancestors
+        ## find time steps with at least one new case, set default R to 0
+        out[as.character(unique(as.integer(Tinf[i,])))] <- 0
+
+        ## get infection times of infectors
         Tinf.temp <- Tinf[i,as.integer(names(e))]
 
         ## count mean nb of secondary infections created by cases infected at each time step
         meanNbCasePerTimeStep <- tapply(as.numeric(e),as.numeric(Tinf.temp),mean)
+
         out[names(meanNbCasePerTimeStep)] <- meanNbCasePerTimeStep
         return(out)
     }
