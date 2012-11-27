@@ -2,19 +2,30 @@
 ##################
 ## main functions
 ##################
-outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
+outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        w.dens, w.trunc=length(w.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        init.kappa=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
                        pi.param1=10, pi.param2=1,
-                       init.mu1=0.5/ncol(dna), init.gamma=1,
+                       init.mu1=NULL, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE,
                        quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
+
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is required but not installed")
+
+    ## HANDLE MISSING DNA ##
+    useDna <- !is.null(dna)
+    if(is.null(dna)){
+        dna <- as.DNAbin(matrix('a',ncol=1,nrow=length(dates)))
+        move.mut <- FALSE
+        find.import <- FALSE
+        init.tree <- "star"
+    }
+
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
     if(!is.matrix(dna)) dna <- as.matrix(dna)
     if(is.character(dates)) stop("dates are characters; they must be integers or dates with POSIXct format (see ?as.POSIXct)")
@@ -32,6 +43,7 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
     if(sum(w.dens) < 1e-14) stop("w.dens is zero everywhere")
     if(init.mu1<0) stop("init.mu1 < 0")
     if(init.gamma<0) stop("init.gamma < 0")
+
 
 
     ## PROCESS INPUTS ##
@@ -58,6 +70,10 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
     ## need to go from: id of case for each sequence
     ## to: position of the sequence in DNA matrix for each case
     ## -1 is used for missing sequences
+    if(is.null(idx.dna)) {
+        idx.dna <- 1:nrow(dna)
+    }
+
     if(any(!idx.dna %in% 1:n.ind)) stop("DNA sequences provided for unknown cases (some idx.dna not in 1:n.ind)")
     if(length(idx.dna)!=nrow(dna)) stop("length of idx.dna does not match the number of DNA sequences")
 
@@ -137,6 +153,9 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
     pi.param2 <- as.double(pi.param2)
     phi.param1 <- as.double(1)
     phi.param2 <- as.double(10)
+    if(is.null(init.mu1)) {
+        init.mu1 <- 0.5/ncol(dna)
+    }
     init.mu1 <- as.double(init.mu1)
     init.gamma <- as.double(init.gamma)
     move.mut <- as.integer(move.mut)
@@ -200,13 +219,13 @@ outbreaker <- function(dna, dates, idx.dna=1:nrow(dna),
 ## version with multiple runs
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
-                                dna, dates, idx.dna=1:nrow(dna), w.dens, w.trunc=length(w.dens),
+                                dna=NULL, dates, idx.dna=NULL, w.dens, w.trunc=length(w.dens),
                                 init.tree=c("seqTrack","random","star","none"),
                                 init.kappa=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, find.import=TRUE, find.import.n=50,
                                 pi.param1=10, pi.param2=1,
-                                init.mu1=0.5/ncol(dna), init.gamma=1,
+                                init.mu1=NULL, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){

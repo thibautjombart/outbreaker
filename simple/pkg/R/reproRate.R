@@ -87,6 +87,34 @@ get.Rt <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=F
 
 
 
+##########
+## get.R
+##########
+## effective reproduction number per case
+get.R <- function(x, burnin=2e4, ...){
+
+    ## GET DATA ##
+    ## remove burnin
+    if(!any(x$chains$step>burnin)) stop("burnin too high - no chain left")
+    chains <- x$chains[x$chains$step>burnin,,drop=FALSE]
+
+    ## get ancestries
+    ances <- chains[,grep("alpha", names(x$chains)),drop=FALSE] # table of ancestries
+
+    ## functin to get R for a given step
+    id <- 1:length(x$collec.dates)
+    f1 <- function(vecAnces){
+        return(sapply(id, function(i) sum(vecAnces==i,na.rm=TRUE)))
+    }
+
+    res <- t(apply(ances,1,f1))
+    colnames(res) <- id
+    return(res)
+} # end get.R
+
+
+
+
 
 
 #############
