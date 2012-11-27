@@ -171,7 +171,7 @@ makeSimulZuper <- function(N=1){
 
 
         ## SAVE OBJECTS TO FILE ##
-        save(dat,collecDates,res,res.nodnachains,tre,tre.nodna,stat,group, chitest, nbDesc, key, areFoundZuper, areFoundZuper.nodna, file=paste(key,"RData",sep="."))
+        save(dat,collecDates,res,res.nodna,chains,tre,tre.nodna,stat,group, chitest, nbDesc, key, areFoundZuper, areFoundZuper.nodna, file=paste(key,"RData",sep="."))
 
         ## ## COMPILE/WRITE INPUT DATA ##
         ## inputs <- list()
