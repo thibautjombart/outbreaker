@@ -72,14 +72,14 @@ makeSimulZuper <- function(N=1){
 
         ## create dir and move to it
         dir.create(key)
-        odir <- getwd()
+        curdir <- getwd()
         setwd(key)
 
         cat("Ongoing computations", file="ONGOING")
 
         ## run outbreaker - know that all outbreak sampled
         res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, init.tree="seqTrack", init.kappa=1,
-                          n.iter=5e4, sample.every=500,tune.every=500,burnin=BURNIN,find.import=FALSE,
+                          n.iter=1e5, sample.every=500,tune.every=500,burnin=BURNIN,find.import=FALSE,
                           pi.param1=1, pi.param2=1, init.mu1=1e-5, init.gamma=1,
                           move.mut=TRUE, move.ances=TRUE, move.kappa=FALSE)
 
@@ -156,22 +156,22 @@ makeSimulZuper <- function(N=1){
         ## SAVE OBJECTS TO FILE ##
         save(dat,collecDates,res,chains,tre,stat,group, chitest, nbDesc, key, areFoundZuper, file=paste(key,"RData",sep="."))
 
-        ## COMPILE/WRITE INPUT DATA ##
-        inputs <- list()
-        inputs$R <- R0
-        inputs$w.mu <- w.mu
-        inputs$w.sigma <- w.sigma
-        inputs$w.k <- w.k
-        inputs$mu1 <- mu1
-        inputs$mu2 <- mu2
-        inputs$r.imp.cases <- r.imp
-        inputs$p.obs.cases <- p.samp
-        inputs$p.seq.data <- p.seq
+        ## ## COMPILE/WRITE INPUT DATA ##
+        ## inputs <- list()
+        ## inputs$R <- R0
+        ## inputs$w.mu <- w.mu
+        ## inputs$w.sigma <- w.sigma
+        ## inputs$w.k <- w.k
+        ## inputs$mu1 <- mu1
+        ## inputs$mu2 <- mu2
+        ## inputs$r.imp.cases <- 0
+        ## inputs$p.obs.cases <- 1
+        ## inputs$p.seq.data <- 1
 
-        inputs <- data.frame(inputs)
-        row.names(inputs) <- key
+        ## inputs <- data.frame(inputs)
+        ## row.names(inputs) <- key
 
-        write.csv(inputs, file=paste(key,".in.csv", sep=""))
+        ## write.csv(inputs, file=paste(key,".in.csv", sep=""))
 
 
         ## WRITE STAT TO FILE ##
@@ -179,7 +179,7 @@ makeSimulZuper <- function(N=1){
 
         ## GO BACK TO PREVIOUS WORKING DIRECTORY ##
         file.remove("ONGOING")
-        setwd(odir)
+        setwd(curdir)
 
     } # end for loop
 
