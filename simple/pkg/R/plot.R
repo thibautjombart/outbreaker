@@ -232,3 +232,115 @@ transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.p
     return(invisible(out))
 
 } # end transGraph
+
+
+
+
+
+
+
+################
+## outbreakplot
+################
+.entropy <- function(p){
+    p <- p/sum(p, na.rm=TRUE)
+    return(-sum(p*log(p), na.rm=TRUE))
+}
+
+outbreakplot <- function(x, burnin=2e4, thres.hide=0.2,
+                         col=NULL, col.pal=seasun, arr.col.pal=NULL,
+                         cex.bubble=1, lwd.arrow=2,...){
+    ## CHECKS ##
+    if(!require(adegenet)) stop("adegenet is not installed")
+
+    ## GET TREE ##
+    tre <- get.TTree.simple(x,burnin=burnin)
+    N <- length(tre$idx)
+
+    ## GET NUMBER OF MUTATIONS BETWEEN SEQUENCES
+    M <- as.matrix(x$D)
+
+    ## GET ALPHA_I ##
+    alpha <- x$chains[x$chains$step>burnin, grep("alpha",names(x$chains))]
+    f1 <- function(vec){
+        sapply(1:N, function(i) mean(vec==i,na.rm=TRUE))
+    }
+
+    ## support for ancestries
+    alphadat <- apply(alpha,2,f1)
+
+    ## define colors for the individuals
+    ## default: based on entropy of ancestries support
+    if(is.null(col)){
+        entropy <-apply(alphadat, 2, .entropy)
+        col <- num2col(entropy, col.pal=col.pal)
+    }
+
+
+    ## PLOT INFECTION DATES ##
+    toKeep <- grep("Tinf",names(x$chains))
+    Tinf <- x$chains[x$chains$step>burnin, toKeep]
+    colnames(Tinf) <- gsub(":.*","",rownames(dna))
+
+    ## basic boxplot
+    boxplot(Tinf, col=col, horizontal=TRUE, ...)
+
+    ## add infectious periods
+    lapply(1:N, function(i) points(tre$inf.curves[[i]][,1], rep(i, nrow(tre$inf.curves[[i]])),
+                                   cex=sqrt(tre$inf.curves[[i]][,2])*10*cex.bubble,
+                                   col=transp(col)[i], pch=19) )
+
+    ## plot collection dates
+    points(days, 1:N, col="black", pch=20)
+
+
+    ## ADD ANCESTRIES
+    if(is.null(arr.col.pal)){
+        arr.col.pal <- function(n){
+            return(grey(seq(1,0,length=n)))
+        }
+    }
+
+    ## function to draw arrows
+    drawArrow <- function(from, to){
+        if(is.na(from)||from<1) return(invisible())
+        ## get stuff for arrows ##
+        infdays <- apply(Tinf,2,mean)
+        ##x.to <- x.from <- infdays[to] # for arrows on day of infection
+        x.from <- infdays[from]
+        x.to <- infdays[to]
+        y.from <- from
+        y.to <- to
+        support <- alphadat[from,to]
+        ## col <- col[from]
+        arr.col <- num2col(support, x.min=0, x.max=1, col.pal=arr.col.pal)
+        arr.col[support<thres.hide] <- "transparent"
+        ## lwd <- round(support*arrow.max)
+        ## col.back <- rep("transparent",N)
+        ## col.back[lwd>=2] <- "black"
+
+        ## draw arrows ##
+        arrows(x.from, y.from, x.to, y.to, col=arr.col, length=0.1, angle=20, lwd=lwd.arrow)
+
+        ## get stuff for annotations ##
+        if(support>=thres.hide){
+            x.ann <- (x.from + x.to)/2
+            y.ann <- 0.15+(y.from + y.to)/2
+            ## nb mut
+            ann <- M[from,to]
+            text(x.ann,y.ann,ann)
+        }
+        return(invisible())
+    }
+
+
+    ## draw all arrows
+    ances <- apply(alpha,2,function(e) table(e)/sum(e))
+    names(ances) <- 1:N
+    lapply(1:N, function(i) sapply(as.integer(names(ances[[i]])), function(from) drawArrow(from, i)))
+
+
+    ## BUILT RESULT AND RETURN ##
+    res <- list(col=col, col.pal=col.pal, entropy=entropy, arr.col.pal=arr.col.pal)
+    return(invisible(res))
+} # end outbreakplot
