@@ -205,6 +205,7 @@ param *alloc_param(int n){
     out->pi = 1.0;
     out->pi_param1 = 0.0;
     out->pi_param2 = 0.0;
+    out->outlier_threshold = 1000.0;
     /* out->phi = 0.1; */
     /* out->phi_param1 = 0.0; */
     /* out->phi_param2 = 0.0; */
@@ -240,6 +241,9 @@ void print_param(param *in){
     printf("%.5f", in->pi);
     printf("\n= priors on pi (parameter of beta distribution) =\n");
     printf("%.5f  %.5f", in->pi_param1, in->pi_param2);
+    printf("\n= threshold used in imported case detection =\n");
+    printf("%.2f", in->outlier_threshold);
+
     /* printf("\n= phi (proportion of external cases) =\n"); */
     /* printf("%.5f", in->phi); */
     /* printf("\n= priors on phi (parameter of beta distribution) =\n"); */
@@ -260,6 +264,7 @@ void copy_param(param *in, param *out){
     out->pi = in->pi;
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
+    out->outlier_threshold = in->outlier_threshold;
     /* out->phi = in->phi; */
     /* out->phi_param1 = in->phi_param1; */
     /* out->phi_param2 = in->phi_param2; */

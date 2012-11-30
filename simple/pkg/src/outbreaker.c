@@ -24,6 +24,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  double *init_mu1, double *init_gamma, 
 		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, int *move_pi, 
 		  int *find_import, int *burnin, int *find_import_at, 
+		  double *outlier_threshold,
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **res_file_name, char **tune_file_name, int *seed){
     /* DECLARATIONS */
@@ -64,7 +65,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, rng);
+    init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, *outlier_threshold, rng);
     /* print_param(par); */
 
 

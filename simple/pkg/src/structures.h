@@ -57,6 +57,7 @@ typedef struct{
     double pi; /* proportion of observed cases */
     double pi_param1, pi_param2; /* parameters of the Beta prior for pi */
     int kappa_temp; /* used to store temporary kappa for genetic LL */
+    double outlier_threshold; /* threshold used in outlier detection */
     /* double phi; /\* proba of external case *\/ */
     /* double phi_param1, phi_param2; /\* parameters of the Beta prior for phi *\/ */
 } param;

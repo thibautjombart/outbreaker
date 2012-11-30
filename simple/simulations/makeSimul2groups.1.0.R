@@ -48,14 +48,14 @@ makeSimul2groups <- function(N=1){
     for(i in 1:N){
         ## simulate outbreak ##
         dat <- simOutbreak(R0=R0, infec.curve=w, mu.transi=mu1, mu.transv=mu2, rate.import.case=0,
-                            duration=100, n.hosts=100, seq.length=1e4, diverg.import=10, group.freq=f.grp)
+                           duration=100, n.hosts=100, seq.length=1e4, diverg.import=10, group.freq=f.grp)
 
         ## run simulations until at least 10 cases and significant differences between groups
-        noDiff <- chisq.test(table(dat$group[dat$ances]), p=c(.5,.5))$p.value>0.01
+        noDiff <- TRUE
 
         while(dat$n < 20 || noDiff){
             dat <- simOutbreak(R0=R0, infec.curve=w, mu.transi=mu1, mu.transv=mu2, rate.import.case=0,
-                            duration=100, n.hosts=100, seq.length=1e4, diverg.import=10, group.freq=f.grp)
+                               duration=100, n.hosts=100, seq.length=1e4, diverg.import=10, group.freq=f.grp)
 
             ## check that both groups are there
             bothGrp <- all(table(dat$group)>5)
@@ -78,6 +78,7 @@ makeSimul2groups <- function(N=1){
 
         ## hash key
         key <- paste(unlist(strsplit(digest(dat),""))[1:10], collapse="")
+        cat("\nsimulation: ", key)
 
         ## create dir and move to it
         dir.create(key)
@@ -94,9 +95,9 @@ makeSimul2groups <- function(N=1){
 
         ## run outbreaker - know that all outbreak sampled
         res.nodna <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="seqTrack", init.kappa=1,
-                          n.iter=1e5, sample.every=500,tune.every=500,burnin=BURNIN,find.import=FALSE,
-                          pi.param1=1, pi.param2=1, init.mu1=1e-5, init.gamma=1,
-                          move.mut=FALSE, move.ances=TRUE, move.kappa=FALSE)
+                                n.iter=1e5, sample.every=500,tune.every=500,burnin=BURNIN,find.import=FALSE,
+                                pi.param1=1, pi.param2=1, init.mu1=1e-5, init.gamma=1,
+                                move.mut=FALSE, move.ances=TRUE, move.kappa=FALSE)
 
         ## extract information from results ##
         tre <- get.TTree.simple(res, burn=BURNIN)
@@ -115,7 +116,7 @@ makeSimul2groups <- function(N=1){
         temp <- sapply(1:dat$n, function(i) mean(dat$ances[i]==alpha[,i],na.rm=TRUE))
         stat$msup.ances <- mean(temp, na.rm=TRUE)
 
-         ## mean error date
+        ## mean error date
         Tinf <- chains[,grep("Tinf", names(chains))]
         temp <- abs(t(Tinf) - dat$dates)
         stat$merr.date <- mean(temp, na.rm=TRUE)
@@ -161,21 +162,27 @@ makeSimul2groups <- function(N=1){
                                  meanR1.nodna=mean(Rval1.nodna),meanR2.nodna=mean(Rval2.nodna),
                                  pval.nodna=myTest.nodna$p.value)
             write.csv(output, file=paste(key,".test2groups.csv", sep=""))
+
+            ## SAVE OBJECTS TO FILE ##
+            save(dat, collecDates, res, res.nodna, chains, tre, stat, key, myTest, myTest.nodna, file=paste(key,"RData",sep="."))
+
+            ## WRITE STAT TO FILE ##
+            write.csv(stat, file=paste(key,".out.csv", sep=""))
+
+            ## GO BACK TO PREVIOUS WORKING DIRECTORY ##
+            file.remove("ONGOING")
+            setwd(curdir)
+            cat(paste("\n",key,"OK\n"))
+
         } else {
-            myTest <- NULL
-            myTest.nodna <- NULL
+            ## if there was no significant difference in the data (not in the inference), remove and exit
+            file.remove("ONGOING")
+            cat(paste("\n",key,"removed\n"))
+
+            setwd(curdir)
+            cmd <- paste("rm",key,"-r &")
+            system(cmd)
         }
-
-
-        ## SAVE OBJECTS TO FILE ##
-        save(dat, collecDates, res, res.nodna, chains, tre, stat, key, myTest, myTest.nodna, file=paste(key,"RData",sep="."))
-
-        ## WRITE STAT TO FILE ##
-        write.csv(stat, file=paste(key,".out.csv", sep=""))
-
-        ## GO BACK TO PREVIOUS WORKING DIRECTORY ##
-        file.remove("ONGOING")
-        setwd(curdir)
 
     } # end for loop
 
