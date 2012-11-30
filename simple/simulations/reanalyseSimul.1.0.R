@@ -38,7 +38,11 @@ reanalyseSimul <- function(key){
 
     ## GET MUTATION RATES
     mu1 <- read.csv(dir(pattern="in.csv"))$mu1
-    gamma <- read.csv(dir(pattern="in.csv"))$mu2/mu1
+    if(mu1<2e-12){
+        gamma <- 1.0
+    } else {
+        gamma <- read.csv(dir(pattern="in.csv"))$mu2/mu1
+    }
 
     ## run outbreaker ##
     BURNIN <- 2e4

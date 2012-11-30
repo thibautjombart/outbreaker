@@ -12,6 +12,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        init.mu1=NULL, init.gamma=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE,
+                       outlier.threshold = 1000,
                        quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## CHECKS ##
@@ -24,6 +25,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         move.mut <- FALSE
         find.import <- FALSE
         init.tree <- "star"
+        init.mu1 <- 0
+        init.gamma <- 0
     }
 
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
@@ -41,8 +44,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     w.dens[1] <- 0 # force w_0 = 0
     w.dens[w.dens<0] <- 0
     if(sum(w.dens) < 1e-14) stop("w.dens is zero everywhere")
-    if(init.mu1<0) stop("init.mu1 < 0")
-    if(init.gamma<0) stop("init.gamma < 0")
+    if(!is.null(init.mu1) && init.mu1<0) stop("init.mu1 < 0")
+    if(!is.null(init.gamma) && init.gamma<0) stop("init.gamma < 0")
 
 
 
@@ -168,6 +171,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     tune.file.name <- as.character(tune.file.name)[1]
     burnin <- as.integer(burnin)
     find.import.int <- as.integer(find.import)
+    outlier.threshold <- as.double(outlier.threshold)
 
     ## create empty output vector for genetic distances ##
     dna.dist <- integer(n.ind*(n.ind-1)/2)
@@ -180,13 +184,13 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                pi.param1, pi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi,
-               find.import.int, burnin, find.import.at, quiet,
+               find.import.int, burnin, find.import.at, outlier.threshold, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[27]]
+    D <- temp[[28]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[28]]
+    stopTuneAt <- temp[[29]]
 
     cat("\nComputations finished.\n\n")
 
@@ -228,6 +232,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 init.mu1=NULL, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
+                                outlier.threshold = 1000,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## SOME CHECKS ##
@@ -265,16 +270,17 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
 
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
-                                                           init.tree=init.tree, init.kappa=init.kappa,
-                                                           n.iter=n.iter, sample.every=sample.every,
-                                                           tune.every=tune.every, burnin=burnin,
-                                                           find.import=find.import, find.import.n=find.import.n,
-                                                           pi.param1=pi.param1, pi.param2=pi.param2,
-                                                           init.mu1=init.mu1, init.gamma=init.gamma,
-                                                           move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
-                                                           move.Tinf=move.Tinf, move.pi=move.pi,
-                                                           quiet=TRUE, res.file.name=res.file.names[i],
-                                                           tune.file.name=tune.file.names[i], seed=seed[i]))
+                                                                  init.tree=init.tree, init.kappa=init.kappa,
+                                                                  n.iter=n.iter, sample.every=sample.every,
+                                                                  tune.every=tune.every, burnin=burnin,
+                                                                  find.import=find.import, find.import.n=find.import.n,
+                                                                  pi.param1=pi.param1, pi.param2=pi.param2,
+                                                                  init.mu1=init.mu1, init.gamma=init.gamma,
+                                                                  move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
+                                                                  move.Tinf=move.Tinf, move.pi=move.pi,
+                                                                  outlier.threshold = outlier.threshold,
+                                                                  quiet=TRUE, res.file.name=res.file.names[i],
+                                                                  tune.file.name=tune.file.names[i], seed=seed[i]))
 
         ## close parallel processes ##
         stopCluster(clust)
@@ -302,6 +308,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                                         init.mu1=init.mu1, init.gamma=init.gamma,
                                                         move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                         move.Tinf=move.Tinf, move.pi=move.pi,
+                                                        outlier.threshold = outlier.threshold,
                                                         quiet=TRUE, res.file.name=res.file.names[i],
                                                         tune.file.name=tune.file.names[i], seed=seed[i]))
     }
