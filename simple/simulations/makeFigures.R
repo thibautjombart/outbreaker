@@ -149,7 +149,7 @@ dev.off()
 ##########################################
 source("analyseHetero.R")
 
-dat.2g <- dat.2g[1:50,c(2,3,5,6)]
+dat.2g <- cbind.data.frame(trueR[1:50,], dat.2g[1:50,c(2,3,5,6)])
 dat.zup <- dat.zup[1:50,]
 
 
@@ -160,16 +160,18 @@ pdf("figures/figure2.pdf")
 par(mar=c(5.1,4.1,2.1,4.1))
 
 ## boxplot for 2-group simulation
-lab.2g <- rep(c("Low R", "High R"),2)
-boxplot(dat.2g, names=lab.2g, col=rep(c("deepskyblue3","red3"),each=2), ylab="Effective reproduction number (R)",cex.lab=1.2, xlim=c(0,8),las=3)
+lab.2g <- rep(c("Low R", "High R"),3)
+col.2g <- rep(c("grey","deepskyblue3","red3"),each=2)
+boxplot(dat.2g, names=lab.2g, col=col.2g, ylab="Effective reproduction number (R)",cex.lab=1.2, xlim=c(0,10),las=3)
 
 ## separation
-abline(v=5, lty=2, lwd=2)
+abline(v=7, lty=2, lwd=2)
 
 ## boxplot for super-spreaders
+ousr <- par("usr")
 par(usr=c(ousr[1:2],-0.05,1.05))
 
-boxplot(dat.zup,at=6:7,add=TRUE, col=c("deepskyblue3","red3"), yaxt="n",xaxt="n")
+boxplot(dat.zup,at=8:9,add=TRUE, col=c("deepskyblue3","red3"), yaxt="n",xaxt="n")
 
 ## add axis
 axis(side=4,srt=180)
@@ -177,8 +179,8 @@ mtext(side=4, "Proportion of super-spreader detected", cex=1.2, line=3,srt=180)
 
 ## legend
 par(xpd=TRUE)
-leg.xy <- list(x=4.5, y=par("usr")[3])
-legend(leg.xy, fill=c("deepskyblue3","red3"), legend=c("with genetic data","without genetic data"),bg=transp("white",.7),cex=1.25)
+leg.xy <- list(x=6.5, y=par("usr")[3])
+legend(leg.xy, fill=c("grey","deepskyblue3","red3"), legend=c("actual values", "model with DNA","model without DNA"),bg=transp("white",.7),cex=1)
 
 dev.off()
 
@@ -190,16 +192,18 @@ svg("figures/figure2.svg")
 par(mar=c(5.1,4.1,2.1,4.1))
 
 ## boxplot for 2-group simulation
-lab.2g <- rep(c("Low R", "High R"),2)
-boxplot(dat.2g, names=lab.2g, col=rep(c("deepskyblue3","red3"),each=2), ylab="Effective reproduction number (R)",cex.lab=1.2, xlim=c(0,8),las=3)
+lab.2g <- rep(c("Low R", "High R"),3)
+col.2g <- rep(c("grey","deepskyblue3","red3"),each=2)
+boxplot(dat.2g, names=lab.2g, col=col.2g, ylab="Effective reproduction number (R)",cex.lab=1.2, xlim=c(0,10),las=3)
 
 ## separation
-abline(v=5, lty=2, lwd=2)
+abline(v=7, lty=2, lwd=2)
 
 ## boxplot for super-spreaders
+ousr <- par("usr")
 par(usr=c(ousr[1:2],-0.05,1.05))
 
-boxplot(dat.zup,at=6:7,add=TRUE, col=c("deepskyblue3","red3"), yaxt="n",xaxt="n")
+boxplot(dat.zup,at=8:9,add=TRUE, col=c("deepskyblue3","red3"), yaxt="n",xaxt="n")
 
 ## add axis
 axis(side=4,srt=180)
@@ -207,8 +211,8 @@ mtext(side=4, "Proportion of super-spreader detected", cex=1.2, line=3,srt=180)
 
 ## legend
 par(xpd=TRUE)
-leg.xy <- list(x=4.5, y=par("usr")[3])
-legend(leg.xy, fill=c("deepskyblue3","red3"), legend=c("with genetic data","without genetic data"),bg=transp("white",.7),cex=1.25)
+leg.xy <- list(x=6.5, y=par("usr")[3])
+legend(leg.xy, fill=c("grey","deepskyblue3","red3"), legend=c("actual values", "model with DNA","model without DNA"),bg=transp("white",.7),cex=1)
 
 dev.off()
 
