@@ -10,6 +10,13 @@ void filter_logprob(double *in){
 }
 
 
+/* fixed version of exponential density */
+/* basic version returns NaN for mu=0; this one returns 0 */
+double gsl_ran_exponential_pdf_fixed(double x, double mu){
+    if(mu <= NEARZERO) return 0.0;
+    return gsl_ran_exponential_pdf_fixed(x, mu);
+}
+
 
 /* /\* p(alpha_i) = ... */
 /*    ...phi if alpha_i=0 */
@@ -47,13 +54,16 @@ void filter_logprob(double *in){
 
 
 /* p(mu_1) = exp(mu_init) */
-/* old version: p(mu_1) = Unif(0,1) = 1*/
+/* two possible versions: unif or exponential */
+/* exponential doesn't allow mu=0 */
 double logprior_mu1(param *par){
-    double out = gsl_ran_exponential_pdf(par->mu1, par->mu1_prior);
-    out = log(out);
-    filter_logprob(&out);
-    return out;
-    /* return 0.0; /\* log(1) = 0 *\/ */
+    /* EXPONENTIAL VERSION */
+    /* double out = gsl_ran_exponential_pdf_fixed(par->mu1, par->mu1_prior); */
+    /* out = log(out); */
+    /* filter_logprob(&out); */
+    /* return out; */
+    /* UNIFORM VERSION */
+    return 0.0; /* log(1) = 0 */
 }
 
 

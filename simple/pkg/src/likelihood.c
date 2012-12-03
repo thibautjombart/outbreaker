@@ -91,6 +91,12 @@ int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo){
 
 
 
+/* Fixed version of gsl_ran_poisson_pdf */
+/* Original returns P(0|0) = NaN; this one returns 1.0 */
+double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
+    if(mu <= NEARZERO && k==0) return 1.0;
+    return gsl_ran_poisson_pdf_fixed(k, mu);
+} /* gsl_ran_poisson_pdf_fixed */
 
 
 
@@ -176,13 +182,13 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
     /* dpois(0,0) returns -NaN, not 1! */
     if(com_nucl_ij(i, ances, dat, dnainfo)>0){
 	/* TRANSITIONS */
-	out += log(gsl_ran_poisson_pdf((unsigned int) transi_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
+	out += log(gsl_ran_poisson_pdf_fixed((unsigned int) transi_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
 	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
 
 	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1)); */
 
 	/* TRANSVERSIONS */
-	out += log(gsl_ran_poisson_pdf((unsigned int) transv_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
+	out += log(gsl_ran_poisson_pdf_fixed((unsigned int) transv_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
 	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
 
 	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1)); */
@@ -288,8 +294,8 @@ double sim_loglike_gen(data *dat, param *par, gsl_rng *rng){
     lambda2 = (double) dat->length * par->mu1 * par->gamma;
 
     /* compute log-likelihood */
-    out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda1) , lambda1));
-    out += log(gsl_ran_poisson_pdf(gsl_ran_poisson(rng, lambda2) , lambda2));
+    out += log(gsl_ran_poisson_pdf_fixed(gsl_ran_poisson(rng, lambda1) , lambda1));
+    out += log(gsl_ran_poisson_pdf_fixed(gsl_ran_poisson(rng, lambda2) , lambda2));
 
     /* /\* penalize the likelihoood *\/ */
     /* out -= 10; */
