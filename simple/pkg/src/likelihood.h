@@ -16,6 +16,8 @@ int transv_ij(int i, int j, data *dat, dna_dist *dnainfo);
 
 int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo);
 
+double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu);
+
 
 /*
   ====================

@@ -21,12 +21,12 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)
     if(is.null(dna)){
-        dna <- as.DNAbin(matrix('a',ncol=1,nrow=length(dates)))
+        dna <- as.DNAbin(matrix('a',ncol=10,nrow=length(dates)))
         move.mut <- FALSE
         find.import <- FALSE
         init.tree <- "star"
         init.mu1 <- 0
-        init.gamma <- 0
+        init.gamma <- 1
     }
 
     if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")

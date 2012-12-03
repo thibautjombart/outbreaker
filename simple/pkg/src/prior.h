@@ -4,6 +4,8 @@
 
 void filter_logprob(double *in);
 
+double gsl_ran_exponential_pdf_fixed(double x, double mu);
+
 /* double logprior_alpha_i(int i, param *par); */
 
 /* double logprior_kappa_i(int i, param *par); */
