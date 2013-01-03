@@ -43,9 +43,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(length(w.dens)<w.trunc) stop(paste("incomplete w.dens: values needed from t=0 to t=", w.trunc-1,sep=""))
     w.dens[1] <- 0 # force w_0 = 0
     w.dens[w.dens<0] <- 0
-    if(sum(w.dens) < 1e-14) stop("w.dens is zero everywhere")
+    if(sum(w.dens) <= 1e-14) stop("w.dens is zero everywhere")
     if(!is.null(init.mu1) && init.mu1<0) stop("init.mu1 < 0")
-    if(!is.null(init.gamma) && init.gamma<0) stop("init.gamma < 0")
+    if(!is.null(init.gamma) && init.gamma <= 1e-14) stop("init.gamma <= 0")
 
 
 

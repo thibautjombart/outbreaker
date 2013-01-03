@@ -5,6 +5,9 @@ library(adegenet)
 source("/home/thibaut/dev/outbreaker/outbreaker-code/simple/simulations/poolResults.R")
 x <- poolResults()
 
+## rename types in a more accessible way
+x$type <- gsub("1.5_1_4","peaked",x$type)
+x$type <- gsub("6_3_20","flat",x$type)
 
 ## get ordered levels for types of simulation
 temp <- sort(unique(gsub("-fixedMu","",x$type)))
