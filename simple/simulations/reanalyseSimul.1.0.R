@@ -13,10 +13,10 @@ reanalyseSimul <- function(key){
 
     ## EXIT IF ONGOING ANALYSES ##
     path <- key
-    if(length(dir(path, pattern="ONGOING"))>0){
-        cat(paste("\nAnalyses ongoing in directory",path,"\n"))
-        return()
-    }
+    ## if(length(dir(path, pattern="ONGOING"))>0){
+    ##     cat(paste("\nAnalyses ongoing in directory",path,"\n"))
+    ##     return()
+    ## }
 
 
     ## REDO ANALYSIS WITH FIXED MUTATION RATES ##
@@ -28,20 +28,21 @@ reanalyseSimul <- function(key){
 
     ## LOAD DATA
     BURNIN <- 2e4
-    load(dir(pattern="RData"))
+    ##    load(dir(pattern="RData"))
+    load(paste(key, ".RData", sep=""))
 
     ## GET PROPORTION OF SEQUENCED CASES
-    p.seq <- read.csv(dir(pattern="in.csv"))$p.seq.data
+    p.seq <- read.csv(paste(key,".in.csv",sep=""))$p.seq.data
     temp <- as.logical(rbinom(dat$n, prob=p.seq, size=1))
     which.seq <- which(temp)
     dna <- dat$dna[which.seq,,drop=FALSE]
 
     ## GET MUTATION RATES
-    mu1 <- read.csv(dir(pattern="in.csv"))$mu1
+    mu1 <- read.csv(paste(key,".in.csv",sep=""))$mu1
     if(mu1<2e-12){
         gamma <- 1.0
     } else {
-        gamma <- read.csv(dir(pattern="in.csv"))$mu2/mu1
+        gamma <- read.csv(paste(key,".in.csv",sep=""))$mu2/mu1
     }
 
     ## run outbreaker ##
@@ -90,7 +91,7 @@ reanalyseSimul <- function(key){
     stat2$mu2.ok <- 1
 
     ## merr.pi: the mean error in posterior values of pi
-    p.samp <- read.csv(dir(pattern=".in.csv"))$p.obs.cases
+    p.samp <- read.csv(paste(key,".in.csv",sep=""))$p.obs.cases
     stat2$merr.pi <- abs(mean(chains$pi) - p.samp)
 
     ## timing
@@ -105,7 +106,7 @@ reanalyseSimul <- function(key){
 
 
     ## COMPILE/WRITE INPUT DATA ##
-    file.copy(dir(pattern=".in.csv"),paste(key,"-2.in.csv",sep=""))
+    file.copy(paste(key,".in.csv",sep=""),paste(key,"-2.in.csv",sep=""))
 
     ## WRITE STAT TO FILE ##
     write.csv(stat2, file=paste(key,"-2.out.csv", sep=""))
