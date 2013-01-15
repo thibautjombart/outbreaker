@@ -4,6 +4,7 @@
 ##################
 outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        w.dens, w.trunc=length(w.dens),
+                       f.dens=w.dens, f.trunc=length(f.dens),
                        init.tree=c("seqTrack","random","star","none"),
                        init.kappa=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
@@ -89,6 +90,12 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     w.dens <- w.dens/sum(w.dens)
     if(any(is.na(w.dens))) stop("NAs in w.dens after normalization")
     w.trunc <- as.integer(w.trunc)
+
+    ## check collection time function ##
+    f.dens <- as.double(f.dens)
+    f.dens <- f.dens/sum(f.dens)
+    if(any(is.na(f.dens))) stop("NAs in f.dens after normalization")
+    f.trunc <- as.integer(f.trunc)
 
     ## init.kappa ##
     ## if NULL, will be ML assigned (code is kappa_i<0)
@@ -179,7 +186,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases,
-               w.dens, w.trunc,
+               w.dens, w.trunc, f.dens, f.trunc
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
@@ -188,9 +195,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[28]]
+    D <- temp[[30]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[29]]
+    stopTuneAt <- temp[[31]]
 
     cat("\nComputations finished.\n\n")
 
@@ -224,6 +231,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
                                 dna=NULL, dates, idx.dna=NULL, w.dens, w.trunc=length(w.dens),
+                                f.dens=w.dens, f.trunc=length(f.dens),
                                 init.tree=c("seqTrack","random","star","none"),
                                 init.kappa=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
@@ -270,6 +278,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
 
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+                                                                  f.dens=f.dens, f.trunc=f.trunc,
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
                                                                   tune.every=tune.every, burnin=burnin,
@@ -300,6 +309,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         ##                   mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+                                                        f.dens=f.dens, f.trunc=f.trunc,
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
                                                         tune.every=tune.every, burnin=burnin,
