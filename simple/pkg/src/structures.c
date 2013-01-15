@@ -192,7 +192,7 @@ double colltime_dens(gentime *in, int t){
     }
 
     /* otherwise fetch density value */
-    double out=mat_vec_i(in->collTime, t);
+    double out=vec_double_i(in->collTime, t);
     return out;
 }
 

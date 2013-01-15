@@ -186,7 +186,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases,
-               w.dens, w.trunc, f.dens, f.trunc
+               w.dens, w.trunc, f.dens, f.trunc,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
