@@ -25,7 +25,9 @@ gsl_rng * create_gsl_rng(time_t t){
 
 
 /* initialize and pre-compute generation time */
-void init_gentime(gentime *in, double *values){
+/* W: generation time distribution */
+/* F: time to collection distribution */
+void init_gentime(gentime *in, double *Wvalues, double *Fvalues){
     double sumDens=0.0;
     int i,j;
 
@@ -33,13 +35,13 @@ void init_gentime(gentime *in, double *values){
     /* PRE-COMPUTE DENSITIES */
     /* for kappa=1 */
     /* copy densities provided by user (from R) */
-    for(j=0;j<in->trunc;j++){
-	in->dens->rows[0]->values[j] = values[j];
+    for(j=0;j<in->truncW;j++){
+	in->dens->rows[0]->values[j] = Wvalues[j];
     }
 
     /* normalize this density */
     sumDens = sum_vec_double(in->dens->rows[0]);
-    for(j=0;j<in->trunc;j++){
+    for(j=0;j<in->truncW;j++){
 	in->dens->rows[0]->values[j] = in->dens->rows[0]->values[j]/sumDens;
     }
 
@@ -47,6 +49,13 @@ void init_gentime(gentime *in, double *values){
     for(i=1;i<in->dens->n;i++){
 	convol_vec_double(in->dens->rows[0], in->dens->rows[i-1], in->dens->rows[i]);
     }
+
+    /* fill in values for f */
+    /* copy densities provided by user (from R) */
+    for(j=0;j<in->truncF;j++){
+	in->collTime->values[j] = Fvalues[j];
+    }
+
 } /* end init_gentime */
 
 

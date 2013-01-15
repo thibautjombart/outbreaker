@@ -115,7 +115,8 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     /* = EXTERNAL CASES = */
     if(ances < 0){
 	/* PROBA OF SAMPLING TIME */
-	out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
+	/* out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1)); */
+	out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 
 	/* /\* PROBA OF EXTERNAL CASE *\/ */
 	/* out += log(par->phi); */
@@ -139,7 +140,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
     /* EPIDEMIOLOGICAL LIKELIHOOD */
     /* LIKELIHOOD OF COLLECTION DATE */
-    out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
+    out += log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 
     /* LIKELIHOOD OF INFECTION TIME */
     /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
@@ -338,7 +339,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    ances=vec_int_i(par->alpha,i);
 
 	    /* likelihood of collection date */
-	    temp = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
+	    temp = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 	    filter_logprob(&temp);
 	    printf("\ni=%d: collection date (t_%d=%d,Tinf_%d=%d) like is: %f", i+1, i+1, vec_int_i(dat->dates,i), i+1, vec_int_i(par->Tinf,i), temp);
 	    fflush(stdout);
