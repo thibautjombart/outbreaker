@@ -289,8 +289,8 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	/* MAY NEED TO CHANGE THIS AND ADD CORRECTION */
 	/* constraint: Tinf_i <= t_i */
 	if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
-	/* constraint: Tinf_i >= -trunc */
-	if(vec_int_i(tempPar->Tinf,toMove) < -gen->trunc) tempPar->Tinf->values[toMove] = -gen->trunc;
+	/* constraint: Tinf_i >= -truncW */
+	if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW;
 
 	/* PROCEED TO ACCEPT/REJECT ONLY IF TINF HAS CHANGED */
 	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
