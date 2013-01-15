@@ -7,7 +7,7 @@
 
 gsl_rng * create_gsl_rng(time_t t);
 
-void init_gentime(gentime *in, double *values);
+void init_gentime(gentime *in, double *Wvalues, double *Fvalues);
 
 int find_maxLike_kappa_i(int T, gentime *gen);
 

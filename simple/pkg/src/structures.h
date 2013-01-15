@@ -36,11 +36,12 @@
 
 
 
-/* descriptors/parameters of the generation time function 'w' */
+/* descriptors/parameters of the generation time function 'w' and time to collection 'f' */
 typedef struct{
-    int trunc; /* value of truncation; p(x>=truc)=0 */
+    int truncW, truncF; /* value of truncation of the distributions*/
     int maxK; /* maximum value of kappa_i (i.e. max nb of generations between two cases) */
     mat_double *dens; /* pre-computed values of density: row 'i' gives densities for kappa=i at t=0, 1, ..., trunc-1*/
+    vec_double *collTime; /* mass function of the "time interval to collection" */
 } gentime;
 
 
@@ -133,13 +134,15 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, 
   =======
 */
 
-gentime *alloc_gentime(int maxK, int trunc);
+gentime *alloc_gentime(int maxK, int truncW, int truncF);
 
 void free_gentime(gentime *in);
 
 void print_gentime(gentime *in);
 
 double gentime_dens(gentime *in, int t, int kappa_i);
+
+double colltime_dens(gentime *in, int t);
 
 
 /*

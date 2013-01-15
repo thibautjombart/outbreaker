@@ -109,10 +109,11 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
   =======
 */
 
-/* 'trunc' is the time at which w is truncated to zero */
+/* 'truncW' is the time at which w (generation time distrib.) is truncated to zero */
+/* 'truncF' is the time at which f (time to collection distrib.) is truncated to zero */
 /* 'maxK' is the maximum number of unobserved generations, for which we need convolutions */
 /* 'maxT' must be larger than the largest time difference that can be observed between two related cases */
-gentime *alloc_gentime(int maxK, int trunc){
+gentime *alloc_gentime(int maxK, int truncW, int truncF){
   /* allocate pointer */
     gentime *out = (gentime *) malloc(sizeof(gentime));
     if(out == NULL){
@@ -120,11 +121,13 @@ gentime *alloc_gentime(int maxK, int trunc){
 	exit(1);
     }
 
-    out->trunc = trunc>0 ? trunc : 1; /* make sur that p(0) is not zero */
+    out->truncW = truncW>0 ? truncW : 1; /* make sur that p(0) is not zero */
+    out->truncF = truncF>0 ? truncF : 1; /* make sur that p(0) is not zero */
     out->maxK = maxK>0 ? maxK : 1;
 
     /* allocate vector of densities */
-    out->dens = alloc_mat_double(out->maxK, out->trunc*(out->maxK+2)); /* +2 to be on the safe side */
+    out->dens = alloc_mat_double(out->maxK, out->truncW*(out->maxK+2)); /* +2 to be on the safe side */
+    out->collTime = alloc_vec_double(out->truncW*(out->maxK+2)); /* +2 to be on the safe side */
 
     /* return */
     return out;
@@ -135,6 +138,7 @@ gentime *alloc_gentime(int maxK, int trunc){
 
 void free_gentime(gentime *in){
     free_mat_double(in->dens);
+    free_vec_double(in->collTime);
     free(in);
 } /* end free_gentime*/
 
@@ -144,8 +148,10 @@ void free_gentime(gentime *in){
 void print_gentime(gentime *in){
     fflush(stdout);
     printf("\n= Description of generation time function =\n");
-    printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->trunc);
+    printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->truncW);
     print_mat_double(in->dens);
+    printf("\n= Distribution of the time to collection =\n");
+    print_vec_double(in->collTime);
     fflush(stdout);
 } /* end print_gentime*/
 
@@ -162,14 +168,31 @@ double gentime_dens(gentime *in, int t, int kappa_i){
     }
 
     /* error if requested time too large */
-    if(t >= in->maxK*in->trunc){
-	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->trunc);
+    if(t >= in->maxK*in->truncW){
+	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
 	fflush(stdout);
 	exit(1);
     }
 
     /* otherwise fetch density value */
     double out=mat_double_ij(in->dens, kappa_i-1, t);
+    return out;
+}
+
+
+
+
+/* get density from the time to collection distribution */
+double colltime_dens(gentime *in, int t){
+    /* error if requested time too large */
+    if(t >= in->maxK*in->truncW){
+	fprintf(stderr, "\n[in: structures.c->colltime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
+	fflush(stdout);
+	exit(1);
+    }
+
+    /* otherwise fetch density value */
+    double out=mat_vec_i(in->collTime, t);
     return out;
 }
 
