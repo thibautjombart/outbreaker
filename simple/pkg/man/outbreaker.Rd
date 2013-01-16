@@ -155,12 +155,41 @@ full <- simOutbreak(R0=2, infec.curve=w, mu.transi=mu1,mu.transv=mu2)
 ## EXAMPLE WITH COMPLETE SAMPLING ##
 ####################################
 
-dat <- full[1:30]
+dat <- full[1:10]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
-res <- outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=5e4)
+## test basic ##
+res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w,
+init.tree="star", n.iter=3e4)
 
+# test plots
+plot.chains(res)
+outbreakplot(res)
+
+# test incidence curves
+get.incid(res, main="Incidence curves")
+
+## test effective reproduction numbers
+get.Rt(res, main="Effective reproduction number")
+
+
+
+## test parallel
+res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4)
+plot.chains(res)
+outbreakplot(res)
+
+
+
+
+
+
+
+
+
+
+\dontrun{
 
 plot.chains(res, main="Posterior probabilities")
 
@@ -288,5 +317,5 @@ get.incid(res, main="Incidence curves")
 
 ## get effective reproduction numbers
 get.Rt(res, main="Effective reproduction number")
-
+}
 }
