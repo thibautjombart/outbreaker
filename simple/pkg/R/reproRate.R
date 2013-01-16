@@ -25,7 +25,11 @@ get.Rt <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=F
     ## function to get Rt for one chain 'i'
     f1 <- function(i){
         ## get nb of descendents per ancestor
-        e <- tabAnces[-1,i] # -1: remove '0's
+        if(is.list(tabAnces)){
+                e <- tabAnces[[i]][-1] # -1: remove '0's
+        } else {
+            e <- tabAnces[-1,i] # -1: remove '0's
+        }
 
         ## create empty output
         out <- emptyOut
@@ -87,6 +91,7 @@ get.Rt <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=F
 
 
 
+
 ##########
 ## get.R
 ##########
@@ -101,7 +106,7 @@ get.R <- function(x, burnin=2e4, ...){
     ## get ancestries
     ances <- chains[,grep("alpha", names(x$chains)),drop=FALSE] # table of ancestries
 
-    ## functin to get R for a given step
+    ## function to get R for a given step
     id <- 1:length(x$collec.dates)
     f1 <- function(vecAnces){
         return(sapply(id, function(i) sum(vecAnces==i,na.rm=TRUE)))
