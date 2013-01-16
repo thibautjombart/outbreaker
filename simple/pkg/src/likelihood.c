@@ -95,7 +95,7 @@ int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo){
 /* Original returns P(0|0) = NaN; this one returns 1.0 */
 double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
     if(mu <= NEARZERO && k==0) return 1.0;
-    return gsl_ran_poisson_pdf_fixed(k, mu);
+    return gsl_ran_poisson_pdf(k, mu);
 } /* gsl_ran_poisson_pdf_fixed */
 
 
@@ -114,10 +114,10 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 
     /* = EXTERNAL CASES = */
     if(ances < 0){
-	printf("\nAnces < 0\n");fflush(stdout);
+	/* printf("\nAnces < 0\n");fflush(stdout); */
 	/* PROBA OF SAMPLING TIME */
-	out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
-	/* out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i))); */
+	/* out = log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1)); */
+	out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 
 	/* /\* PROBA OF EXTERNAL CASE *\/ */
 	/* out += log(par->phi); */
@@ -131,29 +131,29 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
 	/* FILTER AND RETURN */
 	filter_logprob(&out);
 	/* printf("\nlikelihood (imported case): %f\n", out);fflush(stdout); */
-	printf("\nAnces < 0 went OK\n");fflush(stdout);
+	/* printf("\nAnces < 0 went OK\n");fflush(stdout); */
 	return out;
     }
 
 
     /* = INTERNAL CASES = */
     /* GENETIC LIKELIHOOD */
-    printf("\nBefore genetic LL\n");fflush(stdout);
-    /* out += loglikelihood_gen_i(i, dat, dnainfo, par, rng); */
-    printf("\nGenetic LL went OK\n");fflush(stdout);
+    /* printf("\nBefore genetic LL\n");fflush(stdout); */
+    out += loglikelihood_gen_i(i, dat, dnainfo, par, rng);
+    /* printf("\nGenetic LL went OK\n");fflush(stdout); */
 
     /* EPIDEMIOLOGICAL LIKELIHOOD */
     /* LIKELIHOOD OF COLLECTION DATE */
-    printf("\nBefore collection date\n");fflush(stdout);
-    out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1));
-    printf("\nCollection date went OK\n");fflush(stdout);
-    /* out += log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i))); */
+    /* printf("\nBefore collection date\n");fflush(stdout); */
+    /* out += log(gentime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i), 1)); */
+    /* printf("\nCollection date went OK\n");fflush(stdout); */
+    out += log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 
     /* LIKELIHOOD OF INFECTION TIME */
     /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
-    printf("\nBefore infection date\n");fflush(stdout);
+    /* printf("\nBefore infection date\n");fflush(stdout); */
     out += log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
-    printf("\nInfection date went OK\n");fflush(stdout);
+    /* printf("\nInfection date went OK\n");fflush(stdout); */
 
     /* /\* PROBA OF NON-EXTERNAL INFECTION *\/ */
     /* out += log(1.0 - par->phi); */
