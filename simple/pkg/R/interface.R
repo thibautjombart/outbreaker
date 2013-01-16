@@ -71,7 +71,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
 
     ## handle idx.dna ##
-    ## need to go from: id of case for each sequence
+    ## need to go from: id of case for each sequence (idx.dna)
     ## to: position of the sequence in DNA matrix for each case
     ## -1 is used for missing sequences
     if(is.null(idx.dna)) {
@@ -161,8 +161,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     tune.every <- as.integer(tune.every)
     pi.param1 <- as.double(pi.param1)
     pi.param2 <- as.double(pi.param2)
-    phi.param1 <- as.double(1)
-    phi.param2 <- as.double(10)
     if(is.null(init.mu1)) {
         init.mu1 <- 0.5/ncol(dna)
     }
@@ -239,8 +237,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 pi.param1=10, pi.param2=1,
                                 init.mu1=NULL, init.gamma=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                                move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE,
-                                outlier.threshold = 1000,
+                                move.Tinf=TRUE, move.pi=TRUE, outlier.threshold = 1000,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## SOME CHECKS ##
@@ -272,7 +269,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         clusterEvalQ(clust, library(outbreaker))
 
         ## transfer data onto each child ##
-        listArgs <- c("dna", "dates", "idx.dna", "w.dens", "w.trunc", "init.tree", "init.kappa", "n.iter", "sample.every", "tune.every", "burnin", "find.import", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.gamma", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.phi", "res.file.names", "tune.file.names", "seed")
+        listArgs <- c("dna", "dates", "idx.dna", "w.dens", "w.trunc", "init.tree", "init.kappa", "n.iter", "sample.every", "tune.every", "burnin", "find.import", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.gamma", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "res.file.names", "tune.file.names", "seed")
 
         clusterExport(clust, listArgs, envir=environment())
 
