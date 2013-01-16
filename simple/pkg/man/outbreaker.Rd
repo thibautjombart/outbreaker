@@ -156,7 +156,7 @@ full <- simOutbreak(R0=2, infec.curve=w, mu.transi=mu1,mu.transv=mu2)
 ## EXAMPLE WITH COMPLETE SAMPLING ##
 ####################################
 
-dat <- full[1:5]
+dat <- full[1:10]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
@@ -170,6 +170,9 @@ res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.ite
 
 ## test without import detection ##
 res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4)
+
+## test without f different from w ##
+res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, f.dens=1, init.tree="star", n.iter=3e4)
 
 ## test parallel ##
 res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)

@@ -326,7 +326,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    /* display genetic likelihood */
 	    temp = loglikelihood_gen_i(i, dat, dnainfo, par, rng);
 	    filter_logprob(&temp);
-	    printf("\ni=%d: genetic like is: %f", i+1, temp);
+	    printf("\ni=%d: genetic log-like is: %f", i+1, temp);
 	    fflush(stdout);
 	    if(temp <= NEARMINUSINF) printf(" (i.e., zero)");
 	    fflush(stdout);
@@ -337,7 +337,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    /* likelihood of collection date */
 	    temp = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 	    filter_logprob(&temp);
-	    printf("\ni=%d: collection date (t_%d=%d,Tinf_%d=%d) like is: %f", i+1, i+1, vec_int_i(dat->dates,i), i+1, vec_int_i(par->Tinf,i), temp);
+	    printf("\ni=%d: collection date (t_%d=%d,Tinf_%d=%d) log-like is: %f", i+1, i+1, vec_int_i(dat->dates,i), i+1, vec_int_i(par->Tinf,i), temp);
 	    fflush(stdout);
 	    if(temp <= NEARMINUSINF) printf(" (i.e., zero)");
 	    fflush(stdout);
@@ -345,7 +345,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    /* likelihood of infection time */
 	    temp = log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
 	    filter_logprob(&temp);
-	    printf("\ni=%d: infection time (Tinf=%d,Tances=%d) like is: %f", i+1, vec_int_i(par->Tinf,i),vec_int_i(par->Tinf,ances), temp);
+	    printf("\ni=%d: infection time (Tinf=%d,Tances=%d) log-like is: %f", i+1, vec_int_i(par->Tinf,i),vec_int_i(par->Tinf,ances), temp);
 	    fflush(stdout);
 	    if(temp <= NEARMINUSINF) printf(" (i.e., zero)");
 	    fflush(stdout);
