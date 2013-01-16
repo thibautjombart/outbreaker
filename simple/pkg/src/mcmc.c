@@ -1,4 +1,3 @@
-
 #include "common.h"
 #include "structures.h"
 #include "matvec.h"
@@ -59,23 +58,23 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
 
     /* OUTPUT TO SCREEN */
     if(!quiet){
-	printf("\n%d\t", step);
+	Rprintf("\n%d\t", step);
 	fprintf(file,"\t%.15f", like*prior);
 	fprintf(file,"\t%.15f", like);
 	fprintf(file,"\t%.15f", prior);
-	printf("\t%.15f", par->mu1);
-	printf("\t%.15f", par->mu1 * par->gamma);
-	printf("\t%.15f", par->gamma);
-	printf("\t%.15f", par->pi);
+	Rprintf("\t%.15f", par->mu1);
+	Rprintf("\t%.15f", par->mu1 * par->gamma);
+	Rprintf("\t%.15f", par->gamma);
+	Rprintf("\t%.15f", par->pi);
 	/* printf("\t%.15f", par->phi); */
 	for(i=0;i<par->Tinf->length;i++){
-	    printf("\t%d", vec_int_i(par->Tinf, i));
+	    Rprintf("\t%d", vec_int_i(par->Tinf, i));
 	}
 	for(i=0;i<par->Tinf->length;i++){
-	    printf("\t%d", vec_int_i(par->alpha, i)+1);
+	    Rprintf("\t%d", vec_int_i(par->alpha, i)+1);
 	}
 	for(i=0;i<par->Tinf->length;i++){
-	    printf("\t%d", vec_int_i(par->kappa, i));
+	    Rprintf("\t%d", vec_int_i(par->kappa, i));
 	}
     }
 } /* end fprint_chains */
@@ -266,15 +265,15 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
 	for(i=0;i<dat->n;i++){
-	    printf("\tTinf_%d", i+1);
+	    Rprintf("\tTinf_%d", i+1);
 	}
 	for(i=0;i<dat->n;i++){
-	    printf("\talpha_%d", i+1);
+	    Rprintf("\talpha_%d", i+1);
 	}
 	for(i=0;i<dat->n;i++){
-	    printf("\tkappa_%d", i+1);
+	    Rprintf("\tkappa_%d", i+1);
 	}
     }
 
@@ -366,7 +365,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout); */
 	if((medLogLike - vec_double_i(indivLogLike,j)) > log(par->outlier_threshold)){
 	    areOutliers->values[j] = 1;
-	    printf("\nIndividual %d identified as imported case\n",j+1);fflush(stdout);
+	    Rprintf("\nIndividual %d identified as imported case\n",j+1);fflush(stdout);
 	} else {
 	    areOutliers->values[j] = 0;
 	}
@@ -433,15 +432,15 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	printf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
 	for(i=0;i<dat->n;i++){
-	    printf("\tTinf_%d", i+1);
+	    Rprintf("\tTinf_%d", i+1);
 	}
 	for(i=0;i<dat->n;i++){
-	    printf("\talpha_%d", i+1);
+	    Rprintf("\talpha_%d", i+1);
 	}
 	for(i=0;i<dat->n;i++){
-	    printf("\tkappa_%d", i+1);
+	    Rprintf("\tkappa_%d", i+1);
 	}
     }
 

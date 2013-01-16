@@ -116,9 +116,9 @@ void free_list_dnaseq(list_dnaseq *in){
 void print_dnaseq(dnaseq *in){
     int i;
     for(i=0;i<in->length;i++){
-	printf("%c", in->seq[i]);
+	Rprintf("%c", in->seq[i]);
     }
-    printf("\n");
+    Rprintf("\n");
 }
 
 
@@ -126,12 +126,12 @@ void print_dnaseq(dnaseq *in){
 
 void print_list_dnaseq(list_dnaseq *in){
     int i;
-    printf("\nList of %d DNA sequences (size: %d)\n", in->n, in->length);
+    Rprintf("\nList of %d DNA sequences (size: %d)\n", in->n, in->length);
     for(i=0;i<in->n;i++){
-	printf("%d: ", i+1);
+	Rprintf("%d: ", i+1);
 	print_dnaseq(in->list[i]);
     }
-    printf("\n");
+    Rprintf("\n");
 }
 
 
