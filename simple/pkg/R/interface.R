@@ -210,7 +210,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     chains <- read.table(res.file.name, header=TRUE)
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
-    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
+    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
                 find.import=find.import, burnin=burnin, find.import.at=find.import.at, n.runs=1, call=call)
 
     return(res)
