@@ -48,19 +48,19 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna);
-    /* printf("\n>>> Data <<<\n"); */
+    /* Rprintf("\n>>> Data <<<\n"); */
     /* print_data(dat); */
 
 
     /* GET TIME SPAN */
     /* TIMESPAN = max_vec_int(dat->dates) - min_vec_int(dat->dates); */
-    /* printf("\nTimespan is %d\n",TIMESPAN); */
+    /* Rprintf("\nTimespan is %d\n",TIMESPAN); */
 
 
     /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(dat->timespan, *wTrunc, *fTrunc);
     init_gentime(gen, gentimeDens, colltimeDens);
-    /* printf("\n>>> gentime info <<<\n"); */
+    /* Rprintf("\n>>> gentime info <<<\n"); */
     /* print_gentime(gen); */
 
 
@@ -72,24 +72,24 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna);
-    /* printf("\n>>> DNA info <<<\n"); */
+    /* Rprintf("\n>>> DNA info <<<\n"); */
     /* print_dna_dist(dnainfo); */
 
 
    /*  /\* COMPUTE PRIORS *\/ */
    /*  double logPrior = logprior_all(par); */
-   /*  printf("\nPrior value (log): %.10f\n", logPrior);fflush(stdout); */
+   /*  Rprintf("\nPrior value (log): %.10f\n", logPrior);fflush(stdout); */
 
    /* /\* COMPUTE LIKELIHOOD *\/ */
    /*  double logLike = loglikelihood_all(dat, dnainfo, gen, par, rng); */
-   /*  printf("\n\n = Initial Log-likelihood value: %f\n", logLike); */
+   /*  Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike); */
 
    /*  /\* COMPUTE POSTERIOR *\/ */
    /*  double logPost = logposterior_all(dat, dnainfo, gen, par, rng); */
-   /*  printf("\nLog-posterior value: %.10f\n", logPost);fflush(stdout); */
+   /*  Rprintf("\nLog-posterior value: %.10f\n", logPost);fflush(stdout); */
 
    /*  /\* ALLOCATE AND INITIALIZE MCMC PARAMETERS *\/ */
-   /*  printf("\nBefore check init LL\n");fflush(stdout);fflush(stdout); */
+   /*  Rprintf("\nBefore check init LL\n");fflush(stdout);fflush(stdout); */
 
     mcmcPar = alloc_mcmc_param(dat->n);
     init_mcmc_param(mcmcPar, dat, (bool) *move_mut, move_alpha, move_kappa, (bool) *move_Tinf, 
@@ -102,14 +102,14 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 	fflush(stdout);
     }
 
-    /* printf("\nAfter check init LL\n");fflush(stdout); */
-    /* printf("\nBefore MCMC\n");fflush(stdout); */
+    /* Rprintf("\nAfter check init LL\n");fflush(stdout); */
+    /* Rprintf("\nBefore MCMC\n");fflush(stdout); */
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery,
 	 (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
 
-    /* printf("\nAfter MCMC\n");fflush(stdout); */
+    /* Rprintf("\nAfter MCMC\n");fflush(stdout); */
 
     /* FILL IN GENETIC DISTANCE VECTOR */
     counter = 0;

@@ -1,4 +1,3 @@
-
 #include "common.h"
 #include "structures.h"
 #include "prior.h"

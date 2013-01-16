@@ -239,10 +239,10 @@ double mat_double_ij(mat_double *in, int i, int j){
 void print_vec_int(vec_int *in){
     int i;
     fflush(stdout);
-    printf("Vector of %d integers: ", in->length);
+    Rprintf("Vector of %d integers: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
-    for(i=0;i<in->length;i++) printf("%d ", vec_int_i(in,i));
-    printf("\n");
+    for(i=0;i<in->length;i++) Rprintf("%d ", vec_int_i(in,i));
+    Rprintf("\n");
     fflush(stdout);
 }
 
@@ -253,14 +253,14 @@ void print_vec_int(vec_int *in){
 void print_mat_int(mat_int *in){
     int i,j;
     fflush(stdout);
-    printf("\n%dx%d matrix of integers",in->n,in->p);
+    Rprintf("\n%dx%d matrix of integers",in->n,in->p);
     for(i=0;i<in->n;i++){
-	printf("\n");
+	Rprintf("\n");
 	for(j=0;j<in->p;j++)
-	    /* printf("%d ", in->rows[i]->values[j]); */
-	    printf("%d ", mat_int_ij(in,i,j));
+	    /* Rprintf("%d ", in->rows[i]->values[j]); */
+	    Rprintf("%d ", mat_int_ij(in,i,j));
     }
-    printf("\n");
+    Rprintf("\n");
     fflush(stdout);
 }
 
@@ -273,10 +273,10 @@ void print_mat_int(mat_int *in){
 void print_vec_double(vec_double *in){
     int i;
     fflush(stdout);
-    printf("Vector of %d doubles: ", in->length);
+    Rprintf("Vector of %d doubles: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
-    for(i=0;i<in->length;i++) printf("%.3f ", vec_double_i(in,i));
-    printf("\n");
+    for(i=0;i<in->length;i++) Rprintf("%.3f ", vec_double_i(in,i));
+    Rprintf("\n");
     fflush(stdout);
 }
 
@@ -288,14 +288,14 @@ void print_vec_double(vec_double *in){
 void print_mat_double(mat_double *in){
     int i,j;
     fflush(stdout);
-    printf("\n%dx%d matrix of doubles",in->n,in->p);
+    Rprintf("\n%dx%d matrix of doubles",in->n,in->p);
     for(i=0;i<in->n;i++){
-	printf("\n");
+	Rprintf("\n");
 	for(j=0;j<in->p;j++)
 	    /* printf("%d ", in->rows[i]->values[j]); */
-	    printf("%.3f ", mat_double_ij(in,i,j));
+	    Rprintf("%.3f ", mat_double_ij(in,i,j));
     }
-    printf("\n");
+    Rprintf("\n");
     fflush(stdout);
 }
 
@@ -309,9 +309,9 @@ void print_gsl_vector(gsl_vector *in, char format[256]){
     int i;
     fflush(stdout);
     for(i=0;i<in->size;i++){
-	printf(format, in->data[i]);
+	Rprintf(format, in->data[i]);
     }
-    printf("\n");
+    Rprintf("\n");
     fflush(stdout);
 }
 

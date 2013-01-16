@@ -93,15 +93,15 @@ int get_nbcommon(dna_dist * in, int i, int j){
 */
 
 void print_dna_dist(dna_dist *in){
-    printf("\n - transitions -");
+    Rprintf("\n - transitions -");
     print_mat_int(in->transi);
 
-    printf("\n - transversions -");
+    Rprintf("\n - transversions -");
     print_mat_int(in->transv);
 
-    printf("\n - common nucleotides -");
+    Rprintf("\n - common nucleotides -");
     print_mat_int(in->nbcommon);
-    printf("\n");
+    Rprintf("\n");
 }
 
 

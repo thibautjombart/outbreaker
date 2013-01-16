@@ -49,12 +49,12 @@ void free_data(data *in){
 
 
 void print_data(data *in){
-    printf("\n= Collection dates (timespan: %d)=\n",in->timespan);
+    Rprintf("\n= Collection dates (timespan: %d)=\n",in->timespan);
     print_vec_int(in->dates);
-    printf("\n= Sequences =");
+    Rprintf("\n= Sequences =");
     print_list_dnaseq(in->dna);
     fflush(stdout);
-    printf("\n= Indices of DNA sequences for each case=\n");
+    Rprintf("\n= Indices of DNA sequences for each case=\n");
     print_vec_int(in->idxCasesInDna);
 } /* end print_data*/
 
@@ -147,10 +147,10 @@ void free_gentime(gentime *in){
 
 void print_gentime(gentime *in){
     fflush(stdout);
-    printf("\n= Description of generation time function =\n");
-    printf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->truncW);
+    Rprintf("\n= Description of generation time function =\n");
+    Rprintf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->truncW);
     print_mat_double(in->dens);
-    printf("\n= Distribution of the time to collection =\n");
+    Rprintf("\n= Distribution of the time to collection =\n");
     print_vec_double(in->collTime);
     fflush(stdout);
 } /* end print_gentime*/
@@ -250,25 +250,25 @@ void free_param(param *in){
 
 void print_param(param *in){
     fflush(stdout);
-    printf("\n= Tinf (infection dates) =\n");
+    Rprintf("\n= Tinf (infection dates) =\n");
     print_vec_int(in->Tinf);
-    printf("\n= Alpha_i (ancestries) =\n");
+    Rprintf("\n= Alpha_i (ancestries) =\n");
     print_vec_int(in->alpha);
-    printf("\n= Kappa_i (generations from nearest ancestor) =\n");
+    Rprintf("\n= Kappa_i (generations from nearest ancestor) =\n");
     print_vec_int(in->kappa);
-    printf("\n= mu1, mu2, gamma (transi, transver, coef, prior mu1) =\n");
-    printf("%.5f   %.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma, in->mu1_prior);
-    printf("\n= pi (proportion of observed cases) =\n");
-    printf("%.5f", in->pi);
-    printf("\n= priors on pi (parameter of beta distribution) =\n");
-    printf("%.5f  %.5f", in->pi_param1, in->pi_param2);
-    printf("\n= threshold used in imported case detection =\n");
-    printf("%.2f", in->outlier_threshold);
+    Rprintf("\n= mu1, mu2, gamma (transi, transver, coef, prior mu1) =\n");
+    Rprintf("%.5f   %.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma, in->mu1_prior);
+    Rprintf("\n= pi (proportion of observed cases) =\n");
+    Rprintf("%.5f", in->pi);
+    Rprintf("\n= priors on pi (parameter of beta distribution) =\n");
+    Rprintf("%.5f  %.5f", in->pi_param1, in->pi_param2);
+    Rprintf("\n= threshold used in imported case detection =\n");
+    Rprintf("%.2f", in->outlier_threshold);
 
-    /* printf("\n= phi (proportion of external cases) =\n"); */
-    /* printf("%.5f", in->phi); */
-    /* printf("\n= priors on phi (parameter of beta distribution) =\n"); */
-    /* printf("%.5f  %.5f", in->phi_param1, in->phi_param2); */
+    /* Rprintf("\n= phi (proportion of external cases) =\n"); */
+    /* Rprintf("%.5f", in->phi); */
+    /* Rprintf("\n= priors on phi (parameter of beta distribution) =\n"); */
+    /* Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2); */
     fflush(stdout);
 } /* end print_param*/
 
@@ -397,65 +397,65 @@ void free_mcmc_param(mcmc_param *in){
 
 void print_mcmc_param(mcmc_param *in){
     fflush(stdout);
-    printf("\nsigma for mu1: %.10f",in->sigma_mu1);
-    printf("\nsigma for gamma: %.10f",in->sigma_gamma);
-    printf("\nsigma for pi: %.10f",in->sigma_pi);
-    /* printf("\nsigma for phi: %.10f",in->sigma_phi); */
-    printf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
-    printf("\nnb moves for Tinf: %d",in->n_move_Tinf);
-    printf("\nnb moves for alpha: %d",in->n_move_alpha);
-    printf("\nnb moves for kappa: %d",in->n_move_kappa);
+    Rprintf("\nsigma for mu1: %.10f",in->sigma_mu1);
+    Rprintf("\nsigma for gamma: %.10f",in->sigma_gamma);
+    Rprintf("\nsigma for pi: %.10f",in->sigma_pi);
+    /* Rprintf("\nsigma for phi: %.10f",in->sigma_phi); */
+    Rprintf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
+    Rprintf("\nnb moves for Tinf: %d",in->n_move_Tinf);
+    Rprintf("\nnb moves for alpha: %d",in->n_move_alpha);
+    Rprintf("\nnb moves for kappa: %d",in->n_move_kappa);
 
-    printf("\nmu1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_mu1, in->n_reject_mu1, (double) in->n_accept_mu1 / in->n_reject_mu1);
+    Rprintf("\nmu1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_mu1, in->n_reject_mu1, (double) in->n_accept_mu1 / in->n_reject_mu1);
 
-    printf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
+    Rprintf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
 
-    printf("\npi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_pi, in->n_reject_pi, (double) in->n_accept_pi / in->n_reject_pi);
+    Rprintf("\npi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_pi, in->n_reject_pi, (double) in->n_accept_pi / in->n_reject_pi);
 
-    /* printf("\nphi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_phi, in->n_reject_phi, (double) in->n_accept_phi / in->n_reject_phi); */
+    /* Rprintf("\nphi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_phi, in->n_reject_phi, (double) in->n_accept_phi / in->n_reject_phi); */
 
-    printf("\nTinf: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_Tinf, in->n_reject_Tinf, (double) in->n_accept_Tinf / in->n_reject_Tinf);
+    Rprintf("\nTinf: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_Tinf, in->n_reject_Tinf, (double) in->n_accept_Tinf / in->n_reject_Tinf);
 
-    printf("\nalpha: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_alpha, in->n_reject_alpha, (double) in->n_accept_alpha / in->n_reject_alpha);
+    Rprintf("\nalpha: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_alpha, in->n_reject_alpha, (double) in->n_accept_alpha / in->n_reject_alpha);
 
-    printf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
+    Rprintf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
 
-    printf("\nIndices of Tinf_i to move:\n");
+    Rprintf("\nIndices of Tinf_i to move:\n");
     print_vec_int(in->idx_move_Tinf);
-    printf("\nIndices of alpha_i to move:\n");
+    Rprintf("\nIndices of alpha_i to move:\n");
     print_vec_int(in->idx_move_alpha);
-    printf("\nIndices of kappa_i to move:\n");
+    Rprintf("\nIndices of kappa_i to move:\n");
     print_vec_int(in->idx_move_kappa);
 
-    printf("\nVector of all indices (0:(n-1)):\n");
+    Rprintf("\nVector of all indices (0:(n-1)):\n");
     print_vec_int(in->all_idx);
 
-    printf("\nVector of candidate ancestors:\n");
+    Rprintf("\nVector of candidate ancestors:\n");
     print_vec_int(in->candid_ances);
 
-    printf("\nVector of candidate ancestors (proba):\n");
+    Rprintf("\nVector of candidate ancestors (proba):\n");
     print_vec_double(in->candid_ances_proba);
 
-    printf("\nTuned parameters:");
-    if(in->tune_mu1) printf("mu1 ");
-    if(in->tune_gamma) printf("gamma ");
-    if(in->tune_pi) printf("pi ");
-    /* if(in->tune_phi) printf("phi "); */
-    printf("\nTuning stopped at step %d\n", in->step_notune);
+    Rprintf("\nTuned parameters:");
+    if(in->tune_mu1) Rprintf("mu1 ");
+    if(in->tune_gamma) Rprintf("gamma ");
+    if(in->tune_pi) Rprintf("pi ");
+    /* if(in->tune_phi) Rprintf("phi "); */
+    Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
-    printf("\nMoved parameters:");
-    if(in->move_mut) printf("mu1 gamma ");
-    /* if(in->move_alpha) printf("alpha "); */
-    /* if(in->move_kappa) printf("kappa "); */
-    if(in->move_Tinf) printf("Tinf ");
-    if(in->move_pi) printf("pi ");
-    /* if(in->move_phi) printf("phi "); */
-    printf("\nMove alpha_i:");
+    Rprintf("\nMoved parameters:");
+    if(in->move_mut) Rprintf("mu1 gamma ");
+    /* if(in->move_alpha) Rprintf("alpha "); */
+    /* if(in->move_kappa) Rprintf("kappa "); */
+    if(in->move_Tinf) Rprintf("Tinf ");
+    if(in->move_pi) Rprintf("pi ");
+    /* if(in->move_phi) Rprintf("phi "); */
+    Rprintf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
-    printf("\nMove kappa_i:");
+    Rprintf("\nMove kappa_i:");
     print_vec_double(in->move_kappa);
     if(in->find_import){
-	printf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
+	Rprintf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
     }
 
     fflush(stdout);
