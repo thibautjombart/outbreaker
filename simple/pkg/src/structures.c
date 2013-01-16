@@ -184,11 +184,9 @@ double gentime_dens(gentime *in, int t, int kappa_i){
 
 /* get density from the time to collection distribution */
 double colltime_dens(gentime *in, int t){
-    /* error if requested time too large */
-    if(t >= in->maxK*in->truncW){
-	fprintf(stderr, "\n[in: structures.c->colltime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
-	fflush(stdout);
-	exit(1);
+    /* return 0 of t > truncF */
+    if(t > in->truncF){
+	return 0.0;
     }
 
     /* otherwise fetch density value */
