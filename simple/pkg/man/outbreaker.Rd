@@ -135,6 +135,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
 }
 \author{ Thibaut Jombart \email{t.jombart@imperial.ac.uk} }
 \examples{
+
 library(outbreaker)
 library(adegenet)
 library(ape)
@@ -155,30 +156,39 @@ full <- simOutbreak(R0=2, infec.curve=w, mu.transi=mu1,mu.transv=mu2)
 ## EXAMPLE WITH COMPLETE SAMPLING ##
 ####################################
 
-dat <- full[1:10]
+dat <- full[1:5]
 collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
-## test basic ##
-res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w,
-init.tree="star", n.iter=3e4)
 
-# test plots
+#### TEST DIFFERENT VERSIONS OF THE METHOD ####
+## test basic ##
+res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w,init.tree="star", n.iter=3e4, find.import=FALSE)
+
+## test without genetic info ##
+res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)
+
+## test without import detection ##
+res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4)
+
+## test parallel ##
+res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)
+
+
+#### TEST POST-PROCESSING OF THE RESULTS ####
+## test plots ##
 plot.chains(res)
+plot(get.TTree.simple(res))
+transGraph(res, thres=0.1)
 outbreakplot(res)
 
-# test incidence curves
+## test incidence curves ##
 get.incid(res, main="Incidence curves")
 
-## test effective reproduction numbers
-get.Rt(res, main="Effective reproduction number")
+## test effective reproduction numbers ##
+barplot(table(get.R(res)), main="Effective reproduction number - distribution")
 
-
-
-## test parallel
-res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4)
-plot.chains(res)
-outbreakplot(res)
+get.Rt(res, main="Effective reproduction number over time")
 
 
 
