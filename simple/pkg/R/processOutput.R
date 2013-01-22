@@ -140,24 +140,24 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 
 
 
-##################
-## [.TTree.simple
-##################
-"[.TTree.simple" <- function(x,i,j,drop=FALSE){
-    res <- x
-    res$idx <- res$idx[i]
-    res$ances <- res$ances[i]
-    res$p.ances <- res$p.ances[i]
-    res$n.gen <- res$n.gen[i]
-    res$p.gen <- res$p.gen[i]
-    res$inf.curves <- res$inf.curves[i]
-    res$collec.dates <- res$collec.dates[i]
-    res$inf.dates <- res$inf.dates[i]
-    res$n <- length(res$ances)
-    res$nb.mut <- res$nb.mut[i]
+## ##################
+## ## [.TTree.simple
+## ##################
+## "[.TTree.simple" <- function(x,i,j,drop=FALSE){
+##     res <- x
+##     res$idx <- res$idx[i]
+##     res$ances <- res$ances[i]
+##     res$p.ances <- res$p.ances[i]
+##     res$n.gen <- res$n.gen[i]
+##     res$p.gen <- res$p.gen[i]
+##     res$inf.curves <- res$inf.curves[i]
+##     res$collec.dates <- res$collec.dates[i]
+##     res$inf.dates <- res$inf.dates[i]
+##     res$n <- length(res$ances)
+##     res$nb.mut <- res$nb.mut[i]
 
-    return(res)
-}
+##     return(res)
+## }
 
 
 
