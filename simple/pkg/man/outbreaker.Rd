@@ -191,10 +191,10 @@ res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, i
 
 #### TEST POST-PROCESSING OF THE RESULTS ####
 ## test plots ##
-plot.chains(res)
+plotChains(res)
 plot(get.TTree.simple(res))
 transGraph(res, thres=0.1)
-outbreakplot(res)
+plotOutbreak(res)
 
 ## test incidence curves ##
 get.incid(res, main="Incidence curves")
@@ -215,7 +215,7 @@ get.Rt(res, main="Effective reproduction number over time")
 
 \dontrun{
 
-plot.chains(res, main="Posterior probabilities")
+plotChains(res, main="Posterior probabilities")
 
 ## check ancestries
 x <- get.TTree.simple(res, burn=BURNIN)
@@ -235,9 +235,9 @@ plot(x,main="reconstruction (red=wrong ancestry)", vertex.color=v.col)
 
 
 ## check mutation rates
-plot.chains(res, "mu1",type="dens", omit=2e4)
+plotChains(res, "mu1",type="dens", omit=2e4)
 abline(v=mu1, col="blue")
-plot.chains(res, "mu2",type="dens", omit=2e4)
+plotChains(res, "mu2",type="dens", omit=2e4)
 abline(v=mu2, col="blue")
 
 
@@ -278,7 +278,7 @@ plot(dat, main="Data")
 
 res <- outbreaker.parallel(n.runs=4, dna=dat$dna,dates=collecDates,w.dens=w, init.tree="star", n.iter=10e4, pi.param1=3,pi.param2=3)
 
-plot.chains(res, main="Posterior probabilities")
+plotChains(res, main="Posterior probabilities")
 
 ## check ancestries
 x <- get.TTree.simple(res, burn=BURNIN)
@@ -314,14 +314,14 @@ plot(x,main="reconstruction (red=wrong number of generations)", vertex.color=v.c
 
 
 ## check pi
-plot.chains(res, "pi",type="dens", omit=2e4)
+plotChains(res, "pi",type="dens", omit=2e4)
 abline(v=mean(dat$ngen>1))
 
 
 ## check mutation rates
-plot.chains(res, "mu1",type="dens", omit=2e4)
+plotChains(res, "mu1",type="dens", omit=2e4)
 abline(v=mu1, col="blue")
-plot.chains(res, "mu2",type="dens", omit=2e4)
+plotChains(res, "mu2",type="dens", omit=2e4)
 abline(v=mu2, col="blue")
 
 

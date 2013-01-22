@@ -69,7 +69,10 @@ get.TTree.simple(x, burnin=2e4)
     generations between each case and its inferred ancestor
     \item inf.curves: the generation time distributions in time, for
     each case
- }
+  }
+
+  The plot function invisibly returns the conversion of the
+  \code{TTree.simple} object into a \code{igraph} graph.
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
