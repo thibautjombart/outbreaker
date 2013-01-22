@@ -1,0 +1,78 @@
+\name{TTree.simple}
+\alias{TTree.simple}
+\alias{get.TTree.simple}
+\alias{plot.TTree.simple}
+\alias{as.igraph.TTree.simple}
+% \alias{[.TTree.simple}
+\alias{findMutations.TTree.simple}
+\title{Simple transmission tree from outreaber's output}
+\description{
+  The S3 class \code{TTreesimple} is used for storing simplified
+  transmission trees, obtained from outbreaker's ouptput (functions
+  \code{outbreaker} and \code{outbreaker.parallel}) using
+  \code{get.TTree.simple}. Some additional features are available for
+  \code{TTree.simple} objects, including plotting (\code{plot}),
+  conversion to \code{igraph} graphs(\code{as.igraph}), and
+  identification of mutations on the branches of the tree
+  (\code{findMutations}).
+}
+\usage{
+get.TTree.simple(x, burnin=2e4)
+
+\method{plot}{TTree.simple}(x, y=NULL, edge.col="black", col.edge.by="prob",
+     col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", \dots)
+
+\method{as.igraph}{TTree.simple}(x, edge.col="black", col.edge.by="prob",
+     col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", \dots)
+
+\method{findMutations}{TTree.simple}(x, dna, \dots)
+}
+\arguments{
+  \item{x}{for \code{get.TTree.simple}, the output of \code{outbreaker}
+    or \code{outbreaker.parallel}. For other functions, a
+    \code{TTree.simple} object.}
+  \item{burnin}{an integer indicating the number of steps of the MCMC to
+  be discarded as burnin period. Defaults to 20,000.}
+  \item{y}{unused - there for compatibility with the generic of \code{plot}.}
+  \item{edge.col}{the color used for the edges; overriden if
+    \code{col.edge.by} is provided.}
+  \item{col.edge.by}{a character string indicating how edges should be
+    colored. Can be "dist" (by number of mutations), "n.gen" (by number
+    of generations), or "prob" (by posterior support for the ancestries).}
+  \item{col.pal}{the palette of colors to be used for edges; if NULL, a
+    grey palette is used, with larger values in darker shades.}
+  \item{annot}{same as \code{col.edge.by}, but specifies the information
+    used to annotated the edges; several values can be provided, in
+    which case different fields will be concatenated to generate the
+    annotation.}
+  \item{sep}{a character indicating the separator for different field
+    (see \code{annot}).}
+  \item{dna}{a DNAbin object containing the aligned sequences of the
+    isolates in the tree.}
+  \item{\dots}{further arguments to be passed to other functions.}
+}
+\value{
+  \code{TTree.simple} objects are lists with the following components:
+  \itemize{
+    \item idx: integer, the index of the cases
+    \item collec.dates: the collection dates of the isolates
+    \item idx.dna: the index of the cases to which each DNA sequence corresponds
+    \item ances: the index of the inferred ancestor, for each case
+    \item inf.dates: the inferred infection date, for each case
+    \item p.ances: the posterior probability of the inferred ancestor
+    (i.e., proportion in the posterior distribution of ancestors)
+    \item nb.mut: the number of mutations between isolates and their
+    inferred ancestor, for each isolate
+    \item n.gen: the number of generations between isolates and their
+    inferred ancestor, for each isolate
+    \item p.gen: the posterior probability of the inferred number of
+    generations between each case and its inferred ancestor
+    \item inf.curves: the generation time distributions in time, for
+    each case
+ }
+}
+\author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
+\examples{
+
+}
+\keyword{classes}
