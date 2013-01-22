@@ -1,13 +1,28 @@
-\name{plot.chains}
-\alias{plot.chains}
-\title{Plot outbreaker's MCMCs}
+\name{outbreaker graphics}
+\alias{plotChains}
+\alias{transGraph}
+\alias{plotOutbreak}
+\title{Plot outbreaker's results}
 \description{
-  The function \code{plot.chains} is used for plotting MCMCs output by
-  \code{outbreaker} and \code{outbreaker.parallel}.
+  These are the main functions used for generating graphics from the raw
+  output of \code{outbreaker} and \code{outbreaker.parallel}.
+
+  \itemize{
+    \item \code{plotChains} is used for plotting MCMCs
+    \item \code{transGraph} plots a graph of inferred ancestries
+  }
 }
 \usage{
-plot.chains(x, what="post", type=c("series","density"), omit.first=0,
+plotChains(x, what="post", type=c("series","density"), burnin=0,
             dens.all=TRUE, col=rainbow(x$n.runs), lty=1, lwd=1, main=what, \dots)
+
+transGraph(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
+           annot=c("dist","support"), sep="/", \dots)
+
+plotOutbreak(x, burnin=2e4, thres.hide=0.2,
+             col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
+             arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2, \dots)
+
 }
 \arguments{
   \item{x}{the output of \code{outbreaker} or \code{outbreaker.parallel}.}
@@ -16,7 +31,7 @@ plot.chains(x, what="post", type=c("series","density"), omit.first=0,
     log-posterior values are plotted}
   \item{type}{a character indicating if the chains should be plotted as
     time series ("series"), or as density ("density").}
-  \item{omit.first}{an integer indicating the number of MCMC steps to
+  \item{burnin}{an integer indicating the number of MCMC steps to
     discard before plotting chains.}
   \item{dens.all}{a logical indicating if, in the case of multiple runs,
     the overall density of the different chains should be plotted in
@@ -26,7 +41,26 @@ plot.chains(x, what="post", type=c("series","density"), omit.first=0,
     different chains.}
   \item{lwd}{same as \code{lty}, but for line width.}
   \item{main}{the title to be added to the plot.}
-  \item{\dots}{further arguments to be passed to the plot function.}
+  \item{labels}{the labels to be used to name the nodes of the graph (cases).}
+  \item{threshold}{the minimum support for ancestries to be plotted;
+    'support' is defined as the frequency of a given ancestor in the
+    posterior distribution; defaults to 0.2.}
+  \item{col.pal}{the color palette to be used for the edges (ancestries).}
+  \item{curved.edges}{a logical indicating whether edges should be curved.}
+  \item{annot}{a character indicating which information should be used
+    to annotate the edges; this can be the distances between ancestors
+    and descendents ("dist") and the posterior support for ancestries
+    ("support"); if both are requested, fields will be concatenated.}
+  \item{sep}{a character indicating the separator to be used when
+    concatenating several types of annotation.}
+  \item{arr.col.pal}{the color palette to be used for the arrows,
+    representing the support for each ancesetry; if NULL, a grey scale
+    is used, with larger support in darker shades.}
+  \item{cex.bubble}{a numeric value indicating the size factor for the
+    bubbles representing the generation time distribution.}
+  \item{lwd.arrow}{a numeric value indicating the size factor for the
+    arrows.}
+  \item{\dots}{further arguments to be passed to other functions.}
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{

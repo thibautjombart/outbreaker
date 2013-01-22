@@ -34,9 +34,9 @@ plot.TTree.simple <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
 
 
 ##############
-## plot.chains
+## plotChains
 ##############
-plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0, dens.all=TRUE,
+plotChains <- function(x, what="post", type=c("series","density"), burnin=0, dens.all=TRUE,
                         col=rainbow(x$n.runs), lty=1, lwd=1, main=what, ...){
     ## HANDLE ARGUMENTS ##
     type <- match.arg(type)
@@ -45,15 +45,15 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
     if(!is.null(col)) col <- rep(col, length = n.runs)
     if(!is.null(lty)) lty <- rep(lty, length = n.runs)
     if(!is.null(lwd)) lwd <- rep(lwd, length = n.runs)
-    if(is.null(omit.first)){
-        omit.first <- max(res$burnin, res$find.import.at, res$tune.end)
+    if(is.null(burnin)){
+        burnin <- max(res$burnin, res$find.import.at, res$tune.end)
     }
 
     ## GET DATA TO PLOT ##
     dat <- cbind(x$chains$step[x$chains$run==1],data.frame(split(x$chains[,what], x$chains$run)))
     names(dat) <- c("step", paste(what, 1:n.runs,sep=""))
-    if(!any(dat$step>omit.first)) stop("omit.first is greater than the number of steps in x")
-    dat <- dat[dat$step>omit.first,,drop=FALSE]
+    if(!any(dat$step>burnin)) stop("burnin is greater than the number of steps in x")
+    dat <- dat[dat$step>burnin,,drop=FALSE]
 
     ## MAKE PLOT ##
     if(type=="series"){
@@ -77,7 +77,7 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
     }
 
     return(invisible())
-} # end plot.chains
+} # end plotChains
 
 
 
@@ -87,14 +87,14 @@ plot.chains <- function(x, what="post", type=c("series","density"), omit.first=0
 ##############
 ## transGraph
 ##############
-transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
+transGraph <- function(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
                        annot=c("dist","support"), sep="/", ...){
     ## CHECKS ##
     if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
 
     ## HANDLE ARGUMENTS ##
-    if(omit.first> max(x$chains$step)) stop("omit.first exceeds the number of chains in the output")
+    if(burnin> max(x$chains$step)) stop("burnin exceeds the number of chains in the output")
     if(is.null(col.pal)){
         col.pal <- function(n){
             return(grey(seq(1,0,length=n)))
@@ -102,7 +102,7 @@ transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.p
     }
 
     ## GET ANCESTRY DATA ##
-    ances <- x$chains[x$chains$step>=omit.first, grep("alpha",names(x$chains)),drop=FALSE]
+    ances <- x$chains[x$chains$step>=burnin, grep("alpha",names(x$chains)),drop=FALSE]
     tabances <- apply(ances,2,table)
     N <- ncol(ances)
 
@@ -123,7 +123,7 @@ transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.p
     edge.col <- num2col(support, col.pal=col.pal, x.min=0, x.max=1)
 
     ## average dates of infection
-    Tinf <- x$chains[x$chains$step>=omit.first, grep("Tinf",names(x$chains)),drop=FALSE]
+    Tinf <- x$chains[x$chains$step>=burnin, grep("Tinf",names(x$chains)),drop=FALSE]
     inf.dates <- apply(Tinf,2,mean)
     names(inf.dates) <- 1:N
 
@@ -189,14 +189,14 @@ transGraph <- function(x, labels=NULL, omit.first=x$burnin, threshold=0.2, col.p
 
 
 ################
-## outbreakplot
+## plotOutbreak
 ################
 .entropy <- function(p){
     p <- p/sum(p, na.rm=TRUE)
     return(-sum(p*log(p), na.rm=TRUE))
 }
 
-outbreakplot <- function(x, burnin=2e4, thres.hide=0.2,
+plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
                          col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
                          arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2,...){
     ## CHECKS ##
@@ -292,7 +292,7 @@ outbreakplot <- function(x, burnin=2e4, thres.hide=0.2,
     ## BUILT RESULT AND RETURN ##
     res <- list(col=col, col.pal=col.pal, entropy=entropy, arr.col.pal=arr.col.pal)
     return(invisible(res))
-} # end outbreakplot
+} # end plotOutbreak
 
 
 
