@@ -1,36 +1,36 @@
-\name{TTree.simple}
-\alias{TTree.simple}
-\alias{get.TTree.simple}
-\alias{plot.TTree.simple}
-\alias{as.igraph.TTree.simple}
-% \alias{[.TTree.simple}
-\alias{findMutations.TTree.simple}
+\name{tTree}
+\alias{tTree}
+\alias{get.tTree}
+\alias{plot.tTree}
+\alias{as.igraph.tTree}
+% \alias{[.tTree}
+\alias{findMutations.tTree}
 \title{Simple transmission tree from outreaber's output}
 \description{
   The S3 class \code{TTreesimple} is used for storing simplified
   transmission trees, obtained from outbreaker's ouptput (functions
   \code{outbreaker} and \code{outbreaker.parallel}) using
-  \code{get.TTree.simple}. Some additional features are available for
-  \code{TTree.simple} objects, including plotting (\code{plot}),
+  \code{get.tTree}. Some additional features are available for
+  \code{tTree} objects, including plotting (\code{plot}),
   conversion to \code{igraph} graphs(\code{as.igraph}), and
   identification of mutations on the branches of the tree
   (\code{findMutations}).
 }
 \usage{
-get.TTree.simple(x, burnin=2e4)
+get.tTree(x, burnin=2e4)
 
-\method{plot}{TTree.simple}(x, y=NULL, edge.col="black", col.edge.by="prob",
+\method{plot}{tTree}(x, y=NULL, edge.col="black", col.edge.by="prob",
      col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", \dots)
 
-\method{as.igraph}{TTree.simple}(x, edge.col="black", col.edge.by="prob",
+\method{as.igraph}{tTree}(x, edge.col="black", col.edge.by="prob",
      col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", \dots)
 
-\method{findMutations}{TTree.simple}(x, dna, \dots)
+\method{findMutations}{tTree}(x, dna, \dots)
 }
 \arguments{
-  \item{x}{for \code{get.TTree.simple}, the output of \code{outbreaker}
+  \item{x}{for \code{get.tTree}, the output of \code{outbreaker}
     or \code{outbreaker.parallel}. For other functions, a
-    \code{TTree.simple} object.}
+    \code{tTree} object.}
   \item{burnin}{an integer indicating the number of steps of the MCMC to
   be discarded as burnin period. Defaults to 20,000.}
   \item{y}{unused - there for compatibility with the generic of \code{plot}.}
@@ -52,7 +52,7 @@ get.TTree.simple(x, burnin=2e4)
   \item{\dots}{further arguments to be passed to other functions.}
 }
 \value{
-  \code{TTree.simple} objects are lists with the following components:
+  \code{tTree} objects are lists with the following components:
   \itemize{
     \item idx: integer, the index of the cases
     \item collec.dates: the collection dates of the isolates
@@ -72,7 +72,7 @@ get.TTree.simple(x, burnin=2e4)
   }
 
   The plot function invisibly returns the conversion of the
-  \code{TTree.simple} object into a \code{igraph} graph.
+  \code{tTree} object into a \code{igraph} graph.
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{

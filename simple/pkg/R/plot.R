@@ -1,11 +1,11 @@
 #####################
-## plot.TTree.simple
+## plot.tTree
 #####################
-plot.TTree.simple <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
+plot.tTree <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
                               col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
     if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
-    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+    if(!inherits(x,"tTree")) stop("x is not a tTree object")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
     ## get graph ##
@@ -17,7 +17,7 @@ plot.TTree.simple <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
     ## return graph invisibly ##
     return(invisible(g))
 
-} # end plot.TTree.simple
+} # end plot.tTree
 
 
 
@@ -203,7 +203,7 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
     if(!require(adegenet)) stop("adegenet is not installed")
 
     ## GET TREE ##
-    tre <- get.TTree.simple(x,burnin=burnin)
+    tre <- get.tTree(x,burnin=burnin)
     N <- length(tre$idx)
 
     ## GET NUMBER OF MUTATIONS BETWEEN SEQUENCES
@@ -309,7 +309,7 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
 ## #############
 ## epicurves <- function (x, col=NULL, bg="lightgrey", line.col="white", coef=1, max.arr=5,...) {
 ##     if(!require(adegenet)) stop("adegenet is required")
-##     if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+##     if(!inherits(x,"tTree")) stop("x is not a tTree object")
 
 ##     ## GET USEFUL INFO ##
 ##     N <- length(x$idx)
