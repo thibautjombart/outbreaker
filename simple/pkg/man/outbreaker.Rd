@@ -192,7 +192,7 @@ res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, i
 #### TEST POST-PROCESSING OF THE RESULTS ####
 ## test plots ##
 plotChains(res)
-plot(get.TTree.simple(res))
+plot(get.tTree(res))
 transGraph(res, thres=0.1)
 plotOutbreak(res)
 
@@ -218,7 +218,7 @@ get.Rt(res, main="Effective reproduction number over time")
 plotChains(res, main="Posterior probabilities")
 
 ## check ancestries
-x <- get.TTree.simple(res, burn=BURNIN)
+x <- get.tTree(res, burn=BURNIN)
 temp <- x
 temp$ances[is.na(temp$ances)] <- 0
 temp2 <- dat$ances
@@ -281,7 +281,7 @@ res <- outbreaker.parallel(n.runs=4, dna=dat$dna,dates=collecDates,w.dens=w, ini
 plotChains(res, main="Posterior probabilities")
 
 ## check ancestries
-x <- get.TTree.simple(res, burn=BURNIN)
+x <- get.tTree(res, burn=BURNIN)
 temp <- x
 temp$ances[is.na(temp$ances)] <- 0
 temp2 <- dat$ances

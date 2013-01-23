@@ -288,7 +288,7 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
                                   edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(ape)) stop("package ape is required for this operation")
-    if(!inherits(x,"simOutbreak")) stop("x is not a TTree.simple object")
+    if(!inherits(x,"simOutbreak")) stop("x is not a tTree object")
     if(!require(adegenet)) stop("adegenet is required")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 

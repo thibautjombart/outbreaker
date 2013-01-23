@@ -1,7 +1,7 @@
+f####################
+## get.tTree
 ####################
-## get.TTree.simple
-####################
-get.TTree.simple <- function(x, burnin=2e4){
+get.tTree <- function(x, burnin=2e4){
 
     ## ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
     ## temp <- all(grep("run", names(x))==1:length(x))
@@ -69,9 +69,9 @@ get.TTree.simple <- function(x, burnin=2e4){
 
 
     ## SET CLASS AND RETURN ##
-    class(res) <- "TTree.simple"
+    class(res) <- "tTree"
     return(res)
-} # end get.TTree.simple
+} # end get.tTree
 
 
 
@@ -81,11 +81,11 @@ get.TTree.simple <- function(x, burnin=2e4){
 #############
 ## as.igraph
 #############
-as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
+as.igraph.tTree <- function(x, edge.col="black", col.edge.by="prob",
                               col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(adegenet)) stop("adegenet is required")
-    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+    if(!inherits(x,"tTree")) stop("x is not a tTree object")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
     ## GET DAG ##
@@ -132,7 +132,7 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=x$inf.dates, maxx=x$inf.dates))
 
     return(out)
-} # end as.igraph.TTree.simple
+} # end as.igraph.tTree
 
 
 
@@ -141,9 +141,9 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 
 
 ## ##################
-## ## [.TTree.simple
+## ## [.tTree
 ## ##################
-## "[.TTree.simple" <- function(x,i,j,drop=FALSE){
+## "[.tTree" <- function(x,i,j,drop=FALSE){
 ##     res <- x
 ##     res$idx <- res$idx[i]
 ##     res$ances <- res$ances[i]
@@ -168,10 +168,10 @@ as.igraph.TTree.simple <- function(x, edge.col="black", col.edge.by="prob",
 #################
 ## findMutations
 #################
-findMutations.TTree.simple <- function(x, dna, ...){
+findMutations.tTree <- function(x, dna, ...){
     ## CHECKS ##
     if(!require(ape)) stop("the ape package is needed")
-    if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+    if(!inherits(x,"tTree")) stop("x is not a tTree object")
 
     ## ## function to pull out mutations from sequence a to b ##
     ## f1 <- function(a,b){
@@ -222,7 +222,7 @@ findMutations.TTree.simple <- function(x, dna, ...){
 ## ###################
 ## refine.mutrates <- function(x, min.support=0.5){
 ##     ## CHECKS ##
-##     if(!inherits(x,"TTree.simple")) stop("x is not a TTree.simple object")
+##     if(!inherits(x,"tTree")) stop("x is not a tTree object")
 
 ##     ## AUXILIARY FUNCTIONS ##
 
