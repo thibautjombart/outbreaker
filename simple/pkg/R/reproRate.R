@@ -2,7 +2,7 @@
 ## get.Rt
 ##########
 get.Rt <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=FALSE,
-                   CI.level=0.05, fill.col="gold", lines.col=transp("grey"), ...){
+                   fill.col="gold", lines.col=transp("grey"), ...){
     if(!require(adegenet)) stop("the adegenet package is required.")
     type <- match.arg(type)
 
@@ -125,8 +125,8 @@ get.R <- function(x, burnin=2e4, ...){
 #############
 ## get.incid
 #############
-get.incid <- function(x, burnin=2e4, plot=TRUE, type=c("CI", "boxplot", "lines"), lines=FALSE,
-                   CI.level=0.05, fill.col="gold", lines.col=transp("grey"), ...){
+get.incid <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=FALSE,
+                      fill.col="gold", lines.col=transp("grey"), ...){
     if(!require(adegenet)) stop("the adegenet package is required.")
     type <- match.arg(type)
 
@@ -163,17 +163,17 @@ get.incid <- function(x, burnin=2e4, plot=TRUE, type=c("CI", "boxplot", "lines")
 
     ## MAKE PLOT IF NEEDED ##
     if(plot){
-        if(type=="CI"){
-            ## CI-based
-            stat <- apply(res, 1, quantile, c(CI.level,0.5, 1-CI.level), na.rm=TRUE)
-            xcoord <- as.numeric(colnames(stat))
-            matplot(xcoord, t(stat), type="n", ylab="Incidence", ...)
-            polygon(c(xcoord,rev(xcoord)), c(stat[3,], rev(stat[1,])), col=fill.col, border=NA)
-            if(lines){
-                matplot(rownames(res),res, type="l", lty=1, col=lines.col, lwd=1, add=TRUE)
-            }
-            matplot(xcoord, t(stat), type="l", lty=1, col="black", lwd=2, add=TRUE)
-        }
+        ## if(type=="CI"){
+        ##     ## CI-based
+        ##     stat <- apply(res, 1, quantile, c(CI.level,0.5, 1-CI.level), na.rm=TRUE)
+        ##     xcoord <- as.numeric(colnames(stat))
+        ##     matplot(xcoord, t(stat), type="n", ylab="Incidence", ...)
+        ##     polygon(c(xcoord,rev(xcoord)), c(stat[3,], rev(stat[1,])), col=fill.col, border=NA)
+        ##     if(lines){
+        ##         matplot(rownames(res),res, type="l", lty=1, col=lines.col, lwd=1, add=TRUE)
+        ##     }
+        ##     matplot(xcoord, t(stat), type="l", lty=1, col="black", lwd=2, add=TRUE)
+        ## }
 
 
 
