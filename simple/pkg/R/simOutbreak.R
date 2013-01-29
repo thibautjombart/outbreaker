@@ -284,7 +284,7 @@ labels.simOutbreak <- function(object, ...){
 #########################
 ## as.igraph.simOutbreak
 #########################
-as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", vertex.col.pal=funky,
+as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", vertex.col="gold",
                                   edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("package igraph is required for this operation")
     if(!require(ape)) stop("package ape is required for this operation")
@@ -314,12 +314,13 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     names(x$dates) <- x$id
     V(out)$date <- x$dates[V(out)$name]
 
-    ## groups
-    names(x$group) <- x$id
-    V(out)$group <- x$group[V(out)$name]
+    ## ## groups
+    ## names(x$group) <- x$id
+    ## V(out)$group <- x$group[V(out)$name]
 
     ## colors
-    V(out)$color <- fac2col(factor(V(out)$group), col.pal=vertex.col.pal)
+    V(out)$color <- vertex.col
+    ## V(out)$color <- fac2col(factor(V(out)$group), col.pal=vertex.col.pal)
 
 
     ## SET EDGE INFO ##
@@ -362,7 +363,7 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 #####################
 ## plot.simOutbreak
 #####################
-plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", vertex.col.pal=funky,
+plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", vertex.col="gold",
                               edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
     if(!require(igraph)) stop("igraph is required")
     if(!require(adegenet)) stop("adegenet is required")
@@ -370,7 +371,7 @@ plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", ve
     if(!col.edge.by %in% c("dist","n.gen")) stop("unknown col.edge.by specified")
 
     ## get graph ##
-    g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, vertex.col.pal=vertex.col.pal,
+    g <- as.igraph(x, edge.col=edge.col, col.edge.by=col.edge.by, vertex.col=vertex.col,
                    edge.col.pal=edge.col.pal, annot=annot, sep=sep)
 
      ## make plot ##

@@ -19,9 +19,9 @@ plotChains(x, what="post", type=c("series","density"), burnin=0,
 transGraph(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
            annot=c("dist","support"), sep="/", \dots)
 
-plotOutbreak(x, burnin=2e4, thres.hide=0.2,
+plotOutbreak(x, burnin=x$burnin, thres.hide=0.2,
              col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
-             arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2, \dots)
+             arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2, xlim=NULL,\dots)
 
 }
 \arguments{
@@ -45,6 +45,9 @@ plotOutbreak(x, burnin=2e4, thres.hide=0.2,
   \item{threshold}{the minimum support for ancestries to be plotted;
     'support' is defined as the frequency of a given ancestor in the
     posterior distribution; defaults to 0.2.}
+  \item{thres.hide}{a threshold of posterior support for displaying
+    ancestries; ancestries with less than this frequency in the
+    posterior are hidden.}
   \item{col.pal}{the color palette to be used for the edges (ancestries).}
   \item{curved.edges}{a logical indicating whether edges should be curved.}
   \item{annot}{a character indicating which information should be used
@@ -60,6 +63,7 @@ plotOutbreak(x, burnin=2e4, thres.hide=0.2,
     bubbles representing the generation time distribution.}
   \item{lwd.arrow}{a numeric value indicating the size factor for the
     arrows.}
+  \item{xlim}{the limits of the X axis; if NULL, determined from the data.}
   \item{\dots}{further arguments to be passed to other functions.}
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
