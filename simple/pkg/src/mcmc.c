@@ -394,7 +394,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
 	  bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i, j, nbTermsLike = 0;
+    int i;
     vec_int *areOutliers = alloc_vec_int(dat->n);
 
     /* OPEN OUTPUT FILES */

@@ -412,7 +412,7 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 /* MOVE VALUES OF KAPPA */
 void move_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, j, toMove=0, temp;
+    int i, toMove=0, temp;
     double logRatio = 0.0;
 
 
@@ -532,7 +532,7 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
 
 /* MOVE VALUES OF ALPHA AND KAPPA */
 void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, toMove=0, T, temp;
+    int i, toMove=0, temp;
     double logRatio = 0.0;
 
 
