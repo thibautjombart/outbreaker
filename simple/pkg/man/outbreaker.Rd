@@ -1,6 +1,7 @@
 \encoding{UTF-8}
 \name{outbreaker}
 \alias{outbreaker}
+\alias{outbreaker.parallel}
 \title{Outbreaker}
 \description{
   These functions are under development. Please contact the author if
@@ -64,7 +65,13 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     character string indicating how this tree should be computed, or a
     vector if integers corresponding to the tree itself, where the i-th value
     correspond to the index of the ancestor of 'i' (i.e., \code{init.tree[i]}
-    is the ancestor of \code{i}. See details.}
+    is the ancestor of \code{i}). Accepted character strings are
+    "seqTrack" (uses seqTrack output as initialize tree), "random"
+    (ancestor randomly selected from preceding cases), "star" (all cases
+    coalesce to the first case), and "none" (no ancestry to start with).}
+  \item{init.kappa}{as \code{init.tree}, but values indicate the number
+    of generations between each case and its most recent
+    sampled ancestor.}
   \item{n.iter}{an integer indicating the number of iterations in the MCMC,
     including the burnin period; defaults to \code{100,000}.}
   \item{sample.every}{an integer indicating the frequency at which to

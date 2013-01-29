@@ -21,7 +21,7 @@ get.Rt(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=FALSE,
 
 get.R(x, burnin=2e4, \dots)
 
-get.incid(x, burnin=2e4, plot=TRUE, type=c("CI", "boxplot", "lines"),
+get.incid(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"),
           lines=FALSE, fill.col="gold", lines.col=transp("grey"), \dots)
 
 }

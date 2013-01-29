@@ -198,7 +198,7 @@ transGraph <- function(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=N
 
 plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
                          col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
-                         arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2,...){
+                         arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2, xlim=NULL, ...){
     ## CHECKS ##
     if(!require(adegenet)) stop("adegenet is not installed")
 
@@ -231,8 +231,15 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
     Tinf <- x$chains[x$chains$step>burnin, toKeep]
     colnames(Tinf) <- colnames(as.matrix(x$D))
 
+    ## find max date
+    if(is.null(xlim)){
+        min.date <- min(x$chains[,grep("Tinf",names(x$chains))])
+        max.date <- max(tre$inf.curves[[1]][,1])
+        xlim <- c(min.date-.5,  max.date+.5)
+    }
+
     ## basic boxplot
-    boxplot(Tinf, col=col, horizontal=TRUE, las=1, ...)
+    boxplot(Tinf, col=col, horizontal=TRUE, las=1, ylim=xlim, ...)
 
     ## add infectious periods
     lapply(1:N, function(i) points(tre$inf.curves[[i]][,1], rep(i, nrow(tre$inf.curves[[i]])),
