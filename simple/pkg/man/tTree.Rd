@@ -1,4 +1,4 @@
-\name{tTree}
+\name{consensus ancestries}
 \alias{tTree}
 \alias{get.tTree}
 \alias{plot.tTree}
@@ -76,6 +76,24 @@ get.tTree(x, burnin=2e4)
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
+data(toyOutbreak)
+attach(toyOutbreak)
+
+## represent posterior ancestries
+transGraph(res, annot="", main="Posterior ancestries - support > 0.01", threshold=0.01, col.pal=redpal)
+
+## get consensus ancestries
+tre <- get.tTree(res)
+plot(tre, annot="", main="Consensus ancestries")
+
+## show match data/consensus ancestries
+col <- rep("lightgrey", 30)
+col[which(dat$ances != tre$ances)] <- "pink"
+plot(tre, annot="", vertex.color=col, main="Consensus ancestries")
+mtext(side=3, text="cases with erroneous ancestries in pink")
+
+
+detach(toyOutbreak)
 
 }
 \keyword{classes}
