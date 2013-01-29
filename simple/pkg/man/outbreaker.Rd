@@ -155,7 +155,7 @@ Bayesian reconstruction of disease outbreaks by combining epidemiologic and geno
   Implementation by Thibaut Jombart (\email{t.jombart@imperial.ac.uk})
 }
 \examples{
-
+\dontrun{
 library(outbreaker)
 
 BURNIN <- 1e4
@@ -211,4 +211,5 @@ barplot(table(get.R(res)), main="Effective reproduction number - distribution")
 
 get.Rt(res, main="Effective reproduction number over time")
 
+}
 }
