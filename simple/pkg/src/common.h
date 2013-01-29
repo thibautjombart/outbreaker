@@ -33,8 +33,11 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_sort.h>
 
-/* R headers for Rprintf */
-#include <R_ext/Print.h>
+/* /\* R headers for Rprintf *\/ */
+/* #include <R_ext/Print.h> */
+
+/* R headers of R API */
+#include <R.h>
 
 #define NEARZERO 0.00000000000000000001 /* 1e-20 */
 #define NEARPLUSINF 100000000000000000000.0 /* 10e20 */

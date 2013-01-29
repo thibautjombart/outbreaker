@@ -63,8 +63,9 @@ int choose_kappa_i(int T, gentime *gen, gsl_rng *rng){
     } while(rnd>=cumSum);
 
     if(i>gen->maxK){
-	fprintf(stderr, "\n[in: moves.c->choose_kappa_i]\nInvalid value of kappa_i returned (%d, but maxK=%d).\n", i, gen->maxK);
-	exit(1);
+      error("\n[in: moves.c->choose_kappa_i]\nInvalid value of kappa_i returned (%d, but maxK=%d).\n", i, gen->maxK);
+      /* fprintf(stderr, "\n[in: moves.c->choose_kappa_i]\nInvalid value of kappa_i returned (%d, but maxK=%d).\n", i, gen->maxK); */
+      /* exit(1); */
     }
 
     return i;

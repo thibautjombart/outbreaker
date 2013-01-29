@@ -19,16 +19,18 @@
 vec_int * alloc_vec_int(int n){
     vec_int *out = (vec_int *) malloc(sizeof(vec_int));
     if(out == NULL){
-	fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
-	exit(1);
+      error("\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
+      /* fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* NOTE out->values is not allocated when n=0 */
     if(n>0){
 	out->values = (int *) calloc(n, sizeof(int));
 	if(out->values == NULL){
-	    fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
-	    exit(1);
+	  error("\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n");
+	  /* fprintf(stderr, "\n[in: matvec.c->alloc_vec_int]\nNo memory left for creating vector of integers. Exiting.\n"); */
+	  /* exit(1); */
 	}
     }
 
@@ -45,16 +47,18 @@ vec_int * alloc_vec_int(int n){
 vec_double * alloc_vec_double(int n){
     vec_double *out = (vec_double *) malloc(sizeof(vec_double));
     if(out == NULL){
-	fprintf(stderr, "\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
-	exit(1);
+      error("\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
+      /* fprintf(stderr, "\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* NOTE out->values is not allocated when n=0 */
     if(n>0){
 	out->values = (double *) calloc(n, sizeof(double));
 	if(out->values == NULL){
-	    fprintf(stderr, "\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
-	    exit(1);
+	  error("\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n");
+	  /* fprintf(stderr, "\n[in: matvec.c->alloc_vec_double]\nNo memory left for creating vector of double. Exiting.\n"); */
+	  /* exit(1); */
 	}
     }
 
@@ -77,15 +81,17 @@ mat_int * alloc_mat_int(int n, int p){
     /* allocate output */
     out = (mat_int *) malloc(sizeof(mat_int));
     if(out == NULL){
-	fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
-	exit(1);
+      error("\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
+      /* fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* fill in content */
     out->rows = (vec_int **) calloc(n, sizeof(vec_int *));
     if(out->rows == NULL){
-	fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
-	exit(1);
+      error("\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
+      /* fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n"); */
+      /* exit(1); */
     }
 
     for(i=0;i<n;i++){
@@ -112,15 +118,17 @@ mat_double * alloc_mat_double(int n, int p){
     /* allocate output */
     out = (mat_double *) malloc(sizeof(mat_double));
     if(out == NULL){
-	fprintf(stderr, "\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
-	exit(1);
+      error("\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
+      /* fprintf(stderr, "\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* fill in content */
     out->rows = (vec_double **) calloc(n, sizeof(vec_double *));
     if(out->rows == NULL){
-	fprintf(stderr, "\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
-	exit(1);
+      error("\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n");
+      /* fprintf(stderr, "\n[in: matvec.c->alloc_mat_double]\nNo memory left for creating distance matrix. Exiting.\n"); */
+      /* exit(1); */
     }
 
     for(i=0;i<n;i++){
@@ -190,8 +198,9 @@ void free_mat_double(mat_double *in){
 
 int vec_int_i(vec_int *in, int i){
     if(i >= in->length) {
-	fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length);
-	exit(1);
+      error("\nTrying to access value %d in a vector of size %d\n",i,in->length);
+      /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
+      /* exit(1); */
     }
     return in->values[i];
 }
@@ -201,8 +210,9 @@ int vec_int_i(vec_int *in, int i){
 
 int mat_int_ij(mat_int *in, int i, int j){
     if(i >= in->n) {
-	fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n);
-	exit(1);
+      error("\nTrying to access item %d in a list of size %d\n",i,in->n);
+      /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
+      /* exit(1); */
     }
     return vec_int_i(in->rows[i], j);
 }
@@ -213,8 +223,9 @@ int mat_int_ij(mat_int *in, int i, int j){
 
 double vec_double_i(vec_double *in, int i){
     if(i >= in->length) {
-	fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length);
-	exit(1);
+      error("\nTrying to access value %d in a vector of size %d\n",i,in->length);
+      /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
+      /* exit(1); */
     }
     return in->values[i];
 }
@@ -224,8 +235,9 @@ double vec_double_i(vec_double *in, int i){
 
 double mat_double_ij(mat_double *in, int i, int j){
     if(i >= in->n) {
-	fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n);
-	exit(1);
+      error("\nTrying to access item %d in a list of size %d\n",i,in->n);
+      /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
+      /* exit(1); */
     }
     return vec_double_i(in->rows[i], j);
 }
@@ -238,12 +250,10 @@ double mat_double_ij(mat_double *in, int i, int j){
 /* print method */
 void print_vec_int(vec_int *in){
     int i;
-    fflush(stdout);
     Rprintf("Vector of %d integers: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
     for(i=0;i<in->length;i++) Rprintf("%d ", vec_int_i(in,i));
     Rprintf("\n");
-    fflush(stdout);
 }
 
 
@@ -252,7 +262,6 @@ void print_vec_int(vec_int *in){
 /* print method */
 void print_mat_int(mat_int *in){
     int i,j;
-    fflush(stdout);
     Rprintf("\n%dx%d matrix of integers",in->n,in->p);
     for(i=0;i<in->n;i++){
 	Rprintf("\n");
@@ -261,7 +270,6 @@ void print_mat_int(mat_int *in){
 	    Rprintf("%d ", mat_int_ij(in,i,j));
     }
     Rprintf("\n");
-    fflush(stdout);
 }
 
 
@@ -272,12 +280,10 @@ void print_mat_int(mat_int *in){
 /* print method */
 void print_vec_double(vec_double *in){
     int i;
-    fflush(stdout);
     Rprintf("Vector of %d doubles: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
     for(i=0;i<in->length;i++) Rprintf("%.3f ", vec_double_i(in,i));
     Rprintf("\n");
-    fflush(stdout);
 }
 
 
@@ -287,7 +293,6 @@ void print_vec_double(vec_double *in){
 /* print method */
 void print_mat_double(mat_double *in){
     int i,j;
-    fflush(stdout);
     Rprintf("\n%dx%d matrix of doubles",in->n,in->p);
     for(i=0;i<in->n;i++){
 	Rprintf("\n");
@@ -296,7 +301,6 @@ void print_mat_double(mat_double *in){
 	    Rprintf("%.3f ", mat_double_ij(in,i,j));
     }
     Rprintf("\n");
-    fflush(stdout);
 }
 
 
@@ -307,12 +311,10 @@ void print_mat_double(mat_double *in){
 /* alternative print method for gsl vectors */
 void print_gsl_vector(gsl_vector *in, char format[256]){
     int i;
-    fflush(stdout);
     for(i=0;i<in->size;i++){
 	Rprintf(format, in->data[i]);
     }
     Rprintf("\n");
-    fflush(stdout);
 }
 
 
@@ -402,8 +404,9 @@ int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng){
 void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
     if(in->length<1 || out->length<1) return;
     if(out->length > in->length && !replace){
-  	fprintf(stderr, "\n[in: matvec.c->sample_vec_int]\nReplace is FALSE but sample size (%d) is bigger than input vector (%d)",out->length,in->length);
-    	exit(1);
+      error("\n[in: matvec.c->sample_vec_int]\nReplace is FALSE but sample size (%d) is bigger than input vector (%d)",out->length,in->length);
+  	/* fprintf(stderr, "\n[in: matvec.c->sample_vec_int]\nReplace is FALSE but sample size (%d) is bigger than input vector (%d)",out->length,in->length); */
+    	/* exit(1); */
     }
 
     if(replace){
@@ -424,8 +427,9 @@ void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng 
     /* checks */
     if(in->length<1 || out->length<1) return;
     if(in->length != prob->length){
-  	fprintf(stderr, "\n[in: matvec.c->draw_vec_int_multinom]\nInput vector and vector of probabilities have different lengths (in:%d, prob:%d)", in->length, prob->length);
-    	exit(1);
+      error("\n[in: matvec.c->draw_vec_int_multinom]\nInput vector and vector of probabilities have different lengths (in:%d, prob:%d)", in->length, prob->length);
+      /* fprintf(stderr, "\n[in: matvec.c->draw_vec_int_multinom]\nInput vector and vector of probabilities have different lengths (in:%d, prob:%d)", in->length, prob->length); */
+      /* exit(1); */
     }
 
     /* draw values */
@@ -446,8 +450,9 @@ void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng 
 */
 void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
     if(out->length > in->length){
-	fprintf(stderr, "\n[in: matvec.c->sort_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
-    	exit(1);
+      error("\n[in: matvec.c->sort_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+      /* fprintf(stderr, "\n[in: matvec.c->sort_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length); */
+      /* exit(1); */
     }
 
     int i, j, curMin, curMinIdx;
@@ -495,8 +500,9 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
 */
 void sort_vec_double(vec_double *in, vec_double *out, vec_int *idx){
     if(out->length > in->length){
-	fprintf(stderr, "\n[in: matvec.c->sort_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
-    	exit(1);
+      error("\n[in: matvec.c->sort_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+      /* fprintf(stderr, "\n[in: matvec.c->sort_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length); */
+      /* exit(1); */
     }
 
     int i, j, curMinIdx;
@@ -539,8 +545,9 @@ void sort_vec_double(vec_double *in, vec_double *out, vec_int *idx){
 void copy_vec_int(vec_int *in, vec_int *out){
     int i;
     if(in->length != out->length){
-	fprintf(stderr, "\n[in: matvec.c->copy_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
-    	exit(1);
+      error("\n[in: matvec.c->copy_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+      /* fprintf(stderr, "\n[in: matvec.c->copy_vec_int]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length); */
+      /* exit(1); */
     }
 
     for(i=0;i<in->length;i++){
@@ -553,8 +560,9 @@ void copy_vec_int(vec_int *in, vec_int *out){
 void copy_vec_double(vec_double *in, vec_double *out){
     int i;
     if(in->length != out->length){
-	fprintf(stderr, "\n[in: matvec.c->copy_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
-    	exit(1);
+      error("\n[in: matvec.c->copy_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length);
+      /* fprintf(stderr, "\n[in: matvec.c->copy_vec_double]\nInput and output vectors have different lengths (in:%d out:%d)",in->length, out->length); */
+      /* exit(1); */
     }
 
     for(i=0;i<in->length;i++){
@@ -570,12 +578,14 @@ void copy_mat_int(mat_int *in, mat_int *out){
 
     /* checks */
     if(in->n != out->n){
-	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
-    	exit(1);
+      error("\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
+      /* fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n); */
+      /* exit(1); */
     }
     if(in->p != out->p){
-	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p);
-    	exit(1);
+      error("\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p);
+      /* fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p); */
+      /* exit(1); */
     }
 
     /* copy */
@@ -592,12 +602,14 @@ void copy_mat_double(mat_double *in, mat_double *out){
 
     /* checks */
     if(in->n != out->n){
-	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
-    	exit(1);
+      error("\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n);
+      /* fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of rows (in:%d out:%d)",in->n, out->n); */
+      /* exit(1); */
     }
     if(in->p != out->p){
-	fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p);
-    	exit(1);
+      error("\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p);
+	/* fprintf(stderr, "\n[in: matvec.c->copy_mat_int]\nInput and output matrices have different numbers of columns (in:%d out:%d)",in->p, out->p); */
+    	/* exit(1); */
     }
 
     /* copy */
@@ -838,8 +850,9 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 
     /* check sizes */
     if(in_a->length != in_b->length || in_a->length!=out->length){
-	fprintf(stderr, "\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length);
-    	exit(1);
+      error("\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length);
+      /* fprintf(stderr, "\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length); */
+      /* exit(1); */
     }
 
     /* make computations */

@@ -365,7 +365,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout); */
 	if((medLogLike - vec_double_i(indivLogLike,j)) > log(par->outlier_threshold)){
 	    areOutliers->values[j] = 1;
-	    Rprintf("\nIndividual %d identified as imported case\n",j+1);fflush(stdout);
+	    Rprintf("\nIndividual %d identified as imported case\n",j+1);
 	} else {
 	    areOutliers->values[j] = 0;
 	}
@@ -400,13 +400,15 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     /* OPEN OUTPUT FILES */
     FILE *file = fopen(outputFile,"w");
     if(file==NULL){
-	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile);
-	exit(1);
+      error("\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile);
+      /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile); */
+      /* exit(1); */
     }
     FILE *mcmcFile = fopen(mcmcOutputFile,"w");
     if(mcmcFile==NULL){
-	fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile);
-	exit(1);
+      error("\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile);
+      /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile); */
+      /* exit(1); */
     }
 
 
