@@ -1,4 +1,4 @@
-\name{simOutbreak}
+\name{simple outbreak simulator}
 \alias{simOutbreak}
 \alias{print.simOutbreak}
 \alias{[.simOutbreak}

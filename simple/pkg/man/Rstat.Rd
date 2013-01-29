@@ -1,4 +1,4 @@
-\name{Reproduction numbers}
+\name{reproduction numbers}
 \alias{get.R}
 \alias{get.Rt}
 \alias{get.incid}
@@ -42,6 +42,19 @@ get.incid(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"),
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
+## load data
+data(toyOutbreak)
+attach(toyOutbreak)
+
+## individual R
+barplot(table(get.R(res)), main="Individual effective reproduction numbers")
+
+## R(t)
+get.Rt(res)
+
+## incidence
+get.incid(res)
+
+detach(toyOutbreak)
 
 }
-\keyword{classes}

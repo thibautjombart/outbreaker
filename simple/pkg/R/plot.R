@@ -46,7 +46,7 @@ plotChains <- function(x, what="post", type=c("series","density"), burnin=0, den
     if(!is.null(lty)) lty <- rep(lty, length = n.runs)
     if(!is.null(lwd)) lwd <- rep(lwd, length = n.runs)
     if(is.null(burnin)){
-        burnin <- max(res$burnin, res$find.import.at, res$tune.end)
+        burnin <- max(x$burnin, x$find.import.at, x$tune.end)
     }
 
     ## GET DATA TO PLOT ##

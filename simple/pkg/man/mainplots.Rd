@@ -68,5 +68,23 @@ plotOutbreak(x, burnin=x$burnin, thres.hide=0.2,
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
+data(toyOutbreak)
+attach(toyOutbreak)
+
+## examine MCMC
+plotChains(res)
+plotChains(res,type="dens")
+plotChains(res,type="dens", what="mu1", burnin=2e4)
+
+## represent posterior ancestries
+transGraph(res, annot="", main="Posterior ancestries")
+transGraph(res, annot="", main="Posterior ancestries - support > 0.5", threshold=0.5)
+transGraph(res, annot="", main="Posterior ancestries - support > 0.01", threshold=0.01, col.pal=redpal)
+
+## summary plot
+plotOutbreak(res,cex.bubble=0.5, thres.hide=0.5, main="Outbreak reconstruction")
+
+
+detach(toyOutbreak)
 
 }
