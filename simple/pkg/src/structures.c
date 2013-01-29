@@ -13,8 +13,9 @@ data *alloc_data(int n, int nSeq, int length){
     /* allocate pointer */
     data *out = (data *) malloc(sizeof(data));
     if(out == NULL){
-	fprintf(stderr, "\n[in: structures.c->alloc_data]\nNo memory left for creating data. Exiting.\n");
-	exit(1);
+      error("\n[in: structures.c->alloc_data]\nNo memory left for creating data. Exiting.\n");
+      /* fprintf(stderr, "\n[in: structures.c->alloc_data]\nNo memory left for creating data. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* fill in integers */
@@ -53,7 +54,6 @@ void print_data(data *in){
     print_vec_int(in->dates);
     Rprintf("\n= Sequences =");
     print_list_dnaseq(in->dna);
-    fflush(stdout);
     Rprintf("\n= Indices of DNA sequences for each case=\n");
     print_vec_int(in->idxCasesInDna);
 } /* end print_data*/
@@ -117,8 +117,9 @@ gentime *alloc_gentime(int maxK, int truncW, int truncF){
   /* allocate pointer */
     gentime *out = (gentime *) malloc(sizeof(gentime));
     if(out == NULL){
-	fprintf(stderr, "\n[in: structures.c->alloc_gentime]\nNo memory left for creating gentime. Exiting.\n");
-	exit(1);
+      error("\n[in: structures.c->alloc_gentime]\nNo memory left for creating gentime. Exiting.\n");
+      /* fprintf(stderr, "\n[in: structures.c->alloc_gentime]\nNo memory left for creating gentime. Exiting.\n"); */
+      /* exit(1); */
     }
 
     out->truncW = truncW>0 ? truncW : 1; /* make sur that p(0) is not zero */
@@ -146,13 +147,11 @@ void free_gentime(gentime *in){
 
 
 void print_gentime(gentime *in){
-    fflush(stdout);
     Rprintf("\n= Description of generation time function =\n");
     Rprintf("\n= Pre-computed density (truncated to 0 at %d)=\n",in->truncW);
     print_mat_double(in->dens);
     Rprintf("\n= Distribution of the time to collection =\n");
     print_vec_double(in->collTime);
-    fflush(stdout);
 } /* end print_gentime*/
 
 
@@ -162,16 +161,18 @@ void print_gentime(gentime *in){
 double gentime_dens(gentime *in, int t, int kappa_i){
     /* error if requested kappa_i does not exist */
     if(kappa_i > in->maxK || kappa_i<1){
-	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK);
-	fflush(stdout);
-	exit(1);
+      error("\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK);
+      /* fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK); */
+      /* fflush(stdout); */
+      /* exit(1); */
     }
 
     /* error if requested time too large */
     if(t >= in->maxK*in->truncW){
-	fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
-	fflush(stdout);
-	exit(1);
+      error("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
+      /* fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW); */
+      /* fflush(stdout); */
+      /* exit(1); */
     }
 
     /* otherwise fetch density value */
@@ -206,8 +207,9 @@ param *alloc_param(int n){
   /* allocate pointer */
     param *out = (param *) malloc(sizeof(param));
     if(out == NULL){
-	fprintf(stderr, "\n[in: structures.c->alloc_param]\nNo memory left for creating param. Exiting.\n");
-	exit(1);
+      error("\n[in: structures.c->alloc_param]\nNo memory left for creating param. Exiting.\n");
+      /* fprintf(stderr, "\n[in: structures.c->alloc_param]\nNo memory left for creating param. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* fill in integers */
@@ -249,7 +251,6 @@ void free_param(param *in){
 
 
 void print_param(param *in){
-    fflush(stdout);
     Rprintf("\n= Tinf (infection dates) =\n");
     print_vec_int(in->Tinf);
     Rprintf("\n= Alpha_i (ancestries) =\n");
@@ -269,7 +270,6 @@ void print_param(param *in){
     /* Rprintf("%.5f", in->phi); */
     /* Rprintf("\n= priors on phi (parameter of beta distribution) =\n"); */
     /* Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2); */
-    fflush(stdout);
 } /* end print_param*/
 
 
@@ -312,8 +312,9 @@ mcmc_param *alloc_mcmc_param(int n){
   /* allocate pointer */
     mcmc_param *out = (mcmc_param *) malloc(sizeof(mcmc_param));
     if(out == NULL){
-	fprintf(stderr, "\n[in: structures.c->alloc_mcmc_param]\nNo memory left for creating mcmc_param. Exiting.\n");
-	exit(1);
+      error("\n[in: structures.c->alloc_mcmc_param]\nNo memory left for creating mcmc_param. Exiting.\n");
+      /* fprintf(stderr, "\n[in: structures.c->alloc_mcmc_param]\nNo memory left for creating mcmc_param. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* DETERMINE THE NUMBER OF Tinf */
@@ -396,7 +397,6 @@ void free_mcmc_param(mcmc_param *in){
 
 
 void print_mcmc_param(mcmc_param *in){
-    fflush(stdout);
     Rprintf("\nsigma for mu1: %.10f",in->sigma_mu1);
     Rprintf("\nsigma for gamma: %.10f",in->sigma_gamma);
     Rprintf("\nsigma for pi: %.10f",in->sigma_pi);
@@ -458,7 +458,6 @@ void print_mcmc_param(mcmc_param *in){
 	Rprintf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
     }
 
-    fflush(stdout);
 } /* end print_mcmc_param */
 
 

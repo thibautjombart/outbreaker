@@ -30,8 +30,9 @@ dnaseq * alloc_dnaseq(int length){
     /* ALLOCATE OUTPUT */
     dnaseq *out = (dnaseq *) malloc(sizeof(dnaseq));
     if(out==NULL){
-	fprintf(stderr, "\n[in: classes.c->alloc_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
-	exit(1);
+      error("\n[in: classes.c->alloc_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n");
+      /* fprintf(stderr, "\n[in: classes.c->alloc_dnaseq]\nNo memory left for creating DNA sequence. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* FILL/ALLOCATE CONTENT */
@@ -54,15 +55,17 @@ list_dnaseq * alloc_list_dnaseq(int n, int length){
     /* ALLOCATE OUTPUT */
     list_dnaseq *out = (list_dnaseq *) malloc(sizeof(list_dnaseq));
     if(out==NULL){
-	fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
-	exit(1);
+      error("\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+      /* fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n"); */
+      /* exit(1); */
     }
 
     /* FILL/ALLOCATE CONTENT */
     out->list = (dnaseq **) malloc(n*sizeof(dnaseq *));
     if(out->list==NULL){
-	fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
-	exit(1);
+      error("\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n");
+      /* fprintf(stderr, "\n[in: classes.c->alloc_list_dnaseq]\nNo memory left for creating list of DNA sequences. Exiting.\n"); */
+      /* exit(1); */
     }
 
     for(i=0;i<n;i++){
@@ -183,8 +186,9 @@ list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
 /* copy a dnaseq object */
 void copy_dnaseq(dnaseq *in, dnaseq *out){
     if(out->length!=in->length){
-	fprintf(stderr, "\n[in: genclasses.c->copy_dnaseq]\n.Input and output length mismatch (in:%d, out:%d)\n", in->length, out->length);
-	exit(1);
+      error("\n[in: genclasses.c->copy_dnaseq]\n.Input and output length mismatch (in:%d, out:%d)\n", in->length, out->length);
+      /* fprintf(stderr, "\n[in: genclasses.c->copy_dnaseq]\n.Input and output length mismatch (in:%d, out:%d)\n", in->length, out->length); */
+      /* exit(1); */
     }
 
     int i;

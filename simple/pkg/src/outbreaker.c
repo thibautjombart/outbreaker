@@ -98,8 +98,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnainfo, gen, par, rng);
     if(!checkLike){
-	fprintf(stderr, "\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
-	fflush(stdout);
+      warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
+      /* fprintf(stderr, "\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n"); */
+      /* fflush(stdout); */
     }
 
     /* Rprintf("\nAfter check init LL\n");fflush(stdout); */

@@ -321,15 +321,15 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	if(temp <= NEARMINUSINF){
 	    out = FALSE;
 	    Rprintf("\nlikelihood for ancestry of %d is zero", i+1);
-	    fflush(stdout);
+	    /* fflush(stdout); */
 
 	    /* display genetic likelihood */
 	    temp = loglikelihood_gen_i(i, dat, dnainfo, par, rng);
 	    filter_logprob(&temp);
 	    Rprintf("\ni=%d: genetic log-like is: %f", i+1, temp);
-	    fflush(stdout);
+	    /* fflush(stdout); */
 	    if(temp <= NEARMINUSINF) Rprintf(" (i.e., zero)");
-	    fflush(stdout);
+	    /* fflush(stdout); */
 
 	    /* display epi likelihood */
 	    ances=vec_int_i(par->alpha,i);
@@ -338,17 +338,17 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    temp = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 	    filter_logprob(&temp);
 	    Rprintf("\ni=%d: collection date (t_%d=%d,Tinf_%d=%d) log-like is: %f", i+1, i+1, vec_int_i(dat->dates,i), i+1, vec_int_i(par->Tinf,i), temp);
-	    fflush(stdout);
+	    /* fflush(stdout); */
 	    if(temp <= NEARMINUSINF) Rprintf(" (i.e., zero)");
-	    fflush(stdout);
+	    /* fflush(stdout); */
 
 	    /* likelihood of infection time */
 	    temp = log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
 	    filter_logprob(&temp);
 	    Rprintf("\ni=%d: infection time (Tinf=%d,Tances=%d) log-like is: %f", i+1, vec_int_i(par->Tinf,i),vec_int_i(par->Tinf,ances), temp);
-	    fflush(stdout);
+	    /* fflush(stdout); */
 	    if(temp <= NEARMINUSINF) Rprintf(" (i.e., zero)");
-	    fflush(stdout);
+	    /* fflush(stdout); */
 
 	}
     }

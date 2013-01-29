@@ -22,8 +22,9 @@
 dna_dist * alloc_dna_dist(int n){
     dna_dist * out = (dna_dist *) malloc(sizeof(dna_dist));
     if(out==NULL){
-	fprintf(stderr, "\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n");
-	exit(1);
+      error("\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n");
+	/* fprintf(stderr, "\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n"); */
+	/* exit(1); */
     }
 
     out->transi = alloc_mat_int(n,n);
