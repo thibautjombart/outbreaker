@@ -13,7 +13,7 @@ void filter_logprob(double *in){
 /* basic version returns NaN for mu=0; this one returns 0 */
 double gsl_ran_exponential_pdf_fixed(double x, double mu){
     if(mu <= NEARZERO) return 0.0;
-    return gsl_ran_exponential_pdf_fixed(x, mu);
+    return gsl_ran_exponential_pdf(x, mu);
 }
 
 
