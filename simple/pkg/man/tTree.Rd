@@ -7,7 +7,7 @@
 \alias{findMutations.tTree}
 \title{Simple transmission tree from outreaber's output}
 \description{
-  The S3 class \code{TTreesimple} is used for storing simplified
+  The S3 class \code{tTree} is used for storing simplified
   transmission trees, obtained from outbreaker's ouptput (functions
   \code{outbreaker} and \code{outbreaker.parallel}) using
   \code{get.tTree}. Some additional features are available for

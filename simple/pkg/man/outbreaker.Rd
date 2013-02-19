@@ -181,19 +181,24 @@ plot(dat, main="Data")
 
 #### TEST DIFFERENT VERSIONS OF THE METHOD ####
 ## test basic ##
-res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w,init.tree="star", n.iter=3e4, find.import=FALSE)
+res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w,init.tree="star",
+n.iter=3e4, find.import=FALSE)
 
 ## test without genetic info ##
-res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)
+res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", 
+n.iter=3e4, find.import=FALSE)
 
 ## test without import detection ##
 res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4)
 
 ## test without f different from w ##
-res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, f.dens=1, init.tree="star", n.iter=3e4)
+res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, f.dens=1,
+init.tree="star", n.iter=3e4)
 
 ## test parallel ##
-res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)
+res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates,
+w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)
+
 
 
 #### TEST POST-PROCESSING OF THE RESULTS ####
