@@ -1,5 +1,14 @@
-			CHANGES IN EPIDEMICS VERSION 1.1-0
+			CHANGES IN EPIDEMICS VERSION 1.0-0
 
-NEW FEATURES
+NEW FEATURES - FIRST RELEASE OF THE PACKAGE
 
-	o
+	o implementation of Jombart et al.'s transmission model in
+	functions outbreaker and outbreaker.parallel
+
+	o procedures for visualizing and post-processing MCMCs
+	(plotChains, transGraph, plotOutbreak, get.tTree, plot.tTree)
+
+	o outbreak simulator (simOutbreak)
+
+	o computation of incidence and effective reproduction numbers from
+	posterior trees (get.incid, get.R, get.Rt)
