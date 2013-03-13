@@ -14,7 +14,7 @@
 }
 \usage{
 plotChains(x, what="post", type=c("series","density"), burnin=0,
-           dens.all=TRUE, col=rainbow(x$n.runs), lty=1, lwd=1,
+           dens.all=TRUE, col=funky(x$n.runs), lty=1, lwd=1,
            main=what, legend=TRUE, posi="bottomleft", \dots)
 
 transGraph(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
