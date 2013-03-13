@@ -14,7 +14,8 @@
 }
 \usage{
 plotChains(x, what="post", type=c("series","density"), burnin=0,
-            dens.all=TRUE, col=rainbow(x$n.runs), lty=1, lwd=1, main=what, \dots)
+           dens.all=TRUE, col=rainbow(x$n.runs), lty=1, lwd=1,
+           main=what, legend=TRUE, posi="bottomleft", \dots)
 
 transGraph(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
            annot=c("dist","support"), sep="/", \dots)
@@ -63,7 +64,12 @@ plotOutbreak(x, burnin=x$burnin, thres.hide=0.2,
     bubbles representing the generation time distribution.}
   \item{lwd.arrow}{a numeric value indicating the size factor for the
     arrows.}
-  \item{xlim}{the limits of the X axis; if NULL, determined from the data.}
+  \item{xlim}{the limits of the X axis; if NULL, determined from the
+    data.}
+  \item{legend}{a logical indicating if a legend should be plotted for
+    the different runs.}
+  \item{posi}{a character string indicating the position of the legend
+    (see \code{?legend}).}
   \item{\dots}{further arguments to be passed to other functions.}
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
