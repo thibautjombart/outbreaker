@@ -24,23 +24,16 @@ plot.tTree <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
 
 
 
-
-
-
-
-
-
-
-
-
 ##############
 ## plotChains
 ##############
 plotChains <- function(x, what="post", type=c("series","density"), burnin=0, dens.all=TRUE,
-                        col=rainbow(x$n.runs), lty=1, lwd=1, main=what, ...){
+                       col=rainbow(x$n.runs), lty=1, lwd=1, main=what,
+                       legend=TRUE, posi="bottomright", ...){
     ## HANDLE ARGUMENTS ##
     type <- match.arg(type)
     n.runs <- x$n.runs
+    col.ori <- col
     if(!what %in% names(x$chains)) stop(paste(what,"is not a column of x$chains"))
     if(!is.null(col)) col <- rep(col, length = n.runs)
     if(!is.null(lty)) lty <- rep(lty, length = n.runs)
@@ -76,6 +69,10 @@ plotChains <- function(x, what="post", type=c("series","density"), burnin=0, den
         invisible(lapply(1:n.runs, function(i) lines(temp[[i]], col=col[i], lty=lty[i], lwd=lwd[i])))
     }
 
+    ## ADD LEGEND ##
+    if(legend){
+        legend("bottomleft", fill=col, title="Runs", leg=1:length(col.ori))
+    }
     return(invisible())
 } # end plotChains
 
