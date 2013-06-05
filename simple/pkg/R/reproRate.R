@@ -3,7 +3,7 @@
 ##########
 get.Rt <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=FALSE,
                    fill.col="gold", lines.col=transp("grey"), ...){
-    if(!require(adegenet)) stop("the adegenet package is required.")
+    ## if(!require(adegenet)) stop("the adegenet package is required.")
     type <- match.arg(type)
 
     ## GET DATA ##
@@ -127,7 +127,7 @@ get.R <- function(x, burnin=2e4, ...){
 #############
 get.incid <- function(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"), lines=FALSE,
                       fill.col="gold", lines.col=transp("grey"), ...){
-    if(!require(adegenet)) stop("the adegenet package is required.")
+    ## if(!require(adegenet)) stop("the adegenet package is required.")
     type <- match.arg(type)
 
     ## GET DATA ##

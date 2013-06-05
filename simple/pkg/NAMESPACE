@@ -1,15 +1,10 @@
-# Default NAMESPACE created by R
-# Remove the previous line if you edit this file
 
-# Export all names
+## Export all names
 exportPattern(".")
 
-# Import all packages listed as Imports or Depends
-import(
-       ape,
-       igraph,
-       adegenet
-)
+## Import all packages listed as Imports or Depends
+import(ape,igraph,adegenet)
+importFrom(utils,packageDescription)
 
-# Load DLL
+## Load DLL
 useDynLib(outbreaker)
