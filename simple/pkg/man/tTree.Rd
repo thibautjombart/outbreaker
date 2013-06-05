@@ -81,7 +81,8 @@ attach(toyOutbreak)
 
 ## represent posterior ancestries
 if(require(adegenet)){
-transGraph(res, annot="", main="Posterior ancestries - support > 0.01", threshold=0.01, col.pal=spectral)
+transGraph(res, annot="", main="Posterior ancestries - support > 0.01",
+   threshold=0.01, col.pal=spectral)
 }
 ## get consensus ancestries
 tre <- get.tTree(res)

@@ -24,11 +24,13 @@
 \dontrun{
 ## command line to generate similar data
 w <- c(0, 0.5, 1, 0.75)
-dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100)[1:30] #works only if outbreak has at least 30 cases
+## note: this works only if outbreak has at least 30 case
+dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100)[1:30] s
 collecDates <- dat$dates + sample(0:3, size=30, replace=TRUE, prob=w)
 
 ## command line to analyse the data (4 runs in parallel)
-res <-  outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
+res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
+   dates=collecDates,w.dens=w, n.iter=5e4)
 }
 
 ## load data
@@ -36,7 +38,8 @@ data(toyOutbreak)
 attach(toyOutbreak)
 
 ## visualize dynamics
-matplot(dat$dynam, type="o", pch=20, lty=1, xlim=c(0,32), main="Outbreak dynamics")
+matplot(dat$dynam, type="o", pch=20, lty=1, xlim=c(0,32),
+   main="Outbreak dynamics")
 legend("topright", legend=c("S","I","R"), lty=1, col=1:3)
 
 ## visualize transmission tree
