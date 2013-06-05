@@ -24,7 +24,8 @@ outbreaker(dna=NULL, dates, idx.dna=NULL,
            move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
            move.Tinf=TRUE, move.pi=TRUE,
            outlier.threshold = 1000,
-           quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL)
+           quiet=TRUE, res.file.name="chains.txt",
+           tune.file.name="tuning.txt", seed=NULL)
 
 
 outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
@@ -38,7 +39,8 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
                     init.mu1=NULL, init.gamma=1,
                     move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                     move.Tinf=TRUE, move.pi=TRUE, outlier.threshold = 1000,
-                    quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL)
+                    quiet=TRUE, res.file.name="chains.txt",
+                    tune.file.name="tuning.txt", seed=NULL)
 }
 \arguments{
   \item{dna}{the DNA sequences in \code{DNAbin} format (see

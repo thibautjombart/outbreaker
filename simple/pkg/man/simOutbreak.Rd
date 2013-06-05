@@ -13,16 +13,18 @@
   email the author before using them.
 }
 \usage{
-simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=10000, 
-    mu.transi=1e-04, mu.transv=mu.transi/2, rate.import.case=0.01, 
+simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=10000,
+    mu.transi=1e-04, mu.transv=mu.transi/2, rate.import.case=0.01,
     diverg.import=10, group.freq=1)
 \method{print}{simOutbreak}(x, \dots)
 \method{[}{simOutbreak}(x, i, j, drop=FALSE)
 \method{labels}{simOutbreak}(object, \dots)
-\method{as.igraph}{simOutbreak}(x, edge.col="black", col.edge.by="dist", vertex.col="gold",
-                                  edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", \dots)
-\method{plot}{simOutbreak}(x, y=NULL, edge.col="black", col.edge.by="dist", vertex.col="gold",
-                              edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", \dots)
+\method{as.igraph}{simOutbreak}(x, edge.col="black", col.edge.by="dist",
+           vertex.col="gold", edge.col.pal=NULL,
+           annot=c("dist","n.gen"), sep="/", \dots)
+\method{plot}{simOutbreak}(x, y=NULL, edge.col="black",
+           col.edge.by="dist", vertex.col="gold", edge.col.pal=NULL,
+           annot=c("dist","n.gen"), sep="/", \dots)
 }
 \arguments{
   \item{R0}{the basic reproduction number; to use
@@ -115,5 +117,6 @@ mtext(side=3, text="nb mutations / nb generations")
 
 ## plot population dynamics
 head(dat$dynam,15)
-matplot(dat$dynam[1:max(dat$dates),],xlab="time",ylab="nb of individuals",pch=c("S","I","R"), type="b")
+matplot(dat$dynam[1:max(dat$dates),],xlab="time",
+   ylab="nb of individuals", pch=c("S","I","R"), type="b")
 }

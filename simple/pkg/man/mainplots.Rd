@@ -17,8 +17,8 @@ plotChains(x, what="post", type=c("series","density"), burnin=0,
            dens.all=TRUE, col=funky(x$n.runs), lty=1, lwd=1,
            main=what, legend=TRUE, posi="bottomleft", \dots)
 
-transGraph(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
-           annot=c("dist","support"), sep="/", \dots)
+transGraph(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL,
+           curved.edges=TRUE, annot=c("dist","support"), sep="/", \dots)
 
 plotOutbreak(x, burnin=x$burnin, thres.hide=0.2,
              col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
@@ -84,12 +84,15 @@ plotChains(res,type="dens", what="mu1", burnin=2e4)
 
 ## represent posterior ancestries
 transGraph(res, annot="", main="Posterior ancestries")
-transGraph(res, annot="", main="Posterior ancestries - support > 0.5",threshold=0.5)
+transGraph(res, annot="", main="Posterior ancestries - support > 0.5",
+   threshold=0.5)
 if(require(adegenet)){
-transGraph(res, annot="", main="Posterior ancestries - support > 0.01", threshold=0.01, col.pal=spectral)
+transGraph(res, annot="", main="Posterior ancestries - support > 0.01",
+   threshold=0.01, col.pal=spectral)
 }
 ## summary plot
-plotOutbreak(res,cex.bubble=0.5, thres.hide=0.5, main="Outbreak reconstruction")
+plotOutbreak(res,cex.bubble=0.5, thres.hide=0.5,
+   main="Outbreak reconstruction")
 
 
 detach(toyOutbreak)
