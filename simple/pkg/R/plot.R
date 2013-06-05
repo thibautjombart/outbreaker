@@ -3,8 +3,8 @@
 #####################
 plot.tTree <- function(x, y=NULL, edge.col="black", col.edge.by="prob",
                               col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
-    if(!require(igraph)) stop("igraph is required")
-    if(!require(adegenet)) stop("adegenet is required")
+    ## if(!require(igraph)) stop("igraph is required")
+    ## if(!require(adegenet)) stop("adegenet is required")
     if(!inherits(x,"tTree")) stop("x is not a tTree object")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
@@ -87,8 +87,8 @@ plotChains <- function(x, what="post", type=c("series","density"), burnin=0, den
 transGraph <- function(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=NULL, curved.edges=TRUE,
                        annot=c("dist","support"), sep="/", ...){
     ## CHECKS ##
-    if(!require(igraph)) stop("igraph is required")
-    if(!require(adegenet)) stop("adegenet is required")
+    ## if(!require(igraph)) stop("igraph is required")
+    ## if(!require(adegenet)) stop("adegenet is required")
 
     ## HANDLE ARGUMENTS ##
     if(burnin> max(x$chains$step)) stop("burnin exceeds the number of chains in the output")
@@ -197,7 +197,7 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
                          col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
                          arr.col.pal=NULL, cex.bubble=1, lwd.arrow=2, xlim=NULL, ...){
     ## CHECKS ##
-    if(!require(adegenet)) stop("adegenet is not installed")
+    ## if(!require(adegenet)) stop("adegenet is not installed")
 
     ## GET TREE ##
     tre <- get.tTree(x,burnin=burnin)

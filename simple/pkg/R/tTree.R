@@ -83,8 +83,8 @@ get.tTree <- function(x, burnin=2e4){
 #############
 as.igraph.tTree <- function(x, edge.col="black", col.edge.by="prob",
                               col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", ...){
-    if(!require(igraph)) stop("package igraph is required for this operation")
-    if(!require(adegenet)) stop("adegenet is required")
+    ## if(!require(igraph)) stop("package igraph is required for this operation")
+    ## if(!require(adegenet)) stop("adegenet is required")
     if(!inherits(x,"tTree")) stop("x is not a tTree object")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
@@ -170,7 +170,7 @@ as.igraph.tTree <- function(x, edge.col="black", col.edge.by="prob",
 #################
 findMutations.tTree <- function(x, dna, ...){
     ## CHECKS ##
-    if(!require(ape)) stop("the ape package is needed")
+    ## if(!require(ape)) stop("the ape package is needed")
     if(!inherits(x,"tTree")) stop("x is not a tTree object")
 
     ## ## function to pull out mutations from sequence a to b ##

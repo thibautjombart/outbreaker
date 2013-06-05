@@ -17,7 +17,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## CHECKS ##
-    if(!require(ape)) stop("the ape package is required but not installed")
+    ## if(!require(ape)) stop("the ape package is required but not installed")
 
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)

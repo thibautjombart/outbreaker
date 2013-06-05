@@ -43,8 +43,10 @@ legend("topright", legend=c("S","I","R"), lty=1, col=1:3)
 plot(dat, annot="dist", main="Data - transmission tree")
 
 ## visualize NJ tree
-plot(nj(dist.dna(dat$dna)))
-title("NJ tree")
+if(require(ape)){
+  plot(nj(dist.dna(dat$dna)))
+  title("NJ tree")
+}
 
 ## assess convergence of chains
 plotChains(res)

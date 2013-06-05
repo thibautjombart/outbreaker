@@ -7,7 +7,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         group.freq=1){
 
     ## CHECKS ##
-    if(!require(ape)) stop("The ape package is required.")
+    ## if(!require(ape)) stop("The ape package is required.")
 
 
     ## HANDLE ARGUMENTS ##
@@ -286,10 +286,10 @@ labels.simOutbreak <- function(object, ...){
 #########################
 as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", vertex.col="gold",
                                   edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
-    if(!require(igraph)) stop("package igraph is required for this operation")
-    if(!require(ape)) stop("package ape is required for this operation")
+    ## if(!require(igraph)) stop("package igraph is required for this operation")
+    ## if(!require(ape)) stop("package ape is required for this operation")
     if(!inherits(x,"simOutbreak")) stop("x is not a tTree object")
-    if(!require(adegenet)) stop("adegenet is required")
+    ## if(!require(adegenet)) stop("adegenet is required")
     if(!col.edge.by %in% c("dist","n.gen","prob")) stop("unknown col.edge.by specified")
 
     ## GET DAG ##
@@ -365,8 +365,8 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 #####################
 plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", vertex.col="gold",
                               edge.col.pal=NULL, annot=c("dist","n.gen"), sep="/", ...){
-    if(!require(igraph)) stop("igraph is required")
-    if(!require(adegenet)) stop("adegenet is required")
+    ## if(!require(igraph)) stop("igraph is required")
+    ## if(!require(adegenet)) stop("adegenet is required")
     if(!inherits(x,"simOutbreak")) stop("x is not a simOutbreak object")
     if(!col.edge.by %in% c("dist","n.gen")) stop("unknown col.edge.by specified")
 
