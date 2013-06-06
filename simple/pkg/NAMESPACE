@@ -1,16 +1,21 @@
 
 ## Export all names
-exportPattern(".")
+exportPattern("^[^\\.]")
+
 
 ## Import all packages listed as Imports or Depends
 importFrom(utils, "packageDescription")
+
 importFrom(ape, "as.character.DNAbin", "as.DNAbin", "as.DNAbin.alignment", "as.DNAbin.character",
            "as.DNAbin.list", "as.list.DNAbin", "as.matrix.DNAbin", "cbind.DNAbin", "c.DNAbin",
            "[.DNAbin", "labels.DNAbin", "print.DNAbin", "rbind.DNAbin", "dist.dna")
+
 importFrom(igraph, "graph.data.frame", "V", "V<-", "E", "E<-", "layout.fruchterman.reingold",
            "as.igraph", "plot.igraph", "print.igraph")
+
 importFrom(adegenet, "bluepal", "redpal", "greenpal", "seasun", "spectral", "funky",
            "num2col", "fac2col", "any2col", "transp", "findMutations", "findMutations.DNAbin")
+
 
 ## Load DLL
 useDynLib(outbreaker)
