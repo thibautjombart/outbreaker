@@ -215,6 +215,7 @@ param *alloc_param(int n){
     /* fill in integers */
     out->n = n;
     out->kappa_temp = 0;
+    out->model = 0;
 
     /* allocates vectors of integers */
     out->Tinf = alloc_vec_int(n);
@@ -257,7 +258,7 @@ void print_param(param *in){
     print_vec_int(in->alpha);
     Rprintf("\n= Kappa_i (generations from nearest ancestor) =\n");
     print_vec_int(in->kappa);
-    Rprintf("\n= mu1, mu2, gamma (transi, transver, coef, prior mu1) =\n");
+    Rprintf("\n= mu1, mu2, gamma (mutation1, mutation2, coef, prior mu1) =\n");
     Rprintf("%.5f   %.5f   %.5f   %.5f", in->mu1, in->gamma*in->mu1, in->gamma, in->mu1_prior);
     Rprintf("\n= pi (proportion of observed cases) =\n");
     Rprintf("%.5f", in->pi);
@@ -265,6 +266,8 @@ void print_param(param *in){
     Rprintf("%.5f  %.5f", in->pi_param1, in->pi_param2);
     Rprintf("\n= threshold used in imported case detection =\n");
     Rprintf("%.2f", in->outlier_threshold);
+    Rprintf("\n= genetic model used =\n");
+    Rprintf("%d", in->model);
 
     /* Rprintf("\n= phi (proportion of external cases) =\n"); */
     /* Rprintf("%.5f", in->phi); */
@@ -286,6 +289,7 @@ void copy_param(param *in, param *out){
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
     out->outlier_threshold = in->outlier_threshold;
+    out->model = in->model;
     /* out->phi = in->phi; */
     /* out->phi_param1 = in->phi_param1; */
     /* out->phi_param2 = in->phi_param2; */

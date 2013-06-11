@@ -25,7 +25,7 @@
 
 
 typedef struct{
-	mat_int *transi, *transv, *nbcommon;
+	mat_int *mutation1, *mutation2, *nbcommon;
 	int n;
 } dna_dist;
 
@@ -61,9 +61,9 @@ void free_dna_dist(dna_dist * in);
 
 bool is_atgc(char in);
 
-int get_transi(dna_dist * in, int i, int j);
+int get_mutation1(dna_dist * in, int i, int j);
 
-int get_transv(dna_dist * in, int i, int j);
+int get_mutation2(dna_dist * in, int i, int j);
 
 int get_nbcommon(dna_dist * in, int i, int j);
 

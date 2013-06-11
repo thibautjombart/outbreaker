@@ -52,26 +52,26 @@ int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par){
 
 
 /* FIND NB TRANSITIONS BETWEEN CASES I AND J */
-int transi_ij(int i, int j, data *dat, dna_dist *dnainfo){
+int mutation1_ij(int i, int j, data *dat, dna_dist *dnainfo){
     /* if no nucleotide in common, return -1 */
     if(com_nucl_ij(i, j, dat, dnainfo)<1) return -1;
 
     /* else read appropriate value in dnainfo */
-    return mat_int_ij(dnainfo->transi, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
-} /* end transi_ij */
+    return mat_int_ij(dnainfo->mutation1, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
+} /* end mutation1_ij */
 
 
 
 
 
 /* FIND NB TRANSVERSIONS BETWEEN CASES I AND J */
-int transv_ij(int i, int j, data *dat, dna_dist *dnainfo){
+int mutation2_ij(int i, int j, data *dat, dna_dist *dnainfo){
     /* if no nucleotide in common, return -1 */
     if(com_nucl_ij(i, j, dat, dnainfo)<1) return -1;
 
     /* else read appropriate value in dnainfo */
-    return mat_int_ij(dnainfo->transv, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
-} /* end transi_ij */
+    return mat_int_ij(dnainfo->mutation2, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
+} /* end mutation1_ij */
 
 
 
@@ -87,7 +87,7 @@ int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo){
     if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
 
     return mat_int_ij(dnainfo->nbcommon, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
-} /* end transi_ij */
+} /* end mutation1_ij */
 
 
 
@@ -179,16 +179,16 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
     /* dpois(0,0) returns -NaN, not 1! */
     if(com_nucl_ij(i, ances, dat, dnainfo)>0){
 	/* TRANSITIONS */
-	out += log(gsl_ran_poisson_pdf_fixed((unsigned int) transi_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
-	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
+	out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
+	/* printf("\ntransitions: %.10f\n", log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->mutation1, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1))); */
 
-	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transi, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1)); */
+	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->mutation1, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->mu1)); */
 
 	/* TRANSVERSIONS */
-	out += log(gsl_ran_poisson_pdf_fixed((unsigned int) transv_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
-	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
+	out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation2_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
+	/* printf("\ntransversions: %.10f\n",log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->mutation2, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1))); */
 
-	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->transv, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1)); */
+	/* out += log(gsl_ran_poisson_pdf((unsigned int) mat_int_ij(dnainfo->mutation2, i, ances), (double) mat_int_ij(dnainfo->nbcommon, i, ances) * (double) vec_int_i(par->kappa,i) * par->gamma *par->mu1)); */
     }
 
 

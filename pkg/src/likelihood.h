@@ -10,9 +10,9 @@
 */
 int find_sequenced_ancestor(int i, data *dat, dna_dist *dnainfo, param *par);
 
-int transi_ij(int i, int j, data *dat, dna_dist *dnainfo);
+int mutation1_ij(int i, int j, data *dat, dna_dist *dnainfo);
 
-int transv_ij(int i, int j, data *dat, dna_dist *dnainfo);
+int mutation2_ij(int i, int j, data *dat, dna_dist *dnainfo);
 
 int com_nucl_ij(int i, int j, data *dat, dna_dist *dnainfo);
 

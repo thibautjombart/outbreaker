@@ -100,7 +100,7 @@ int choose_alpha_i(int i, data *dat, dna_dist *dnainfo, param *currentPar, mcmc_
 	    if(vec_int_i(currentPar->kappa,j)==1){
 		/* if genetic info present */
 		if(com_nucl_ij(i, j, dat, dnainfo)>0){
-		    nmut = transi_ij(i,j,dat,dnainfo) + transv_ij(i,j,dat,dnainfo);
+		    nmut = mutation1_ij(i,j,dat,dnainfo) + mutation2_ij(i,j,dat,dnainfo);
 		    mcmcPar->candid_ances_proba->values[nCandidates] = (double) nmut;
 		    if(minNmut>nmut) minNmut = nmut;
 		} else { /* missing genetic info */
@@ -366,8 +366,8 @@ void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 	    /* /\* MH correction *\/ */
 	    /* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
 
-	    /* curMut = mat_int_ij(dnainfo->transi, toMove, tempPar->alpha->values[toMove]) + mat_int_ij(dnainfo->transv, toMove, tempPar->alpha->values[toMove]); */
-	    /* tempMut = mat_int_ij(dnainfo->transi, toMove, currentPar->alpha->values[toMove]) + mat_int_ij(dnainfo->transv, toMove, currentPar->alpha->values[toMove]); */
+	    /* curMut = mat_int_ij(dnainfo->mutation1, toMove, tempPar->alpha->values[toMove]) + mat_int_ij(dnainfo->mutation2, toMove, tempPar->alpha->values[toMove]); */
+	    /* tempMut = mat_int_ij(dnainfo->mutation1, toMove, currentPar->alpha->values[toMove]) + mat_int_ij(dnainfo->mutation2, toMove, currentPar->alpha->values[toMove]); */
 
 	    /* logRatio += log(mcmcPar->Pmove_alpha_old/mcmcPar->Pmove_alpha_new); */
 

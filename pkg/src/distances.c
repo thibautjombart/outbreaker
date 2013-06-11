@@ -27,8 +27,8 @@ dna_dist * alloc_dna_dist(int n){
 	/* exit(1); */
     }
 
-    out->transi = alloc_mat_int(n,n);
-    out->transv = alloc_mat_int(n,n);
+    out->mutation1 = alloc_mat_int(n,n);
+    out->mutation2 = alloc_mat_int(n,n);
     out->nbcommon = alloc_mat_int(n,n);
     out->n = n;
 
@@ -47,8 +47,8 @@ dna_dist * alloc_dna_dist(int n){
 */
 
 void free_dna_dist(dna_dist * in){
-    free_mat_int(in->transi);
-    free_mat_int(in->transv);
+    free_mat_int(in->mutation1);
+    free_mat_int(in->mutation2);
     free_mat_int(in->nbcommon);
     free(in);
 }
@@ -69,13 +69,13 @@ bool is_atgc(char in){
 }
 
 
-int get_transi(dna_dist * in, int i, int j){
-    return in->transi->rows[i]->values[j];
+int get_mutation1(dna_dist * in, int i, int j){
+    return in->mutation1->rows[i]->values[j];
 }
 
 
-int get_transv(dna_dist * in, int i, int j){
-    return in->transv->rows[i]->values[j];
+int get_mutation2(dna_dist * in, int i, int j){
+    return in->mutation2->rows[i]->values[j];
 }
 
 
@@ -95,10 +95,10 @@ int get_nbcommon(dna_dist * in, int i, int j){
 
 void print_dna_dist(dna_dist *in){
     Rprintf("\n - transitions -");
-    print_mat_int(in->transi);
+    print_mat_int(in->mutation1);
 
     Rprintf("\n - transversions -");
-    print_mat_int(in->transv);
+    print_mat_int(in->mutation2);
 
     Rprintf("\n - common nucleotides -");
     print_mat_int(in->nbcommon);
@@ -131,17 +131,17 @@ dna_dist * compute_dna_distances(list_dnaseq *in){
 			   || (in->list[i]->seq[k]=='g' && in->list[j]->seq[k]=='a')
 			   || (in->list[i]->seq[k]=='c' && in->list[j]->seq[k]=='t')
 			   || (in->list[i]->seq[k]=='t' && in->list[j]->seq[k]=='c')) {
-			    out->transi->rows[i]->values[j] = out->transi->rows[i]->values[j] + 1;
+			    out->mutation1->rows[i]->values[j] = out->mutation1->rows[i]->values[j] + 1;
 			} else { /* else it is a transversion*/
-			    out->transv->rows[i]->values[j] = out->transv->rows[i]->values[j] + 1;
+			    out->mutation2->rows[i]->values[j] = out->mutation2->rows[i]->values[j] + 1;
 			}
 		    }
 		} /* end if non-missing data*/
 	    } /* end for k */
 
 	    /* FILL IN THE SECOND HALF OF THE 'MATRIX' */
-	    out->transi->rows[j]->values[i] = out->transi->rows[i]->values[j];
-	    out->transv->rows[j]->values[i] = out->transv->rows[i]->values[j];
+	    out->mutation1->rows[j]->values[i] = out->mutation1->rows[i]->values[j];
+	    out->mutation2->rows[j]->values[i] = out->mutation2->rows[i]->values[j];
 	    out->nbcommon->rows[j]->values[i] = out->nbcommon->rows[i]->values[j];
 	} /* end for j */
     } /* end for i */
