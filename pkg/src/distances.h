@@ -79,7 +79,7 @@ int get_nbcommon(dna_dist * in, int i, int j);
 
 void print_dna_dist(dna_dist *in);
 
-dna_dist * compute_dna_distances(list_dnaseq *in);
+dna_dist * compute_dna_distances(list_dnaseq *in, int model);
 
 
 #endif

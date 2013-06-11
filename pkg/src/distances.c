@@ -109,42 +109,72 @@ void print_dna_dist(dna_dist *in){
 
 
 /* GET ALL PAIRWISE DISTANCES (TRANSITIONS/TRANSVERSIONS) IN A LIST OF SEQUENCES */
-dna_dist * compute_dna_distances(list_dnaseq *in){
+dna_dist * compute_dna_distances(list_dnaseq *in, int model){
     int i,j,k;
     int N=in->n, L=in->length;
 
     /* CREATE OUTPUT */
     dna_dist *out = alloc_dna_dist(N);
-  
-    /* COMPUTE DISTANCES */
-    /* for all unique pairs of sequences */
-    for(i=0;i<(N-1);i++){
-	for(j=i+1;j<N;j++){
-	    /* for all pairs of nucleotides */
-	    for(k=0;k<L;k++){
-		if(is_atgc(in->list[i]->seq[k]) && is_atgc(in->list[j]->seq[k])){ /*if non-missing data*/
-		    /* one more nucleotide was comparable */
-		    out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;
-		    if(in->list[i]->seq[k] != in->list[j]->seq[k]){
-			/* transitions */
-			if((in->list[i]->seq[k]=='a' && in->list[j]->seq[k]=='g')
-			   || (in->list[i]->seq[k]=='g' && in->list[j]->seq[k]=='a')
-			   || (in->list[i]->seq[k]=='c' && in->list[j]->seq[k]=='t')
-			   || (in->list[i]->seq[k]=='t' && in->list[j]->seq[k]=='c')) {
-			    out->mutation1->rows[i]->values[j] = out->mutation1->rows[i]->values[j] + 1;
-			} else { /* else it is a transversion*/
-			    out->mutation2->rows[i]->values[j] = out->mutation2->rows[i]->values[j] + 1;
-			}
-		    }
-		} /* end if non-missing data*/
-	    } /* end for k */
 
-	    /* FILL IN THE SECOND HALF OF THE 'MATRIX' */
-	    out->mutation1->rows[j]->values[i] = out->mutation1->rows[i]->values[j];
-	    out->mutation2->rows[j]->values[i] = out->mutation2->rows[i]->values[j];
-	    out->nbcommon->rows[j]->values[i] = out->nbcommon->rows[i]->values[j];
-	} /* end for j */
-    } /* end for i */
+    /* CHECK MODEL */
+    if(model<1 || model>2) error("\n[in: distances.c->compute_dna_distances]\nModel %d unknown.\n", model);
+
+
+    /* COMPUTE DISTANCES */
+    /* MODEL 1: distance = nb of mutations */
+    if(model==1){
+	/* for all unique pairs of sequences */
+	for(i=0;i<(N-1);i++){
+	    for(j=i+1;j<N;j++){
+		/* for all pairs of nucleotides */
+		for(k=0;k<L;k++){
+		    if(is_atgc(in->list[i]->seq[k]) && is_atgc(in->list[j]->seq[k])){ /*if non-missing data*/
+			/* one more nucleotide was comparable */
+			out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;
+			if(in->list[i]->seq[k] != in->list[j]->seq[k]){
+				out->mutation1->rows[i]->values[j] = out->mutation1->rows[i]->values[j] + 1;
+			}
+		    } /* end if non-missing data*/
+		} /* end for k */
+
+		/* FILL IN THE SECOND HALF OF THE 'MATRIX' */
+		out->mutation1->rows[j]->values[i] = out->mutation1->rows[i]->values[j];
+		out->nbcommon->rows[j]->values[i] = out->nbcommon->rows[i]->values[j];
+	    } /* end for j */
+	} /* end for i */
+    }
+
+    /* MODEL 2: mutation1=transitions, mutation2=transversions */
+    if(model==2){
+	/* for all unique pairs of sequences */
+	for(i=0;i<(N-1);i++){
+	    for(j=i+1;j<N;j++){
+		/* for all pairs of nucleotides */
+		for(k=0;k<L;k++){
+		    if(is_atgc(in->list[i]->seq[k]) && is_atgc(in->list[j]->seq[k])){ /*if non-missing data*/
+			/* one more nucleotide was comparable */
+			out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;
+			if(in->list[i]->seq[k] != in->list[j]->seq[k]){
+			    /* transitions */
+			    if((in->list[i]->seq[k]=='a' && in->list[j]->seq[k]=='g')
+			       || (in->list[i]->seq[k]=='g' && in->list[j]->seq[k]=='a')
+			       || (in->list[i]->seq[k]=='c' && in->list[j]->seq[k]=='t')
+			       || (in->list[i]->seq[k]=='t' && in->list[j]->seq[k]=='c')) {
+				out->mutation1->rows[i]->values[j] = out->mutation1->rows[i]->values[j] + 1;
+			    } else { /* else it is a transversion*/
+				out->mutation2->rows[i]->values[j] = out->mutation2->rows[i]->values[j] + 1;
+			    }
+			}
+		    } /* end if non-missing data*/
+		} /* end for k */
+
+		/* FILL IN THE SECOND HALF OF THE 'MATRIX' */
+		out->mutation1->rows[j]->values[i] = out->mutation1->rows[i]->values[j];
+		out->mutation2->rows[j]->values[i] = out->mutation2->rows[i]->values[j];
+		out->nbcommon->rows[j]->values[i] = out->nbcommon->rows[i]->values[j];
+	    } /* end for j */
+	} /* end for i */
+    }
 
     /* SEQUENCES HAVE L NUCLEOTIDES IN COMMON WITH THEMSELVES */
     for(i=0;i<N;i++){
