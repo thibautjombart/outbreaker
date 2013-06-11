@@ -12,7 +12,7 @@
   package \code{parallel}.
 }
 \usage{
-outbreaker(dna=NULL, dates, idx.dna=NULL,
+outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1,
            w.dens, w.trunc=length(w.dens),
            f.dens=w.dens, f.trunc=length(f.dens),
            init.tree=c("seqTrack","random","star","none"),
@@ -29,7 +29,8 @@ outbreaker(dna=NULL, dates, idx.dna=NULL,
 
 
 outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
-                    dna=NULL, dates, idx.dna=NULL, w.dens, w.trunc=length(w.dens),
+                    dna=NULL, dates, idx.dna=NULL, mut.model=1,
+                    w.dens, w.trunc=length(w.dens),
                     f.dens=w.dens, f.trunc=length(f.dens),
                     init.tree=c("seqTrack","random","star","none"),
                     init.kappa=NULL,
@@ -51,6 +52,8 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
   \item{idx.dna}{an integer vector indicating to which case each dna
     sequence in \code{dna} corresponds. Not required if each case has a
     sequence, and the order of the sequences matches that of the cases.}
+  \item{mut.model}{an integer indicating the mutational model to be
+    used; 1: one mutation rate; 2: two rates, transitions/transversions.}
   \item{w.dens}{a vector of numeric values indicating the generation
     time distribution, reflecting how infectious a patient is at t=0, 1,
     2, ... time steps after infection. By convention, w.dens[1]=0,
