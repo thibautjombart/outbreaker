@@ -511,11 +511,12 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* check_loglikelihood_all(dat, dnainfo, gen, par); */
 
 	/* MOVEMENTS */
-	if(mcmcPar->move_mut){/* move mu1 */
-	    move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	if(mcmcPar->move_mut){
+	    /* move mu1 */
+	    if(par->model==1 || par->model==2) move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
 	    /* move gamma */
-	    move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    if(par->model==2) move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
 	}
 
 	/* move pi */

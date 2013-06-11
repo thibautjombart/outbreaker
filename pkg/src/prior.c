@@ -104,9 +104,8 @@ double logprior_all(param *par){
     double out=0.0;
 
     out += logprior_mu1(par);
-    out += logprior_gamma(par);
+    if(par->model==2) out += logprior_gamma(par);
     out += logprior_pi(par);
-    /* out += logprior_phi(par); */
 
     filter_logprob(&out);
 

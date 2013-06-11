@@ -88,6 +88,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     ## check mutational model ##
     mut.model <- as.integer(mut.model)
     if(!mut.model %in% c(1L,2L)) stop("unknown mutational model requested; accepted values are: 1, 2")
+    if(mut.model==1L){
+        init.gamma <- 1
+    }
 
     ## check generation time function ##
     w.dens <- as.double(w.dens)
