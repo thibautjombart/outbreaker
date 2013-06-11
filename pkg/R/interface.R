@@ -2,7 +2,7 @@
 ##################
 ## main functions
 ##################
-outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
+outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
                        init.tree=c("seqTrack","random","star","none"),
@@ -84,6 +84,10 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     idx.dna.for.cases <- match(1:n.ind, idx.dna)
     idx.dna.for.cases[is.na(idx.dna.for.cases)] <- 0
     idx.dna.for.cases <- as.integer(idx.dna.for.cases-1) # for C
+
+    ## check mutational model ##
+    mut.model <- as.integer(mut.model)
+    if(!mut.model %in% c(1L,2L)) stop("unknown mutational model requested; accepted values are: 1, 2")
 
     ## check generation time function ##
     w.dens <- as.double(w.dens)
@@ -183,7 +187,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     stopTuneAt <- integer(1)
 
     temp <- .C("R_outbreaker",
-               dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases,
+               dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, init.mu1, init.gamma,
@@ -193,9 +197,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[30]]
+    D <- temp[[31]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[31]]
+    stopTuneAt <- temp[[32]]
 
     cat("\nComputations finished.\n\n")
 
@@ -228,7 +232,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 ## version with multiple runs
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
-                                dna=NULL, dates, idx.dna=NULL, w.dens, w.trunc=length(w.dens),
+                                dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens, w.trunc=length(w.dens),
                                 f.dens=w.dens, f.trunc=length(f.dens),
                                 init.tree=c("seqTrack","random","star","none"),
                                 init.kappa=NULL,
@@ -274,7 +278,8 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         clusterExport(clust, listArgs, envir=environment())
 
         ## set calls to outbreaker on each child ##
-        res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+        res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, mut.model=mut.model,
+                                                                  w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
@@ -305,7 +310,8 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         ##                                                     tune.file.name=tune.file.names[i], seed=seed[i]),
         ##                   mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
-        res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, w.dens=w.dens, w.trunc=w.trunc,
+        res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, mut.model=mut.model,
+                                                        w.dens=w.dens, w.trunc=w.trunc,
                                                         f.dens=f.dens, f.trunc=f.trunc,
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
