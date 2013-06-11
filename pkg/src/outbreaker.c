@@ -66,12 +66,12 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, *outlier_threshold, rng);
+    init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, *outlier_threshold, *mutModel, rng);
     /* print_param(par); */
 
 
     /* COMPUTE GENETIC DISTANCES */
-    dnainfo = compute_dna_distances(dat->dna);
+    dnainfo = compute_dna_distances(dat->dna, *mutModel);
     /* Rprintf("\n>>> DNA info <<<\n"); */
     /* print_dna_dist(dnainfo); */
 
