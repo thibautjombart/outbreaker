@@ -20,6 +20,7 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *length, 
 		  int *idxCasesInDna, int *mutModel, double *gentimeDens, int *wTrunc, 
 		  double *colltimeDens, int *fTrunc,
+		  double *distMat, int *distModel,
 		  int *ances, int *init_kappa, int *nIter, int *outputEvery, int *tuneEvery, 
 		  double *pi_param1, double *pi_param2, 
 		  double *init_mu1, double *init_gamma, 

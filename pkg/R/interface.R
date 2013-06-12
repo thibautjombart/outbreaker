@@ -5,6 +5,7 @@
 outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
+                       dist.mat=NULL, dist.model=1,
                        init.tree=c("seqTrack","random","star","none"),
                        init.kappa=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
@@ -104,6 +105,19 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     if(any(is.na(f.dens))) stop("NAs in f.dens after normalization")
     f.trunc <- as.integer(f.trunc)
 
+    ## check spatial distances ##
+    if(!is.null(dist.mat)){
+        if(inherits(dist.mat,"dist")) dist.mat <- as.matrix(dist.mat)
+        dist.model <- as.integer(dist.model)
+        if(dist.model<0L | dist.model>1L) stop("unknown spatial model requested; accepted values are: 0, 1")
+        if(nrow(dist.mat) != ncol(dist.mat)) stop("matrix of distances (dist.mat) is not square")
+        if(nrow(dist.mat) != length(dates)) stop("wrong dimension for the matrix of distances")
+        if(dist.model == 0L) dist.mat <- matrix(0, ncol=length(dates), nrow=length(dates))
+    } else {
+        dist.mat <- matrix(0, ncol=length(dates), nrow=length(dates))
+        dist.model <- 0L
+    }
+
     ## init.kappa ##
     ## if NULL, will be ML assigned (code is kappa_i<0)
     if(is.null(init.kappa)) init.kappa <- rep(0L,n.ind)
@@ -192,6 +206,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
+               dist.mat, dist.model,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, init.mu1, init.gamma,
                move.mut, move.ances, move.kappa, move.Tinf,
@@ -200,9 +215,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[31]]
+    D <- temp[[33]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[32]]
+    stopTuneAt <- temp[[34]]
 
     cat("\nComputations finished.\n\n")
 
@@ -237,6 +252,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
 outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
                                 dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens, w.trunc=length(w.dens),
                                 f.dens=w.dens, f.trunc=length(f.dens),
+                                dist.mat=NULL, dist.model=1,
                                 init.tree=c("seqTrack","random","star","none"),
                                 init.kappa=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
@@ -284,6 +300,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, mut.model=mut.model,
                                                                   w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
+                                                                  dist.mat=dist.mat, dist.model=dist.model,
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
                                                                   tune.every=tune.every, burnin=burnin,
@@ -316,6 +333,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, mut.model=mut.model,
                                                         w.dens=w.dens, w.trunc=w.trunc,
                                                         f.dens=f.dens, f.trunc=f.trunc,
+                                                        dist.mat=dist.mat, dist.model=dist.model,
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
                                                         tune.every=tune.every, burnin=burnin,
