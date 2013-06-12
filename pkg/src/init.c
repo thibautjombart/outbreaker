@@ -87,7 +87,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double init_mu1, double init_gamma, double outlier_threshold, int model, gsl_rng *rng){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double init_mu1, double init_gamma, double outlier_threshold, int mut_model, gsl_rng *rng){
     int i, ancesId, T, TmaxLike;
 
     /* Tinf */
@@ -123,7 +123,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     }
 
     /* integers */
-    par->model = model;
+    par->mut_model = mut_model;
 
     /* doubles*/
     par->mu1 = init_mu1;

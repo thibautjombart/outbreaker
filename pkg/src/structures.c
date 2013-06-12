@@ -215,7 +215,7 @@ param *alloc_param(int n){
     /* fill in integers */
     out->n = n;
     out->kappa_temp = 0;
-    out->model = 0;
+    out->mut_model = 0;
 
     /* allocates vectors of integers */
     out->Tinf = alloc_vec_int(n);
@@ -267,7 +267,7 @@ void print_param(param *in){
     Rprintf("\n= threshold used in imported case detection =\n");
     Rprintf("%.2f", in->outlier_threshold);
     Rprintf("\n= genetic model used =\n");
-    Rprintf("%d", in->model);
+    Rprintf("%d", in->mut_model);
 
     /* Rprintf("\n= phi (proportion of external cases) =\n"); */
     /* Rprintf("%.5f", in->phi); */
@@ -289,7 +289,7 @@ void copy_param(param *in, param *out){
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
     out->outlier_threshold = in->outlier_threshold;
-    out->model = in->model;
+    out->mut_model = in->mut_model;
     /* out->phi = in->phi; */
     /* out->phi_param1 = in->phi_param1; */
     /* out->phi_param2 = in->phi_param2; */
