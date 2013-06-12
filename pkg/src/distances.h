@@ -3,7 +3,6 @@
   Distributed with the epidemics package for the R software.
   Licence: GPL >=2.
 
-  These functions are basic routines for simulating host populations.
 */
 #ifndef __MATVEC_H
 #include "matvec.h"
@@ -30,6 +29,11 @@ typedef struct{
 } dna_dist;
 
 
+typedef struct{
+	mat_double *dist;
+	int n;
+} spatial_dist;
+
 
 /*
    ====================
@@ -37,7 +41,9 @@ typedef struct{
    ====================
 */
 
-dna_dist * create_dna_dist(int n);
+dna_dist * alloc_dna_dist(int n);
+
+spatial_dist * alloc_spatial_dist(int n);
 
 
 
@@ -48,6 +54,8 @@ dna_dist * create_dna_dist(int n);
 */
 
 void free_dna_dist(dna_dist * in);
+
+void free_spatial_dist(spatial_dist * in);
 
 
 
@@ -67,7 +75,7 @@ int get_mutation2(dna_dist * in, int i, int j);
 
 int get_nbcommon(dna_dist * in, int i, int j);
 
-
+double get_spatial_dist(spatial_dist * in, int i, int j);
 
 
 
@@ -78,6 +86,8 @@ int get_nbcommon(dna_dist * in, int i, int j);
 */
 
 void print_dna_dist(dna_dist *in);
+
+void print_spatial_dist(spatial_dist *in);
 
 dna_dist * compute_dna_distances(list_dnaseq *in, int mut_model);
 

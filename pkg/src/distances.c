@@ -37,6 +37,23 @@ dna_dist * alloc_dna_dist(int n){
 
 
 
+/* ALLOC A SPATIAL_DIST OBJECT */
+spatial_dist * alloc_spatial_dist(int n){
+    spatial_dist * out = (spatial_dist *) malloc(sizeof(spatial_dist));
+    if(out==NULL){
+      error("\n[in: distances.c->alloc_spatial_dist]\nNo memory left for creating distance matrix. Exiting.\n");
+	/* fprintf(stderr, "\n[in: distances.c->alloc_spatial_dist]\nNo memory left for creating distance matrix. Exiting.\n"); */
+	/* exit(1); */
+    }
+
+    out->dist = alloc_mat_double(n,n);
+    out->n = n;
+
+    return out;
+}
+
+
+
 
 
 
@@ -50,6 +67,13 @@ void free_dna_dist(dna_dist * in){
     free_mat_int(in->mutation1);
     free_mat_int(in->mutation2);
     free_mat_int(in->nbcommon);
+    free(in);
+}
+
+
+
+void free_spatial_dist(spatial_dist * in){
+    free_mat_double(in->dist);
     free(in);
 }
 
@@ -102,6 +126,16 @@ void print_dna_dist(dna_dist *in){
 
     Rprintf("\n - common nucleotides -");
     print_mat_int(in->nbcommon);
+    Rprintf("\n");
+}
+
+
+
+
+
+void print_spatial_dist(spatial_dist *in){
+    Rprintf("\n - distance -");
+    print_mat_double(in->dist);
     Rprintf("\n");
 }
 
