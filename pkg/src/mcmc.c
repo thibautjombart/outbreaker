@@ -513,10 +513,10 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* MOVEMENTS */
 	if(mcmcPar->move_mut){
 	    /* move mu1 */
-	    if(par->model==1 || par->model==2) move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    if(par->mut_model==1 || par->mut_model==2) move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
 
 	    /* move gamma */
-	    if(par->model==2) move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    if(par->mut_model==2) move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
 	}
 
 	/* move pi */

@@ -109,7 +109,7 @@ void print_dna_dist(dna_dist *in){
 
 
 /* GET ALL PAIRWISE DISTANCES (TRANSITIONS/TRANSVERSIONS) IN A LIST OF SEQUENCES */
-dna_dist * compute_dna_distances(list_dnaseq *in, int model){
+dna_dist * compute_dna_distances(list_dnaseq *in, int mut_model){
     int i,j,k;
     int N=in->n, L=in->length;
 
@@ -117,12 +117,12 @@ dna_dist * compute_dna_distances(list_dnaseq *in, int model){
     dna_dist *out = alloc_dna_dist(N);
 
     /* CHECK MODEL */
-    if(model<1 || model>2) error("\n[in: distances.c->compute_dna_distances]\nModel %d unknown.\n", model);
+    if(mut_model<1 || mut_model>2) error("\n[in: distances.c->compute_dna_distances]\nModel %d unknown.\n", mut_model);
 
 
     /* COMPUTE DISTANCES */
     /* MODEL 1: distance = nb of mutations */
-    if(model==1){
+    if(mut_model==1){
 	/* for all unique pairs of sequences */
 	for(i=0;i<(N-1);i++){
 	    for(j=i+1;j<N;j++){
@@ -145,7 +145,7 @@ dna_dist * compute_dna_distances(list_dnaseq *in, int model){
     }
 
     /* MODEL 2: mutation1=transitions, mutation2=transversions */
-    if(model==2){
+    if(mut_model==2){
 	/* for all unique pairs of sequences */
 	for(i=0;i<(N-1);i++){
 	    for(j=i+1;j<N;j++){
