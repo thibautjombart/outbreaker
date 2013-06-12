@@ -222,6 +222,25 @@ dna_dist * compute_dna_distances(list_dnaseq *in, int mut_model){
 
 
 
+
+/* CREATE A SPATIAL_DIST OBJECT FROM AN INPUT FROM R */
+spatial_dist * doublevec2spatial_dist(double *in, int *n){
+    int i, j, count=0;
+
+    /* ALLOC OUTPUT */
+    spatial_dist *out = alloc_spatial_dist(*n);
+
+  /* FILL IN THE OUTPUT */
+    for(j=0;j<*n;j++){
+	for(i=0;i<*n;i++){
+	    out->dist->rows[i]->values[j] = in[count++];
+	}
+    }
+
+    return out;
+} /* end  doublevec2spatial_dist */
+
+
 /*
   =========================
   === TESTING FUNCTIONS ===

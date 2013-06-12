@@ -36,6 +36,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     gentime *gen;
     param *par;
     dna_dist * dnainfo;
+    spatial_dist * spatialinfo;
     mcmc_param * mcmcPar;
     int i,j, counter;
 
@@ -75,6 +76,12 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     dnainfo = compute_dna_distances(dat->dna, *mutModel);
     /* Rprintf("\n>>> DNA info <<<\n"); */
     /* print_dna_dist(dnainfo); */
+
+
+    /* CONVERT AND STORE SPATIAL DISTANCES */
+    spatialinfo = doublevec2spatial_dist(distMat, n);
+    /* Rprintf("\n>>> SPATIAL info <<<\n"); */
+    /* print_spatial_dist(spatialinfo); */
 
 
    /*  /\* COMPUTE PRIORS *\/ */
