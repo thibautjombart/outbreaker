@@ -91,5 +91,7 @@ void print_spatial_dist(spatial_dist *in);
 
 dna_dist * compute_dna_distances(list_dnaseq *in, int mut_model);
 
+spatial_dist * doublevec2spatial_dist(double *in, int *n);
+
 
 #endif
