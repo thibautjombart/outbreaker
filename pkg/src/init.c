@@ -124,6 +124,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
     /* integers */
     par->mut_model = mut_model;
+    par->spa_model = spa_model;
 
     /* doubles*/
     par->mu1 = init_mu1;
@@ -132,6 +133,8 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->pi = gsl_ran_beta (rng,pi_param1,pi_param2);
     par->pi_param1 = pi_param1;
     par->pi_param2 = pi_param2;
+    par->spa_param1 = init_spa1;
+    par->spa_param2 = init_spa2;
     par->outlier_threshold = (outlier_threshold>10.0) ? outlier_threshold : 10.0;
     /* par->phi = gsl_ran_beta (rng,phi_param1,phi_param2); */
     /* par->phi_param1 = phi_param1; */
@@ -142,7 +145,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool find_import, int burnin, int find_import_at){
+void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_spa, bool find_import, int burnin, int find_import_at){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -152,6 +155,10 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     in->n_reject_mu1 = 0;
     in->n_accept_gamma = 1;
     in->n_reject_gamma = 0;
+    in->n_accept_spa1 = 1;
+    in->n_reject_spa1 = 0;
+    in->n_accept_spa2 = 1;
+    in->n_reject_spa2 = 0;
     in->n_accept_Tinf = in->n_move_Tinf;
     in->n_reject_Tinf = 0;
     in->n_accept_alpha = in->n_move_alpha;
@@ -162,14 +169,11 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 
     /* INITIALIZE MCMC PARAMETERS */
     in->sigma_mu1 = 0.0001;
-    /* in->sigma_mu1 = 0.001; */
     in->sigma_gamma = 1;
     in->sigma_pi = 0.01;
-    /* in->sigma_phi = 0.01; */
-    in->lambda_Tinf = 1;
+    in->sigma_spa1 = 0.01;
+    in->sigma_spa2 = 0.01;
     in->step_notune = 0;
-    /* in->Pmove_alpha_old = 1.0; */
-    /* in->Pmove_alpha_new = 1.0; */
     in->burnin = burnin;
     in->find_import_at = find_import_at;
 
@@ -185,6 +189,7 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 
     /* FILL IN BOOLEANS */
     in->move_mut = move_mut;
+    in->move_spa = move_spa;
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;
     /* in->move_phi = move_phi; */
@@ -195,33 +200,16 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 	in->tune_mu1 = FALSE;
 	in->tune_gamma = FALSE;
     }
+    if(!move_spa){
+	in->tune_spa = FALSE;
+    }
     if(!move_pi) in->tune_pi = FALSE;
     /* if(!move_phi) in->tune_phi = FALSE; */
-    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi;
+    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_spa;
 
 } /* end init_mcmc_param */
 
 
-
-/* void InitMCMCSettings(mcmcInternals *MCMCSettings){ */
-/*     MCMCSettings->NbSimul = 110000; */
-/*     MCMCSettings->SubSample = 10; */
-/*     MCMCSettings->BurnIn = 10000; */
-
-/*     gsl_matrix_set(MCMCSettings->Sigma_beta,0,0,0.1); */
-/*     gsl_matrix_set(MCMCSettings->Sigma_beta,0,1,0.1); */
-/*     gsl_matrix_set(MCMCSettings->Sigma_beta,1,0,0.1); */
-/*     gsl_matrix_set(MCMCSettings->Sigma_beta,1,1,0.1); */
-
-/*     MCMCSettings->Sigma_betaWardOut=0.1; */
-/*     MCMCSettings->Sigma_betaOutOut=0.1; */
-/*     MCMCSettings->Sigma_mu=5; */
-/*     MCMCSettings->Sigma_sigma=1; */
-/*     MCMCSettings->Sigma_nu1=0.005; */
-/*     MCMCSettings->Sigma_kappa=0.005; */
-/*     MCMCSettings->Sigma_tau=10; */
-/*     MCMCSettings->Sigma_alpha=0.1; */
-/* } */
 
 
 

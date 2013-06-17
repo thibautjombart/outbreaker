@@ -239,9 +239,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[33]]
+    D <- temp[[36]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[34]]
+    stopTuneAt <- temp[[37]]
 
     cat("\nComputations finished.\n\n")
 

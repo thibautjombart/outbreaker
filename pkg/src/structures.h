@@ -74,6 +74,8 @@ typedef struct{
     int n_accept_mu1, n_reject_mu1; /* accept/reject for mu1 */
     int n_accept_gamma, n_reject_gamma; /* accept/reject for gamma */
     int n_accept_pi, n_reject_pi; /* accept/reject for pi */
+    int n_accept_spa1, n_reject_spa1; /* accept/reject for spa1 */
+    int n_accept_spa2, n_reject_spa2; /* accept/reject for spa2 */
     /* int n_accept_phi, n_reject_phi; /\* accept/reject for phi *\/ */
     int n_accept_Tinf, n_reject_Tinf; /* accept/reject for Tinf */
     int n_accept_alpha, n_reject_alpha; /* accept/reject for alpha */
@@ -83,6 +85,7 @@ typedef struct{
     double sigma_gamma; /* sigma for normal proposal for gamma */
     double lambda_Tinf; /* lambda for Poisson movements of Tinf */
     double sigma_pi; /* sigma for normal proposal for pi */
+    double sigma_spa1, sigma_spa2; /* sigma for proposal for spa1 and spa2 */
     /* double sigma_phi; /\* sigma for normal proposal for phi *\/ */
     vec_int *idx_move_Tinf; /* vector of length n_move_Tinf giving indices of Tinf_i to move */
     vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
@@ -92,9 +95,9 @@ typedef struct{
     vec_double *candid_ances_proba; /* vector of proba for candidate ancestors, used to move alpha_i */
     /* double Pmove_alpha_old, Pmove_alpha_new; /\* used for accept ratio when moving alpha_i *\/ */
     int n_like_zero; /* number of times likelihood was zero */
-    bool tune_all, tune_mu1, tune_gamma, tune_pi; /* logical indicating whether these proposals should be tuned */
+    bool tune_all, tune_mu1, tune_gamma, tune_pi, tune_spa; /* logical indicating whether these proposals should be tuned */
     int step_notune; /* step at which all tuning stopped */
-    bool move_mut, move_Tinf, move_pi; /* logical indicating what parameter should be moved */
+    bool move_mut, move_Tinf, move_pi, move_spa; /* logical indicating what parameter should be moved */
     vec_double * move_alpha; /* vector indicating which alpha_i to move (1.0) or not (0.0) */
     vec_double * move_kappa; /* vector indicating which kappa_i to move (1.0) or not (0.0) */
     int burnin, find_import_at; /* chains between 'burnin' and 'find_import_at' are used to find imported cases */
