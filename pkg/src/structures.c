@@ -336,7 +336,7 @@ mcmc_param *alloc_mcmc_param(int n){
 
 
     /* DETERMINE THE NUMBER OF KAPPA AND ALPHA TO MOVE */
-    /* set to N/3, minimum 1 */
+    /* set to N/2, minimum 1 */
     out->n_move_alpha = (int) n/2;
     out->n_move_alpha = out->n_move_alpha < 1 ? 1 : out->n_move_alpha;
     out->n_move_kappa = out->n_move_alpha;
@@ -356,6 +356,10 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_reject_mu1 = 0;
     out->n_accept_gamma = 0;
     out->n_reject_gamma = 0;
+    out->n_accept_spa1 = 0;
+    out->n_reject_spa1 = 0;
+    out->n_accept_spa2 = 0;
+    out->n_reject_spa2 = 0;
     out->n_accept_Tinf = 0;
     out->n_reject_Tinf = 0;
     out->n_accept_alpha = 0;
@@ -373,6 +377,7 @@ mcmc_param *alloc_mcmc_param(int n){
     /* out->move_alpha = TRUE; */
     /* out->move_kappa = TRUE; */
     out->move_pi = TRUE;
+    out->move_spa = TRUE;
     /* out->move_phi = TRUE; */
     out->burnin=0;
     out->find_import_at=10000;
@@ -382,6 +387,8 @@ mcmc_param *alloc_mcmc_param(int n){
     out->sigma_mu1 = 0.0;
     out->sigma_gamma = 0.0;
     out->sigma_pi = 0.0;
+    out->sigma_spa1 = 0.0;
+    out->sigma_spa2 = 0.0;
     /* out->sigma_phi = 0.0; */
     out->lambda_Tinf = 0.0;
 
@@ -412,6 +419,8 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\nsigma for mu1: %.10f",in->sigma_mu1);
     Rprintf("\nsigma for gamma: %.10f",in->sigma_gamma);
     Rprintf("\nsigma for pi: %.10f",in->sigma_pi);
+    Rprintf("\nsigma for spa1: %.10f",in->sigma_spa1);
+    Rprintf("\nsigma for spa2: %.10f",in->sigma_spa2);
     /* Rprintf("\nsigma for phi: %.10f",in->sigma_phi); */
     Rprintf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
     Rprintf("\nnb moves for Tinf: %d",in->n_move_Tinf);
@@ -423,6 +432,10 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\ngamma: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_gamma, in->n_reject_gamma, (double) in->n_accept_gamma / in->n_reject_gamma);
 
     Rprintf("\npi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_pi, in->n_reject_pi, (double) in->n_accept_pi / in->n_reject_pi);
+
+    Rprintf("\nspa1: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_spa1, in->n_reject_spa1, (double) in->n_accept_spa1 / in->n_reject_spa1);
+
+    Rprintf("\nspa2: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_spa2, in->n_reject_spa2, (double) in->n_accept_spa2 / in->n_reject_spa2);
 
     /* Rprintf("\nphi: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_phi, in->n_reject_phi, (double) in->n_accept_phi / in->n_reject_phi); */
 
@@ -452,6 +465,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_mu1) Rprintf("mu1 ");
     if(in->tune_gamma) Rprintf("gamma ");
     if(in->tune_pi) Rprintf("pi ");
+    if(in->tune_spa) Rprintf("spa1 spa2");
     /* if(in->tune_phi) Rprintf("phi "); */
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
@@ -461,6 +475,7 @@ void print_mcmc_param(mcmc_param *in){
     /* if(in->move_kappa) Rprintf("kappa "); */
     if(in->move_Tinf) Rprintf("Tinf ");
     if(in->move_pi) Rprintf("pi ");
+    if(in->move_spa) Rprintf("spa1 spa2 ");
     /* if(in->move_phi) Rprintf("phi "); */
     Rprintf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
@@ -491,33 +506,39 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->n_reject_gamma = in->n_reject_gamma;
     out->n_accept_pi = in->n_accept_pi;
     out->n_reject_pi = in->n_reject_pi;
-    /* out->n_accept_phi = in->n_accept_phi; */
-    /* out->n_reject_phi = in->n_reject_phi; */
+    out->n_accept_spa1 = in->n_accept_spa1;
+    out->n_reject_spa1 = in->n_reject_spa1;
+    out->n_accept_spa2 = in->n_accept_spa2;
+    out->n_reject_spa2 = in->n_reject_spa2;
     out->n_accept_Tinf = in->n_accept_Tinf;
     out->n_reject_Tinf = in->n_reject_Tinf;
     out->n_accept_alpha = in->n_accept_alpha;
     out->n_reject_alpha = in->n_reject_alpha;
     out->n_accept_kappa = in->n_accept_kappa;
     out->n_reject_kappa = in->n_reject_kappa;
+
     out->n_move_Tinf = in->n_move_Tinf;
     out->n_move_alpha = in->n_move_alpha;
     out->n_move_kappa = in->n_move_kappa;
+
     out->sigma_mu1 = in->sigma_mu1;
     out->sigma_gamma = in->sigma_gamma;
     out->lambda_Tinf = in->lambda_Tinf;
     out->sigma_pi = in->sigma_pi;
-    /* out->sigma_phi = in->sigma_phi; */
+    out->sigma_spa1 = in->sigma_spa1;
+    out->sigma_spa2 = in->sigma_spa2;
     out->n_like_zero = in->n_like_zero;
+
     out->tune_all = in->tune_all;
     out->tune_mu1 = in->tune_mu1;
     out->tune_gamma = in->tune_gamma;
     out->tune_pi = in->tune_pi;
-    /* out->tune_phi = in->tune_phi; */
+    out->tune_spa = in->tune_spa;
     out->step_notune = in->step_notune;
+
     out->move_mut = in->move_mut;
-    /* out->move_kappa = in->move_kappa; */
     out->move_pi = in->move_pi;
-    /* out->move_phi = in->move_phi; */
+    out->move_spa = in->move_spa;
     out->burnin = in->burnin;
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;
