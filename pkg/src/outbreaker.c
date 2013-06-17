@@ -70,7 +70,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, *outlier_threshold, *mutModel, rng);
+    init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, *init_spa1, *init_spa2, *outlier_threshold, *mutModel, *spaModel, rng);
     /* print_param(par); */
 
 
