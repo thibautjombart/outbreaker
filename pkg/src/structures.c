@@ -216,6 +216,7 @@ param *alloc_param(int n){
     out->n = n;
     out->kappa_temp = 0;
     out->mut_model = 0;
+    out->spa_model = 0;
 
     /* allocates vectors of integers */
     out->Tinf = alloc_vec_int(n);
@@ -229,6 +230,8 @@ param *alloc_param(int n){
     out->pi = 1.0;
     out->pi_param1 = 0.0;
     out->pi_param2 = 0.0;
+    out->spa_param1 = 0.0;
+    out->spa_param2 = 0.0;
     out->outlier_threshold = 1000.0;
     /* out->phi = 0.1; */
     /* out->phi_param1 = 0.0; */
@@ -268,6 +271,8 @@ void print_param(param *in){
     Rprintf("%.2f", in->outlier_threshold);
     Rprintf("\n= genetic model used =\n");
     Rprintf("%d", in->mut_model);
+    Rprintf("\n= spatial model used (parameters) =\n");
+    Rprintf("%d (param1=%.5f, param2=%.5f)", in->spa_model, in->spa_param1, in->spa_param2);
 
     /* Rprintf("\n= phi (proportion of external cases) =\n"); */
     /* Rprintf("%.5f", in->phi); */
@@ -288,8 +293,11 @@ void copy_param(param *in, param *out){
     out->pi = in->pi;
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
+    out->spa_param1 = in->spa_param1;
+    out->spa_param2 = in->spa_param2;
     out->outlier_threshold = in->outlier_threshold;
     out->mut_model = in->mut_model;
+    out->spa_model = in->spa_model;
     /* out->phi = in->phi; */
     /* out->phi_param1 = in->phi_param1; */
     /* out->phi_param2 = in->phi_param2; */

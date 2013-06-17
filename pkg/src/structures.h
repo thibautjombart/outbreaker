@@ -57,9 +57,11 @@ typedef struct{
     double gamma; /* so that rate of transversions mu2 = gamma x mu1 */
     double pi; /* proportion of observed cases */
     double pi_param1, pi_param2; /* parameters of the Beta prior for pi */
+    double spa_param1, spa_param2; /* parameters for the spatial model */
     int kappa_temp; /* used to store temporary kappa for genetic LL */
     double outlier_threshold; /* threshold used in outlier detection */
-    int mut_model; /* genetic mut_model: 0: 1 mutation rate; 1: mutation1/mutation2 */
+    int mut_model; /* genetic mut_model: 0=1 mutation rate; 1=mutation1/mutation2 */
+    int spa_model; /* spatial model: 0=no, 1=model1, 2=model2, ...*/
     /* double phi; /\* proba of external case *\/ */
     /* double phi_param1, phi_param2; /\* parameters of the Beta prior for phi *\/ */
 } param;
