@@ -133,6 +133,8 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
 /*
    AIM: get ~40% acceptance for univariate param, ~20% for multivariate param
 */
+
+/* tune moves for mu1 */
 void tune_mu1(mcmc_param * in, gsl_rng *rng){
     /* get acceptance proportion */
     double paccept = (double) in->n_accept_mu1 / (double) (in->n_accept_mu1 + in->n_reject_mu1);
@@ -160,6 +162,7 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
 
 
 
+/* tune moves for gamma */
 void tune_gamma(mcmc_param * in, gsl_rng *rng){
     /* get acceptance proportion */
     double paccept = (double) in->n_accept_gamma / (double) (in->n_accept_gamma + in->n_reject_gamma);
@@ -187,6 +190,7 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
 
 
 
+/* tune moves for pi */
 void tune_pi(mcmc_param * in, gsl_rng *rng){
     /* get acceptance proportion */
     double paccept = (double) in->n_accept_pi / (double) (in->n_accept_pi + in->n_reject_pi);
@@ -210,6 +214,62 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
     }
 }
 
+
+
+
+
+
+/* tune moves for spa1 */
+void tune_spa1(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_spa1 / (double) (in->n_accept_spa1 + in->n_reject_spa1);
+
+    /* acceptable zone: 25-50% acceptance */
+    if(paccept<0.25) {
+	in->sigma_spa1 /= 1.5;
+	in->n_accept_spa1 = 0;
+	in->n_reject_spa1 = 0;
+    } else if (paccept>0.50) {
+	in->sigma_spa1 *= 1.5;
+	in->n_accept_spa1 = 0;
+	in->n_reject_spa1 = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_spa1>1.0){
+	    in->sigma_spa1 = 1.0;
+	    in->tune_spa1 = FALSE;
+	}
+    } else {
+	in->tune_spa1 = FALSE;
+    }
+}
+
+
+
+
+
+/* tune moves for spa2 */
+void tune_spa2(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_spa2 / (double) (in->n_accept_spa2 + in->n_reject_spa2);
+
+    /* acceptable zone: 25-50% acceptance */
+    if(paccept<0.25) {
+	in->sigma_spa2 /= 1.5;
+	in->n_accept_spa2 = 0;
+	in->n_reject_spa2 = 0;
+    } else if (paccept>0.50) {
+	in->sigma_spa2 *= 1.5;
+	in->n_accept_spa2 = 0;
+	in->n_reject_spa2 = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_spa2>1.0){
+	    in->sigma_spa2 = 1.0;
+	    in->tune_spa2 = FALSE;
+	}
+    } else {
+	in->tune_spa2 = FALSE;
+    }
+}
 
 
 
@@ -334,8 +394,11 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move pi */
 	if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
 
-	/* move spa1/spa2 */
-	if(localMcmcPar->move_spa) move_spa(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
+	/* move spa1 */
+	if(localMcmcPar->move_spa1) move_spa1(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
+
+	/* move spa2 */
+	if(localMcmcPar->move_spa2) move_spa2(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
 
 	/* move Tinf */
 	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);

@@ -302,49 +302,82 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
 
 
 
-/* MOVE VALUES OF SPA (spa_param1 and spa_param2 are moved together) */
-void move_spa(param *currentPar, param *tempPar, data *dat, spatial_dist *spainfo, mcmc_param *mcmcPar, gsl_rng *rng){
+/* MOVE VALUES OF SPA_PARAM1 */
+void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spainfo, mcmc_param *mcmcPar, gsl_rng *rng){
     double logRatio=0.0;
 
     /* !!! MOVING PARAMETERS CAN BE MODEL-DEPENDENT !!! */
-    /* GENERATE CANDIDATE VALUE FOR SPA1 ACCORDING TO A ... DISTRIBUTION */
+    /* GENERATE CANDIDATE VALUE FOR SPA1 ACCORDING TO A (LOGNORMAL?) DISTRIBUTION */
+    /* tempPar->spa_param1 = gsl_ran_lognormal(rng,log(currentPar->spa_param1),mcmcPar->sigma_spa1); */
     tempPar->spa_param1 = currentPar->spa_param1;
-
-    /* GENERATE CANDIDATE VALUE FOR SPA2 ACCORDING TO A ... DISTRIBUTION */
-    tempPar->spa_param2 = currentPar->spa_param2;
-
 
     /* ACCEPT / REJECT */
     /* compute only spatial part of likelihood as the rest is unchanged */
     logRatio += loglikelihood_spa_all(dat, spainfo, tempPar, rng);
     logRatio -= loglikelihood_spa_all(dat, spainfo, currentPar, rng);
 
-   /* add correction (MH) if needed */
+    /* /\* add correction (MH) for lognormal proposal *\/ */
+    /* logRatio += log(tempPar->spa_param1) - log(currentPar->spa_param1); */
 
     /* compute the priors */
-    logRatio += logprior_spa1(tempPar) + logprior_spa2(tempPar);
-    logRatio -= logprior_spa1(currentPar) + logprior_spa2(currentPar);
+    logRatio += logprior_spa1(tempPar);
+    logRatio -= logprior_spa1(currentPar);
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
 	currentPar->spa_param1 = tempPar->spa_param1;
-	currentPar->spa_param2 = tempPar->spa_param2;
 	mcmcPar->n_accept_spa1 += 1;
+    } else { /* else accept new with proba (new/old) */
+	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	    currentPar->spa_param1 = tempPar->spa_param1;
+	    mcmcPar->n_accept_spa1 += 1;
+	} else { /* reject */
+	    tempPar->spa_param1 = currentPar->spa_param1;
+	    mcmcPar->n_reject_spa1 += 1;
+	}
+    }
+} /* end move_spa1 */
+
+
+
+
+
+
+/* MOVE VALUES OF SPA_PARAM1 */
+void move_spa2(param *currentPar, param *tempPar, data *dat, spatial_dist *spainfo, mcmc_param *mcmcPar, gsl_rng *rng){
+    double logRatio=0.0;
+
+    /* !!! MOVING PARAMETERS CAN BE MODEL-DEPENDENT !!! */
+    /* GENERATE CANDIDATE VALUE FOR SPA2 ACCORDING TO A (LOGNORMAL?) DISTRIBUTION */
+    /* tempPar->spa_param1 = gsl_ran_lognormal(rng,log(currentPar->spa_param1),mcmcPar->sigma_spa2); */
+    tempPar->spa_param1 = currentPar->spa_param1;
+
+    /* ACCEPT / REJECT */
+    /* compute only spatial part of likelihood as the rest is unchanged */
+    logRatio += loglikelihood_spa_all(dat, spainfo, tempPar, rng);
+    logRatio -= loglikelihood_spa_all(dat, spainfo, currentPar, rng);
+
+    /* /\* add correction (MH) for lognormal proposal *\/ */
+    /* logRatio += log(tempPar->spa_param1) - log(currentPar->spa_param1); */
+
+    /* compute the priors */
+    logRatio += logprior_spa2(tempPar);
+    logRatio -= logprior_spa2(currentPar);
+
+    /* if p(new/old) > 1, accept new */
+    if(logRatio>=0.0) {
+	currentPar->spa_param1 = tempPar->spa_param1;
 	mcmcPar->n_accept_spa2 += 1;
     } else { /* else accept new with proba (new/old) */
 	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 	    currentPar->spa_param1 = tempPar->spa_param1;
-	    currentPar->spa_param2 = tempPar->spa_param2;
-	    mcmcPar->n_accept_spa1 += 1;
 	    mcmcPar->n_accept_spa2 += 1;
 	} else { /* reject */
 	    tempPar->spa_param1 = currentPar->spa_param1;
-	    tempPar->spa_param2 = currentPar->spa_param2;
-	    mcmcPar->n_reject_spa1 += 1;
 	    mcmcPar->n_reject_spa2 += 1;
 	}
     }
-} /* end move_spa*/
+} /* end move_spa2 */
 
 
 

@@ -189,7 +189,8 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 
     /* FILL IN BOOLEANS */
     in->move_mut = move_mut;
-    in->move_spa = move_spa;
+    in->move_spa1 = move_spa;
+    in->move_spa2 = move_spa;
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;
     /* in->move_phi = move_phi; */
@@ -201,11 +202,12 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
 	in->tune_gamma = FALSE;
     }
     if(!move_spa){
-	in->tune_spa = FALSE;
+	in->tune_spa1 = FALSE;
+	in->tune_spa2 = FALSE;
     }
     if(!move_pi) in->tune_pi = FALSE;
     /* if(!move_phi) in->tune_phi = FALSE; */
-    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_spa;
+    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_spa1 || in->tune_spa2;
 
 } /* end init_mcmc_param */
 
