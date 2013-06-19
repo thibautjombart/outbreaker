@@ -251,7 +251,107 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo,
 
 
 
+/* MOVE VALUES OF PI */
+void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
+    double logRatio=0.0;
+    double QCur, QTemp;
 
+    /* GENERATE CANDIDATE VALUE FOR PI */
+    /* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*/
+    do
+    {
+    	tempPar->pi = gsl_ran_lognormal(rng,log(currentPar->pi),mcmcPar->sigma_pi);
+    	/* which should be the same as: */
+	/* tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi); */
+    } while(tempPar->pi>1.0);
+
+
+    /* ACCEPT / REJECT */
+    /* likelihood */
+    logRatio += loglike_kappa_all(tempPar) - loglike_kappa_all(currentPar);
+
+    /* prior */
+    logRatio += logprior_pi(tempPar) - logprior_pi(currentPar);
+
+    /* ADD CORRECTION FOR MH truncated lognormal */
+    QCur = gsl_cdf_gaussian_P(-log(currentPar->pi),mcmcPar->sigma_pi);
+    QTemp = gsl_cdf_gaussian_P(-log(tempPar->pi),mcmcPar->sigma_pi);
+    logRatio +=  log(tempPar->pi) - log(currentPar->pi); /* correction for lognormal */
+    logRatio +=   log(QCur) - log(QTemp); /* correction for truncation (no values >1) */
+
+    /* if p(new/old) > 1, accept new */
+    if(logRatio>=0.0) {
+	currentPar->pi = tempPar->pi;
+	mcmcPar->n_accept_pi += 1;
+	/* printf("\nAccepting new value\n"); */
+    } else { /* else accept new with proba (new/old) */
+	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	    currentPar->pi = tempPar->pi;
+	    mcmcPar->n_accept_pi += 1;
+	    /* printf("\nAccepting new value\n"); */
+	} else { /* reject */
+	    tempPar->pi = currentPar->pi;
+	    mcmcPar->n_reject_pi += 1;
+	    /* printf("\nRejecting new value\n"); */
+	}
+    }
+
+} /* end move_pi */
+
+
+
+
+
+/* MOVE VALUES OF SPA (spa_param1 and spa_param2 are moved together) */
+void move_spa(param *currentPar, param *tempPar, data *dat, spatial_dist *spainfo, mcmc_param *mcmcPar, gsl_rng *rng){
+    double logRatio=0.0;
+
+    /* !!! MOVING PARAMETERS CAN BE MODEL-DEPENDENT !!! */
+    /* GENERATE CANDIDATE VALUE FOR SPA1 ACCORDING TO A ... DISTRIBUTION */
+    tempPar->spa_param1 = currentPar->spa_param1;
+
+    /* GENERATE CANDIDATE VALUE FOR SPA2 ACCORDING TO A ... DISTRIBUTION */
+    tempPar->spa_param2 = currentPar->spa_param2;
+
+
+    /* ACCEPT / REJECT */
+    /* compute only spatial part of likelihood as the rest is unchanged */
+    logRatio += loglikelihood_spa_all(dat, spainfo, tempPar, rng);
+    logRatio -= loglikelihood_spa_all(dat, spainfo, currentPar, rng);
+
+   /* add correction (MH) if needed */
+
+    /* compute the priors */
+    logRatio += logprior_spa1(tempPar) + logprior_spa2(tempPar);
+    logRatio -= logprior_spa1(currentPar) + logprior_spa2(currentPar);
+
+    /* if p(new/old) > 1, accept new */
+    if(logRatio>=0.0) {
+	currentPar->spa_param1 = tempPar->spa_param1;
+	currentPar->spa_param2 = tempPar->spa_param2;
+	mcmcPar->n_accept_spa1 += 1;
+	mcmcPar->n_accept_spa2 += 1;
+    } else { /* else accept new with proba (new/old) */
+	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	    currentPar->spa_param1 = tempPar->spa_param1;
+	    currentPar->spa_param2 = tempPar->spa_param2;
+	    mcmcPar->n_accept_spa1 += 1;
+	    mcmcPar->n_accept_spa2 += 1;
+	} else { /* reject */
+	    tempPar->spa_param1 = currentPar->spa_param1;
+	    tempPar->spa_param2 = currentPar->spa_param2;
+	    mcmcPar->n_reject_spa1 += 1;
+	    mcmcPar->n_reject_spa2 += 1;
+	}
+    }
+} /* end move_spa*/
+
+
+
+
+
+
+/* MOVE INFECTION DATES (T_inf) */
 void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
     double logRatio=0.0;
     int i, toMove = 0;
@@ -303,58 +403,6 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	} /* end if Tinf has changed */
     } /* end for each indiv to move */
 } /* end move_Tinf*/
-
-
-
-
-
-/* MOVE VALUES OF PI */
-void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
-    double logRatio=0.0;
-    double QCur, QTemp;
-
-    /* GENERATE CANDIDATE VALUE FOR PI */
-    /* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*/
-    do
-    {
-    	tempPar->pi = gsl_ran_lognormal(rng,log(currentPar->pi),mcmcPar->sigma_pi);
-    	/* which should be the same as: */
-	/* tempPar->pi = currentPar->pi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_pi); */
-    } while(tempPar->pi>1.0);
-
-
-    /* ACCEPT / REJECT */
-    /* likelihood */
-    logRatio += loglike_kappa_all(tempPar) - loglike_kappa_all(currentPar);
-
-    /* prior */
-    logRatio += logprior_pi(tempPar) - logprior_pi(currentPar);
-
-    /* ADD CORRECTION FOR MH truncated lognormal */
-    QCur = gsl_cdf_gaussian_P(-log(currentPar->pi),mcmcPar->sigma_pi);
-    QTemp = gsl_cdf_gaussian_P(-log(tempPar->pi),mcmcPar->sigma_pi);
-    logRatio +=  log(tempPar->pi) - log(currentPar->pi); /* correction for lognormal */
-    logRatio +=   log(QCur) - log(QTemp); /* correction for truncation (no values >1) */
-
-    /* if p(new/old) > 1, accept new */
-    if(logRatio>=0.0) {
-	currentPar->pi = tempPar->pi;
-	mcmcPar->n_accept_pi += 1;
-	/* printf("\nAccepting new value\n"); */
-    } else { /* else accept new with proba (new/old) */
-	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-	    currentPar->pi = tempPar->pi;
-	    mcmcPar->n_accept_pi += 1;
-	    /* printf("\nAccepting new value\n"); */
-	} else { /* reject */
-	    tempPar->pi = currentPar->pi;
-	    mcmcPar->n_reject_pi += 1;
-	    /* printf("\nRejecting new value\n"); */
-	}
-    }
-
-} /* end move_pi */
-
 
 
 

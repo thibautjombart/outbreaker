@@ -334,17 +334,11 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move pi */
 	if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
 
-	/* /\* move phi *\/ */
-	/* if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, localMcmcPar, rng); */
+	/* move spa1/spa2 */
+	if(localMcmcPar->move_spa) move_spa(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
 
 	/* move Tinf */
 	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
-
-	/* /\* move alpha_i*\/ */
-	/* move_alpha(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng); */
-
-	/* /\* move kappa_i*\/ */
-	/* move_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng); */
 
 	/* move alpha_i and kappa_i*/
 	move_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
