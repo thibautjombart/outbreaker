@@ -375,7 +375,8 @@ mcmc_param *alloc_mcmc_param(int n){
     /* out->move_alpha = TRUE; */
     /* out->move_kappa = TRUE; */
     out->move_pi = TRUE;
-    out->move_spa = TRUE;
+    out->move_spa1 = TRUE;
+    out->move_spa2 = TRUE;
     /* out->move_phi = TRUE; */
     out->burnin=0;
     out->find_import_at=10000;
@@ -463,7 +464,8 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_mu1) Rprintf("mu1 ");
     if(in->tune_gamma) Rprintf("gamma ");
     if(in->tune_pi) Rprintf("pi ");
-    if(in->tune_spa) Rprintf("spa1 spa2");
+    if(in->tune_spa1) Rprintf("spa1");
+    if(in->tune_spa2) Rprintf("spa2");
     /* if(in->tune_phi) Rprintf("phi "); */
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
@@ -473,7 +475,8 @@ void print_mcmc_param(mcmc_param *in){
     /* if(in->move_kappa) Rprintf("kappa "); */
     if(in->move_Tinf) Rprintf("Tinf ");
     if(in->move_pi) Rprintf("pi ");
-    if(in->move_spa) Rprintf("spa1 spa2 ");
+    if(in->move_spa1) Rprintf("spa1 ");
+    if(in->move_spa2) Rprintf("spa2 ");
     /* if(in->move_phi) Rprintf("phi "); */
     Rprintf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
@@ -531,12 +534,14 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_mu1 = in->tune_mu1;
     out->tune_gamma = in->tune_gamma;
     out->tune_pi = in->tune_pi;
-    out->tune_spa = in->tune_spa;
+    out->tune_spa1 = in->tune_spa1;
+    out->tune_spa2 = in->tune_spa2;
     out->step_notune = in->step_notune;
 
     out->move_mut = in->move_mut;
     out->move_pi = in->move_pi;
-    out->move_spa = in->move_spa;
+    out->move_spa1 = in->move_spa1;
+    out->move_spa2 = in->move_spa2;
     out->burnin = in->burnin;
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;
