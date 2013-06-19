@@ -87,6 +87,24 @@ double logprior_pi(param *par){
 
 
 
+/* prior on spatial param 1 */
+double logprior_spa1(param *par){
+    double out=0.0;
+    filter_logprob(&out);
+    return out;
+}
+
+
+
+/* prior on spatial param 2 */
+double logprior_spa2(param *par){
+    double out=0.0;
+    filter_logprob(&out);
+    return out;
+}
+
+
+
 /* /\* p(phi) = beta(...,...) *\/ */
 /* double logprior_phi(param *par){ */
 /*     double out = gsl_ran_beta_pdf(par->phi, par->phi_param1, par->phi_param2); */
@@ -104,8 +122,12 @@ double logprior_all(param *par){
     double out=0.0;
 
     out += logprior_mu1(par);
-    if(par->mut_model==2) out += logprior_gamma(par);
+    if(par->mut_model>1) out += logprior_gamma(par);
     out += logprior_pi(par);
+    if(par->spa_model>0){
+	out += logprior_spa1(par);
+	out += logprior_spa2(par);
+    }
 
     filter_logprob(&out);
 

@@ -298,9 +298,7 @@ void copy_param(param *in, param *out){
     out->outlier_threshold = in->outlier_threshold;
     out->mut_model = in->mut_model;
     out->spa_model = in->spa_model;
-    /* out->phi = in->phi; */
-    /* out->phi_param1 = in->phi_param1; */
-    /* out->phi_param2 = in->phi_param2; */
+   
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);

@@ -100,6 +100,9 @@ double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
 
 
 
+
+
+
 /*
   ====================
   LIKELIHOOD FUNCTIONS
@@ -107,7 +110,7 @@ double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
 */
 
 /* LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
-double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
+double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng){
     int ances=vec_int_i(par->alpha,i);
     double out=0.0;
 
@@ -148,6 +151,9 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnainfo, gentime *gen, param 
     /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
     out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
 
+    /* SPATIAL LIKELIHOOD */
+    out += loglikelihood_spa_i(i, dat, spainfo, par, rng);
+
     /* FILTER AND RETURN */
     filter_logprob(&out);
 
@@ -174,25 +180,31 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
 	return 0.0;
     }
 
-    /* MODEL 1: only one type of mutations */
-    if(par->mut_model==1){
+    /* SWITCH ACROSS MODELS */
+    switch(par->mut_model){
+	/* MODEL 1: only one type of mutations */
+    case 1:
 	if(com_nucl_ij(i, ances, dat, dnainfo)>0){
 	    out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
 	}
-    } /* end model 1 */
+	break;
 
-
-    /* MODEL 2: transitions and transversions */
-    if(par->mut_model==2){
+  /* MODEL 2: transitions and transversions */
+    case 2:
 	if(com_nucl_ij(i, ances, dat, dnainfo)>0){
-	    /* TRANSITIONS */
+	    /* transitions */
 	    out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
 
-	    /* TRANSVERSIONS */
+	    /* transversions */
 	    out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation2_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
 
 	}
-    } /* end model 2 */
+	break;
+
+	/* DEFAULT */
+    default:
+	break;
+    } /* end switch */
 
     /* RETURN */
     filter_logprob(&out);
@@ -204,13 +216,45 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
 
 
 
+/* SPATIAL LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
+double loglikelihood_spa_i(int i, data *dat, spatial_dist *spainfo, param *par, gsl_rng *rng){
+    double out=0.0;
+
+    /* SWITCH ACROSS MODELS */
+    switch(par->spa_model){
+	/* NULL MODEL - NO SPATIAL INFO */
+    case 0:
+	break;
+
+	/* MODEL 1 */
+    case 1:
+	break;
+
+	/* MODEL 2 */
+    case 2:
+	break;
+
+	/* DEFAULT */
+    default:
+	break;
+    }
+    /* RETURN */
+    filter_logprob(&out);
+
+    return out;
+} /* end loglikelihood_spa_i*/
+
+
+
+
+
 /* LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
-double loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
+double loglikelihood_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng){
     int i;
     double out=0.0;
 
     for(i=0;i<dat->n;i++){
-	out += loglikelihood_i(i, dat, dnainfo, gen, par, rng);
+	out += loglikelihood_i(i, dat, dnainfo, spainfo, gen, par, rng);
     }
 
     filter_logprob(&out);
@@ -235,6 +279,26 @@ double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par, gsl_rng *
 
     return out;
 }
+
+
+
+
+
+
+/* SPATIAL LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
+double loglikelihood_spa_all(data *dat, spatial_dist *spainfo, param *par, gsl_rng *rng){
+    int i;
+    double out=0.0;
+
+    for(i=0;i<dat->n;i++){
+	out += loglikelihood_spa_i(i, dat, spainfo, par, rng);
+    }
+
+    filter_logprob(&out);
+
+    return out;
+}
+
 
 
 
@@ -272,8 +336,8 @@ double loglike_kappa_all(param *par){
 
 
 /* LOG-POSTERIOR FOR ALL INDIVIDUALS */
-double logposterior_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
-    double out = logprior_all(par) + loglikelihood_all(dat, dnainfo, gen, par, rng);
+double logposterior_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng){
+    double out = logprior_all(par) + loglikelihood_all(dat, dnainfo, spainfo, gen, par, rng);
 
     filter_logprob(&out);
 
@@ -311,13 +375,13 @@ double sim_loglike_gen(data *dat, param *par, gsl_rng *rng){
 
 /* CHECK LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
 /* returns TRUE if all is fine, FALSE if likelihood is zero */
-bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *par, gsl_rng *rng){
+bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng){
     int i, ances;
     double temp;
     bool out=TRUE;
 
     for(i=0;i<dat->n;i++){
-	temp = loglikelihood_i(i, dat, dnainfo, gen, par, rng);
+	temp = loglikelihood_i(i, dat, dnainfo, spainfo, gen, par, rng);
 	filter_logprob(&temp);
 
 	if(temp <= NEARMINUSINF){
@@ -349,6 +413,12 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, gentime *gen, param *
 	    filter_logprob(&temp);
 	    Rprintf("\ni=%d: infection time (Tinf=%d,Tances=%d) log-like is: %f", i+1, vec_int_i(par->Tinf,i),vec_int_i(par->Tinf,ances), temp);
 	    /* fflush(stdout); */
+
+	    /* spatial likelihood*/
+	    temp = loglikelihood_spa_i(i, dat, spainfo, par, rng);
+	    filter_logprob(&temp);
+	    Rprintf("\ni=%d: spatial log-like is: %f", i+1, temp);
+
 	    if(temp <= NEARMINUSINF) Rprintf(" (i.e., zero)");
 	    /* fflush(stdout); */
 
