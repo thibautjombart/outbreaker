@@ -93,7 +93,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, spatial_dist *spain
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
     /* OUTPUT TO FILE */
-    fprintf(file,"\n%d\t", step);
+    fprintf(file,"\n%d", step);
     temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_gamma / (double) (mcmcPar->n_accept_gamma + mcmcPar->n_reject_gamma);
