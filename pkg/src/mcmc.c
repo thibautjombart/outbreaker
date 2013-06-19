@@ -25,7 +25,7 @@
    - indices are provided from 1 to n, i.e. not as C indices (from 0 to n-1)
 */
 
-void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
+void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
     int i;
     double like, prior;
 
@@ -34,7 +34,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
     fprintf(file,"\n%d", step);
 
     /* posterior, likelihood, prior */
-    like = loglikelihood_all(dat, dnainfo, gen, par, rng);
+    like = loglikelihood_all(dat, dnainfo, spainfo, gen, par, rng);
     prior = logprior_all(par);
     fprintf(file,"\t%.15f", like + prior);
     fprintf(file,"\t%.15f", like);
@@ -45,7 +45,8 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
     fprintf(file,"\t%.15f", par->mu1 * par->gamma);
     fprintf(file,"\t%.15f", par->gamma);
     fprintf(file,"\t%.15f", par->pi);
-    /* fprintf(file,"\t%.15f", par->phi); */
+    fprintf(file,"\t%.15f", par->spa_param1);
+    fprintf(file,"\t%.15f", par->spa_param2);
     for(i=0;i<par->Tinf->length;i++){
 	fprintf(file, "\t%d", vec_int_i(par->Tinf, i));
     }
@@ -66,7 +67,8 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
 	Rprintf("\t%.15f", par->mu1 * par->gamma);
 	Rprintf("\t%.15f", par->gamma);
 	Rprintf("\t%.15f", par->pi);
-	/* printf("\t%.15f", par->phi); */
+	Rprintf("\t%.15f", par->spa_param1);
+	Rprintf("\t%.15f", par->spa_param2);
 	for(i=0;i<par->Tinf->length;i++){
 	    Rprintf("\t%d", vec_int_i(par->Tinf, i));
 	}
@@ -84,9 +86,9 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, gentime *gen, param
 
 
 
-/* print mcmc parameter (e.g. acceptance/rejection) to file 
+/* print mcmc parameter (e.g. acceptance/rejection) to file
    order is as follows:
-   step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma
+   step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma | sigma_spa1 | sigma_spa2
 */
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
@@ -98,13 +100,18 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_pi / (double) (mcmcPar->n_accept_pi + mcmcPar->n_reject_pi);
     fprintf(file,"\t%.5f", temp);
-    /* temp = (double) mcmcPar->n_accept_phi / (double) (mcmcPar->n_accept_phi + mcmcPar->n_reject_phi); */
-    /* fprintf(file,"\t%.5f", temp); */
     temp = (double) mcmcPar->n_accept_Tinf / (double) (mcmcPar->n_accept_Tinf + mcmcPar->n_reject_Tinf);
     fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_spa1 / (double) (mcmcPar->n_accept_spa1 + mcmcPar->n_reject_spa1);
+    fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_spa2 / (double) (mcmcPar->n_accept_spa2 + mcmcPar->n_reject_spa2);
+    fprintf(file,"\t%.5f", temp);
+  
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_spa1);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_spa2);
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
 }
@@ -258,7 +265,7 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
 
 /* PRELIM MCMC FOR FINDING OUTLIERS */
 void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
-		      data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+		      data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i, j, nbTermsLike = 0;
     double medLogLike = 0.0;
@@ -331,7 +338,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, localMcmcPar, rng); */
 
 	/* move Tinf */
-	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
+	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
 
 	/* /\* move alpha_i*\/ */
 	/* move_alpha(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng); */
@@ -340,7 +347,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng); */
 
 	/* move alpha_i and kappa_i*/
-	move_alpha_kappa(localPar, tempPar, dat, dnainfo, gen, localMcmcPar, rng);
+	move_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
 
     } /* end of MCMC */
 
@@ -392,7 +399,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
    ==============
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
-	  bool quiet, param *par, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+	  bool quiet, param *par, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i;
     vec_int *areOutliers = alloc_vec_int(dat->n);
@@ -413,8 +420,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* OUTPUT TO OUTFILE - HEADER */
-    /* fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi"); */
-    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1\tspa2");
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
     }
@@ -426,15 +432,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    /* fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_phi\tp_accept_Tinf"); */
-    /* fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_phi\tn_like_zero"); */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tn_like_zero");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf\tp_accept_spa1\tp_accept_spa2");
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tsigma_spa2\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1\tspa2");
 	for(i=0;i<dat->n;i++){
 	    Rprintf("\tTinf_%d", i+1);
 	}
@@ -446,7 +450,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
     }
 
-    fprint_chains(file, dat, dnainfo, gen, par, 1, rng, quiet);
+    fprint_chains(file, dat, dnainfo, spainfo, gen, par, 1, rng, quiet);
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
 
     mcmcPar->step_notune = nIter;
@@ -454,7 +458,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
-	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
 	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
 	/* mcmcPar->tune_all = TRUE; */
@@ -485,7 +489,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* OUTPUT TO FILES */
 	if(i % outEvery == 0){
-	    fprint_chains(file, dat, dnainfo, gen, par, i, rng, quiet);
+	    fprint_chains(file, dat, dnainfo, spainfo, gen, par, i, rng, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
 	}
 
@@ -529,16 +533,10 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* printf("\nTinf:"); */
 	/* print_vec_int(par->Tinf); */
 	/* fflush(stdout); */
-	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
-
-	/* /\* move alpha_i*\/ */
-	/* move_alpha(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
-
-	/* /\* move kappa_i*\/ */
-	/* move_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng); */
+	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
 	/* move alpha_i and kappa_i*/
-	move_alpha_kappa(par, tempPar, dat, dnainfo, gen, mcmcPar, rng);
+	move_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
     } /* end of mcmc */
 

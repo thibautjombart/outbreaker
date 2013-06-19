@@ -108,7 +108,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* print_mcmc_param(mcmcPar); */
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
-    checkLike = check_loglikelihood_all(dat, dnainfo, gen, par, rng);
+    checkLike = check_loglikelihood_all(dat, dnainfo, spatialinfo, gen, par, rng);
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
       /* fprintf(stderr, "\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n"); */
@@ -120,7 +120,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *res_file_name, *tune_file_name, *tuneEvery,
-	 (bool) *quiet, par, dat, dnainfo, gen, mcmcPar, rng);
+	 (bool) *quiet, par, dat, dnainfo, spatialinfo, gen, mcmcPar, rng);
 
     /* Rprintf("\nAfter MCMC\n");fflush(stdout); */
 

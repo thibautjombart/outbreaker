@@ -2,10 +2,10 @@
 library(outbreaker)
 w <- c(0, 0.5, 1, 0.75)
 ## note: this works only if outbreak has at least 30 case
-dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100)[1:8]
+dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100)[1:15]
 collecDates <- dat$dates + sample(0:3, size=length(dat$dates), replace=TRUE, prob=w)
-plot(dat)
-D <- prop.table(matrix(1:64, ncol=8, nrow=8),1)
+#plot(dat)
+D <- prop.table(matrix(1:length(dat$dates)^2, ncol=length(dat$dates), nrow=length(dat$dates)),1)
 
 
 ## test parallel
