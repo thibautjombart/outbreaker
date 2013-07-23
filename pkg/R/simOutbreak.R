@@ -71,11 +71,8 @@ disperse <- function(xy, disp=.1, area.size=10){
 simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
                         rate.import.case=0.01, diverg.import=10, group.freq=1,
-                        spatial=TRUE, disp=0.1, area.size=10, mean.reach=1){
-
-    ## CHECKS ##
-    ## if(!require(ape)) stop("The ape package is required.")
-
+                        spatial=TRUE, disp=0.1, area.size=10, mean.reach=1,
+                        plot=FALSE){
 
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
@@ -150,6 +147,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
         return(out)
     }
 
+    ## handle 'plot' argument ##
+    if(plot && !spatial) warning("Plot only available with spatial model")
+
 
     ## MAIN FUNCTION ##
     ## initialize results ##
@@ -166,6 +166,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
     class(res$dna) <- "DNAbin"
     if(spatial) res$xy <- matrix(runif(n.hosts*2, min=0, max=area.size), ncol=2)
+    res$status <- c("I", rep("S", n.hosts-1)) # will be I, S, or R
 
 
     ## run outbreak ##
@@ -178,6 +179,13 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
         if(spatial){
             ## disperse
             res$xy <- disperse(res$xy, disp=disp, area.size=area.size)
+            if(plot) {
+                myCol <- rep("black", nrow(res$xy))
+                myCol[res$status=="I"] <- "red"
+                myCol[res$status=="R"] <- "royalblue"
+                plot(res$xy, pch=20, cex=6, col=transp(myCol),
+                     main=paste("time:", t), xlab="", ylab="")
+            }
 
             ## compute kernels
             k.spa <- .kernel.expo(res$xy, mean=mean.reach)
@@ -189,7 +197,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
             ##      + ...
             ##      + w(t-t_i) x k(i,N) x R0
             ##     = w(t-t_i) x \sum_j k(i,j) x R0
-            spa.force <- apply(k.spa,1,sum)
+
+            ## keep only contacts with susceptibles
+            spa.force <- apply(k.spa[, res$status=="S", drop=FALSE], 1, sum)
 
             ## keep only values for infected indiv
             spa.force <- spa.force[res$id]
@@ -235,20 +245,23 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
 
             ## id of the new cases ##
             if(!spatial){ # non-spatial case - ID doesn't matter
-                areSus <- setdiff(1:N, res$id) # IDs of susceptibles
+                areSus <- which(res$status=="S") # IDs of susceptibles
                 newId <- sample(areSus, size=nbNewInf, replace=FALSE)
                 res$id <- c(res$id, newId)
+                res$status[newId] <- "I"
             } else {
                 for(i in 1:nbNewInf){ # for each new infection
-                    areSus <- setdiff(1:N, res$id) # IDs of susceptibles
+                    areSus <- which(res$status=="S") # IDs of susceptibles
                     newId <- sample(areSus, 1, prob=k.spa[newAnces[i],areSus]) # prob depend on location
                     res$id <- c(res$id, newId)
+                    res$status[newId] <- "I"
                 }
             }
 
             ## dna sequences of the new cases ##
             newSeq <- t(sapply(match(newAnces, res$id), function(i) seq.dupli(res$dna[i,], 1)))
             res$dna <- rbind(res$dna, newSeq)
+
         }
 
 
@@ -266,6 +279,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
             newId <- seq(N+1, by=1, length=nbImpCases)
             res$id <- c(res$id, newId)
 
+            ## status of new cases
+            res$status[newId] <- "I"
+
             ## spatial coord of the new id
             if(spatial){
                 newXy <- matrix(runif(nbImpCases*2, min=0, max=area.size), ncol=2)
@@ -280,10 +296,14 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
             res$dna <- rbind(res$dna, newSeq)
         }
 
+
+        ## set recovered status ##
+        res$status[res$id[(t-res$dates) >= t.clear]] <- "R"
+
         ## update nb of infected, recovered, etc.
-        res$dynam$nrec[t+1] <- sum(res$dates>=t.clear)
-        res$dynam$ninf[t+1] <- length(res$id) - res$dynam$nrec[t+1]
-        res$dynam$nsus[t+1] <- res$dynam$nsus[t] - nbNewInf
+        res$dynam$nrec[t+1] <- sum(res$status=="R")
+        res$dynam$ninf[t+1] <- sum(res$status=="I")
+        res$dynam$nsus[t+1] <- sum(res$status=="S")
     } # end for
 
 
