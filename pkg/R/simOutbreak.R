@@ -247,7 +247,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
             }
 
             ## dna sequences of the new cases ##
-            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1)))
+            newSeq <- t(sapply(match(newAnces, res$id), function(i) seq.dupli(res$dna[i,], 1)))
             res$dna <- rbind(res$dna, newSeq)
         }
 
@@ -282,13 +282,16 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
 
         ## update nb of infected, recovered, etc.
         res$dynam$nrec[t+1] <- sum(res$dates>=t.clear)
-        res$dynam$ninf[t+1] <- sum(res$dates>=0 & (t-res$dates) < t.clear)
+        res$dynam$ninf[t+1] <- length(res$id) - res$dynam$nrec[t+1]
         res$dynam$nsus[t+1] <- res$dynam$nsus[t] - nbNewInf
     } # end for
 
 
     ## SHAPE AND RETURN OUTPUT ##
     res$n <- nrow(res$dna)
+    res$id <- as.character(res$id)
+    res$ances <- as.character(res$ances)
+    rownames(res$dna) <- res$id
 
     findNmut <- function(i){
         if(!is.na(res$ances[i]) && res$ances[i]>0){
@@ -307,6 +310,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
     ##     res$tree <- fastme.ols(dist.dna(res$dna, model="TN93"))
     ##     res$tree <- root(res$tree,"1")
     ## }
+
+
     class(res) <- "simOutbreak"
     return(res)
 
