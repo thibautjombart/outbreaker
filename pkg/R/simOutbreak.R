@@ -1,10 +1,46 @@
+############
+## disperse
+############
+## random movement with a square area
+## with 'bounce' effect
+## xy are the current xy coordinates
+## area.size is the max xy coord (length of an edge of the square)
+disperse <- function(xy, disp=.1, area.size=10){
+    out <- xy + matrix(rnorm(2*nrow(xy), mean=0, sd=disp),ncol=2)
+
+    ## bounce back if too far right/up
+    out[out>area.size] <- area.size - (out[out>area.size] - area.size)
+
+    ## bounce back if too far left/down
+    out[out<0] <- -out[out<0]
+
+    ## bouncing could theoretically still go wrong
+    ## if so, use 'hard edge'
+    out[out<0] <- 0
+    out[out>area.size] <- area.size
+
+    ## return
+    return(out)
+} # end disperse
+
+
+## fun test:
+library(adegenet)
+xy <- matrix(runif(40, min=0, max=10), ncol=2)
+for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
+
+
 ###############
 ## simOutbreak
 ###############
+##
+## R0: basic repro number
+## infec.curve: generation time distribution
+## disp: mean distance for host movement
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
                         rate.import.case=0.01, diverg.import=10,
-                        group.freq=1){
+                        group.freq=1, spatial=TRUE, disp=1, ){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("The ape package is required.")
