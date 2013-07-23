@@ -25,9 +25,40 @@ disperse <- function(xy, disp=.1, area.size=10){
 
 
 ## fun test:
-library(adegenet)
-xy <- matrix(runif(40, min=0, max=10), ncol=2)
-for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
+## library(adegenet)
+## xy <- matrix(runif(40, min=0, max=10), ncol=2)
+## for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
+
+
+
+################
+## .kernel.expo
+################
+## compute an exponential kernel for a set of points,
+## computing pairwise distances first
+## k(L_i,L_{\alpha_i}) = \beta e^{-\theta * h(L_i,L_{\alpha_i})}
+.kernel.expo <- function(xy, mean){
+
+    ## compute output
+    D <- as.matrix(dist(xy))
+    out <- dexp(D, rate=1/mean)
+    diag(out) <- 0
+
+    return(out)
+} # end .kernel.expo
+
+
+
+
+#####################
+## .plot.kernel.expo
+#####################
+.plot.kernel.expo <- function(mean=1, ...){
+    plot(function(x)  return(dexp(x, rate=1/mean)), xlim=c(0,10), ylab="Density")
+    return(invisible(NULL))
+}
+
+
 
 
 ###############
@@ -37,10 +68,10 @@ for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=
 ## R0: basic repro number
 ## infec.curve: generation time distribution
 ## disp: mean distance for host movement
-simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
+simOutbreak <- function(R0, infec.curve, n.hosts=20, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
-                        rate.import.case=0.01, diverg.import=10,
-                        group.freq=1, spatial=TRUE, disp=1, ){
+                        rate.import.case=0.01, diverg.import=10, group.freq=1,
+                        spatial=TRUE, disp=0.1, area.size=10, mean.reach=1){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("The ape package is required.")
@@ -128,20 +159,55 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$dynam$nsus[1] <- n.hosts-1
     res$dynam$ninf[1] <- 1
     res$dates[1] <- 0
+    res$id <- 1 # id of infected individuals
     res$ances <- NA
     res$group <- choose.group(1)
     EVE <- seq.gen()
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
     class(res$dna) <- "DNAbin"
+    if(spatial) res$xy <- matrix(runif(n.hosts*2, min=0, max=area.size), ncol=2)
+
 
     ## run outbreak ##
     for(t in 1:duration){
-        ## INTERNAL INFECTIONS ##
-        ## individual force of infection
-        indivForce <- infec.curve[t-res$dates+1] * R0[res$group]
+        ## DETERMINE NEW INTERNAL INFECTIONS ##
+        ## individual force of infection - purely based on symptom onset
+        indivForce <- infec.curve[t-res$dates+1]
+
+        ## individual force of infection - spatial case
+        if(spatial){
+            ## disperse
+            res$xy <- disperse(res$xy, disp=disp, area.size=area.size)
+
+            ## compute kernels
+            k.spa <- .kernel.expo(res$xy, mean=mean.reach)
+
+
+            ## here, using (force f_i):
+            ## f_i = w(t-t_i) x k(i,1) x R0
+            ##      + w(t-t_i) x k(i,2) x R0
+            ##      + ...
+            ##      + w(t-t_i) x k(i,N) x R0
+            ##     = w(t-t_i) x \sum_j k(i,j) x R0
+            spa.force <- apply(k.spa,1,sum)
+
+            ## keep only values for infected indiv
+            spa.force <- spa.force[res$id]
+            if(length(indivForce)!=length(spa.force)) warning("temporal and spatial forces of infection have different length") # sanity check
+            indivForce <- indivForce *  spa.force
+
+            ## prevent over-shooting R0
+            indivForce[indivForce>1] <- 1
+
+            ## note: without scaling, we may risk overshooting R0
+            ## as apply(K,1,sum) can be > 1
+        }
+
+        ## temporal (spatial) force of infection * R0
+        indivForce <- indivForce * R0[res$group]
 
         ## global force of infection (R0 \sum_j I_t^j / N)
-        N <- res$dynam$nrec[t] + res$dynam$ninf[t] + res$dynam$nsus[t]
+        N <- res$dynam$nrec[t] + res$dynam$ninf[t] + res$dynam$nsus[t] # this may change because of imports
         globForce <- sum(indivForce)/N
 
         ## stop if no ongoing infection in the population
@@ -153,22 +219,35 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         ## number of new infections
         nbNewInf <- rbinom(1, size=res$dynam$nsus[t], prob=p)
 
+
+        ## HANDLE NEW INTERNAL INFECTIONS ##
         if(nbNewInf>0){
-            ## dates of new infections
+            ## dates of new infections ##
             res$dates <- c(res$dates, rep(t,nbNewInf))
 
-            ## ancestries of the new cases
-            temp <- as.vector(rmultinom(1, size=nbNewInf, prob=indivForce))
-            newAnces <- rep(which(temp>0), temp[which(temp>0)])
+            ## identify the infectors of the new cases ##
+            newAnces <- sample(res$id, size=nbNewInf, replace=TRUE, prob=indivForce)
             res$ances <- c(res$ances,newAnces)
 
-            ## groups of the new cases
+            ## find the groups of the new cases ##
             newGroup <- choose.group(nbNewInf)
             res$group <- c(res$group,newGroup)
 
-            ## dna sequences of the new cases
-            ##newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], t-res$dates[i]))) # mol. clock per unit time
-            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1))) # mol. clock per generation
+            ## id of the new cases ##
+            if(!spatial){ # non-spatial case - ID doesn't matter
+                areSus <- setdiff(1:N, res$id) # IDs of susceptibles
+                newId <- sample(areSus, size=nbNewInf, replace=FALSE)
+                res$id <- c(res$id, newId)
+            } else {
+                for(i in 1:nbNewInf){ # for each new infection
+                    areSus <- setdiff(1:N, res$id) # IDs of susceptibles
+                    newId <- sample(areSus, 1, prob=k.spa[newAnces[i],areSus]) # prob depend on location
+                    res$id <- c(res$id, newId)
+                }
+            }
+
+            ## dna sequences of the new cases ##
+            newSeq <- t(sapply(newAnces, function(i) seq.dupli(res$dna[i,], 1)))
             res$dna <- rbind(res$dna, newSeq)
         }
 
@@ -182,6 +261,16 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
             ## ancestries of the imported cases
             res$ances <- c(res$ances, rep(NA, nbImpCases))
+
+            ## id of the imported cases
+            newId <- seq(N+1, by=1, length=nbImpCases)
+            res$id <- c(res$id, newId)
+
+            ## spatial coord of the new id
+            if(spatial){
+                newXy <- matrix(runif(nbImpCases*2, min=0, max=area.size), ncol=2)
+                res$xy <- rbind(res$xy, newXy)
+            }
 
             ## group of the imported cases
             res$group <- c(res$group, choose.group(nbImpCases))
@@ -200,7 +289,6 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
     ## SHAPE AND RETURN OUTPUT ##
     res$n <- nrow(res$dna)
-    res$id <- 1:res$n
 
     findNmut <- function(i){
         if(!is.na(res$ances[i]) && res$ances[i]>0){
