@@ -251,6 +251,7 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spainfo, param *par, 
     default:
 	break;
     }
+ 
     /* RETURN */
     filter_logprob(&out);
 
