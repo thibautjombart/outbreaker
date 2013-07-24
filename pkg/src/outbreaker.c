@@ -103,7 +103,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
    /*  Rprintf("\nBefore check init LL\n");fflush(stdout);fflush(stdout); */
 
     mcmcPar = alloc_mcmc_param(dat->n);
-    init_mcmc_param(mcmcPar, dat, (bool) *move_mut, move_alpha, move_kappa, (bool) *move_Tinf, 
+    init_mcmc_param(mcmcPar, par, dat, (bool) *move_mut, move_alpha, move_kappa, (bool) *move_Tinf, 
 		    (bool) *move_pi, (bool) *move_spa, (bool) *find_import, *burnin, *find_import_at);
     /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
     /* print_mcmc_param(mcmcPar); */

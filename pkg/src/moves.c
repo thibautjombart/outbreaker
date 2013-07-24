@@ -308,7 +308,7 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spain
 
     /* MOVEMENTS AND CORRECTIONS ARE MODEL-DEPENDENT*/
    /* switch across models */
-    switch(par->spa_model){
+    switch(currentPar->spa_model){
 	/* NULL MODEL - NO SPATIAL INFO */
 	/* no movement */
     case 0:
@@ -337,7 +337,7 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spain
     logRatio -= loglikelihood_spa_all(dat, spainfo, currentPar, rng);
 
     /* add correction (MH) for lognormal proposal if needed */
-    if(par->spa_model==1){
+    if(currentPar->spa_model==1){
 	logRatio += log(tempPar->spa_param1) - log(currentPar->spa_param1);
     }
 
@@ -371,7 +371,7 @@ void move_spa2(param *currentPar, param *tempPar, data *dat, spatial_dist *spain
 
     /* MOVEMENTS AND CORRECTIONS ARE MODEL-DEPENDENT*/
    /* switch across models */
-    switch(par->spa_model){
+    switch(currentPar->spa_model){
 	/* NULL MODEL - NO SPATIAL INFO */
 	/* no movement */
     case 0:
