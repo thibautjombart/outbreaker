@@ -72,7 +72,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
     init_param(par, dat,  gen, ances, init_kappa, *pi_param1, *pi_param2, *init_mu1, *init_gamma, *init_spa1, *init_spa2, *spa1_prior, *spa2_prior, *outlier_threshold, *mutModel, *spaModel, rng);
-    print_param(par);
+    /* print_param(par); */
 
 
     /* COMPUTE GENETIC DISTANCES */
@@ -83,8 +83,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CONVERT AND STORE SPATIAL DISTANCES */
     spatialinfo = doublevec2spatial_dist(distMat, n);
-    Rprintf("\n>>> SPATIAL info <<<\n");
-    print_spatial_dist(spatialinfo);
+    /* Rprintf("\n>>> SPATIAL info <<<\n"); */
+    /* print_spatial_dist(spatialinfo); */
 
 
    /*  /\* COMPUTE PRIORS *\/ */
