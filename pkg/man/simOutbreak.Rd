@@ -15,7 +15,8 @@
 \usage{
 simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=10000,
     mu.transi=1e-04, mu.transv=mu.transi/2, rate.import.case=0.01,
-    diverg.import=10, group.freq=1)
+    diverg.import=10, group.freq=1, spatial=TRUE, disp=0.1,
+    area.size=10, reach=1, plot=spatial)
 \method{print}{simOutbreak}(x, \dots)
 \method{[}{simOutbreak}(x, i, j, drop=FALSE)
 \method{labels}{simOutbreak}(object, \dots)
@@ -27,53 +28,90 @@ simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=10000,
            annot=c("dist","n.gen"), sep="/", \dots)
 }
 \arguments{
-  \item{R0}{the basic reproduction number; to use
-several groups, provide a vector with several values.}
-  \item{infec.curve}{a \code{numeric} vector describing the
-individual infectiousness at time t=0, 1, \dots}
+
+ \item{R0}{the basic reproduction number; to use several
+  groups, provide a vector with several values.}
+
+  \item{infec.curve}{a \code{numeric} vector describing the individual
+infectiousness at time t=0, 1, \dots}
+
   \item{n.hosts}{the number of susceptible hosts at the begining of the
 outbreak}
+
   \item{duration}{the number of time steps for which simulation is run}
+
   \item{seq.length}{an integer indicating the length of the simulated
     haplotypes, in number of nucleotides.}
-  \item{mu.transi}{the rate of transitions, in number of mutation per site and per
-    time unit.}
-  \item{mu.transv}{the rate of transversions, in number of mutation per site and per
-    time unit.}
-%   \item{tree}{a \code{logical} indicating whether a (minimum evolution)
-% tree of the outbreak should be included in the output.}
+
+  \item{mu.transi}{the rate of transitions, in number of mutation per
+    site and per time unit.}
+
+  \item{mu.transv}{the rate of transversions, in number of mutation per
+    site and per time unit.}
+
   \item{rate.import.case}{the rate at which cases are imported at each
    time step.}
+
   \item{diverg.import}{the number of time steps to the MRCA of all
   imported cases.}
+
   \item{group.freq}{the frequency of the different groups; to use
 several groups, provide a vector with several values.}
+
+  \item{spatial}{a logical indicating whether the spatial model should
+  be used.}
+
+  \item{disp}{the magnitude of dispersal (standard deviation of a normal
+  distribution).}
+
+  \item{area.size}{the size of the (square) area, if a spatial model is used.}
+
+  \item{reach}{the mean distance for an infectious contact to occur.}
+
+  \item{plot}{a logical indicating whether the outbreak should be
+  plotted during the simulation (only available, and used by default,
+  for the spatial model).}
+
   \item{x,object}{\code{simOutbreak} objects.}
-  \item{i,j, drop}{\code{i} is a vector used for subsetting the object. For
-    instance, \code{i=1:3} will retain only the first three haplotypes of the
-    outbreak. \code{j} and \code{drop} are only provided for compatibility,
-    but not used.}
+
+  \item{i,j, drop}{\code{i} is a vector used for subsetting the
+    object. For instance, \code{i=1:3} will retain only the first three
+    haplotypes of the outbreak. \code{j} and \code{drop} are only
+    provided for compatibility, but not used.}
+
   \item{y}{present for compatibility with the generic 'plot'
 method. Currently not used.}
+
   % \item{cex}{a size factor for the vertices of the plotted graph.}
   \item{col}{the color of the vertices of the plotted graph.}
+
   % \item{label}{the labels of the vertices of the plotted graph.}
   \item{edge.col}{the color of the edges of the plotted graph;
-overridden by \code{col.edge.by}.}
+  overridden by \code{col.edge.by}.}
+
   \item{col.edge.by}{a character indicating the type of information to
 be used to color the edges; currently, the only valid value is "dist"
 (distances, in number of mutations). Other values are ignored.}
-  \item{vertex.col}{the colors to be used for the vertices (i.e., cases).}
+
+  \item{vertex.col}{the colors to be used for the vertices (i.e.,
+  cases).}
+
   \item{edge.col.pal}{the color palette to be used for the edges; if
-NULL, a grey scale is used, with darker shades representing larger values.}
+NULL, a grey scale is used, with darker shades representing larger
+values.}
+
   \item{annot}{a character indicating the information to be used to
 annotate the edges; currently accepted values are "dist" (genetic
 distances, in number of mutations), and "n.gen" (number of generations
 between cases).}
+
   \item{sep}{a character used to separate fields used to annotate the
-edges, whenever more than one type of information is used for annotation.}
+edges, whenever more than one type of information is used for
+annotation.}
+
   % \item{lwd}{the width of the edges of the plotted graph.}
   \item{\dots}{further arguments to be passed to other methods}
+
 }
 \author{
 Implementation by Thibaut Jombart \email{t.jombart@imperial.ac.uk}
@@ -97,6 +135,7 @@ of susceptible, infected, or recovered in the population. \cr
 }
 }
 \examples{
+\dontrun{
 dat <- list(n=0)
 
 ## simulate data with at least 30 cases
@@ -117,6 +156,17 @@ mtext(side=3, text="nb mutations / nb generations")
 
 ## plot population dynamics
 head(dat$dynam,15)
-matplot(dat$dynam[1:max(dat$dates),],xlab="time",
+matplot(dat$dynam[1:max(dat$onset),],xlab="time",
    ylab="nb of individuals", pch=c("S","I","R"), type="b")
+
+
+## spatial model
+w <-  exp(-sqrt((1:40)))
+x <- simOutbreak(2, w, spatial=TRUE,
+                 duration=500, disp=0.1, reach=.2)
+
+## spatial model, no dispersal
+x <- simOutbreak(.5, w, spatial=TRUE,
+                 duration=500, disp=0, reach=5)
+}
 }

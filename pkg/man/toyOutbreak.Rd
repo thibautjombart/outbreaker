@@ -26,7 +26,7 @@
 w <- c(0, 0.5, 1, 0.75)
 ## note: this works only if outbreak has at least 30 case
 dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100)[1:30]
-collecDates <- dat$dates + sample(0:3, size=30, replace=TRUE, prob=w)
+collecDates <- dat$onset + sample(0:3, size=30, replace=TRUE, prob=w)
 
 ## command line to analyse the data (4 runs in parallel)
 res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
