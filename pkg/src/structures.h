@@ -58,6 +58,7 @@ typedef struct{
     double pi; /* proportion of observed cases */
     double pi_param1, pi_param2; /* parameters of the Beta prior for pi */
     double spa_param1, spa_param2; /* parameters for the spatial model */
+    double spa_param1_prior, spa_param2_prior; /* parameters of priors of spatial param */
     int kappa_temp; /* used to store temporary kappa for genetic LL */
     double outlier_threshold; /* threshold used in outlier detection */
     int mut_model; /* genetic mut_model: 0=1 mutation rate; 1=mutation1/mutation2 */
