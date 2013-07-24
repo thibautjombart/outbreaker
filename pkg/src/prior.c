@@ -101,7 +101,7 @@ double logprior_spa1(param *par){
 	/* (par->spa_param1 is the mean) */
 	/* use an exponential prior for the mean of the exponential distribution */
     case 1:
-	out = log(gsl_ran_exponential_pdf(par->spa_param1, par->));
+	out = log(gsl_ran_exponential_pdf(par->spa_param1, par->spa_param1_prior));
 	break;
 
 	/* MODEL 2 */
@@ -112,7 +112,7 @@ double logprior_spa1(param *par){
     default:
 	break;
     }
-  
+
     filter_logprob(&out);
     return out;
 }

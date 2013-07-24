@@ -13,6 +13,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                        pi.param1=10, pi.param2=1,
                        init.mu1=NULL, init.mu2=init.mu1,
                        init.spa1=NULL, init.spa2=NULL,
+                       spa1.prior=1, spa2.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                        outlier.threshold = 1000,
@@ -118,6 +119,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
         if(!inherits(dist.mat,"matrix")) dist.mat <- as.matrix(dist.mat)
         if(nrow(dist.mat) != ncol(dist.mat)) stop("matrix of distances (dist.mat) is not square")
         if(nrow(dist.mat) != length(dates)) stop("wrong dimension for the matrix of distances")
+        if(is.na(any(dist.mat))) stop("NAs in the distance matrix")
     } else {
         dist.mat <- matrix(0, ncol=length(dates), nrow=length(dates))
         spa.model <- 0L
@@ -132,9 +134,10 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
         init.spa1 <- init.spa2 <- 0
     }
     ## model 1: normal dispersal
-    if(spa.model == 0L) {
-        init.spa1 <- 0
+    if(spa.model == 1L) {
+        init.spa1 <- mean(dist.mat)
         init.spa2 <- 1
+        spa1.prior <- max(0, spa1.prior)
     }
 
 
@@ -209,6 +212,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     init.gamma <- as.double(init.gamma)
     init.spa1 <- as.double(init.spa1)
     init.spa2 <- as.double(init.spa2)
+    spa1.prior <- as.double(spa1.prior)
+    spa2.prior <- as.double(spa2.prior)
     move.mut <- as.integer(move.mut)
     move.ances <- as.integer(rep(move.ances, length=n.ind))
     move.kappa <- as.integer(rep(move.kappa, length=n.ind))
@@ -232,7 +237,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                dist.mat, spa.model,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, init.mu1, init.gamma,
-               init.spa1, init.spa2,
+               init.spa1, init.spa2, spa1.prior, spa2.prior,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.spa,
                find.import.int, burnin, find.import.at, outlier.threshold, quiet,

@@ -136,7 +136,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->spa_param1 = init_spa1;
     par->spa_param2 = init_spa2;
     par->spa_param1_prior = spa1_prior;
-    par->spa_param2_prior = init_spa2_prior;
+    par->spa_param2_prior = spa2_prior;
     par->outlier_threshold = (outlier_threshold>10.0) ? outlier_threshold : 10.0;
     /* par->phi = gsl_ran_beta (rng,phi_param1,phi_param2); */
     /* par->phi_param1 = phi_param1; */
