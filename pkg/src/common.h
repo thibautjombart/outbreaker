@@ -23,6 +23,7 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_vector.h>
+#include <gsl/gsl_sf_exp.h>
 
 /* #include <gsl/gsl_blas.h> */
 /* #include <gsl/gsl_eigen.h> */
