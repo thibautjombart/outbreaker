@@ -583,13 +583,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move pi */
 	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
 
-	/* /\* move phi *\/ */
-	/* if(mcmcPar->move_phi) move_phi(par, tempPar, dat, mcmcPar, rng); */
+	/* move spa1 */
+	if(mcmcPar->move_spa1) move_spa1(par, tempPar, dat, spainfo, mcmcPar, rng);
+
+	/* move spa2 */
+	if(mcmcPar->move_spa2) move_spa2(par, tempPar, dat, spainfo, mcmcPar, rng);
 
 	/* move Tinf */
-	/* printf("\nTinf:"); */
-	/* print_vec_int(par->Tinf); */
-	/* fflush(stdout); */
 	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
 	/* move alpha_i and kappa_i*/
