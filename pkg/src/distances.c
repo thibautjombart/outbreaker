@@ -108,7 +108,9 @@ int get_nbcommon(dna_dist * in, int i, int j){
 }
 
 
-
+double get_spatial_dist(spatial_dist * in, int i, int j){
+    return in->dist->rows[i]->values[j];
+}
 
 
 /*
