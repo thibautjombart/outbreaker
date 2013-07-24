@@ -180,7 +180,7 @@ full <- simOutbreak(R0=2, infec.curve=w, mu.transi=mu1,mu.transv=mu2)
 ####################################
 
 dat <- full[1:10]
-collecDates <- dat$dates+sample(0:(length(w)-1), length(dat$dates), replace=TRUE, prob=w)
+collecDates <- dat$onset+sample(0:(length(w)-1), length(dat$onset), replace=TRUE, prob=w)
 plot(dat, main="Data")
 
 
