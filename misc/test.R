@@ -32,4 +32,5 @@ res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5
 dat$ances
 get.tTree(res)$ances
 
+plotChains(res)
 plotChains(res, what="spa1")

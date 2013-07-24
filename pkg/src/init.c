@@ -211,10 +211,9 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 	in->tune_mu1 = FALSE;
 	in->tune_gamma = FALSE;
     }
-    if(!move_spa){
-	in->tune_spa1 = FALSE;
-	in->tune_spa2 = FALSE;
-    }
+    if(!in->move_spa1) in->tune_spa1 = FALSE;
+    if(!in->move_spa2) in->tune_spa2 = FALSE;
+
     if(!move_pi) in->tune_pi = FALSE;
     /* if(!move_phi) in->tune_phi = FALSE; */
     in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_spa1 || in->tune_spa2;
