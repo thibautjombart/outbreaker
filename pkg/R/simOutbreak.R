@@ -170,7 +170,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         res$xy <- matrix(runif(n.hosts*2, min=0, max=area.size), ncol=2)
 
         ## location when infected
-        res$inf.xy <- res$xy
+        res$inf.xy <- res$xy[1,,drop=FALSE]
     }
     res$status <- c("I", rep("S", n.hosts-1)) # will be I, S, or R
 
@@ -258,14 +258,14 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                 newId <- sample(areSus, size=nbNewInf, replace=FALSE)
                 res$id <- c(res$id, newId)
                 res$status[newId] <- "I"
-                res$inf.xy[newId] <- res$xy[newId] # set coords at infection
+                res$inf.xy <- rbind(res$inf.xy, res$xy[newId]) # set coords at infection
             } else {
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
                     newId <- sample(areSus, 1, prob=k.spa[newAnces[i],areSus]) # prob depend on location
                     res$id <- c(res$id, newId)
                     res$status[newId] <- "I"
-                    res$inf.xy[newId] <- res$xy[newId] # set coords at infection
+                    res$inf.xy <- rbind(res$inf.xy, res$xy[newId]) # set coords at infection
                 }
             }
 
@@ -320,10 +320,11 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
 
     ## SHAPE AND RETURN OUTPUT ##
+    ## data need to be reordered so that res$id is 1:res$n
     res$n <- nrow(res$dna)
-    res$id <- as.character(res$id)
-    res$ances <- as.character(res$ances)
-    rownames(res$dna) <- res$id
+    res$ances <- match(res$ances, res$id)
+    res$id <- 1:res$n
+    res$xy <- NULL # don't keep entire distribution, not right order anymore anyway
 
     findNmut <- function(i){
         if(!is.na(res$ances[i]) && res$ances[i]>0){

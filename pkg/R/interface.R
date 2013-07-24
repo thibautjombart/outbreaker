@@ -119,7 +119,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
         if(!inherits(dist.mat,"matrix")) dist.mat <- as.matrix(dist.mat)
         if(nrow(dist.mat) != ncol(dist.mat)) stop("matrix of distances (dist.mat) is not square")
         if(nrow(dist.mat) != length(dates)) stop("wrong dimension for the matrix of distances")
-        if(is.na(any(dist.mat))) stop("NAs in the distance matrix")
+        if(any(is.na(dist.mat))) stop("NAs in the distance matrix")
     } else {
         dist.mat <- matrix(0, ncol=length(dates), nrow=length(dates))
         spa.model <- 0L
