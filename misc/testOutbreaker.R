@@ -28,7 +28,7 @@ library(outbreaker)
 w <- c(0, 0.5, 1, 0.75)
 
 ## this may generate an error if outbreak doesn't take off
-dat <- simOutbreak(R0 = .5, infec.curve = w, n.hosts = 100, spatial=TRUE)[1:50]
+dat <- simOutbreak(R0 = .5, infec.curve = w, n.hosts = 100, spatial=TRUE)[1:15]
 collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
 D <- as.matrix(dist(dat$xy))
 
