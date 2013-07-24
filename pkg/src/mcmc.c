@@ -378,7 +378,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	    tune_pi(localMcmcPar,rng);
 	    /* tune_phi(localMcmcPar,rng); */
 	    /* localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_phi; */
-	    localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi;
+	    localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
 	}
 
 	/* MOVEMENTS */
@@ -557,7 +557,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    tune_pi(mcmcPar,rng);
 	    /* tune_phi(mcmcPar,rng); */
 	    /* mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi; */
-	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi;
+	    mcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
 		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */

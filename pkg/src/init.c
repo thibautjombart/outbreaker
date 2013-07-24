@@ -147,7 +147,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 
-void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_spa, bool find_import, int burnin, int find_import_at){
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_spa, bool find_import, int burnin, int find_import_at){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -193,6 +193,14 @@ void init_mcmc_param(mcmc_param *in, data *dat, bool move_mut, int *move_alpha, 
     in->move_mut = move_mut;
     in->move_spa1 = move_spa;
     in->move_spa2 = move_spa;
+    /* check that we don't move useless things */
+    if(par->spa_model==0){
+	in->move_spa1 = FALSE;
+	in->move_spa2 = FALSE;
+    }
+    if(par->spa_model==1){
+	in->move_spa2 = FALSE;
+    }
     in->move_Tinf = move_Tinf;
     in->move_pi = move_pi;
     /* in->move_phi = move_phi; */
