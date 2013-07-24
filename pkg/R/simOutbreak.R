@@ -26,8 +26,8 @@ disperse <- function(xy, disp=.1, area.size=10){
 
 ## fun test:
 ## library(adegenet)
-## xy <- matrix(runif(40, min=0, max=10), ncol=2)
-## for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
+ xy <- matrix(runif(40, min=0, max=10), ncol=2)
+ for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
 
 
 
@@ -258,7 +258,6 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                 newId <- sample(areSus, size=nbNewInf, replace=FALSE)
                 res$id <- c(res$id, newId)
                 res$status[newId] <- "I"
-                res$inf.xy <- rbind(res$inf.xy, res$xy[newId]) # set coords at infection
             } else {
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
@@ -326,6 +325,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$id <- 1:res$n
     res$xy <- res$inf.xy # don't keep entire distribution, not right order anymore anyway
     res$inf.xy <- NULL # simpler to just call coords 'xy'
+    res$status <- NULL # we don't need this
 
     findNmut <- function(i){
         if(!is.na(res$ances[i]) && res$ances[i]>0){
