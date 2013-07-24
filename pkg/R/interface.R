@@ -135,8 +135,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     }
     ## model 1: normal dispersal
     if(spa.model == 1L) {
-        init.spa1 <- mean(dist.mat)
-        init.spa2 <- 1
+        init.spa1 <- 1
+        init.spa2 <- 0
         spa1.prior <- max(0.0, spa1.prior)
     }
 
