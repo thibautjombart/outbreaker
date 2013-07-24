@@ -155,7 +155,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     ## initialize results ##
     dynam <- data.frame(nsus=integer(duration+1), ninf=integer(duration+1), nrec=integer(duration+1))
     rownames(dynam) <- 0:duration
-    res <- list(n=1, dna=NULL, dates=NULL, id=NULL, ances=NULL, dynam=dynam)
+    res <- list(n=1, dna=NULL, onset=NULL, id=NULL, ances=NULL, dynam=dynam)
     res$dynam$nsus[1] <- n.hosts-1
     res$dynam$ninf[1] <- 1
     res$onset[1] <- 0
@@ -324,7 +324,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$n <- nrow(res$dna)
     res$ances <- match(res$ances, res$id)
     res$id <- 1:res$n
-    res$xy <- NULL # don't keep entire distribution, not right order anymore anyway
+    res$xy <- res$inf.xy # don't keep entire distribution, not right order anymore anyway
+    res$inf.xy <- NULL # simpler to just call coords 'xy'
 
     findNmut <- function(i){
         if(!is.na(res$ances[i]) && res$ances[i]>0){
@@ -398,6 +399,8 @@ print.simOutbreak <- function(x, ...){
     res$n <- nrow(res$dna)
     res$nmut <- x$nmut[i]
     res$ngen <- x$ngen[i]
+    res$status <- x$status[i]
+    res$xy <- x$xy[i,,drop=FALSE]
 
     ## non-trivial subsetting ##
     res$ances <- res$ances[i]
