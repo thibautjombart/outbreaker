@@ -218,7 +218,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
 
 /* SPATIAL LOG-LIKELIHOOD FOR INDIVIDUAL 'i' */
 double loglikelihood_spa_i(int i, data *dat, spatial_dist *spainfo, param *par, gsl_rng *rng){
-    double out=0.0, rate=0.0, Dij=0.0;
+    double out=0.0, Dij=0.0;
     int ances=0;
 
     /* SWITCH ACROSS MODELS */
@@ -232,10 +232,9 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spainfo, param *par, 
 	/* mean = 1/rate */
 	/* par->spa_param1 is the mean */
     case 1:
-	rate = 1.0 / par->spa_param1;
 	ances = vec_int_i(par->alpha, i);
 	Dij = get_spatial_dist(spainfo, ances, i);
-	out = rate * gsl_sf_exp(- rate * Dij);
+	out = log(gsl_ran_exponential_pdf(Dij, par->spa_param1));
 	break;
 
 	/* MODEL 2 */

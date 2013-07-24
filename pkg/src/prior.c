@@ -90,6 +90,29 @@ double logprior_pi(param *par){
 /* prior on spatial param 1 */
 double logprior_spa1(param *par){
     double out=0.0;
+
+    /* SWITCH ACROSS MODELS */
+    switch(par->spa_model){
+	/* NULL MODEL - NO SPATIAL INFO */
+    case 0:
+	break;
+
+	/* MODEL 1: exponential */
+	/* (par->spa_param1 is the mean) */
+	/* use an exponential prior for the mean of the exponential distribution */
+    case 1:
+	out = log(gsl_ran_exponential_pdf(par->spa_param1, par->));
+	break;
+
+	/* MODEL 2 */
+    case 2:
+	break;
+
+	/* DEFAULT */
+    default:
+	break;
+    }
+  
     filter_logprob(&out);
     return out;
 }

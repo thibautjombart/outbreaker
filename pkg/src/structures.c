@@ -232,6 +232,8 @@ param *alloc_param(int n){
     out->pi_param2 = 0.0;
     out->spa_param1 = 0.0;
     out->spa_param2 = 0.0;
+    out->spa_param1_prior = 0.0;
+    out->spa_param2_prior = 0.0;
     out->outlier_threshold = 1000.0;
     /* out->phi = 0.1; */
     /* out->phi_param1 = 0.0; */
@@ -273,6 +275,8 @@ void print_param(param *in){
     Rprintf("%d", in->mut_model);
     Rprintf("\n= spatial model used (parameters) =\n");
     Rprintf("%d (param1=%.5f, param2=%.5f)", in->spa_model, in->spa_param1, in->spa_param2);
+    Rprintf("\n= parameters of the spatial priors =\n");
+    Rprintf("(mean prior param1=%.5f, mean prior param2=%.5f)", in->spa_param1_prior, in->spa_param2_prior);
 
     /* Rprintf("\n= phi (proportion of external cases) =\n"); */
     /* Rprintf("%.5f", in->phi); */
@@ -295,10 +299,12 @@ void copy_param(param *in, param *out){
     out->pi_param2 = in->pi_param2;
     out->spa_param1 = in->spa_param1;
     out->spa_param2 = in->spa_param2;
+    out->spa_param1_prior = in->spa_param1_prior;
+    out->spa_param2_prior = in->spa_param2_prior;
     out->outlier_threshold = in->outlier_threshold;
     out->mut_model = in->mut_model;
     out->spa_model = in->spa_model;
-   
+
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
