@@ -26,8 +26,8 @@ disperse <- function(xy, disp=.1, area.size=10){
 
 ## fun test:
 ## library(adegenet)
- xy <- matrix(runif(40, min=0, max=10), ncol=2)
- for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
+## xy <- matrix(runif(40, min=0, max=10), ncol=2)
+## for(i in 1:2000) plot(xy <- disperse(xy), col=transp(funky(20),.8), cex=10, pch=20, main=i, xlim=c(0,10), ylim=c(0,10))
 
 
 
