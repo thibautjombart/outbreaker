@@ -6,6 +6,7 @@
 \alias{simOutbreak-class}
 \alias{as.igraph.simOutbreak}
 \alias{plot.simOutbreak}
+\alias{disperse}
 \title{Simulation of pathogen genotypes during disease outbreaks}
 \description{
   The function \code{simOutbreak} implements simulations of disease
@@ -13,19 +14,26 @@
   email the author before using them.
 }
 \usage{
-simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=10000,
-    mu.transi=1e-04, mu.transv=mu.transi/2, rate.import.case=0.01,
-    diverg.import=10, group.freq=1, spatial=TRUE, disp=0.1,
-    area.size=10, reach=1, plot=spatial)
+simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=1e4,
+            mu.transi=1e-4, mu.transv=mu.transi/2,
+            rate.import.case=0.01, diverg.import=10, group.freq=1,
+            spatial=TRUE, disp=0.1, area.size=10, reach=1, plot=spatial)
+
 \method{print}{simOutbreak}(x, \dots)
+
 \method{[}{simOutbreak}(x, i, j, drop=FALSE)
+
 \method{labels}{simOutbreak}(object, \dots)
+
 \method{as.igraph}{simOutbreak}(x, edge.col="black", col.edge.by="dist",
            vertex.col="gold", edge.col.pal=NULL,
            annot=c("dist","n.gen"), sep="/", \dots)
+
 \method{plot}{simOutbreak}(x, y=NULL, edge.col="black",
            col.edge.by="dist", vertex.col="gold", edge.col.pal=NULL,
            annot=c("dist","n.gen"), sep="/", \dots)
+
+disperse(xy, disp=.1, area.size=10)
 }
 \arguments{
 
@@ -55,22 +63,20 @@ outbreak}
   \item{diverg.import}{the number of time steps to the MRCA of all
   imported cases.}
 
-  \item{group.freq}{the frequency of the different groups; to use
-several groups, provide a vector with several values.}
-
-  \item{spatial}{a logical indicating whether the spatial model should
-  be used.}
+  \item{spatial}{a logical indicating if a spatial model should be used.}
 
   \item{disp}{the magnitude of dispersal (standard deviation of a normal
   distribution).}
 
-  \item{area.size}{the size of the (square) area, if a spatial model is used.}
+  \item{area.size}{the size of the square area to be used for spatial simulations.}
 
-  \item{reach}{the mean distance for an infectious contact to occur.}
+  \item{reach}{the mean of the exponential kernel used to determine new infections.}
 
-  \item{plot}{a logical indicating whether the outbreak should be
-  plotted during the simulation (only available, and used by default,
-  for the spatial model).}
+  \item{plot}{a logical indicating whether an animated plot of the
+  outbreak should be displayed; only available with the spatial model.}
+
+  \item{group.freq}{the frequency of the different groups; to use
+several groups, provide a vector with several values.}
 
   \item{x,object}{\code{simOutbreak} objects.}
 
@@ -108,6 +114,8 @@ between cases).}
   \item{sep}{a character used to separate fields used to annotate the
 edges, whenever more than one type of information is used for
 annotation.}
+
+  \item{xy}{spatial coordinates used as input for the dispersal process.}
 
   % \item{lwd}{the width of the edges of the plotted graph.}
   \item{\dots}{further arguments to be passed to other methods}
