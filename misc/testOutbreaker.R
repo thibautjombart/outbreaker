@@ -6,7 +6,7 @@ set.seed(2)
 ## NON-SPATIAL SIMULATION ##
 
 ## this may generate an error if outbreak doesn't take off
-dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE)[1:15]
+dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=2e-4)[1:30]
 collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
 
 
@@ -15,6 +15,7 @@ collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, pro
 
 ## run outbreaker
 res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, init.spa1=1, init.spa2=10, spa.model=0)
+res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, init.spa1=1, init.spa2=10, spa.model=0, find.import=FALSE)
 
 dat$ances
 get.tTree(res)$ances
