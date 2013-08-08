@@ -22,7 +22,7 @@ outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens,
            init.mu2=init.mu1, init.spa1=NULL, init.spa2=NULL,
            spa1.prior=1, spa2.prior=1, move.mut=TRUE, move.ances=TRUE,
            move.kappa=TRUE, move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-           outlier.threshold = 1000, quiet=TRUE,
+           outlier.threshold = 5, quiet=TRUE,
            res.file.name="chains.txt", tune.file.name="tuning.txt",
            seed=NULL )
 
@@ -39,7 +39,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
                     init.spa2=NULL, spa1.prior=1, spa2.prior=1,
                     move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                     move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-                    outlier.threshold = 1000, quiet=TRUE,
+                    outlier.threshold = 5, quiet=TRUE,
                     res.file.name="chains.txt",
                     tune.file.name="tuning.txt", seed=NULL)
 }
