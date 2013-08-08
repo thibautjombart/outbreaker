@@ -107,6 +107,7 @@ double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
 /* there are kappa*nbnucl 'draws' (possible mutation occurences) */
 /* Formula: p = mu^nbmut x (1-mu)^{(kappa x nbnucl) - nbmut} */
 double proba_mut(int nbmut, int nbnucl, int kappa, double mu){
+    double out=0.0;
     out = gsl_sf_pow_int(mu, nbmut) * gsl_sf_pow_int(1.0-mu, kappa*nbnucl - nbmut);
     return out;
 }
@@ -209,7 +210,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
 	    out += log(proba_mut(mutation1_ij(i, ances, dat, dnainfo), com_nucl_ij(i, ances, dat, dnainfo), par->kappa_temp, par->mu1));
 
 	    /* transversions */
-	    out += log(proba_mut(mutation2_ij(i, ances, dat, dnainfo), com_nucl_ij(i, ances, dat, dnainfo), par->kappa_temp,  par->gamma * par->mu2));
+	    out += log(proba_mut(mutation2_ij(i, ances, dat, dnainfo), com_nucl_ij(i, ances, dat, dnainfo), par->kappa_temp,  par->gamma * par->mu1));
 	}
 	break;
 
