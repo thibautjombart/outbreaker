@@ -269,7 +269,10 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             }
 
             ## dna sequences of the new cases ##
-            newSeq <- t(sapply(match(newAnces, res$id), function(i) seq.dupli(res$dna[i,], 1)))
+            ## molecular clock / generation
+            ## newSeq <- t(sapply(match(newAnces, res$id), function(i) seq.dupli(res$dna[i,], 1)))
+            ## molecular clock / time unit
+            newSeq <- t(sapply(match(newAnces, res$id), function(i) seq.dupli(res$dna[i,], t-res$onset[match(newAnces, res$id)])))
             res$dna <- rbind(res$dna, newSeq)
         }
 
