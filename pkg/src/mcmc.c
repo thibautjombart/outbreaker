@@ -328,7 +328,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 		      data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i, j, nbTermsLike = 0;
-    double medLogLike = 0.0;
+    double meanInfluence = 0.0;
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
@@ -354,20 +354,25 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
     copy_mcmc_param(mcmcPar, localMcmcPar);
 
-    /* CREATE TEMPORARY VECTOR STORING INDIVIDUAL LIKELIHOODS */
-    vec_double *indivLogLike = alloc_vec_double(dat->n);
+    /* CREATE TEMPORARY VECTOR STORING "GLOBAL INFLUENCE" OF EACH INDIVIDUALS */
+    /* let LL be the total log-likelihood, LL[-i] the same without observation i */
+    /* and LL(i) the contrib of 'i' to the total log-likelihood */
+    /* Then: */
+    /* GI_i = LL[-i] - LL = -LL(i) */
+    /* See Hens et al. (2012) AJE, Doi: 10.1093/aje/kws006 */
+
+    vec_double *indivInfluence = alloc_vec_double(dat->n);
 
     /* RUN MCMC */
     for(i=2;i<=localMcmcPar->find_import_at;i++){
 	/* printf("i: %d ",i);fflush(stdout); */
-	/* COLLECT INFORMATION ABOUT INDIVIDUAL LIKELIHOODS */
+	/* COLLECT INFORMATION ABOUT ALL GI_i */
 	if(i>=localMcmcPar->burnin && i % outEvery == 0){
-	    /* printf("\ni=%d - computing individual likelihoods\n",i);fflush(stdout); */
 	    for(j=0;j<dat->n;j++){
-		indivLogLike->values[j] += loglikelihood_gen_i(j,dat, dnainfo, localPar, rng);
+		indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnainfo, localPar, rng);
 	    }
 	    /* printf("\nlikelihood vector:\n");fflush(stdout); */
-	    /* print_vec_double(indivLogLike); */
+	    /* print_vec_double(indivInfluence); */
 	    nbTermsLike++;
 	}
 
@@ -410,24 +415,24 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
 
     /* FIND IMPORTED CASES */
-    /* compute individual average log-like */
+    /* compute average GI_i for each individual */
     for(j=0;j<dat->n;j++){
-	indivLogLike->values[j] = vec_double_i(indivLogLike,j)/((double) nbTermsLike);
+	indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
     }
 
-    /* compute general average log-like */
-    medLogLike = mean_vec_double(indivLogLike);
+    /* compute general average GI_i */
+    meanInfluence = mean_vec_double(indivInfluence);
     /* printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout); */
     /* printf("\nIndividual loglike:\n");fflush(stdout); */
-    /* print_vec_double(indivLogLike); */
+    /* print_vec_double(indivInfluence); */
 
-    /* browse each likelihood, define outliers */
+    /* browse global influences and define outliers */
     /* printf("\n\nLooking for outliers...\n"); */
     for(j=0;j<dat->n;j++){
-	/* outliers = likelihood xxx times lower than the mean */
+	/* outliers = GI_i xxx times larger than the mean */
 	/* ('xxx' defined in par) */
-	/* printf("\nIndiv %d: loglike difference= %.5f", j+1, medLogLike - vec_double_i(indivLogLike,j));fflush(stdout); */
-	if((medLogLike - vec_double_i(indivLogLike,j)) > log(par->outlier_threshold)){
+	/* if((medLogLike - vec_double_i(indivInfluence,j)) > log(par->outlier_threshold)){ */
+	if(vec_double_i(indivInfluence,j) > (par->outlier_threshold * meanInfluence)){
 	    areOutliers->values[j] = 1;
 	    Rprintf("\nIndividual %d identified as imported case\n",j+1);
 	} else {
@@ -440,7 +445,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     free_param(localPar);
     free_param(tempPar);
     free_mcmc_param(localMcmcPar);
-    free_vec_double(indivLogLike);
+    free_vec_double(indivInfluence);
 } /* end mcmc_find_import */
 
 
