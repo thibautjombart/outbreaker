@@ -422,9 +422,11 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* compute general average GI_i */
     meanInfluence = mean_vec_double(indivInfluence);
-    /* printf("\nAverage loglike: %f\n", medLogLike);fflush(stdout); */
-    /* printf("\nIndividual loglike:\n");fflush(stdout); */
-    /* print_vec_double(indivInfluence); */
+    printf("\nAverage influence: %f\n", meanInfluence);fflush(stdout);
+    printf("\nIndividual influences:\n");fflush(stdout);
+    print_vec_double(indivInfluence);
+    printf("\nThreshold (x%d) for outlier classification: influence > %.5f\n", (int) par->outlier_threshold, par->outlier_threshold*meanInfluence);
+    fflush(stdout);
 
     /* browse global influences and define outliers */
     /* printf("\n\nLooking for outliers...\n"); */

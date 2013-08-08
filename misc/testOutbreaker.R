@@ -1,21 +1,34 @@
 
 library(outbreaker)
-w <- c(0, 0.5, 1, 0.75)
 set.seed(2)
 
+## TEST USING TOYOUTBREAK ##
+data(toyOutbreak)
+attach(toyOutbreak)
+plot(dat)
+
+res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
+
+dat$ances
+get.tTree(res)$ances
+mean(dat$ances == get.tTree(res)$ances, na.rm=TRUE)
+
+
+
+
+w <- c(0, 0.5, 1, 0.75)
+
 ## NON-SPATIAL SIMULATION ##
-
 ## this may generate an error if outbreak doesn't take off
-dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=.5e-4)[1:30]
+dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=.5e-4)[1:15]
 collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
-
+plot(dat)
 
 ## test parallel
 #res <-  outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=1e5)
 
 ## run outbreaker
-res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, init.spa1=1, init.spa2=10, spa.model=0)
-res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, init.spa1=1, init.spa2=10, spa.model=0, find.import=FALSE)
+res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, spa.model=0)
 
 dat$ances
 get.tTree(res)$ances
@@ -79,5 +92,7 @@ plotChains(res, what="spa1", type="dens")
 abline(v=mean(dist.inf))
 hist(dist.inf , col="grey",
      main="Distance of infectious contacts", xlab="Distance infector-infected")
+
+
 
 
