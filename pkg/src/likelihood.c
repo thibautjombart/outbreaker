@@ -197,7 +197,8 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
 	/* MODEL 1: only one type of mutations */
     case 1:
 	if(com_nucl_ij(i, ances, dat, dnainfo)>0){
-	    out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
+	    /* out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1)); */
+	    out += log(proba_mut(mutation1_ij(i, ances, dat, dnainfo), com_nucl_ij(i, ances, dat, dnainfo), par->kappa_temp, par->mu1));
 	}
 	break;
 
@@ -205,11 +206,10 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
     case 2:
 	if(com_nucl_ij(i, ances, dat, dnainfo)>0){
 	    /* transitions */
-	    out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->mu1));
+	    out += log(proba_mut(mutation1_ij(i, ances, dat, dnainfo), com_nucl_ij(i, ances, dat, dnainfo), par->kappa_temp, par->mu1));
 
 	    /* transversions */
-	    out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation2_ij(i, ances, dat, dnainfo), (double) com_nucl_ij(i, ances, dat, dnainfo) * (double) par->kappa_temp * par->gamma * par->mu1));
-
+	    out += log(proba_mut(mutation2_ij(i, ances, dat, dnainfo), com_nucl_ij(i, ances, dat, dnainfo), par->kappa_temp,  par->gamma * par->mu2));
 	}
 	break;
 
