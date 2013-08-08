@@ -101,6 +101,18 @@ double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
 
 
 
+/* Compute proba of ... mutations */
+/* - binomial density without the binomial coefficient - */
+/* Assume that no site can mutate twice over kappa generations */
+/* there are kappa*nbnucl 'draws' (possible mutation occurences) */
+/* Formula: p = mu^nbmut x (1-mu)^{(kappa x nbnucl) - nbmut} */
+double proba_mut(int nbmut, int nbnucl, int kappa, double mu){
+    out = gsl_sf_pow_int(mu, nbmut) * gsl_sf_pow_int(1.0-mu, kappa*nbnucl - nbmut);
+    return out;
+}
+
+
+
 
 
 /*
