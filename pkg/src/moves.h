@@ -36,6 +36,10 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 
 void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng);
 
+void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng);
+
+
+
 /* NO LONGER USED */
 /* void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng); */
 

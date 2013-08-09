@@ -528,6 +528,117 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 
 
 
+
+
+/* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
+void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+    int i, toMove=0, temp;
+    double logRatio = 0.0;
+
+
+    /* DETERMINE WHICH INDIVIDUAL TO MOVE */
+    draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
+
+
+    /* MOVE Tinf, kappa, alpha FOR EACH CHOSEN INDIVIDUAL */
+    for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
+	/* current individual to move */
+	toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
+
+
+	/* MOVE Tinf UNLESS USER DISABLED THIS MOVE */
+	if(mcmcPar->move_Tinf){
+	    /* move i-th Tinf */
+	    tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
+
+	    /* constraint: Tinf_i <= t_i */
+	    if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
+
+	    /* constraint: Tinf_i >= -truncW */
+	    if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW;
+	}
+
+
+	/* MOVE KAPPA */
+	/* if not imported and moveable */
+	if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
+	    /* movement */
+	    temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
+
+	    /* needs to be on [1;maxK]*/
+	    if(temp < 1) {
+		temp = 1;
+	    } else if(temp>gen->maxK){
+		temp = gen->maxK;
+	    }
+	    /* store new value of kappa_i */
+	    tempPar->kappa->values[toMove] = temp;
+	}
+
+
+	/* MOVE ALPHA IF MOVEABLE  */
+	if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
+	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, currentPar, mcmcPar, rng);
+	}
+
+
+	/* ACCEPT/REJECT STEP */
+	/* compute the likelihood ratio */
+	logRatio = loglikelihood_all(toMove, dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(toMove, dat, dnainfo, spainfo, gen, currentPar, rng);
+
+	/* /\* MH correction *\/ */
+	/* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
+
+	/* /\* debugging *\/ */
+	/* ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
+	/* ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng); */
+
+	/* if p(new/old) > 1, accept new */
+	if(logRatio>=0.0) {
+	    /* /\* debugging *\/ */
+	    /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+	    /* fflush(stdout); */
+
+	    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
+	    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
+	    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+	    mcmcPar->n_accept_Tinf += 1;
+	    mcmcPar->n_accept_kappa += 1;
+	    mcmcPar->n_accept_alpha += 1;
+	} else { /* else accept new with proba (new/old) */
+	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+		/* /\* debugging *\/ */
+		/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+		/* fflush(stdout); */
+		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
+		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
+		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+		mcmcPar->n_accept_Tinf += 1;
+		mcmcPar->n_accept_kappa += 1;
+		mcmcPar->n_accept_alpha += 1;
+	    } else { /* reject */
+		tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
+		tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove);
+		tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
+		mcmcPar->n_reject_Tinf += 1;
+		mcmcPar->n_reject_kappa += 1;
+		mcmcPar->n_reject_alpha += 1;
+	    }
+	} /* end  ACCEPT/REJECT STEP */
+    } /* end for loop (for all 'i' to move) */
+} /* end move_Tinf_alpha_kappa */
+
+
+
+
+
+
+
+
+
+
+
+
 /* NO LONGER USED */
 
 /* /\* MOVE VALUES OF ALPHA *\/ */
