@@ -63,11 +63,12 @@ library(outbreaker)
 w <- c(0, 0.5, 1, 0.75)
 
 ## this may generate an error if outbreak doesn't take off
-dat <- simOutbreak(R0 = 1.5, infec.curve = w, n.hosts = 100, spatial=TRUE)[1:15]
+dat <- simOutbreak(R0 = 1.5, infec.curve = w, n.hosts = 100, spatial=TRUE)[1:35]
 collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
 D <- as.matrix(dist(dat$xy))
 
-res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5e4, spa.model=1, find.import=FALSE)
+res <-  outbreaker.parallel(3,dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5e4, spa.model=1, find.import=FALSE)
+plotChains(res)
 
 temp1 <- dat$ances
 temp2 <- get.tTree(res)$ances
