@@ -9,10 +9,18 @@ plot(dat)
 
 res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
 
-dat$ances
-get.tTree(res)$ances
-mean(dat$ances == get.tTree(res)$ances, na.rm=TRUE)
+temp1 <- dat$ances
+temp2 <- get.tTree(res)$ances
+temp1[is.na(temp1)] <- 0
+temp2[is.na(temp2)] <- 0
+df <- data.frame(true=temp1, recons=temp2, diff=ifelse(temp1!=temp2, "!", " "))
+df
+mean(temp1==temp2)
 
+areDifferent <- which(temp1 != temp2)
+discrep <- lapply(areDifferent, function(i) table(res$chains[[paste("alpha",i,sep="_")]], res$chains[[paste("kappa",i,sep="_")]]))
+names(discrep) <- paste("ancestry of", areDifferent, ":", apply(df[areDifferent,], 1, paste, collapse=" "))
+discrep
 
 
 
@@ -20,20 +28,33 @@ w <- c(0, 0.5, 1, 0.75)
 
 ## NON-SPATIAL SIMULATION ##
 ## this may generate an error if outbreak doesn't take off
-dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=.5e-4)[1:15]
-collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
+dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=.5e-4)[1:30]
+##collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
+collecDates <- dat$onset + 2
 plot(dat)
 
 ## test parallel
 #res <-  outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=1e5)
 
 ## run outbreaker
-res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, spa.model=0)
+##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, spa.model=0)
+res <-  outbreaker.parallel(3,dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, spa.model=0)
 
-dat$ances
-get.tTree(res)$ances
-mean(dat$ances == get.tTree(res)$ances, na.rm=TRUE)
+plotChains(res)
 
+plot(dat)
+temp1 <- dat$ances
+temp2 <- get.tTree(res)$ances
+temp1[is.na(temp1)] <- 0
+temp2[is.na(temp2)] <- 0
+df <- data.frame(true=temp1, recons=temp2, diff=ifelse(temp1!=temp2, "!", " "))
+df
+mean(temp1==temp2)
+
+areDifferent <- which(temp1 != temp2)
+discrep <- lapply(areDifferent, function(i) table(res$chains[[paste("alpha",i,sep="_")]], res$chains[[paste("kappa",i,sep="_")]]))
+names(discrep) <- paste("ancestry of", areDifferent, ":", apply(df[areDifferent,], 1, paste, collapse=" "))
+discrep
 
 
 ## SPATIAL SIMULATION ##
@@ -48,9 +69,19 @@ D <- as.matrix(dist(dat$xy))
 
 res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5e4, spa.model=1, find.import=FALSE)
 
-dat$ances
-get.tTree(res)$ances
-mean(dat$ances == get.tTree(res)$ances, na.rm=TRUE)
+temp1 <- dat$ances
+temp2 <- get.tTree(res)$ances
+temp1[is.na(temp1)] <- 0
+temp2[is.na(temp2)] <- 0
+df <- data.frame(true=temp1, recons=temp2, diff=ifelse(temp1!=temp2, "!", " "))
+df
+mean(temp1==temp2)
+
+areDifferent <- which(temp1 != temp2)
+discrep <- lapply(areDifferent, function(i) table(res$chains[[paste("alpha",i,sep="_")]], res$chains[[paste("kappa",i,sep="_")]]))
+names(discrep) <- paste("ancestry of", areDifferent, ":", apply(df[areDifferent,], 1, paste, collapse=" "))
+discrep
+
 
 dist.inf <- na.omit(sapply(1:dat$n, function(i) D[dat$id[i], dat$ances[i]]))
 mean(dist.inf)
@@ -77,10 +108,18 @@ D <- as.matrix(dist(dat$xy))
 
 res <-  outbreaker.parallel(3, dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=1e5, spa.model=1)
 
+temp1 <- dat$ances
+temp2 <- get.tTree(res)$ances
+temp1[is.na(temp1)] <- 0
+temp2[is.na(temp2)] <- 0
+df <- data.frame(true=temp1, recons=temp2, diff=ifelse(temp1!=temp2, "!", " "))
+df
+mean(temp1==temp2)
 
-dat$ances
-get.tTree(res)$ances
-mean(dat$ances == get.tTree(res)$ances, na.rm=TRUE)
+areDifferent <- which(temp1 != temp2)
+discrep <- lapply(areDifferent, function(i) table(res$chains[[paste("alpha",i,sep="_")]], res$chains[[paste("kappa",i,sep="_")]]))
+names(discrep) <- paste("ancestry of", areDifferent, ":", apply(df[areDifferent,], 1, paste, collapse=" "))
+discrep
 
 dist.inf <- na.omit(sapply(1:dat$n, function(i) D[dat$id[i], dat$ances[i]]))
 mean(dist.inf)
