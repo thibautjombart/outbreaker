@@ -584,7 +584,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood ratio */
-	logRatio = loglikelihood_all(toMove, dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(toMove, dat, dnainfo, spainfo, gen, currentPar, rng);
+	logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
 
 	/* /\* MH correction *\/ */
 	/* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
