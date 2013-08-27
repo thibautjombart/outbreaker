@@ -29,7 +29,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
         move.mut <- FALSE
         find.import <- FALSE
         init.tree <- "star"
-        init.mu1 <- 0
+        init.mu1 <- init.mu2 <-0
         init.gamma <- 1
     }
 
@@ -94,6 +94,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     ## determine gamma
     if(!is.null(init.mu1) && !is.null(init.mu2)){
         init.gamma <- init.mu2/init.mu1
+        if(is.na(init.gamma) || is.infinite(init.gamma)) init.gamma <- 1 # in case rates are both 0
     } else{
         init.gamma <- 1
     }
