@@ -443,19 +443,23 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     fflush(stdout);
 
     /* browse global influences and define outliers */
+    /* (only if at least 5 cases have a computable influence) */
     /* printf("\n\nLooking for outliers...\n"); */
-    for(j=0;j<dat->n;j++){
+    if(nbCasesWithInfluence>4){
+      for(j=0;j<dat->n;j++){
 	/* outliers = GI_i xxx times larger than the mean */
 	/* ('xxx' defined in par) */
 	/* if((medLogLike - vec_double_i(indivInfluence,j)) > log(par->outlier_threshold)){ */
 	if(vec_double_i(indivInfluence,j) > (par->outlier_threshold * meanInfluence)){
-	    areOutliers->values[j] = 1;
-	    Rprintf("\nIndividual %d identified as imported case\n",j+1);
+	  areOutliers->values[j] = 1;
+	  Rprintf("\nIndividual %d identified as imported case\n",j+1);
 	} else {
-	    areOutliers->values[j] = 0;
+	  areOutliers->values[j] = 0;
 	}
-    } /* end setting outliers */
-
+      } /* end setting outliers */
+    } else {
+      Rprintf("\nLess than 5 cases have a genetic sequence - aborting outlier detection");
+    }
 
     /* FREE TEMPORARY PARAMETERS */
     free_param(localPar);
