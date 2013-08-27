@@ -419,12 +419,17 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* FIND IMPORTED CASES */
     /* compute average GI_i for each individual */
+    /* also compute mean influence across sequenced individuals */
+    meanInfluence = 0.0;
     for(j=0;j<dat->n;j++){
 	indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
-    }
 
-    /* compute general average GI_i */
-    meanInfluence = mean_vec_double(indivInfluence);
+	/* only individuals with a genetic sequence are taken into account */
+  	if(vec_int_i(dat->idxCasesInDna, i)>=0) meanInfluence =+ indivInfluence->values[j];
+    }
+    meanInfluence = meanInfluence/dat->n;
+
+    /* meanInfluence = mean_vec_double(indivInfluence); */
     printf("\nAverage influence: %f\n", meanInfluence);fflush(stdout);
     printf("\nIndividual influences:\n");fflush(stdout);
     print_vec_double(indivInfluence);
