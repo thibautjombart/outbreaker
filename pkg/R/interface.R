@@ -154,9 +154,14 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
     diag(canBeAnces) <- FALSE
 
     if(is.character(init.tree)){
+        ## check init
+        if(init.tree=="seqTrack" && !all(1:n.ind %in% idx.dna)) {
+            warning("Can't use seqTrack initialization with missing DNA sequences - using a star-like tree")
+            init.tree <- "star"
+        }
+
         ## seqTrack init
         if(init.tree=="seqTrack"){
-            if(!all(1:n.ind %in% idx.dna)) stop("can't use seqTrack initialization with missing DNA sequences")
             D <- as.matrix(dist.dna(dna, model="TN93"))
             D[!canBeAnces] <- 1e15
             ances <- apply(D,2,which.min)-1 # -1 for compatibility with C
