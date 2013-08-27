@@ -327,7 +327,7 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
 		      data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i, j, nbTermsLike = 0;
+  int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
     double meanInfluence = 0.0;
 
     /* OUTPUT TO SCREEN - HEADER */
@@ -421,13 +421,19 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     /* compute average GI_i for each individual */
     /* also compute mean influence across sequenced individuals */
     meanInfluence = 0.0;
+    nbCasesWithInfluence = 0;
     for(j=0;j<dat->n;j++){
-	indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
+      /* influence for individuals */
+      indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
 
-	/* only individuals with a genetic sequence are taken into account */
-  	if(vec_int_i(dat->idxCasesInDna, j)>=0) meanInfluence =+ indivInfluence->values[j];
+      /* average influence across individuals */
+      /* (only cases with a genetic sequence are taken into account) */
+  	if(vec_int_i(dat->idxCasesInDna, j)>=0) {
+	  meanInfluence += indivInfluence->values[j];
+	  nbCasesWithInfluence++;
+	}
     }
-    meanInfluence = meanInfluence/dat->n;
+    meanInfluence = meanInfluence/nbCasesWithInfluence;
 
     /* meanInfluence = mean_vec_double(indivInfluence); */
     printf("\nAverage influence: %f\n", meanInfluence);fflush(stdout);
