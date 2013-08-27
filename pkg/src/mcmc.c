@@ -425,7 +425,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
 
 	/* only individuals with a genetic sequence are taken into account */
-  	if(vec_int_i(dat->idxCasesInDna, i)>=0) meanInfluence =+ indivInfluence->values[j];
+  	if(vec_int_i(dat->idxCasesInDna, j)>=0) meanInfluence =+ indivInfluence->values[j];
     }
     meanInfluence = meanInfluence/dat->n;
 
