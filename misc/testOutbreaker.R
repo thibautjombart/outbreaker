@@ -136,3 +136,16 @@ hist(dist.inf , col="grey",
 
 
 
+### test missing sequences ###
+library(outbreaker)
+set.seed(2)
+
+## TEST USING TOYOUTBREAK ##
+data(toyOutbreak)
+attach(toyOutbreak)
+dat <- dat[1:15]
+plot(dat)
+
+seq.for.cases <- c(1,2,3,8,15,4,9,7,11)
+
+res <-  outbreaker(dna=dat$dna[seq.for.cases,], idx.dna=seq.for.cases, dates=collecDates,w.dens=w, n.iter=5e4)
