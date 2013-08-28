@@ -371,8 +371,18 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	    for(j=0;j<dat->n;j++){
 		indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnainfo, localPar, rng);
 	    }
-	    /* printf("\nlikelihood vector:\n");fflush(stdout); */
+	    /* DEBUGGING */
+	    /* printf("\ninfluence values:\n");fflush(stdout); */
 	    /* print_vec_double(indivInfluence); */
+
+	    /* printf("\nancestries:\n");fflush(stdout); */
+	    /* print_vec_int(par->alpha); */
+
+	    /* printf("\nmost recent sequenced ancestors:\n");fflush(stdout); */
+	    /* for(j=0;j<dat->n;j++){ */
+	    /*   printf("\nancestor of %d: %d",j,find_sequenced_ancestor(j, dat, dnainfo, par)); */
+	    /*   fflush(stdout); */
+	    /* } */
 	    nbTermsLike++;
 	}
 
