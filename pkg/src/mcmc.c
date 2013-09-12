@@ -418,8 +418,8 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move Tinf, kappa_i and alpha_i alltogether */
 	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
 
-	/* /\* move Tinf *\/ */
-	/* if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng); */
+	/* move Tinf */
+	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
 
 	/* /\* move alpha_i and kappa_i*\/ */
 	/* move_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng); */
@@ -446,10 +446,10 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     meanInfluence = meanInfluence/nbCasesWithInfluence;
 
     /* meanInfluence = mean_vec_double(indivInfluence); */
-    printf("\nAverage influence: %f\n", meanInfluence);fflush(stdout);
-    printf("\nIndividual influences:\n");fflush(stdout);
+    Rprintf("\nAverage influence: %f\n", meanInfluence);fflush(stdout);
+    Rprintf("\nIndividual influences:\n");fflush(stdout);
     print_vec_double(indivInfluence);
-    printf("\nThreshold (x%d) for outlier classification: influence > %.5f\n", (int) par->outlier_threshold, par->outlier_threshold*meanInfluence);
+    Rprintf("\nThreshold (x%d) for outlier classification: influence > %.5f\n", (int) par->outlier_threshold, par->outlier_threshold*meanInfluence);
     fflush(stdout);
 
     /* browse global influences and define outliers */
@@ -627,8 +627,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move Tinf, kappa_i and alpha_i alltogether */
 	move_Tinf_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
-	/* /\* move Tinf *\/ */
-	/* if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng); */
+	/* move Tinf */
+	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
 	/* /\* move alpha_i and kappa_i*\/ */
 	/* move_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng); */
