@@ -539,7 +539,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
     /* DETERMINE WHICH INDIVIDUAL TO MOVE */
     draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
 
-
     /* MOVE Tinf, kappa, alpha FOR EACH CHOSEN INDIVIDUAL */
     for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
 	/* current individual to move */
