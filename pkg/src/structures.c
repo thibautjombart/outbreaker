@@ -334,14 +334,14 @@ mcmc_param *alloc_mcmc_param(int n){
     }
 
     /* DETERMINE THE NUMBER OF Tinf */
-    /* set to N/3, minimum 1 */
-    out->n_move_Tinf = (int) n;
+    /* set to N/2, minimum 1 */
+    out->n_move_Tinf = (int) n/2;
     out->n_move_Tinf = out->n_move_Tinf < 1 ? 1 : out->n_move_Tinf;
 
 
     /* DETERMINE THE NUMBER OF KAPPA AND ALPHA TO MOVE */
     /* set to N/2, minimum 1 */
-    out->n_move_alpha = (int) n;
+    out->n_move_alpha = (int) n/2;
     out->n_move_alpha = out->n_move_alpha < 1 ? 1 : out->n_move_alpha;
     out->n_move_kappa = out->n_move_alpha;
 
