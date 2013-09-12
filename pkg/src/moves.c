@@ -532,7 +532,7 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, toMove=0, temp;
+    int i, toMove=0, temp, nbDays=0;
     double logRatio = 0.0;
 
 
@@ -548,7 +548,8 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* MOVE Tinf UNLESS USER DISABLED THIS MOVE */
 	if(mcmcPar->move_Tinf){
 	    /* move i-th Tinf */
-	    tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
+	    nbDays = 1+gsl_ran_poisson(rng, 1);
+	    tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? nbDays : -nbDays);
 
 	    /* constraint: Tinf_i <= t_i */
 	    if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
@@ -577,7 +578,8 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* MOVE ALPHA IF MOVEABLE  */
 	if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
-	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, currentPar, mcmcPar, rng);
+	    /* tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, currentPar, mcmcPar, rng); */
+	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, tempPar, mcmcPar, rng);
 	}
 
 
