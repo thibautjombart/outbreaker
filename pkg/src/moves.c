@@ -529,8 +529,8 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, toMove=0, temp, nbDays=0;
-    double logRatio = 0.0;
+    int i, j, Move=0, temp, nbDays=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0;
+    double logRatio = 0.0, correcRatio = 0.0;
 
 
     /* DETERMINE WHICH INDIVIDUAL TO MOVE */
@@ -538,7 +538,10 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
     /* MOVE Tinf, kappa, alpha FOR EACH CHOSEN INDIVIDUAL */
     for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
-	/* current individual to move */
+        /* initialize correction for asymetric proposal */
+        correcRatio=0.0;
+
+	/* CURRENT INDIVIDUAL TO MOVE */
 	toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
 
 
@@ -556,33 +559,62 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	}
 
 
-	/* MOVE KAPPA */
-	/* if not imported and moveable */
-	if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
-	    /* movement */
-	    temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
-
-	    /* needs to be on [1;maxK]*/
-	    if(temp < 1) {
-		temp = 1;
-	    } else if(temp>gen->maxK){
-		temp = gen->maxK;
+	/* MOVE ALPHA IF MOVEABLE  */
+	if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
+	    /* check number of possible ancestors before/after move */
+	    nbCandidCurrent=0;
+	    nbCandidTemp=0;
+	    for(j=0;j<dat->n;j++){
+	        if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,i))
+		  nbCandidCurrent++;
+		if(vec_int_i(tempPar->Tinf,j) < vec_int_i(tempPar->Tinf,i))
+		  nbCandidTemp++;
 	    }
-	    /* store new value of kappa_i */
-	    tempPar->kappa->values[toMove] = temp;
+
+	    /* propose new alpha */
+	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, tempPar, mcmcPar, rng);
+
+	    /* compute correction factor */
+	    /* log[(1/nbCandid) / (1/nbCandid*)] */
+	    /* = log(1) - log(nbCandid) - log(1) + log(= nbCandid*) */
+	    /* = log(nbCandid*) - log(nbCandid) */
+	    correcRatio += log(nbCandidTemp) - log(nbCandidCurrent);
 	}
 
 
-	/* MOVE ALPHA IF MOVEABLE  */
-	if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
-	    /* tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, currentPar, mcmcPar, rng); */
-	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, tempPar, mcmcPar, rng);
+	/* MOVE KAPPA */
+	/* if not imported and moveable */
+	if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
+	  /* propose new, 'intelligent' kappa */
+	    nbDaysTemp = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf,tempPar->alpha->values[toMove]);
+	    tempPar->kappa->values[toMove] = choose_kappa_i(nbDaysTemp, gen, rng);
+
+	    /* compute correction factor */
+	    /* log[w^(kappa_i)(T_i^inf - T_{alpha_i}^inf) / w^(kappa_i*)(T_i^inf* - T_{alpha_i*}^inf)] */
+	    /* = log(w^(kappa_i)(T_i^inf - T_{alpha_i}^inf) - log(w^(kappa_i*)(T_i^inf* - T_{alpha_i*}^inf)) */
+	    nbDaysCurrent = vec_int_i(currentPar->Tinf,toMove) - vec_int_i(currentPar->Tinf,currentPar->alpha->values[toMove]);
+	    correcRatio += log(gentime_dens(gen, nbDaysCurrent, vec_int_i(currentPar->kappa,toMove)));
+	    correcRatio -= log(gentime_dens(gen, nbDaysTemp, vec_int_i(tempPar->kappa,toMove)));
+
+	    /* /\* movement *\/ */
+	    /* temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); */
+
+	    /* /\* needs to be on [1;maxK]*\/ */
+	    /* if(temp < 1) { */
+	    /* 	temp = 1; */
+	    /* } else if(temp>gen->maxK){ */
+	    /* 	temp = gen->maxK; */
+	    /* } */
+	    /* /\* store new value of kappa_i *\/ */
+	    /* tempPar->kappa->values[toMove] = temp; */
 	}
 
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood ratio */
 	logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+
+	logRatio += correcRatio;
 
 	/* /\* MH correction *\/ */
 	/* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
