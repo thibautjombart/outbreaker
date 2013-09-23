@@ -675,7 +675,8 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 /* swap ancestries in the chain x->A->B */
 /* B is picked randomly, then A and B are swapped so that: */
 /* x->A->B becomes x->B->A */
-/* and all descendents of B become descendents of A */
+/* all descendents of B become descendents of A */
+/* all descendents of A become descendents of B */
 void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
   int i, j, x, A, B;
   double logRatio = 0.0;
@@ -695,8 +696,11 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
     A = vec_int_i(currentPar->alpha, B);
     x = vec_int_i(currentPar->alpha, A);
 
+
     /* SWAP ONLY IF: A CAN MOVE, AND A IS NOT IMPORTED (should be redundant) */
     if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && A>-1){
+      Rprintf("\nswapping %d->%d->%d to %d->%d->%d ", x,A,B,x,B,A);fflush(stdout);
+
       /* SWAP ANCESTRIES */
       tempPar->alpha->values[A] = B; /* (x->A) changes to (B->A) */
       tempPar->alpha->values[B] = x; /* (A->B) changes to (x->B) */
@@ -707,44 +711,54 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
       /* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A */
       for(j=0;j<dat->n;j++){
-	/* if a case can move and was descendent of B... */
-	if(vec_double_i(mcmcPar->move_alpha, j)>0.0 && vec_int_i(currentPar->alpha, j)==B){
-	  tempPar->alpha->values[j] = A;
+	/* if a case can move... */
+	if(vec_double_i(mcmcPar->move_alpha, j)>0.0){
+	  /* ...and was descendent of B, it becomes descendent of A */
+	  if(vec_int_i(currentPar->alpha, j)==B){
+	    tempPar->alpha->values[j] = A;
+	    /* ...and vice-versa, a descendent of A becomes descendent of B */
+	  } else if(vec_int_i(currentPar->alpha, j)==A){
+	    tempPar->alpha->values[j] = B;
+	  }
 	}
       }
-    }
+    
 
-    /* ACCEPT/REJECT STEP */
-    /* compute the likelihood ratio */
-    logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+      /* ACCEPT/REJECT STEP */
+      /* compute the likelihood ratio */
+      logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
 
-    /* if p(new/old) > 1, accept new */
-    if(logRatio>=0.0) {
-      /* /\* debugging *\/ */
-      /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
-      /* fflush(stdout); */
-
-      currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
-      currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
-      mcmcPar->n_accept_Tinf += 1;
-      mcmcPar->n_accept_alpha += 1;
-    } else { /* else accept new with proba (new/old) */
-      if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+      /* if p(new/old) > 1, accept new */
+      if(logRatio>=0.0) {
+	Rprintf("...accepted, automatically");fflush(stdout);
 	/* /\* debugging *\/ */
-	/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+	/* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
 	/* fflush(stdout); */
-	currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
-	currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+
+	copy_param(tempPar, currentPar);
 	mcmcPar->n_accept_Tinf += 1;
 	mcmcPar->n_accept_alpha += 1;
-      } else { /* reject */
-	tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
-	tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
-	mcmcPar->n_reject_Tinf += 1;
-	mcmcPar->n_reject_alpha += 1;
-      }
-    } /* end  ACCEPT/REJECT STEP */
+      } else { /* else accept new with proba (new/old) */
+	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	  Rprintf("...accepted, by chance");fflush(stdout);
 
+	  /* /\* debugging *\/ */
+	  /* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+	  /* fflush(stdout); */
+
+	  copy_param(tempPar, currentPar);
+	  mcmcPar->n_accept_Tinf += 1;
+	  mcmcPar->n_accept_alpha += 1;
+	} else { /* reject */
+	  Rprintf("...rejected");
+
+	  copy_param(currentPar, tempPar);
+	  mcmcPar->n_reject_Tinf += 1;
+	  mcmcPar->n_reject_alpha += 1;
+	}
+      } /* end  ACCEPT/REJECT STEP */
+    }
+    Rprintf("\n");
   } /* end for loop for all moved individuals */
 
 } /* end swap_ancestries */
