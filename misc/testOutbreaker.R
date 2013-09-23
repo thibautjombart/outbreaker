@@ -7,7 +7,12 @@ data(toyOutbreak)
 attach(toyOutbreak)
 plot(dat)
 
-res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1000, find.import=FALSE)
+dat=dat[1:3]
+dat$onset=c(0,2,2)
+collecDates = c(0,2,2)
+w <- c(w,.3,.2,.1)
+
+res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=3, find.import=FALSE)
 ##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
 res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
 plotChains(res)
