@@ -14,7 +14,7 @@ int choose_kappa_i(int T, gentime *gen, gsl_rng *rng);
 
 int choose_alpha_i(int i, data *dat, param *currentPar, mcmc_param *mcmcPar, gsl_rng *rng);
 
-
+int find_date_first_import(data *dat, param *par);
 
 /*
   =====

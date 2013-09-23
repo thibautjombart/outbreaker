@@ -104,6 +104,22 @@ int choose_alpha_i(int i, data *dat, param *currentPar, mcmc_param *mcmcPar, gsl
 
 
 
+/* find date of first imported case */
+int find_date_first_import(data *dat, param *par){
+  int i, out=0, counter=0;
+
+  for(i=0;i<dat->n;i++){
+    if(vec_int_i(par->alpha, i)<0){ /* imported case */
+      if(counter==0){
+	out = vec_int_i(par->Tinf, i);
+      } else {
+	if(out > vec_int_i(par->Tinf, i)) out = vec_int_i(par->Tinf, i);
+      }
+      counter++;
+    }
+  }
+  return out;
+}
 
 
 
@@ -529,7 +545,7 @@ void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dn
 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, j, Move=0, temp, nbDays=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0;
+  int i, j, toMove=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0, firstImported=0;
     double logRatio = 0.0, correcRatio = 0.0;
 
 
@@ -547,6 +563,9 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* MOVE Tinf UNLESS USER DISABLED THIS MOVE */
 	if(mcmcPar->move_Tinf){
+  	    /* find first imported case */
+	    firstImported = find_date_first_import(dat, currentPar);
+
 	    /* move i-th Tinf */
 	    /* nbDays = 1+gsl_ran_poisson(rng, 1); */
 	    tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
@@ -554,8 +573,8 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	    /* constraint: Tinf_i <= t_i */
 	    if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
 
-	    /* constraint: Tinf_i >= -truncW */
-	    if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW;
+	    /* constraint: Tinf_i > first imported */
+	    if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1;
 	}
 
 
@@ -614,6 +633,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* compute the likelihood ratio */
 	logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
 
+	filter_logprob(&correcRatio);
 	logRatio += correcRatio;
 
 	/* /\* MH correction *\/ */
