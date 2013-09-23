@@ -418,8 +418,11 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move Tinf, kappa_i and alpha_i alltogether */
 	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
 
-	/* move Tinf */
-	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
+	/* swap ancestries */
+	swap_ancestries(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
+
+	/* /\* move Tinf *\/ */
+	/* if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng); */
 
 	/* /\* move alpha_i and kappa_i*\/ */
 	/* move_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng); */
@@ -627,8 +630,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move Tinf, kappa_i and alpha_i alltogether */
 	move_Tinf_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
-	/* move Tinf */
-	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
+	/* swap ancestries */
+	swap_ancestries(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
+
+	/* /\* move Tinf *\/ */
+	/* if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng); */
 
 	/* /\* move alpha_i and kappa_i*\/ */
 	/* move_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng); */
