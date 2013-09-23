@@ -560,7 +560,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* CURRENT INDIVIDUAL TO MOVE */
 	toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
 
-
 	/* MOVE Tinf UNLESS USER DISABLED THIS MOVE */
 	if(mcmcPar->move_Tinf){
   	    /* find first imported case */
@@ -614,18 +613,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	    nbDaysCurrent = vec_int_i(currentPar->Tinf,toMove) - vec_int_i(currentPar->Tinf,currentPar->alpha->values[toMove]);
 	    correcRatio += log(gentime_dens(gen, nbDaysCurrent, vec_int_i(currentPar->kappa,toMove)));
 	    correcRatio -= log(gentime_dens(gen, nbDaysTemp, vec_int_i(tempPar->kappa,toMove)));
-
-	    /* /\* movement *\/ */
-	    /* temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); */
-
-	    /* /\* needs to be on [1;maxK]*\/ */
-	    /* if(temp < 1) { */
-	    /* 	temp = 1; */
-	    /* } else if(temp>gen->maxK){ */
-	    /* 	temp = gen->maxK; */
-	    /* } */
-	    /* /\* store new value of kappa_i *\/ */
-	    /* tempPar->kappa->values[toMove] = temp; */
 	}
 
 
@@ -685,8 +672,82 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 
 
+/* swap ancestries in the chain x->A->B */
+/* B is picked randomly, then A and B are swapped so that: */
+/* x->A->B becomes x->B->A */
+/* and all descendents of B become descendents of A */
+void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+  int i, j, x, A, B;
+  double logRatio = 0.0;
 
+  /* DETERMINE WHICH INDIVIDUAL TO MOVE */
+  draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
 
+  /* MOVE Tinf, kappa, alpha FOR EACH CHOSEN INDIVIDUAL */
+  for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
+
+    /* CURRENT INDIVIDUAL TO MOVE */
+    /* reminder: x->A->B; x, A, B are indices of cases */
+    /* 'B': case whose ancestry is inverted */
+    /* 'A': vec_int_i(tempPar->alpha,B) */
+    /* 'x': vec_int_i(tempPar->alpha, A) */
+    B = vec_int_i(mcmcPar->idx_move_alpha, i);
+    A = vec_int_i(currentPar->alpha, B);
+    x = vec_int_i(currentPar->alpha, A);
+
+    /* SWAP ONLY IF: A CAN MOVE, AND A IS NOT IMPORTED (should be redundant) */
+    if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && A>-1){
+      /* SWAP ANCESTRIES */
+      tempPar->alpha->values[A] = B; /* (x->A) changes to (B->A) */
+      tempPar->alpha->values[B] = x; /* (A->B) changes to (x->B) */
+
+      /* SWAP TINF */
+      tempPar->Tinf->values[A] = B; /* (x->A) changes to (B->A) */
+      tempPar->Tinf->values[B] = x; /* (A->B) changes to (x->B) */
+
+      /* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A */
+      for(j=0;j<dat->n;j++){
+	/* if a case can move and was descendent of B... */
+	if(vec_double_i(mcmcPar->move_alpha, j)>0.0 && vec_int_i(currentPar->alpha, j)==B){
+	  tempPar->alpha->values[j] = A;
+	}
+      }
+    }
+
+    /* ACCEPT/REJECT STEP */
+    /* compute the likelihood ratio */
+    logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+
+    /* if p(new/old) > 1, accept new */
+    if(logRatio>=0.0) {
+      /* /\* debugging *\/ */
+      /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+      /* fflush(stdout); */
+
+      currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
+      currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+      mcmcPar->n_accept_Tinf += 1;
+      mcmcPar->n_accept_alpha += 1;
+    } else { /* else accept new with proba (new/old) */
+      if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	/* /\* debugging *\/ */
+	/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
+	/* fflush(stdout); */
+	currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
+	currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+	mcmcPar->n_accept_Tinf += 1;
+	mcmcPar->n_accept_alpha += 1;
+      } else { /* reject */
+	tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
+	tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
+	mcmcPar->n_reject_Tinf += 1;
+	mcmcPar->n_reject_alpha += 1;
+      }
+    } /* end  ACCEPT/REJECT STEP */
+
+  } /* end for loop for all moved individuals */
+
+} /* end swap_ancestries */
 
 
 /* NO LONGER USED */
