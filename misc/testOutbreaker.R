@@ -7,9 +7,14 @@ data(toyOutbreak)
 attach(toyOutbreak)
 plot(dat)
 
-##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
-res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
+res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
+##res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
 plotChains(res)
+
+
+par(mfrow=c(5,6))
+for(i in 1:30) plotChains(res, what=paste("Tinf",i,sep="_"))
+for(i in 1:30) plotChains(res, what=paste("alpha",i,sep="_"))
 
 temp1 <- dat$ances
 temp2 <- get.tTree(res)$ances
