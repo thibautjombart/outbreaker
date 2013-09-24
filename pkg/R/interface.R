@@ -28,7 +28,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
         dna <- as.DNAbin(matrix('a',ncol=10,nrow=length(dates)))
         move.mut <- FALSE
         find.import <- FALSE
-        if(init.tree=="seqTrack") init.tree <- "star"
+        if(is.character(init.tree) && match.arg(init.tree)=="seqTrack") init.tree <- "star"
         init.mu1 <- init.mu2 <-0
         init.gamma <- 1
     }
