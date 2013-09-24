@@ -65,7 +65,7 @@ int choose_kappa_i(int T, gentime *gen, gsl_rng *rng){
    -> current version would allow for weights to be defined for candidates
      (but not used; note: removing this would make the procedure faster)
 */
-int choose_alpha_i(int i, data *dat, param *currentPar, mcmc_param *mcmcPar, gsl_rng *rng){
+int choose_alpha_i(int i, data *dat, param *par, mcmc_param *mcmcPar, gsl_rng *rng){
     int j, nCandidates, idOut, out;
 
     /* GET LIST OF CANDIDATES */
@@ -73,7 +73,7 @@ int choose_alpha_i(int i, data *dat, param *currentPar, mcmc_param *mcmcPar, gsl
 
     /* candidates = infection time before T_i^inf*/
     for(j=0;j<dat->n;j++){
-	if(vec_int_i(currentPar->Tinf,j) < vec_int_i(currentPar->Tinf,i)){
+	if(vec_int_i(par->Tinf,j) < vec_int_i(par->Tinf,i)){
 	    /* store 'j' as a candidate */
 	    mcmcPar->candid_ances->values[nCandidates] =  j;
 
@@ -82,6 +82,8 @@ int choose_alpha_i(int i, data *dat, param *currentPar, mcmc_param *mcmcPar, gsl
 
 	    /* increment number of candidates */
 	    nCandidates++;
+	} else {
+	    mcmcPar->candid_ances_proba->values[j] = 0.0;
 	}
     }
 
@@ -570,8 +572,8 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	    /* tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); */
 	    tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1.0 : -1.0) * gsl_ran_poisson(rng, 1);
 
-	    /* constraint: Tinf_i <= t_i */
-	    if(vec_int_i(tempPar->Tinf,toMove) > vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove);
+	    /* constraint: Tinf_i < t_i */
+	    if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
 
 	    /* constraint: Tinf_i > first imported */
 	    if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1;
@@ -605,13 +607,14 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* if not imported and moveable */
 	if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
 	  /* propose new, 'intelligent' kappa */
-	    nbDaysTemp = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf,tempPar->alpha->values[toMove]);
+	    nbDaysTemp = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, vec_int_i(tempPar->alpha,toMove));
 	    tempPar->kappa->values[toMove] = choose_kappa_i(nbDaysTemp, gen, rng);
 
 	    /* compute correction factor */
+	    /* formula: */
 	    /* log[w^(kappa_i)(T_i^inf - T_{alpha_i}^inf) / w^(kappa_i*)(T_i^inf* - T_{alpha_i*}^inf)] */
 	    /* = log(w^(kappa_i)(T_i^inf - T_{alpha_i}^inf) - log(w^(kappa_i*)(T_i^inf* - T_{alpha_i*}^inf)) */
-	    nbDaysCurrent = vec_int_i(currentPar->Tinf,toMove) - vec_int_i(currentPar->Tinf,currentPar->alpha->values[toMove]);
+	    nbDaysCurrent = vec_int_i(currentPar->Tinf,toMove) - vec_int_i(currentPar->Tinf, vec_int_i(currentPar->alpha,toMove));
 	    correcRatio += log(gentime_dens(gen, nbDaysCurrent, vec_int_i(currentPar->kappa,toMove)));
 	    correcRatio -= log(gentime_dens(gen, nbDaysTemp, vec_int_i(tempPar->kappa,toMove)));
 	}
