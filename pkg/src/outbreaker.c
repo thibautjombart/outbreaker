@@ -53,8 +53,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna);
-    /* Rprintf("\n>>> Data <<<\n"); */
-    /* print_data(dat); */
+    Rprintf("\n>>> Data <<<\n");
+    print_data(dat);
 
 
     /* GET TIME SPAN */
@@ -77,8 +77,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* COMPUTE GENETIC DISTANCES */
     dnainfo = compute_dna_distances(dat->dna, *mutModel);
-    /* Rprintf("\n>>> DNA info <<<\n"); */
-    /* print_dna_dist(dnainfo); */
+    Rprintf("\n>>> DNA info <<<\n");
+    print_dna_dist(dnainfo);
 
 
     /* CONVERT AND STORE SPATIAL DISTANCES */
@@ -102,11 +102,11 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
    /*  /\* ALLOCATE AND INITIALIZE MCMC PARAMETERS *\/ */
    /*  Rprintf("\nBefore check init LL\n");fflush(stdout);fflush(stdout); */
 
-    mcmcPar = alloc_mcmc_param(dat->n);
+    mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *move_mut, move_alpha, move_kappa, (bool) *move_Tinf, 
 		    (bool) *move_pi, (bool) *move_spa, (bool) *find_import, *burnin, *find_import_at);
-    /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
-    /* print_mcmc_param(mcmcPar); */
+    Rprintf("\nMCMC parameters\n");fflush(stdout);
+    print_mcmc_param(mcmcPar);
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnainfo, spatialinfo, gen, par, rng);

@@ -10,8 +10,11 @@ plot(dat)
 dat=dat[1:3]
 dat$onset=c(0,2,2)
 collecDates = c(-1,2,3)
-w <- c(0,rep(.2,5))
-dna <- dat$dna[rep(1,3),]
+w <- c(0,rep(.1,20))
+dat$dna <- dat$dna[rep(1,3),]
+
+##
+res <-  outbreaker(dna=NULL, dates=collecDates,w.dens=w, n.iter=10, find.import=FALSE, init.tree=c(0,1,2), move.Tinf=FALSE, move.ances=c(0,1,1))
 
 #res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=3, find.import=FALSE)
 res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=500, find.import=FALSE, init.tree=c(0,1,2), move.Tinf=FALSE)
