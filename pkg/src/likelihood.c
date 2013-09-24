@@ -457,6 +457,11 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo
 
 
 
+
+
+
+
+
 /*
 >>>> TESTING <<<<
 */
