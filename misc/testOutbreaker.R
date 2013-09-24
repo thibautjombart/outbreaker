@@ -20,7 +20,7 @@ plot(dat)
 ## res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=500, find.import=FALSE, init.tree=c(0,1,2), move.Tinf=FALSE)
 
 ##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
-res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4)
+res <-  outbreaker.parallel(n.runs=3, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5)
 plotChains(res)
 
 

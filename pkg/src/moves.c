@@ -724,19 +724,19 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	tempPar->Tinf->values[A] = vec_int_i(currentPar->Tinf,B);
 	tempPar->Tinf->values[B] = vec_int_i(currentPar->Tinf,A);
 
-	/* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A */
-	for(j=0;j<dat->n;j++){
-	    /* if case 'j' can move... */
-	    if(vec_double_i(mcmcPar->move_alpha, j)>0.0){
-		/* ...and was descendent of B, it becomes descendent of A */
-		if(vec_int_i(currentPar->alpha, j)==B){
-		    tempPar->alpha->values[j] = A;
-		    /* ...and descendents of A becomes descendent of B (except for B!!) */
-		} else if(j!=B && vec_int_i(currentPar->alpha, j)==A){
-		    tempPar->alpha->values[j] = B;
-		}
-	    }
-	}
+	/* /\* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A *\/ */
+	/* for(j=0;j<dat->n;j++){ */
+	/*     /\* if case 'j' can move... *\/ */
+	/*     if(vec_double_i(mcmcPar->move_alpha, j)>0.0){ */
+	/* 	/\* ...and was descendent of B, it becomes descendent of A *\/ */
+	/* 	if(vec_int_i(currentPar->alpha, j)==B){ */
+	/* 	    tempPar->alpha->values[j] = A; */
+	/* 	    /\* ...and descendents of A becomes descendent of B (except for B!!) *\/ */
+	/* 	} else if(j!=B && vec_int_i(currentPar->alpha, j)==A){ */
+	/* 	    tempPar->alpha->values[j] = B; */
+	/* 	} */
+	/*     } */
+	/* } */
 
 
 	/* ACCEPT/REJECT STEP */
