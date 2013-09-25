@@ -74,6 +74,8 @@ int choose_alpha_i(int i, data *dat, param *par, mcmc_param *mcmcPar, gsl_rng *r
     /* candidates = infection time before T_i^inf*/
     for(j=0;j<dat->n;j++){
 	if(vec_int_i(par->Tinf,j) < vec_int_i(par->Tinf,i)){
+  	    /* debug */
+	  if(j==i) Rprintf("\n### Messy stuff here: proposing %d->%d",j,i);
 	    /* store 'j' as a candidate */
 	    mcmcPar->candid_ances->values[nCandidates] =  j;
 
@@ -690,11 +692,6 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
   draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
 
   /* MOVE Tinf, kappa, alpha FOR EACH CHOSEN INDIVIDUAL */
-  /* Rprintf("alpha vector"); */
-  /* print_vec_int(tempPar->alpha); */
-
-  /* Rprintf("moved alpha vector\n"); */
-  /* print_vec_int(mcmcPar->idx_move_alpha); */
 
   /* Rprintf("\n Forcing Tinf to [-2;0;1]"); */
   /* currentPar->Tinf->values[0]=-2; */
@@ -724,19 +721,36 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	tempPar->Tinf->values[A] = vec_int_i(currentPar->Tinf,B);
 	tempPar->Tinf->values[B] = vec_int_i(currentPar->Tinf,A);
 
-	/* /\* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A *\/ */
-	/* for(j=0;j<dat->n;j++){ */
-	/*     /\* if case 'j' can move... *\/ */
-	/*     if(vec_double_i(mcmcPar->move_alpha, j)>0.0){ */
-	/* 	/\* ...and was descendent of B, it becomes descendent of A *\/ */
-	/* 	if(vec_int_i(currentPar->alpha, j)==B){ */
-	/* 	    tempPar->alpha->values[j] = A; */
-	/* 	    /\* ...and descendents of A becomes descendent of B (except for B!!) *\/ */
-	/* 	} else if(j!=B && vec_int_i(currentPar->alpha, j)==A){ */
-	/* 	    tempPar->alpha->values[j] = B; */
-	/* 	} */
-	/*     } */
-	/* } */
+	/* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A */
+	for(j=0;j<dat->n;j++){
+	    /* if case 'j' can move... */
+	    if(vec_double_i(mcmcPar->move_alpha, j)>0.0){
+		/* ...and was descendent of B, it becomes descendent of A */
+		if(vec_int_i(currentPar->alpha, j)==B){
+		    tempPar->alpha->values[j] = A;
+		    if(j==A) {
+		      Rprintf("\nHere's a mess: j==A");
+		      Rprintf("\nThis happened while... ");
+		      Rprintf("\nswapping %d->%d->%d to %d->%d->%d \n", x,A,B,x,B,A);
+		      Rprintf("\nTinf vector before:  ");
+		      print_vec_int(currentPar->Tinf);
+		      Rprintf("\nTinf vector proposed:  ");
+		      print_vec_int(tempPar->Tinf);
+
+		      Rprintf("\nAlpha vector before:  ");
+		      print_vec_int(currentPar->alpha);
+		      Rprintf("\nAlpha vector proposed:  ");
+		      print_vec_int(tempPar->alpha);
+
+		      getchar();
+		    }
+		    /* ...and descendents of A becomes descendent of B (except for B!!) */
+		} else if(j!=B && vec_int_i(currentPar->alpha, j)==A){
+		    tempPar->alpha->values[j] = B;
+		    if(j==B) Rprintf("Here's the mess: j==B");
+		}
+	    }
+	}
 
 
 	/* ACCEPT/REJECT STEP */
@@ -747,34 +761,37 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	/* ll1 = loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng); */
 	/* logRatio = ll2 - ll1; */
 
-	/* Rprintf("\nswapping %d->%d->%d to %d->%d->%d \n", x,A,B,x,B,A); */
-	/* Rprintf("\nTinf vector before:  "); */
-	/* print_vec_int(currentPar->Tinf); */
-	/* Rprintf("\nTinf vector proposed:  "); */
-	/* print_vec_int(tempPar->Tinf); */
 
-	/* Rprintf("\nAlpha vector before:  "); */
-	/* print_vec_int(currentPar->alpha); */
-	/* Rprintf("\nAlpha vector proposed:  "); */
-	/* print_vec_int(tempPar->alpha); */
+	/* if(!check_loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng)){ */
+	/* /\* Rprintf("\nThis happened while... "); *\/ */
+	/* /\* Rprintf("\nswapping %d->%d->%d to %d->%d->%d \n", x,A,B,x,B,A); *\/ */
+	/* /\* Rprintf("\nTinf vector before:  "); *\/ */
+	/* /\* print_vec_int(currentPar->Tinf); *\/ */
+	/* /\* Rprintf("\nTinf vector proposed:  "); *\/ */
+	/* /\* print_vec_int(tempPar->Tinf); *\/ */
 
-	/* check_loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng); */
+	/* /\* Rprintf("\nAlpha vector before:  "); *\/ */
+	/* /\* print_vec_int(currentPar->alpha); *\/ */
+	/* /\* Rprintf("\nAlpha vector proposed:  "); *\/ */
+	/* /\* print_vec_int(tempPar->alpha); *\/ */
+
+	/* } */
 	/* Rprintf("\n"); */
 	/* Rprintf("(new LL: %f) (old LL %f)", ll2, ll1); */
 
 	/* if p(new/old) > 1, accept new */
 	if(logRatio>=0.0) {
-	    Rprintf("!!! SWAP ACCEPTED !!!");
+	    Rprintf("x");
 	    fflush(stdout);
 	    copy_param(tempPar, currentPar);
 	    mcmcPar->n_accept_Tinf += 1;
 	    mcmcPar->n_accept_alpha += 1;
 	} else { /* else accept new with proba (new/old) */
 	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-		Rprintf("!!! SWAP ACCEPTED !!!");
+		Rprintf("x");
 		/* Rprintf("(new LL: %f) (old LL %f)", ll2, ll1); */
-		fflush(stdout);
-		Rprintf("...accepted, by chance");fflush(stdout);
+		/* fflush(stdout); */
+		/* Rprintf("...accepted, by chance");fflush(stdout); */
 
 		/* /\* debugging *\/ */
 		/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
@@ -784,7 +801,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 		mcmcPar->n_accept_Tinf += 1;
 		mcmcPar->n_accept_alpha += 1;
 	    } else { /* reject */
-		/* Rprintf("...rejected"); */
+		Rprintf(".");
 
 		copy_param(currentPar, tempPar);
 		mcmcPar->n_reject_Tinf += 1;
