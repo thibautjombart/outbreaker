@@ -19,8 +19,22 @@ plot(dat)
 #res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=3, find.import=FALSE)
 ## res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=500, find.import=FALSE, init.tree=c(0,1,2), move.Tinf=FALSE)
 
-res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5,find.import=FALSE)
-##res <-  outbreaker.parallel(n.runs=3, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, find.import=FALSE)
+## for(i in 4:30){
+##     res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5,find.import=FALSE, seed=i)
+##     png(paste("seed = ",i,".png",sep=""))
+##     plotChains(res)
+##     dev.off()
+## }
+
+## ## version longue
+## for(i in 4:10){
+##     res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=2e6,find.import=FALSE, seed=i)
+##     png(paste("long - seed = ",i,".png",sep=""))
+##     plotChains(res)
+##     dev.off()
+## }
+
+res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=2e5, find.import=TRUE)
 plotChains(res)
 
 

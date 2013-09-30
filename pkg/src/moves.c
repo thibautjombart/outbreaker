@@ -16,6 +16,23 @@
   AUXILIARY FUNCTIONS
   ===================
 */
+bool look_for_aba(param *par, data *dat){
+  int B, A, ancesA;
+  for(B=0;B<dat->n;B++){
+    A = vec_int_i(par->alpha, B); /* A ancestor of B */
+    if(A>-1){
+      ancesA = vec_int_i(par->alpha, A); /*ancestor of A */
+      if(ancesA==B){
+	Rprintf("\nDetected pattern A->B->A: %d->%d->%d",A, B, A);
+	Rprintf("\nCorrdesponding Tinf: A = %d,   B = %d", vec_int_i(par->Tinf,A), vec_int_i(par->Tinf,B));
+	return TRUE;
+      }
+    }
+  }
+  return FALSE;
+} /* end look_for_aba*/
+
+
 
 
 /* SAMPLE KAPPA_I USING PROB */
@@ -465,93 +482,17 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 
 
 
-/* MOVE VALUES OF ALPHA AND KAPPA */
-void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    int i, toMove=0, temp;
-    double logRatio = 0.0;
-
-
-    /* DETERMINE WHICH ALPHA_I/KAPPA_I TO MOVE */
-    /* sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng); */
-    draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
-
-    /* MOVE EACH ALPHA_I/KAPPA_I TO MOVE */
-    /* need to propose a new kappa at the same time */
-    for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
-	toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
-
-	/* MOVE KAPPA */
-	/* if not imported and moveable */
-	if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
-	    /* movement */
-	    temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
-
-	    /* needs to be on [1;maxK]*/
-	    if(temp < 1) {
-		temp = 1;
-	    } else if(temp>gen->maxK){
-		temp = gen->maxK;
-	    }
-	    /* store new value of kappa_i */
-	    tempPar->kappa->values[toMove] = temp;
-	}
-
-	/* MOVE ALPHA */
-	/* if moveable */
-	if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
-	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, currentPar, mcmcPar, rng);
-	}
-
-	/* ACCEPT/REJECT STEP */
-	/* compute the likelihood */
-	/* logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
-	logRatio = loglikelihood_i(toMove, dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_i(toMove, dat, dnainfo, spainfo, gen, currentPar, rng);
-
-	/* /\* MH correction *\/ */
-	/* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
-
-	/* /\* debugging *\/ */
-	/* ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
-	/* ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng); */
-
-	/* if p(new/old) > 1, accept new */
-	if(logRatio>=0.0) {
-	    /* /\* debugging *\/ */
-	    /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
-	    /* fflush(stdout); */
-
-	    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
-	    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-	    /* mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new; */
-	    mcmcPar->n_accept_alpha += 1;
-	} else { /* else accept new with proba (new/old) */
-	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-		/* /\* debugging *\/ */
-		/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
-		/* fflush(stdout); */
-
-		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
-		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-		/* mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new; */
-		mcmcPar->n_accept_alpha += 1;
-	    } else { /* reject */
-		tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
-		tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove);
-		mcmcPar->n_reject_alpha += 1;
-	    }
-	} /* end  ACCEPT/REJECT STEP */
-    } /* end for loop (for all 'i' to move) */
-} /* end move_alpha_kappa */
-
-
-
 
 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
   int i, j, toMove=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0, firstImported=0;
-    double logRatio = 0.0, correcRatio = 0.0;
+  double logRatio = 0.0, correcRatio = 0.0, ll1, ll2;
 
+    /* DEBUGGING */
+    bool checkABA = look_for_aba(currentPar, dat);
+    bool oldCheckABA = checkABA;
+    if(checkABA) Rprintf("\nABA detected when entering move_Tinf_alpha_kappa");
 
     /* DETERMINE WHICH INDIVIDUAL TO MOVE */
     draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
@@ -624,7 +565,9 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood ratio */
-	logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+	ll1 = loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+	ll2 = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng);
+	logRatio = ll2-ll1;
 
 	filter_logprob(&correcRatio);
 	logRatio += correcRatio;
@@ -632,15 +575,24 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* /\* MH correction *\/ */
 	/* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
 
-	/* /\* debugging *\/ */
-	/* ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
-	/* ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng); */
 
 	/* if p(new/old) > 1, accept new */
 	if(logRatio>=0.0) {
-	    /* /\* debugging *\/ */
-	    /* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
-	    /* fflush(stdout); */
+	  /* DEBUGGING */
+	  if(!look_for_aba(currentPar, dat) && look_for_aba(tempPar, dat)) {
+	    Rprintf("\nABA created during move_Tinf_alpha_kappa");
+	    Rprintf("\nThis happened while moving %d",toMove);
+
+	    Rprintf("\naccepting automatically move from %d->%d to %d->%d (respective loglike: old:%f  new%f   correc:%f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2, correcRatio);
+
+	    Rprintf("\n====== Current param where: =======");
+	    print_param(currentPar);
+
+	    Rprintf("\n\n====== New param are: ======");
+	    print_param(tempPar);
+	    getchar();
+
+	  }
 
 	    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 	    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
@@ -649,7 +601,21 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	    mcmcPar->n_accept_kappa += 1;
 	    mcmcPar->n_accept_alpha += 1;
 	} else { /* else accept new with proba (new/old) */
-	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	  if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	    if(!look_for_aba(currentPar, dat) && look_for_aba(tempPar, dat)) {
+	      Rprintf("\nABA created during move_Tinf_alpha_kappa");
+	      Rprintf("\nThis happened while moving %d",toMove);
+
+	      Rprintf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
+
+	      Rprintf("\nCurrent param where:");
+	      print_param(currentPar);
+
+	      Rprintf("\nNew param are:");
+	      print_param(tempPar);
+	      getchar();
+	    }
+
 		/* /\* debugging *\/ */
 		/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
 		/* fflush(stdout); */
@@ -668,7 +634,16 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 		mcmcPar->n_reject_alpha += 1;
 	    }
 	} /* end  ACCEPT/REJECT STEP */
+
     } /* end for loop (for all 'i' to move) */
+
+    /* DEBUGGING */
+    checkABA = look_for_aba(currentPar, dat);
+    if(!oldCheckABA && checkABA) {
+      Rprintf("\nABA created during move_Tinf_alpha_kappa");
+      getchar();
+    } else if(checkABA) Rprintf("\nABA detected when leaving move_Tinf_alpha_kappa");
+
 } /* end move_Tinf_alpha_kappa */
 
 
@@ -687,6 +662,12 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
   int i, j, x, A, B;
   double logRatio = 0.0;
   double ll1=0.0, ll2=0.0;
+
+
+  /* DEBUGGING */
+    bool checkABA = look_for_aba(currentPar, dat);
+    bool oldCheckABA = checkABA;
+    if(checkABA) Rprintf("\nABA detected when entering swap_ancestries");
 
   /* DETERMINE WHICH INDIVIDUAL TO MOVE */
   draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
@@ -813,10 +794,115 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
     /* Rprintf("\n"); */
   } /* end for loop for all moved individuals */
 
+  /* DEBUGGING */
+    checkABA = look_for_aba(currentPar, dat);
+    if(!oldCheckABA && checkABA) {
+      Rprintf("\nABA created during swap_ancestries");
+      getchar();
+    } else if(checkABA) Rprintf("\nABA detected when leaving swap_ancestries");
+
 } /* end swap_ancestries */
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* NO LONGER USED */
+
+
+/* /\* MOVE VALUES OF ALPHA AND KAPPA *\/ */
+/* void move_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){ */
+/*     int i, toMove=0, temp; */
+/*     double logRatio = 0.0; */
+
+
+/*     /\* DETERMINE WHICH ALPHA_I/KAPPA_I TO MOVE *\/ */
+/*     /\* sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_alpha, FALSE, rng); *\/ */
+/*     draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng); */
+
+/*     /\* MOVE EACH ALPHA_I/KAPPA_I TO MOVE *\/ */
+/*     /\* need to propose a new kappa at the same time *\/ */
+/*     for(i=0;i<mcmcPar->idx_move_alpha->length;i++){ */
+/* 	toMove = vec_int_i(mcmcPar->idx_move_alpha,i); */
+
+/* 	/\* MOVE KAPPA *\/ */
+/* 	/\* if not imported and moveable *\/ */
+/* 	if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){ */
+/* 	    /\* movement *\/ */
+/* 	    temp = tempPar->kappa->values[toMove] + (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); */
+
+/* 	    /\* needs to be on [1;maxK]*\/ */
+/* 	    if(temp < 1) { */
+/* 		temp = 1; */
+/* 	    } else if(temp>gen->maxK){ */
+/* 		temp = gen->maxK; */
+/* 	    } */
+/* 	    /\* store new value of kappa_i *\/ */
+/* 	    tempPar->kappa->values[toMove] = temp; */
+/* 	} */
+
+/* 	/\* MOVE ALPHA *\/ */
+/* 	/\* if moveable *\/ */
+/* 	if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){ */
+/* 	    tempPar->alpha->values[toMove] = choose_alpha_i(toMove, dat, currentPar, mcmcPar, rng); */
+/* 	} */
+
+/* 	/\* ACCEPT/REJECT STEP *\/ */
+/* 	/\* compute the likelihood *\/ */
+/* 	/\* logRatio = loglikelihood_all(dat, dnainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, gen, currentPar, rng); *\/ */
+/* 	logRatio = loglikelihood_i(toMove, dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_i(toMove, dat, dnainfo, spainfo, gen, currentPar, rng); */
+
+/* 	/\* /\\* MH correction *\\/ *\/ */
+/* 	/\* /\\* like ratio x ( Pmove(current)/Pmove(temp) ) *\\/ *\/ */
+
+/* 	/\* /\\* debugging *\\/ *\/ */
+/* 	/\* ll1=loglikelihood_all(dat, dnainfo, gen, currentPar, rng); *\/ */
+/* 	/\* ll2=loglikelihood_all(dat, dnainfo, gen, tempPar, rng); *\/ */
+
+/* 	/\* if p(new/old) > 1, accept new *\/ */
+/* 	if(logRatio>=0.0) { */
+/* 	    /\* /\\* debugging *\\/ *\/ */
+/* 	    /\* printf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); *\/ */
+/* 	    /\* fflush(stdout); *\/ */
+
+/* 	    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove); */
+/* 	    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove); */
+/* 	    /\* mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new; *\/ */
+/* 	    mcmcPar->n_accept_alpha += 1; */
+/* 	} else { /\* else accept new with proba (new/old) *\/ */
+/* 	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /\* accept *\/ */
+/* 		/\* /\\* debugging *\\/ *\/ */
+/* 		/\* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); *\/ */
+/* 		/\* fflush(stdout); *\/ */
+
+/* 		currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove); */
+/* 		currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove); */
+/* 		/\* mcmcPar->Pmove_alpha_old = mcmcPar->Pmove_alpha_new; *\/ */
+/* 		mcmcPar->n_accept_alpha += 1; */
+/* 	    } else { /\* reject *\/ */
+/* 		tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove); */
+/* 		tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove); */
+/* 		mcmcPar->n_reject_alpha += 1; */
+/* 	    } */
+/* 	} /\* end  ACCEPT/REJECT STEP *\/ */
+/*     } /\* end for loop (for all 'i' to move) *\/ */
+/* } /\* end move_alpha_kappa *\/ */
+
+
+
+
 
 /* /\* MOVE VALUES OF ALPHA *\/ */
 /* void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){ */

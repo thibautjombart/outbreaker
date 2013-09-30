@@ -9,6 +9,7 @@
   AUXILIARY FUNCTIONS
   ===================
 */
+bool look_for_aba(param *par, data *dat);
 
 int choose_kappa_i(int T, gentime *gen, gsl_rng *rng);
 
