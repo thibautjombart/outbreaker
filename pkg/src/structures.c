@@ -177,7 +177,7 @@ double gentime_dens(gentime *in, int t, int kappa_i){
 
     /* error if requested time is <= 0 */
     if(t <= 0){
-      warning("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (min: 1).\n", t);
+      /* warning("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (min: 1).\n", t); */
       return 0.0;
     }
 
@@ -198,7 +198,7 @@ double colltime_dens(gentime *in, int t){
 
     /* error if requested time is <= 0 */
     if(t <= 0){
-      warning("\n[in: structures.c->colltime_dens]\nTrying to get density for %d time units (min: 1).\n", t);
+      /* warning("\n[in: structures.c->colltime_dens]\nTrying to get density for %d time units (min: 1).\n", t); */
       return 0.0;
     }
 
@@ -353,7 +353,7 @@ mcmc_param *alloc_mcmc_param(int n){
 
     /* DETERMINE THE NUMBER OF KAPPA AND ALPHA TO MOVE */
     /* set to N/2, minimum 1 */
-    out->n_move_alpha = (int) n/2;
+    out->n_move_alpha = (int) n;
     out->n_move_alpha = out->n_move_alpha < 1 ? 1 : out->n_move_alpha;
     out->n_move_kappa = out->n_move_alpha;
 

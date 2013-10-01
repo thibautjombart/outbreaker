@@ -487,12 +487,12 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
   int i, j, toMove=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0, firstImported=0;
-  double logRatio = 0.0, correcRatio = 0.0, ll1, ll2;
+  double logRatio = 0.0, correcRatio = 0.0;
 
-    /* DEBUGGING */
-    bool checkABA = look_for_aba(currentPar, dat);
-    bool oldCheckABA = checkABA;
-    if(checkABA) Rprintf("\nABA detected when entering move_Tinf_alpha_kappa");
+    /* /\* DEBUGGING *\/ */
+    /* bool checkABA = look_for_aba(currentPar, dat); */
+    /* bool oldCheckABA = checkABA; */
+    /* if(checkABA) Rprintf("\nABA detected when entering move_Tinf_alpha_kappa"); */
 
     /* DETERMINE WHICH INDIVIDUAL TO MOVE */
     draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
@@ -565,10 +565,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood ratio */
-	ll1 = loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
-	ll2 = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng);
-	logRatio = ll2-ll1;
-
+	logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
 	filter_logprob(&correcRatio);
 	logRatio += correcRatio;
 
@@ -578,21 +575,21 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* if p(new/old) > 1, accept new */
 	if(logRatio>=0.0) {
-	  /* DEBUGGING */
-	  if(!look_for_aba(currentPar, dat) && look_for_aba(tempPar, dat)) {
-	    Rprintf("\nABA created during move_Tinf_alpha_kappa");
-	    Rprintf("\nThis happened while moving %d",toMove);
+	  /* /\* DEBUGGING *\/ */
+	  /* if(!look_for_aba(currentPar, dat) && look_for_aba(tempPar, dat)) { */
+	  /*   Rprintf("\nABA created during move_Tinf_alpha_kappa"); */
+	  /*   Rprintf("\nThis happened while moving %d",toMove); */
 
-	    Rprintf("\naccepting automatically move from %d->%d to %d->%d (respective loglike: old:%f  new%f   correc:%f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2, correcRatio);
+	  /*   Rprintf("\naccepting automatically move from %d->%d to %d->%d (respective loglike: old:%f  new%f   correc:%f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2, correcRatio); */
 
-	    Rprintf("\n====== Current param where: =======");
-	    print_param(currentPar);
+	  /*   Rprintf("\n====== Current param where: ======="); */
+	  /*   print_param(currentPar); */
 
-	    Rprintf("\n\n====== New param are: ======");
-	    print_param(tempPar);
-	    getchar();
+	  /*   Rprintf("\n\n====== New param are: ======"); */
+	  /*   print_param(tempPar); */
+	  /*   getchar(); */
 
-	  }
+	  /* } */
 
 	    currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 	    currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
@@ -602,19 +599,19 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	    mcmcPar->n_accept_alpha += 1;
 	} else { /* else accept new with proba (new/old) */
 	  if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-	    if(!look_for_aba(currentPar, dat) && look_for_aba(tempPar, dat)) {
-	      Rprintf("\nABA created during move_Tinf_alpha_kappa");
-	      Rprintf("\nThis happened while moving %d",toMove);
+	    /* if(!look_for_aba(currentPar, dat) && look_for_aba(tempPar, dat)) { */
+	    /*   Rprintf("\nABA created during move_Tinf_alpha_kappa"); */
+	    /*   Rprintf("\nThis happened while moving %d",toMove); */
 
-	      Rprintf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2);
+	    /*   Rprintf("\naccepting automatically move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2); */
 
-	      Rprintf("\nCurrent param where:");
-	      print_param(currentPar);
+	    /*   Rprintf("\nCurrent param where:"); */
+	    /*   print_param(currentPar); */
 
-	      Rprintf("\nNew param are:");
-	      print_param(tempPar);
-	      getchar();
-	    }
+	    /*   Rprintf("\nNew param are:"); */
+	    /*   print_param(tempPar); */
+	    /*   getchar(); */
+	    /* } */
 
 		/* /\* debugging *\/ */
 		/* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
@@ -637,12 +634,12 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
     } /* end for loop (for all 'i' to move) */
 
-    /* DEBUGGING */
-    checkABA = look_for_aba(currentPar, dat);
-    if(!oldCheckABA && checkABA) {
-      Rprintf("\nABA created during move_Tinf_alpha_kappa");
-      getchar();
-    } else if(checkABA) Rprintf("\nABA detected when leaving move_Tinf_alpha_kappa");
+    /* /\* DEBUGGING *\/ */
+    /* checkABA = look_for_aba(currentPar, dat); */
+    /* if(!oldCheckABA && checkABA) { */
+    /*   Rprintf("\nABA created during move_Tinf_alpha_kappa"); */
+    /*   getchar(); */
+    /* } else if(checkABA) Rprintf("\nABA detected when leaving move_Tinf_alpha_kappa"); */
 
 } /* end move_Tinf_alpha_kappa */
 
@@ -661,13 +658,12 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
   int i, j, x, A, B;
   double logRatio = 0.0;
-  double ll1=0.0, ll2=0.0;
 
 
-  /* DEBUGGING */
-    bool checkABA = look_for_aba(currentPar, dat);
-    bool oldCheckABA = checkABA;
-    if(checkABA) Rprintf("\nABA detected when entering swap_ancestries");
+  /* /\* DEBUGGING *\/ */
+  /*   bool checkABA = look_for_aba(currentPar, dat); */
+  /*   bool oldCheckABA = checkABA; */
+  /*   if(checkABA) Rprintf("\nABA detected when entering swap_ancestries"); */
 
   /* DETERMINE WHICH INDIVIDUAL TO MOVE */
   draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
@@ -708,28 +704,30 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	    /* if case 'j' can move... */
 	    if(vec_double_i(mcmcPar->move_alpha, j)>0.0){
 		/* ...and was descendent of B, it becomes descendent of A */
-		if(vec_int_i(currentPar->alpha, j)==B){
+		if(j!=A && vec_int_i(currentPar->alpha, j)==B){
 		    tempPar->alpha->values[j] = A;
-		    if(j==A) {
-		      Rprintf("\nHere's a mess: j==A");
-		      Rprintf("\nThis happened while... ");
-		      Rprintf("\nswapping %d->%d->%d to %d->%d->%d \n", x,A,B,x,B,A);
-		      Rprintf("\nTinf vector before:  ");
-		      print_vec_int(currentPar->Tinf);
-		      Rprintf("\nTinf vector proposed:  ");
-		      print_vec_int(tempPar->Tinf);
+		    /* /\* DEBUGGING *\/ */
+		    /* if(j==A) { */
+		    /*   Rprintf("\nHere's a mess: j==A"); */
+		    /*   Rprintf("\nThis happened while... "); */
+		    /*   Rprintf("\nswapping %d->%d->%d to %d->%d->%d \n", x,A,B,x,B,A); */
+		    /*   Rprintf("\nTinf vector before:  "); */
+		    /*   print_vec_int(currentPar->Tinf); */
+		    /*   Rprintf("\nTinf vector proposed:  "); */
+		    /*   print_vec_int(tempPar->Tinf); */
 
-		      Rprintf("\nAlpha vector before:  ");
-		      print_vec_int(currentPar->alpha);
-		      Rprintf("\nAlpha vector proposed:  ");
-		      print_vec_int(tempPar->alpha);
+		    /*   Rprintf("\nAlpha vector before:  "); */
+		    /*   print_vec_int(currentPar->alpha); */
+		    /*   Rprintf("\nAlpha vector proposed:  "); */
+		    /*   print_vec_int(tempPar->alpha); */
 
-		      getchar();
-		    }
+		    /*   getchar(); */
+		    /* } */
 		    /* ...and descendents of A becomes descendent of B (except for B!!) */
 		} else if(j!=B && vec_int_i(currentPar->alpha, j)==A){
 		    tempPar->alpha->values[j] = B;
-		    if(j==B) Rprintf("Here's the mess: j==B");
+		    /* /\* DEBUGGING *\/ */
+		    /* if(j==B) Rprintf("Here's the mess: j==B"); */
 		}
 	    }
 	}
@@ -763,14 +761,13 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 	/* if p(new/old) > 1, accept new */
 	if(logRatio>=0.0) {
-	    Rprintf("x");
-	    fflush(stdout);
+	    /* Rprintf("x"); */
 	    copy_param(tempPar, currentPar);
 	    mcmcPar->n_accept_Tinf += 1;
 	    mcmcPar->n_accept_alpha += 1;
 	} else { /* else accept new with proba (new/old) */
 	    if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-		Rprintf("x");
+		/* Rprintf("x"); */
 		/* Rprintf("(new LL: %f) (old LL %f)", ll2, ll1); */
 		/* fflush(stdout); */
 		/* Rprintf("...accepted, by chance");fflush(stdout); */
@@ -783,7 +780,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 		mcmcPar->n_accept_Tinf += 1;
 		mcmcPar->n_accept_alpha += 1;
 	    } else { /* reject */
-		Rprintf(".");
+		/* Rprintf("."); */
 
 		copy_param(currentPar, tempPar);
 		mcmcPar->n_reject_Tinf += 1;
@@ -794,12 +791,12 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
     /* Rprintf("\n"); */
   } /* end for loop for all moved individuals */
 
-  /* DEBUGGING */
-    checkABA = look_for_aba(currentPar, dat);
-    if(!oldCheckABA && checkABA) {
-      Rprintf("\nABA created during swap_ancestries");
-      getchar();
-    } else if(checkABA) Rprintf("\nABA detected when leaving swap_ancestries");
+  /* /\* DEBUGGING *\/ */
+  /*   checkABA = look_for_aba(currentPar, dat); */
+  /*   if(!oldCheckABA && checkABA) { */
+  /*     Rprintf("\nABA created during swap_ancestries"); */
+  /*     getchar(); */
+  /*   } else if(checkABA) Rprintf("\nABA detected when leaving swap_ancestries"); */
 
 } /* end swap_ancestries */
 
