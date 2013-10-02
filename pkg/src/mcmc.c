@@ -449,11 +449,10 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     meanInfluence = meanInfluence/nbCasesWithInfluence;
 
     /* meanInfluence = mean_vec_double(indivInfluence); */
-    Rprintf("\nAverage influence: %f\n", meanInfluence);fflush(stdout);
-    Rprintf("\nIndividual influences:\n");fflush(stdout);
+    Rprintf("\nAverage influence: %f\n", meanInfluence);
+    Rprintf("\nIndividual influences:\n");
     print_vec_double(indivInfluence);
     Rprintf("\nThreshold (x%d) for outlier classification: influence > %.5f\n", (int) par->outlier_threshold, par->outlier_threshold*meanInfluence);
-    fflush(stdout);
 
     /* browse global influences and define outliers */
     /* (only if at least 5 cases have a computable influence) */
