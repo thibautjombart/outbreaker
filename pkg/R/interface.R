@@ -6,7 +6,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
                        dist.mat=NULL, spa.model=1,
-                       init.tree=c("seqTrack","random","star","none"),
+                       init.tree=c("seqTrack","random","star"),
                        init.kappa=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
@@ -185,10 +185,10 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
             ances <- as.integer(ances-1) # put on C scale
         }
 
-        ## no ancestry init
-        if(init.tree=="none"){
-            ances <- as.integer(rep(-1,length(dates)))
-        }
+        ## ## no ancestry init
+        ## if(init.tree=="none"){
+        ##     ances <- as.integer(rep(-1,length(dates)))
+        ## }
     }
 
     ## handle seed ##
@@ -288,7 +288,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens, w.trunc=length(w.dens),
                                 f.dens=w.dens, f.trunc=length(f.dens),
                                 dist.mat=NULL, spa.model=1,
-                                init.tree=c("seqTrack","random","star","none"),
+                                init.tree=c("seqTrack","random","star"),
                                 init.kappa=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, find.import=TRUE, find.import.n=50,
