@@ -34,7 +34,7 @@ plot(dat)
 ##     dev.off()
 ## }
 
-res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5, find.import=TRUE)
+res <-  outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5, find.import=TRUE)
 plotChains(res)
 
 
