@@ -1,0 +1,77 @@
+Average influence: 23.013147
+
+Individual influences:
+Vector of 148 doubles: 0.000 0.000 2.370 55.196 48.017 29.479 182.172 10.942 19.514 20.907 31.069 19.514 20.907 29.479 38.052 8.651 66.555 10.942 19.514 10.942 46.624 28.086 46.624 56.589 19.514 19.514 10.942 56.589 3.071 2.415 10.942 20.907 19.514 2.370 10.942 2.370 12.335 11.028 10.942 2.370 28.086 10.942 10.942 10.942 10.942 20.907 29.479 72.340 38.052 12.335 29.479 30.873 25.236 19.514 29.479 46.624 36.658 28.321 36.658 36.658 12.145 10.942 2.370 28.086 29.479 10.942 2.370 6.613 10.942 6.400 28.181 56.589 46.624 46.624 48.017 20.907 28.086 19.514 46.624 24.055 12.335 2.370 9.427 63.768 10.942 28.086 10.942 2.370 10.942 2.414 28.086 2.370 2.370 10.942 10.942 19.514 10.942 20.907 3.543 65.161 45.230 9.768 10.942 10.942 3.885 20.907 10.942 2.370 29.479 12.335 10.942 36.658 19.514 10.942 45.230 11.016 56.589 36.702 72.340 2.370 10.942 2.462 10.942 20.907 19.514 19.514 10.942 19.514 12.430 29.479 28.086 19.514 46.624 10.942 19.514 10.942 10.942 20.907 20.907 19.514 2.413 38.052 20.907 36.658 29.479 19.514 36.658 2.370 
+
+Threshold (x5) for outlier classification: influence > 115.06574
+
+Individual 7 identified as imported case
+
+likelihood for ancestry of 2 is zero
+i=2: genetic log-like is: -10.677017
+i=2: collection date (t_2=3,Tinf_2=3) log-like is: -100000000000000000000.000000 (i.e., zero)
+i=2: infection time (Tinf=3,Tances=2) log-like is: -1.314846
+i=2: spatial log-like is: 0.000000
+likelihood for ancestry of 6 is zero
+i=6: genetic log-like is: -31.086447
+i=6: collection date (t_6=4,Tinf_6=3) log-like is: -1.314846
+i=6: infection time (Tinf=3,Tances=3) log-like is: -100000000000000000000.000000
+i=6: spatial log-like is: 0.000000
+likelihood for ancestry of 9 is zero
+i=9: genetic log-like is: -20.580263
+i=9: collection date (t_9=5,Tinf_9=3) log-like is: -0.658587
+i=9: infection time (Tinf=3,Tances=3) log-like is: -100000000000000000000.000000
+i=9: spatial log-like is: 0.000000
+Movement to -Inf LL during move_Tinf_alpha_kappa
+This happened while moving 1
+accepting automatically move from -1->1 to 0->1 (respective loglike: old:-3925.015466  new-100000000000000000000.000000   correc:inf)
+
+====== Current param where: =======
+= Tinf (infection dates) =
+Vector of 148 integers: 2 2 3 3 4 3 4 4 3 6 6 6 6 7 8 7 6 7 8 7 8 8 7 7 8 9 11 9 8 9 8 10 8 11 9 10 11 10 9 11 10 12 10 10 11 11 10 12 13 12 13 12 12 12 12 11 11 12 13 12 13 13 13 13 13 13 13 13 13 15 14 14 15 13 14 14 15 14 14 14 14 15 15 14 14 15 15 15 15 14 15 16 15 16 14 16 16 15 18 18 17 17 17 16 16 17 16 17 18 17 18 17 17 17 18 22 19 20 19 22 21 19 20 21 21 23 23 23 24 24 24 24 28 26 27 28 29 29 30 28 31 30 32 34 38 40 40 45 
+
+= Alpha_i (ancestries) =
+Vector of 148 integers: -1 -1 0 0 0 1 -1 0 1 6 4 5 4 6 9 10 5 5 7 9 9 7 12 6 10 16 40 9 10 17 19 16 10 29 22 21 24 23 19 22 19 30 10 21 22 40 17 30 32 38 30 38 22 40 22 24 37 17 26 24 57 42 46 38 44 44 46 52 46 79 46 54 54 32 65 57 48 50 50 65 64 57 49 50 52 48 52 61 52 49 74 78 64 62 50 52 74 57 101 94 79 72 90 80 82 64 76 49 95 97 49 84 49 72 82 118 49 112 78 114 109 105 102 118 109 123 118 123 124 126 125 126 128 131 130 133 133 133 134 134 137 134 137 141 143 144 144 145 
+
+= Kappa_i (generations from nearest ancestor) =
+Vector of 148 integers: 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 2 2 2 1 1 2 1 2 1 2 1 2 1 1 1 2 1 1 1 1 2 2 1 2 2 2 2 1 2 1 2 2 3 2 3 2 1 1 3 2 1 3 1 2 1 2 2 2 1 1 2 1 2 1 2 1 2 3 1 1 1 1 1 1 1 2 1 1 1 1 2 1 2 1 1 1 1 2 1 2 1 2 1 2 1 1 1 1 1 2 1 3 1 1 3 2 3 1 2 2 4 2 3 2 2 1 2 1 2 1 2 1 2 1 1 1 2 1 2 1 2 1 2 1 1 2 2 2 2 1 1 3 
+
+= mu1, mu2, gamma (mutation1, mutation2, coef, prior mu1) =
+0.00005   0.00003   0.54721   0.00005
+= pi (proportion of observed cases) =
+0.59789
+= priors on pi (parameter of beta distribution) =
+1.00000  1.00000
+= threshold used in imported case detection =
+5.00
+= genetic model used =
+2
+= spatial model used (parameters) =
+0 (param1=0.00000, param2=0.00000)
+= parameters of the spatial priors =
+(mean prior param1=1.00000, mean prior param2=1.00000)
+
+====== New param are: ======
+= Tinf (infection dates) =
+Vector of 148 integers: 2 3 3 3 4 3 4 4 3 6 6 6 6 7 8 7 6 7 8 7 8 8 7 7 8 9 11 9 8 9 8 10 8 11 9 10 11 10 9 11 10 12 10 10 11 11 10 12 13 12 13 12 12 12 12 11 11 12 13 12 13 13 13 13 13 13 13 13 13 15 14 14 15 13 14 14 15 14 14 14 14 15 15 14 14 15 15 15 15 14 15 16 15 16 14 16 16 15 18 18 17 17 17 16 16 17 16 17 18 17 18 17 17 17 18 22 19 20 19 22 21 19 20 21 21 23 23 23 24 24 24 24 28 26 27 28 29 29 30 28 31 30 32 34 38 40 40 45 
+
+= Alpha_i (ancestries) =
+Vector of 148 integers: -1 0 0 0 0 1 -1 0 1 6 4 5 4 6 9 10 5 5 7 9 9 7 12 6 10 16 40 9 10 17 19 16 10 29 22 21 24 23 19 22 19 30 10 21 22 40 17 30 32 38 30 38 22 40 22 24 37 17 26 24 57 42 46 38 44 44 46 52 46 79 46 54 54 32 65 57 48 50 50 65 64 57 49 50 52 48 52 61 52 49 74 78 64 62 50 52 74 57 101 94 79 72 90 80 82 64 76 49 95 97 49 84 49 72 82 118 49 112 78 114 109 105 102 118 109 123 118 123 124 126 125 126 128 131 130 133 133 133 134 134 137 134 137 141 143 144 144 145 
+
+= Kappa_i (generations from nearest ancestor) =
+Vector of 148 integers: 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 2 2 2 1 1 2 1 2 1 2 1 2 1 1 1 2 1 1 1 1 2 2 1 2 2 2 2 1 2 1 2 2 3 2 3 2 1 1 3 2 1 3 1 2 1 2 2 2 1 1 2 1 2 1 2 1 2 3 1 1 1 1 1 1 1 2 1 1 1 1 2 1 2 1 1 1 1 2 1 2 1 2 1 2 1 1 1 1 1 2 1 3 1 1 3 2 3 1 2 2 4 2 3 2 2 1 2 1 2 1 2 1 2 1 1 1 2 1 2 1 2 1 2 1 1 2 2 2 2 1 1 3 
+
+= mu1, mu2, gamma (mutation1, mutation2, coef, prior mu1) =
+0.00005   0.00003   0.54721   0.00005
+= pi (proportion of observed cases) =
+0.59789
+= priors on pi (parameter of beta distribution) =
+1.00000  1.00000
+= threshold used in imported case detection =
+5.00
+= genetic model used =
+2
+= spatial model used (parameters) =
+0 (param1=0.00000, param2=0.00000)
+= parameters of the spatial priors =
+(mean prior param1=1.00000, mean prior param2=1.00000)
