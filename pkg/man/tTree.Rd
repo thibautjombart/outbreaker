@@ -17,7 +17,7 @@
   (\code{findMutations}).
 }
 \usage{
-get.tTree(x, burnin=2e4)
+get.tTree(x, burnin=2e4, best=c("ancestries","tree"))
 
 \method{plot}{tTree}(x, y=NULL, edge.col="black", col.edge.by="prob",
      col.pal=NULL, annot=c("dist","n.gen","prob"), sep="/", \dots)
@@ -32,7 +32,12 @@ get.tTree(x, burnin=2e4)
     or \code{outbreaker.parallel}. For other functions, a
     \code{tTree} object.}
   \item{burnin}{an integer indicating the number of steps of the MCMC to
-  be discarded as burnin period. Defaults to 20,000.}
+    be discarded as burnin period. Defaults to 20,000.}
+  \item{best}{a character string matching "ancestries" or "tree",
+    indicating which criterion is used to define the consensus tree;
+    "ancestries" retains, for each case, the most supported ancestor;
+    "tree" retains the most supported tree; note that the latter may
+    exist only in the case of very small epidemics.}
   \item{y}{unused - there for compatibility with the generic of \code{plot}.}
   \item{edge.col}{the color used for the edges; overriden if
     \code{col.edge.by} is provided.}

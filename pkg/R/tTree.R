@@ -1,19 +1,15 @@
-####################
+#############
 ## get.tTree
-####################
-get.tTree <- function(x, burnin=2e4){
+#############
+##
+## consensus: tree is defined as a set of best supported ancestries
+## best: tree is the most frequent tree; note that this may exist only for small datasets
+get.tTree <- function(x, burnin=2e4, best=c("ancestries","tree")){
 
-    ## ## PRE-PROCESS RUNS IF PARALLELIZED VERSION USED ##
-    ## temp <- all(grep("run", names(x))==1:length(x))
-    ## if(is.list(x) && temp){
-    ##     n.runs <- length(x)
-    ##     old.x <- x
-    ##     x <- x[[1]]
-    ##     temp <- lapply(old.x, function(e) e$chains[e$chains$step>burnin,])
-    ##     x$chains <- Reduce("rbind", temp)
-    ## }
-
+    ## HANDLE ARGUMENTS ##
     if(all(x$chains$step<=burnin)) stop("requested burn-in exeeds the number of chains")
+    best <- match.arg(best)
+
 
     ## CREATE OUTPUT LIST ##
     res <- list()
@@ -26,7 +22,16 @@ get.tTree <- function(x, burnin=2e4){
 
     ## get ancestors ##
     temp <- chains[,grep("alpha",names(chains))]
-    res$ances <- apply(temp,2, function(e) names(table(e))[which.max(as.numeric(table(e)))])
+    if(best=="ancestries"){
+        res$ances <- apply(temp,2, function(e) names(table(e))[which.max(as.numeric(table(e)))])
+    }
+    if(best=="tree"){
+        ## be careful that trees order is not scrambled by table(...)
+        allTrees <- apply(temp,1,paste,collapse="-")
+        allTrees <- factor(allTrees, levels=unique(allTrees))
+        best.tree <- which.max(table(allTrees))
+        res$ances <- temp[best.tree,,drop=TRUE]
+    }
     res$ances <- as.integer(res$ances)
     res$ances[res$ances<1] <- NA
 
