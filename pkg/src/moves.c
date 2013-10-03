@@ -494,7 +494,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
   /* DEBUGGING */
   bool checkLL = check_loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
-  bool oldCheckLL = checkLL;
+
   if(!checkLL) Rprintf("\n-Inf LL detected when entering move_Tinf_alpha_kappa");
 
   /* bool checkABA = look_for_aba(currentPar, dat); */
