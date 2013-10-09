@@ -94,8 +94,8 @@ int choose_alpha_i(int i, data *dat, param *par, mcmc_param *mcmcPar, gsl_rng *r
     /* candidates = infection time before T_i^inf*/
     for(j=0;j<dat->n;j++){
 	if(vec_int_i(par->Tinf,j) < vec_int_i(par->Tinf,i)){
-  	    /* debug */
-	  if(j==i) Rprintf("\n### Messy stuff here: proposing %d->%d",j,i);
+  	  /*   /\* debug *\/ */
+	  /* if(j==i) Rprintf("\n### Messy stuff here: proposing %d->%d",j,i); */
 	    /* store 'j' as a candidate */
 	    mcmcPar->candid_ances->values[nCandidates] =  j;
 
@@ -493,9 +493,9 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
   double logRatio = 0.0, correcRatio = 0.0, ll1 = 0.0, ll2 = 0.0;
 
   /* DEBUGGING */
-  bool checkLL = check_loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+  /* bool checkLL = check_loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng); */
 
-  if(!checkLL) Rprintf("\n-Inf LL detected when entering move_Tinf_alpha_kappa");
+  /* if(!checkLL) Rprintf("\n-Inf LL detected when entering move_Tinf_alpha_kappa"); */
 
   /* bool checkABA = look_for_aba(currentPar, dat); */
   /* bool oldCheckABA = checkABA; */
@@ -553,22 +553,22 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* log[(1/nbCandid) / (1/nbCandid*)] */
 	/* = log(1) - log(nbCandid) - log(1) + log(= nbCandid*) */
 	/* = log(nbCandid*) - log(nbCandid) */
-	if(nbCandidCurrent<1) {
-	  warning("\n[in move_Tinf_alpha_kappa]: nbCandidCurrent is zero and will result in a dodgy move; are you trying to move an imported case?");
-	  Rprintf("\nnbCandidCurrent is zero");
-	  Rprintf("\ndate of first imported case is %d",firstImported);
-	  Rprintf("\nproposed Tinf for %d is %d", toMove, tempPar->Tinf->values[toMove]);
-	  Rprintf("\nThis happened while moving %d:",toMove);
+	/* if(nbCandidCurrent<1) { */
+	/*   warning("\n[in move_Tinf_alpha_kappa]: nbCandidCurrent is zero and will result in a dodgy move; are you trying to move an imported case?"); */
+	/*   Rprintf("\nnbCandidCurrent is zero"); */
+	/*   Rprintf("\ndate of first imported case is %d",firstImported); */
+	/*   Rprintf("\nproposed Tinf for %d is %d", toMove, tempPar->Tinf->values[toMove]); */
+	/*   Rprintf("\nThis happened while moving %d:",toMove); */
 
-	  Rprintf("\ntrying to move from %d->%d to %d->%d (respective loglike: old:%f  new%f   correc:%f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2, correcRatio);
+	/*   Rprintf("\ntrying to move from %d->%d to %d->%d (respective loglike: old:%f  new%f   correc:%f)\n",vec_int_i(currentPar->alpha,toMove), toMove, vec_int_i(tempPar->alpha,toMove), toMove, ll1, ll2, correcRatio); */
 
-	  Rprintf("\n====== Current param where: =======");
-	  print_param(currentPar);
+	/*   Rprintf("\n====== Current param where: ======="); */
+	/*   print_param(currentPar); */
 
-	  Rprintf("\n\n====== New param are: ======");
-	  print_param(tempPar);
-	  getchar();
-	}
+	/*   Rprintf("\n\n====== New param are: ======"); */
+	/*   print_param(tempPar); */
+	/*   getchar(); */
+	/* } */
 	correcRatio += log(nbCandidTemp) - log(nbCandidCurrent);
       }
 
