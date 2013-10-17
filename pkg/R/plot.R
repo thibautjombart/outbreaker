@@ -193,10 +193,10 @@ transGraph <- function(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=N
     return(-sum(p*log(p), na.rm=TRUE))
 }
 
-plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
-                         col=NULL, col.pal=colorRampPalette(c("blue","lightgrey")),
-                         edge.col.pal=NULL, col.edge.by="prob", annot=c("dist","prob"), sep="/",
-                         cex.bubble=1, lwd.arrow=2, xlim=NULL, ...){
+plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2, col=NULL,
+                         col.pal=colorRampPalette(c("blue","lightgrey")), edge.col.pal=NULL,
+                         col.edge.by="prob", annot=c("dist","prob"), sep="/", cex.bubble=1,
+                         edge.max.dist=10,lwd.arrow=2, xlim=NULL, ...){
     ## CHECKS ##
     ## if(!require(adegenet)) stop("adegenet is not installed")
     col.edge.by <- match.arg(col.edge.by, c("dist","prob"))
@@ -256,7 +256,16 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
         }
     }
 
-    ## function to draw arrows
+    ## ## FUNCTION TO FIND THE NUMBER OF MUTATIONS DISPLAYED ##
+    ## ## (required to define the color scale for arrows ##
+    ## get.nb.mut <- function(from, to){
+    ##      support <- alphadat[from,to]
+    ##      nb.mut <- M[from,to]
+    ##      if(support<thres.hide) nb.mut <- 0
+    ##      return(nb.mut)
+    ##  }
+
+    ## FUNCTION TO DRAW ARROWS ##
     drawArrow <- function(from, to){
         if(is.na(from)||from<1) return(invisible())
         ## get stuff for arrows ##
@@ -272,7 +281,7 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
             edge.col <- num2col(support, x.min=0, x.max=1, col.pal=edge.col.pal)
         }
         if(col.edge.by=="dist"){
-            edge.col <- num2col(M[from,to], x.min=0, x.max=1, col.pal=edge.col.pal)
+            edge.col <- num2col(as.integer(M[from,to]), x.min=0, x.max=edge.max.dist, col.pal=edge.col.pal)
         }
         edge.col[support<thres.hide] <- "transparent"
         ## lwd <- round(support*arrow.max)
@@ -298,10 +307,16 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2,
         return(invisible())
     }
 
-
-    ## draw all arrows
+    ## DRAW ALL ARROWS ##
     ances <- apply(alpha,2,function(e) table(e)/sum(e))
     names(ances) <- 1:N
+
+    ##  ## need to determine max nb of mutations if col.edge.by=="dist" ##
+    ## if(col.edge.by=="dist"){
+    ##     allMut <- unlist(lapply(1:N, function(i) sapply(as.integer(names(ances[[i]])), function(from) get.nb.mut(from, i))))
+    ##     max.nb.mut <- max(allMut,na.rm=TRUE)
+    ## }
+
     lapply(1:N, function(i) sapply(as.integer(names(ances[[i]])), function(from) drawArrow(from, i)))
 
 
