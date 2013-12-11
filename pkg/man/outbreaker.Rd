@@ -15,7 +15,7 @@
 outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens,
            w.trunc=length(w.dens), f.dens=w.dens,
            f.trunc=length(f.dens), dist.mat=NULL, spa.model=1,
-           init.tree=c("seqTrack","random","star","none"),
+           init.tree=c("seqTrack","random","star"),
            init.kappa=NULL, n.iter=1e5, sample.every=500,
            tune.every=500, burnin=2e4, find.import=TRUE,
            find.import.n=50, pi.param1=10, pi.param2=1, init.mu1=NULL,
@@ -31,7 +31,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
                     dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens,
                     w.trunc=length(w.dens), f.dens=w.dens,
                     f.trunc=length(f.dens), dist.mat=NULL, spa.model=1,
-                    init.tree=c("seqTrack","random","star","none"),
+                    init.tree=c("seqTrack","random","star"),
                     init.kappa=NULL, n.iter=1e5, sample.every=500,
                     tune.every=500, burnin=2e4, find.import=TRUE,
                     find.import.n=50, pi.param1=10, pi.param2=1,
@@ -83,13 +83,12 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
   
   \item{init.tree}{the tree used to initialize the MCMC. Can be either a
     character string indicating how this tree should be computed, or a
-    vector if integers corresponding to the tree itself, where the i-th value
-    correspond to the index of the ancestor of 'i' (i.e., \code{init.tree[i]}
-    is the ancestor of \code{i}). Accepted character strings are
-    "seqTrack" (uses seqTrack output as initialize tree), "random"
-    (ancestor randomly selected from preceding cases), "star" (all cases
-    coalesce to the first case), and "none" (no ancestry to start
-    with).}
+    vector if integers corresponding to the tree itself, where the i-th
+    value correspond to the index of the ancestor of 'i' (i.e.,
+    \code{init.tree[i]} is the ancestor of \code{i}). Accepted character
+    strings are "seqTrack" (uses seqTrack output as initialize tree),
+    "random" (ancestor randomly selected from preceding cases), and
+    "star" (all cases coalesce to the first case).}
   
   \item{init.kappa}{as \code{init.tree}, but values indicate the number
     of generations between each case and its most recent
