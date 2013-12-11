@@ -81,9 +81,9 @@ plotOutbreak(x, burnin=x$burnin, thres.hide=0.2, col=NULL,
   \item{sep}{a character indicating the separator to be used when
     concatenating several types of annotation.}
 
-  \item{arr.col.pal}{the color palette to be used for the arrows,
-    representing the support for each ancesetry; if NULL, a grey scale
-    is used, with larger support in darker shades.}
+  % \item{arr.col.pal}{the color palette to be used for the arrows,
+  %   representing the support for each ancestry; if NULL, a grey scale
+  %   is used, with larger support in darker shades.}
 
   \item{cex.bubble}{a numeric value indicating the size factor for the
     bubbles representing the generation time distribution.}
