@@ -16,6 +16,7 @@ importFrom(igraph, "graph.data.frame", "V", "V<-", "E", "E<-", "layout.fruchterm
 importFrom(adegenet, "bluepal", "redpal", "greenpal", "seasun", "spectral", "funky",
            "num2col", "fac2col", "any2col", "transp", "findMutations", "findMutations.DNAbin")
 
+importFrom(parallel, "detectCores", "makeCluster", "clusterEvalQ", "clusterExport", "parLapply", "stopCluster")
 
 ## Load DLL
 useDynLib(outbreaker)
