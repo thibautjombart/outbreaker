@@ -24,7 +24,7 @@ plotOutbreak(x, burnin=x$burnin, thres.hide=0.2, col=NULL,
              col.pal=colorRampPalette(c("blue","lightgrey")),
              edge.col.pal=NULL, col.edge.by="prob",
              annot=c("dist","prob"), sep="/", cex.bubble=1,
-             edge.max.dist = 10, lwd.arrow=2, xlim=NULL,,\dots)
+             edge.max.dist = 10, lwd.arrow=2, xlim=NULL, \dots)
 }
 \arguments{
   \item{x}{the output of \code{outbreaker} or
