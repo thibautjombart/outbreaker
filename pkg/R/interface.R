@@ -2,22 +2,23 @@
 ##################
 ## main functions
 ##################
-outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
+outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
+                       mut.model=1, spa.model=1,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
-                       dist.mat=NULL, spa.model=1,
+                       dist.mat=NULL,
                        init.tree=c("seqTrack","random","star"),
-                       init.kappa=NULL,
+                       init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1,
+                       init.spa1=NULL, init.spa2=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, find.import=TRUE, find.import.n=50,
                        pi.param1=10, pi.param2=1,
-                       init.mu1=NULL, init.mu2=init.mu1,
-                       init.spa1=NULL, init.spa2=NULL,
                        spa1.prior=1, spa2.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                        outlier.threshold = 5,
-                       quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
+                       quiet=TRUE, res.file.name="chains.txt",
+                       tune.file.name="tuning.txt", seed=NULL){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
@@ -285,16 +286,17 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL, mut.model=1,
 ## version with multiple runs
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
-                                dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens, w.trunc=length(w.dens),
+                                dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
+                                w.dens, w.trunc=length(w.dens),
                                 f.dens=w.dens, f.trunc=length(f.dens),
-                                dist.mat=NULL, spa.model=1,
+                                dist.mat=NULL,
                                 init.tree=c("seqTrack","random","star"),
                                 init.kappa=NULL,
+                                init.mu1=NULL, init.mu2=init.mu1,
+                                init.spa1=NULL, init.spa2=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, find.import=TRUE, find.import.n=50,
                                 pi.param1=10, pi.param2=1,
-                                init.mu1=NULL, init.mu2=init.mu1,
-                                init.spa1=NULL, init.spa2=NULL,
                                 spa1.prior=1, spa2.prior=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, outlier.threshold = 5,
@@ -304,6 +306,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
     if(parallel && !require(parallel)) stop("parallel package requested but not installed")
     if(parallel && is.null(n.cores)){
         n.cores <- detectCores()
+        n.cores <- min(n.cores, 6)
     }
 
 
@@ -336,10 +339,11 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         clusterExport(clust, listArgs, envir=environment())
 
         ## set calls to outbreaker on each child ##
-        res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna, mut.model=mut.model,
+        res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
+                                                                  mut.model=mut.model, spa.model=spa.model,
                                                                   w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
-                                                                  dist.mat=dist.mat, spa.model=spa.model,
+                                                                  dist.mat=dist.mat,
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
                                                                   tune.every=tune.every, burnin=burnin,
