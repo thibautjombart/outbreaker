@@ -22,52 +22,56 @@
 }
 \examples{
 \dontrun{
-## command line to generate similar data
+## COMMAND LINES TO GENERATE SIMILAR DATA ##
 w <- c(0, 0.5, 1, 0.75)
 ## note: this works only if outbreak has at least 30 case
 dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100)[1:30]
 collecDates <- dat$onset + sample(0:3, size=30, replace=TRUE, prob=w)
 
-## command line to analyse the data (4 runs in parallel)
+## COMMAND LINE TO ANALYSE THE DATA (4 RUNS IN PARALLEL)
 res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
    dates=collecDates,w.dens=w, n.iter=5e4)
-}
 
-## load data
+
+
+## EXAMPLE USING TOYOUTBREAK ##
+## LOAD DATA, SET RANDOM SEED
 data(toyOutbreak)
 attach(toyOutbreak)
+set.seed(1)
 
-## visualize dynamics
-matplot(dat$dynam, type="o", pch=20, lty=1, xlim=c(0,32),
+## VISUALIZE DYNAMICS
+matplot(dat$dynam, type="o", pch=20, lty=1,
    main="Outbreak dynamics")
 legend("topright", legend=c("S","I","R"), lty=1, col=1:3)
 
-## visualize transmission tree
+## VISUALIZE TRANSMISSION TREE
 plot(dat, annot="dist", main="Data - transmission tree")
+mtext(side=3, "arrow annotations are numbers of mutations")
 
-## visualize NJ tree
-if(require(ape)){
-  plot(nj(dist.dna(dat$dna)))
-  title("NJ tree")
-}
 
-## assess convergence of chains
+## RUN OUTBREAKER - PARALLEL VERSION
+## (takes < 1 min))
+res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
+   dates=collecDates,w.dens=w, n.iter=5e4)
+
+## ASSESS CONVERGENCE OF CHAINS
 plotChains(res)
 
-## represent posterior ancestries
-transGraph(res, annot="", main="Posterior ancestries")
+## REPRESENT POSTERIOR ANCESTRIES
+transGraph(res, annot="", main="Posterior ancestries", thres=.01)
 
-## get consensus ancestries
+## GET CONSENSUS ANCESTRIES
 tre <- get.tTree(res)
 plot(tre, annot="", main="Consensus ancestries")
 
-## show discrepancies
+## SHOW DISCREPANCIES
 col <- rep("lightgrey", 30)
 col[which(dat$ances != tre$ances)] <- "pink"
 plot(tre, annot="", vertex.color=col, main="Consensus ancestries")
 mtext(side=3, text="cases with erroneous ancestries in pink")
 
 detach(toyOutbreak)
-
+}
 }
 \keyword{datasets}
