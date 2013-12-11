@@ -303,7 +303,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
     ## SOME CHECKS ##
     if(parallel && !require(parallel)) stop("parallel package requested but not installed")
     if(parallel && is.null(n.cores)){
-        n.cores <- parallel:::detectCores()
+        n.cores <- detectCores()
     }
 
 
