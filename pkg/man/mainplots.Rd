@@ -9,7 +9,11 @@
 
   \itemize{
     \item \code{plotChains} is used for plotting MCMCs
+
     \item \code{transGraph} plots a graph of inferred ancestries
+
+    \item \code{plotOutbreak} attempts to synthetize the reconstruction
+    of small outbreaks
   }
 }
 \usage{

@@ -7,14 +7,13 @@
 \alias{findMutations.tTree}
 \title{Simple transmission tree from outreaber's output}
 \description{
-  The S3 class \code{tTree} is used for storing simplified
-  transmission trees, obtained from outbreaker's ouptput (functions
-  \code{outbreaker} and \code{outbreaker.parallel}) using
-  \code{get.tTree}. Some additional features are available for
-  \code{tTree} objects, including plotting (\code{plot}),
-  conversion to \code{igraph} graphs(\code{as.igraph}), and
-  identification of mutations on the branches of the tree
-  (\code{findMutations}).
+  The S3 class \code{tTree} is used for storing simplified transmission
+  trees, obtained from outbreaker's ouptput (functions \code{outbreaker}
+  and \code{outbreaker.parallel}) using \code{get.tTree}. Some
+  additional features are available for \code{tTree} objects, including
+  plotting (\code{plot}), conversion to \code{igraph} graphs
+  (\code{as.igraph}), and identification of mutations on the branches of
+  the tree (\code{findMutations}).
 }
 \usage{
 get.tTree(x, burnin=2e4, best=c("ancestries","tree"))
@@ -60,20 +59,29 @@ get.tTree(x, burnin=2e4, best=c("ancestries","tree"))
   \code{tTree} objects are lists with the following components:
   \itemize{
     \item idx: integer, the index of the cases
+
     \item collec.dates: the collection dates of the isolates
-    \item idx.dna: the index of the cases to which each DNA sequence corresponds
+
+    \item idx.dna: the index of the cases to which each DNA sequence
+    corresponds
+
     \item ances: the index of the inferred ancestor, for each case
+
     \item inf.dates: the inferred infection date, for each case
+
     \item p.ances: the posterior probability of the inferred ancestor
     (i.e., proportion in the posterior distribution of ancestors)
+
     \item nb.mut: the number of mutations between isolates and their
     inferred ancestor, for each isolate
+
     \item n.gen: the number of generations between isolates and their
     inferred ancestor, for each isolate
+
     \item p.gen: the posterior probability of the inferred number of
     generations between each case and its inferred ancestor
-    \item inf.curves: the generation time distributions in time, for
-    each case
+
+    \item inf.curves: the infectivity curves for each case
   }
 
   The plot function invisibly returns the conversion of the

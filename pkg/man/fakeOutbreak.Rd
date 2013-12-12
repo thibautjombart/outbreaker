@@ -75,7 +75,8 @@ get.Rt(res)
 
 ## GET INDIVIDUAL EFFECTIVE REPRODUCTION
 head(get.R(res))
-boxplot(get.R(res), col="grey", xlab="Case",ylab="Effective reproduction number")
+boxplot(get.R(res), col="grey", xlab="Case",
+        ylab="Effective reproduction number")
 
 ## GET MUTATION RATE PER TIME UNIT
 ## per genome
@@ -87,7 +88,7 @@ head(mu)
 
 summary(mu)
 hist(mu, border="lightgrey", col="grey", xlab="Mutation per day and nucleotide",
-   main="Posterior distribution of mutation rate")
+     main="Posterior distribution of mutation rate")
 
 detach(fakeOutbreak)
 
