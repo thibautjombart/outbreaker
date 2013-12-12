@@ -109,8 +109,8 @@ plotOutbreak(x, burnin=x$burnin, thres.hide=0.2, col=NULL,
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
-data(toyOutbreak)
-attach(toyOutbreak)
+data(fakeOutbreak)
+attach(fakeOutbreak)
 
 ## examine MCMC
 plotChains(res)
@@ -130,6 +130,6 @@ plotOutbreak(res,cex.bubble=0.5, thres.hide=0.5,
    main="Outbreak reconstruction")
 
 
-detach(toyOutbreak)
+detach(fakeOutbreak)
 
 }

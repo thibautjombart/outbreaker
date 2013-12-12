@@ -81,8 +81,8 @@ get.tTree(x, burnin=2e4, best=c("ancestries","tree"))
 }
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
-data(toyOutbreak)
-attach(toyOutbreak)
+data(fakeOutbreak)
+attach(fakeOutbreak)
 
 ## represent posterior ancestries
 if(require(adegenet)){
@@ -100,7 +100,7 @@ plot(tre, annot="", vertex.color=col, main="Consensus ancestries")
 mtext(side=3, text="cases with erroneous ancestries in pink")
 
 
-detach(toyOutbreak)
+detach(fakeOutbreak)
 
 }
 \keyword{classes}

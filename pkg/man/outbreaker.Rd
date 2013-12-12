@@ -223,49 +223,80 @@ epidemiologic and genomic data. PLoS Computational Biology.
 \author{
   Thibaut Jombart (\email{t.jombart@imperial.ac.uk})
 }
-\examples{
-\dontrun{
-
-#### TEST DIFFERENT VERSIONS OF THE METHOD ####
-## test basic ##
-res <- outbreaker(dna=dat$dna, dates=collecDates, w.dens=w, n.iter=5e4)
-plotChains(res)
-par(mfrow=c(1,2))
-plot(dat)
-title("Simulated data")
-plot(get.tTree(res))
-title("Reconstructed outbreak")
-
-## test without genetic info ##
-res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, n.iter=5e4, find.import=FALSE)
-
-## test without import detection ##
-res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, init.tree="star", n.iter=3e4)
-
-## test without f different from w ##
-res <- outbreaker(dna=NULL, dates=collecDates, w.dens=w, f.dens=1,
-init.tree="star", n.iter=3e4)
-
-## test parallel ##
-res <- outbreaker.parallel(n.runs=2, dna=dat$dna, dates=collecDates,
-w.dens=w, init.tree="star", n.iter=3e4, find.import=FALSE)
-
-
-
-#### TEST POST-PROCESSING OF THE RESULTS ####
-## test plots ##
-plotChains(res)
-plot(get.tTree(res))
-transGraph(res, thres=0.1)
-plotOutbreak(res)
-
-## test incidence curves ##
-get.incid(res, main="Incidence curves")
-
-## test effective reproduction numbers ##
-barplot(table(get.R(res)), main="Effective reproduction number - distribution")
-
-get.Rt(res, main="Effective reproduction number over time")
-
+\seealso{
+  \itemize{
+    \item \link{transGraph} and \link{get.tTree} to represent
+    transmission trees.
+    \item \link{get.R} and \link{get.Rt} to get reproduction numbers distributions.
+    \item \link{get.mu} to get the mutation rate distribution.
+    \item \link{simOutbreak} to simulate outbreaks.
+    \item \link{selectChains} to select chains from parallel runs which
+    converged towards different posterior modes.
+  }
 }
+\examples{
+
+## EXAMPLE USING TOYOUTBREAK ##
+## LOAD DATA, SET RANDOM SEED
+data(fakeOutbreak)
+attach(fakeOutbreak)
+
+## VISUALIZE DYNAMICS
+matplot(dat$dynam, type="o", pch=20, lty=1,
+   main="Outbreak dynamics", xlim=c(0,28))
+legend("topright", legend=c("S","I","R"), lty=1, col=1:3)
+
+## VISUALIZE TRANSMISSION TREE
+plot(dat, annot="dist", main="Data - transmission tree")
+mtext(side=3, "arrow annotations are numbers of mutations")
+
+
+\dontrun{
+## RUN OUTBREAKER - PARALLEL VERSION
+## (takes < 1 min))
+set.seed(1)
+res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
+   dates=collecDates,w.dens=w, n.iter=5e4)
+}
+
+
+## ASSESS CONVERGENCE OF CHAINS
+plotChains(res)
+plotChains(res, burnin=2e4)
+
+## REPRESENT POSTERIOR ANCESTRIES
+transGraph(res, annot="", main="Posterior ancestries", thres=.01)
+
+## GET CONSENSUS ANCESTRIES
+tre <- get.tTree(res)
+plot(tre, annot="", main="Consensus ancestries")
+
+## SHOW DISCREPANCIES
+col <- rep("lightgrey", 30)
+col[which(dat$ances != tre$ances)] <- "pink"
+plot(tre, annot="", vertex.color=col, main="Consensus ancestries")
+mtext(side=3, text="cases with erroneous ancestries in pink")
+
+## GET EFFECTIVE REPRODUCTION OVER TIME
+get.Rt(res)
+
+## GET INDIVIDUAL EFFECTIVE REPRODUCTION
+head(get.R(res))
+boxplot(get.R(res), col="grey", xlab="Case",ylab="Effective reproduction number")
+
+## GET MUTATION RATE PER TIME UNIT
+## per genome
+head(get.mu(res))
+
+## per nucleotide
+mu <- get.mu(res, genome.size=1e4)
+head(mu)
+
+summary(mu)
+hist(mu, border="lightgrey", col="grey", xlab="Mutation per day and nucleotide",
+   main="Posterior distribution of mutation rate")
+
+detach(fakeOutbreak)
+
+
 }

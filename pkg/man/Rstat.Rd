@@ -43,8 +43,8 @@ get.incid(x, burnin=2e4, plot=TRUE, type=c("boxplot", "lines"),
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
 ## load data
-data(toyOutbreak)
-attach(toyOutbreak)
+data(fakeOutbreak)
+attach(fakeOutbreak)
 
 ## individual R
 barplot(table(get.R(res)), main="Individual effective reproduction numbers")
@@ -55,6 +55,6 @@ get.Rt(res)
 ## incidence
 get.incid(res)
 
-detach(toyOutbreak)
+detach(fakeOutbreak)
 
 }
