@@ -31,8 +31,8 @@ get.mu(x, burnin=2e4, genome.size=NULL)
 \author{Thibaut Jombart \email{t.jombart@imperial.ac.uk}}
 \examples{
 ## load data
-data(toyOutbreak)
-attach(toyOutbreak)
+data(fakeOutbreak)
+attach(fakeOutbreak)
 
 mu <- get.mu(res, genome.size=ncol(dat$dna))
 hist(mu, col="grey",
@@ -41,5 +41,5 @@ hist(mu, col="grey",
 abline(v=1e-4,lty=2, lwd=4, col="royalblue")
 mtext(side=3, "Dashed line = actual value")
 
-detach(toyOutbreak)
+detach(fakeOutbreak)
 }
