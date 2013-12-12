@@ -24,8 +24,8 @@
 */
 
 /* ALLOC DNASEQ OBJECT - ONE DNA SEQUENCE */
-dnaseq * alloc_dnaseq(int length){
-    int i;
+dnaseq * alloc_dnaseq(long int length){
+    long int i;
 
     /* ALLOCATE OUTPUT */
     dnaseq *out = (dnaseq *) malloc(sizeof(dnaseq));
@@ -49,8 +49,8 @@ dnaseq * alloc_dnaseq(int length){
 
 
 /* ALLOC LIST_DNASEQ OBJECT - A LIST OF ALIGNED DNA SEQUENCES */
-list_dnaseq * alloc_list_dnaseq(int n, int length){
-    int i;
+list_dnaseq * alloc_list_dnaseq(long int n, long int length){
+    long int i;
 
     /* ALLOCATE OUTPUT */
     list_dnaseq *out = (list_dnaseq *) malloc(sizeof(list_dnaseq));
@@ -98,7 +98,7 @@ void free_dnaseq(dnaseq *in){
 
 
 void free_list_dnaseq(list_dnaseq *in){
-    int i;
+    long int i;
     if(in!=NULL){
 	for(i=0;i<in->n;i++){
 	    free_dnaseq(in->list[i]);
@@ -117,7 +117,7 @@ void free_list_dnaseq(list_dnaseq *in){
 */
 
 void print_dnaseq(dnaseq *in){
-    int i;
+    long int i;
     for(i=0;i<in->length;i++){
 	Rprintf("%c", in->seq[i]);
     }
@@ -128,7 +128,7 @@ void print_dnaseq(dnaseq *in){
 
 
 void print_list_dnaseq(list_dnaseq *in){
-    int i;
+    long int i;
     Rprintf("\nList of %d DNA sequences (size: %d)\n", in->n, in->length);
     for(i=0;i<in->n;i++){
 	Rprintf("%d: ", i+1);
@@ -159,8 +159,8 @@ char DNAbin2char(unsigned char in){
 
 
 /* convert DNAbin class to list_dnaseq */
-list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, int *n, int *length){
-    int i, j, count=0;
+list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, long int *n, long int *length){
+    long int i, j, count=0;
 
     /* ALLOC OUTPUT */
     list_dnaseq *out = alloc_list_dnaseq(*n,*length);
@@ -191,7 +191,7 @@ void copy_dnaseq(dnaseq *in, dnaseq *out){
       /* exit(1); */
     }
 
-    int i;
+    long int i;
     for(i=0;i<in->length;i++){
 	out->seq[i] = in->seq[i];
     }
