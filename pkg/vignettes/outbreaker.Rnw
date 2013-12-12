@@ -40,7 +40,11 @@ options(width=80)
 
 \begin{abstract}
   This vignette introduces the main functionalities of \textit{outbreaker}, a package implementing a
-  model for disease outbreak reconstruction using epidemiological data and pathogen genome sequences.
+  model for disease outbreak reconstruction using epidemiological data and pathogen genome
+  sequences. The emphasis of this document is put on using \textit{outbreaker} and exploiting its
+  results, more than providing an introduction to disease outbreak reconstruction. For this, see
+  online tutorials available on the \textit{R-epi project}:
+  \url{https://sites.google.com/site/therepiproject/tutorials}.
 \end{abstract}
 
 \newpage
@@ -48,6 +52,308 @@ options(width=80)
 \tableofcontents
 
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Running outbreaker}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A simple example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<>>=
+library(outbreaker)
+data("fakeOutbreak")
+names(fakeOutbreak)
+@
+
+<<>>=
+dat <- fakeOutbreak$dat
+w <- fakeOutbreak$w
+collecDates <- fakeOutbreak$collecDates
+plot(dat, main="Simulated outbreak")
+barplot(w, main="Generation time distribution", ylab="probability", xlab="days", names=0:3)
+@
+
+
+
+<<eval=FALSE>>=
+res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
+                            dates=collecDates,w.dens=w, n.iter=5e4)
+@
+<<echo=FALSE>>=
+load("objects/res.RData")
+@
+
+<<>>=
+names(res)
+@
+
+<<>>=
+names(res$chains)
+@
+
+
+<<>>=
+class(res)
+names(res)
+@
+The object \texttt{res} is a list with a number of named items, described in \texttt{?outbreaker}.
+The most important one is \texttt{res\$chains}, containing the MCMC outputs:
+<<>>=
+class(res$chains)
+dim(res$chains)
+names(res$chains)
+res$chains[1:10,1:10]
+@
+The columns of this \texttt{data.frame} store the following outputs:
+\begin{itemize}
+  \item \texttt{step}: the MCMC iteration of the sample
+  \item \texttt{post/like/prior}: log values for posterior, likelihood, and prior densities
+  \item \texttt{mu1}: in mutation model 1, mutation rate; otherwise, the rate of transitions, per site and generation
+  \item \texttt{mu2}: in mutation model 1, mutation rate (mu1=mu2); otherwise, the rate of transversions, per site and generation
+  \item \texttt{gamma}: the ratio between transversions and transitions ($\mu_2 / \mu_1$)
+  \item \texttt{pi}: the proportion of the transmission tree sampled
+  \item \texttt{Tinf\_[}\textit{number}\texttt{]}: dates of infection
+  \item \texttt{alpha\_[}\textit{number}\texttt{]}: the index of the ancestral cases (infectors)
+  \item \texttt{kappa\_[}\textit{number}\texttt{]}: the number of generations between cases and
+    their most recent sampled ancestor (here, fixed to 1)
+  \item \texttt{run}: for parallel runs, the index of the run.
+\end{itemize}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Assessing convergence and determining the burnin}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A MCMC is said to converge when it reaches a stationary state, i.e. its distributional properties a
+constant over time (mean and variance don't depend on which iteration you consider).
+Convergence of the chains is best assessed by comparing parallel runs.
+This can be done using \texttt{plotChains}:
+
+<<>>=
+plotChains(res, main="Trace of log-posterior values")
+plotChains(res, main="Trace of log-posterior values \n(burnin removed)",
+           burnin=2e4)
+plotChains(res, main="Density log-posterior values \n(burnin removed)",
+           burnin=2e4, type="dens")
+@
+
+Note that any element of the model in \texttt{res\$chains} can be plotted using \texttt{plotChains};
+for instance, the mutation rate:
+<<>>=
+plotChains(res, main="Trace of mu \n(burnin removed)",
+           burnin=2e4, what="mu1")
+plotChains(res, main="Trace of mu \n(burnin removed)",
+           burnin=2e4, what="mu1", type="dens")
+@
+(note that in this case, the plotted information is the mutation rate \textit{per generation of
+  infection}, and not per unit of time.
+See section on mutation rates below for an estimation of the rates per unit of time.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Interpreting the results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Visualizing reconstructed transmission trees}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Accessing posterior distributions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Incidence and reproduction numbers}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mutation rates}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Improving graphics}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<>>=
+library(ggplot2)
+library(reshape2)
+x <- res$chains
+x$run <- factor(x$run)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Plotting traces and densities}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<>>=
+p <- ggplot(x, aes(x=step)) +
+    geom_line(aes(y=post, colour=run)) +
+    labs(title="Trace of log-posterior", y="log-posterior")
+
+p
+@
+<<>>=
+p + scale_y_continuous(limits=c(-460,-430))
+@
+
+<<>>=
+p + scale_y_continuous(limits=c(-460,-430)) + geom_smooth(aes(y=post))
+@
+
+
+<<>>=
+p <- ggplot(data=x) + labs(title="Trace of log-posterior", x="log-posterior") +
+    scale_x_continuous(limits=c(-460,-430))
+p + geom_density(aes(x=post, fill=run), alpha=.3, colour=NA) +
+    geom_density(aes(x=post), size=1, colour="black", shape=2, alpha=.8)
+
+@
+
+<<>>=
+p + geom_histogram(aes(x=post, fill=run, y=..density..), alpha=.7, colour=NA, position="dodge") +
+    geom_density(aes(x=post), size=1, colour="black", shape=2, alpha=.8)
+
+@
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Plotting dates of infection}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<>>=
+Tinf <- x[x$step>=2e4,c(1,ncol(x),grep("Tinf", names(x)))]
+Tinf[1:5,1:6]
+@
+
+<<>>=
+Tinf <- melt(Tinf, id=1:2)
+names(Tinf)[3:4] <- c("case", "date")
+Tinf$case <- sub("Tinf_","Case ", Tinf$case)
+Tinf$case <- factor(Tinf$case, levels=paste("Case",1:30))
+head(Tinf)
+tail(Tinf)
+@
+
+<<>>=
+ggplot(data=Tinf) + geom_line(aes(x=step,y=date,colour=case), alpha=.5) +
+    labs(y="Infection date", title="Traces of infection dates")
+@
+
+
+<<>>=
+ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=case, alpha=.5)) +
+   coord_flip() + labs(y="Infection date", x="", title="Distribution of infection dates")
+@
+
+
+<<>>=
+ggplot(data=Tinf) + geom_violin(aes(x=case,y=date,fill=case, alpha=.5)) +
+   coord_flip() + labs(y="Infection date", x="", title="Distribution of infection dates")
+@
+
+<<>>=
+ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=run),alpha=.5) + coord_flip() +
+    labs(y="Infection date", x="", title="Distribution of infection dates")
+@
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Plotting ancestries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<>>=
+library(igraph)
+library(adegenet)
+@
+<<>>=
+g <- transGraph(res, thres=0)
+@
+
+
+<<>>=
+plot(g, layout=layout.circle, edge.curved=FALSE, vertex.color=funky(30))
+@
+
+
+<<>>=
+g <- transGraph(res, thres=0.5, annot="")
+edge.colors <- funky(30)[as.numeric(get.edgelist(g)[,1])]
+plot(g, layout=layout.circle, edge.curved=FALSE, vertex.color=funky(30), 
+     edge.color=edge.colors)
+title("Ancestries with support >50% - circular graph")
+
+plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=funky(30), 
+     edge.color=edge.colors)
+title("Ancestries with support >50% - other layout")
+
+@
+
+<<>>=
+case.size <- 10+apply(get.R(res),2,mean)*5
+plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=funky(30), 
+     edge.color=edge.colors, vertex.size=case.size)
+title("Ancestries with support >50% \n(node size reflects R)")
+@
+
+
+<<>>=
+Tinf <- x[x$step>=2e4,grep("Tinf", names(x))]
+case.color <- any2col(apply(Tinf,2,mean), col.pal=spectral)
+plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=case.color$col, 
+     vertex.size=case.size)
+title("Ancestries with support >50% \n(node size reflects R)")
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+@
+
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \section{Advanced uses}
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \subsection{Fixing known ancestries}
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
