@@ -15,14 +15,14 @@
 */
 typedef struct{
 	char *seq;
-	int length;
+	long int length;
 } dnaseq;
 
 
 
 typedef struct{
 	dnaseq **list;
-	int n, length; /* n: nb of sequences; length: length of sequences */
+	long int n, length; /* n: nb of sequences; length: length of sequences */
 } list_dnaseq;
 
 
@@ -34,9 +34,9 @@ typedef struct{
   CONSTRUCTORS
   ============
 */
- dnaseq * alloc_dnaseq(int length);
+ dnaseq * alloc_dnaseq(long int length);
 
- list_dnaseq * alloc_list_dnaseq(int n, int length);
+ list_dnaseq * alloc_list_dnaseq(long int n, long int length);
 
 
 
@@ -76,7 +76,7 @@ char DNAbin2char(unsigned char in);
   ==================
 */
 
-list_dnaseq * DNAbin2list_dnaseq(unsigned char * in, int *n, int *length);
+list_dnaseq * DNAbin2list_dnaseq(unsigned char * in, long int *n, long int *length);
 
 void copy_dnaseq(dnaseq *in, dnaseq *out);
 
