@@ -30,9 +30,9 @@
 
 }
 \usage{
-outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens,
-           w.trunc=length(w.dens), f.dens=w.dens,
-           f.trunc=length(f.dens), dist.mat=NULL, spa.model=1,
+outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
+           w.dens, w.trunc=length(w.dens), f.dens=w.dens,
+           f.trunc=length(f.dens), dist.mat=NULL,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
            init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
            init.spa2=NULL, n.iter=1e5, sample.every=500, tune.every=500,
@@ -45,20 +45,18 @@ outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens,
 
 
 outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
-                    dna=NULL, dates, idx.dna=NULL, mut.model=1, w.dens,
-                    w.trunc=length(w.dens), f.dens=w.dens,
-                    f.trunc=length(f.dens), dist.mat=NULL, spa.model=1,
-                    init.tree=c("seqTrack","random","star"),
-                    init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1,
-                    init.spa1=NULL, init.spa2=NULL, n.iter=1e5,
-                    sample.every=500, tune.every=500, burnin=2e4,
-                    find.import=TRUE, find.import.n=50, pi.param1=10,
-                    pi.param2=1, spa1.prior=1, spa2.prior=1,
-                    move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                    move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-                    outlier.threshold = 5, quiet=TRUE,
-                    res.file.name="chains.txt",
-                    tune.file.name="tuning.txt", seed=NULL)
+           dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
+           w.dens, w.trunc=length(w.dens), f.dens=w.dens,
+           f.trunc=length(f.dens), dist.mat=NULL,
+           init.tree=c("seqTrack","random","star"), init.kappa=NULL,
+           init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
+           init.spa2=NULL, n.iter=1e5, sample.every=500, tune.every=500,
+           burnin=2e4, find.import=TRUE, find.import.n=50, pi.param1=10,
+           pi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
+           move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
+           move.pi=TRUE, move.spa=TRUE, outlier.threshold = 5,
+           quiet=TRUE, res.file.name="chains.txt",
+           tune.file.name="tuning.txt", seed=NULL)
 }
 \arguments{
   \item{dna}{the DNA sequences in \code{DNAbin} format (see
