@@ -10,8 +10,9 @@
 \title{Simulation of pathogen genotypes during disease outbreaks}
 \description{
   The function \code{simOutbreak} implements simulations of disease
-  outbreaks. This functions are currently under development. Please
-  email the author before using them.
+  outbreaks. The infectivity of cases is defined by a generation time
+  distribution. The function \code{as.igraph} allows to convert
+  simulated transmission trees into \code{igraph} objects.
 }
 \usage{
 simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=1e4,
@@ -122,7 +123,8 @@ annotation.}
 
 }
 \author{
-Implementation by Thibaut Jombart \email{t.jombart@imperial.ac.uk}
+Implementation by Thibaut Jombart \email{t.jombart@imperial.ac.uk}.
+
 Epidemiological model designed by Anne Cori and Thibaut Jombart.}
 \value{
   === simOutbreak class ===\cr

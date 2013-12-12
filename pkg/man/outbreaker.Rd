@@ -15,8 +15,9 @@
     \item transmission trees
     \item dates of infection
     \item missing cases in a chain of transmission
-    \item imported cases
     \item mutation rates
+    \item imported cases
+    \item (indirectly) effective reproduction numbers
   }
 
   The function \code{outbreaker} is the basic implementation of the
@@ -63,7 +64,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
   \item{dna}{the DNA sequences in \code{DNAbin} format (see
     \code{\link[ape]{read.dna}} in the ape package); this can be
     imported from a fasta file (extension .fa, .fas, or .fasta) using
-    \code{adegenet}'s function \code{\link[adegenet]{fasta2DNAbin}}.}
+    \code{adegenet}'s function \link[adegenet]{fasta2DNAbin}.}
 
   \item{dates}{a vector indicating the collection dates, provided either
     as integer numbers or in a usual date format such as \code{Date} or
@@ -77,7 +78,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
 
   \item{mut.model}{an integer indicating the mutational model to be
     used; 1: one single mutation rate; 2: two rates,
-    transitions/transversions.}
+    transitions (mu1) / transversions (mu2).}
   
   \item{spa.model}{an integer indicating the spatial model to be
     used. 0: no spatial model. 1: exponential kernel.}
@@ -106,7 +107,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
   
   \item{init.tree}{the tree used to initialize the MCMC. Can be either a
     character string indicating how this tree should be computed, or a
-    vector if integers corresponding to the tree itself, where the i-th
+    vector of integers corresponding to the tree itself, where the i-th
     value corresponds to the index of the ancestor of 'i' (i.e.,
     \code{init.tree[i]} is the ancestor of case \code{i}). Accepted
     character strings are "seqTrack" (uses seqTrack output as initialize
@@ -158,11 +159,14 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     the spatial parameters. In the spatial model 1, \code{spa1.prior} is
     the mean of an exponential distribution.}
 
-  \item{move.mut,move.ances,move.kappa,move.Tinf,move.pi,move.spa}{logicals
+  \item{move.mut,move.pi,move.spa}{logicals
     indicating whether the named items should be estimated ('moved' in
     the MCMC), or not, all defaulting to TRUE. \code{move.mut} handles
-    both mutation rates, while \code{move.ances} is a vector of length
-    'n' indicating which ancestries should be estimated.}
+    both mutation rates.}
+
+  \item{move.ances,move.kappa,move.Tinf}{vectors of logicals of length
+    'n' indicating for which cases different components should be
+    moved during the MCMC.}
   
   \item{outlier.threshold}{a numeric value indicating the threshold for
     detecting low likelihood values corresponding to imported
@@ -170,13 +174,13 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     than the average.}
   
   \item{quiet}{a logical indicating whether messages should be displayed
-    to the screen.}
+    on the screen.}
   
   \item{res.file.name}{a character string indicating the name of the
     file used to store MCMC outputs.}
   
   \item{tune.file.name}{a character string indicating the name of the
-    file used to store MCMC tuning parameters.}
+    file used to store MCMC tuning outputs.}
   
   \item{seed}{an integer used to set the random seed of the C
     procedures.}  \item{n.runs}{an integer indicating the number of
@@ -194,25 +198,38 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
 \value{
   Both procedures return a list with the following components:
   \itemize{
-    \item chains: a data.frame containing MCMC outputs (which are also
-    stored in the file indicated in \code{res.file.name}).
+    \item chains: a data.frame containing MCMC outputs (which
+    are also stored in the file indicated in \code{res.file.name}).
+
     \item collec.dates: (data) the collection dates.
-    \item w: (data) the generation time distribution (argument \code{w.dens})
-    \item f: (data) the distribution of the time to collection (argument \code{f.dens})
+
+    \item w: (data) the generation time distribution (argument
+    \code{w.dens})
+
+    \item f: (data) the distribution of the time to collection (argument
+    \code{f.dens})
+
     \item D: a matrix of genetic distances (in number of mutations)
     between all pairs of sequences.
-    \item idx.dna: (data) the index of the case each dna sequence corresponds to
+
+    \item idx.dna: (data) the index of the case each dna sequence
+    corresponds to
+
     \item tune.end: an integer indicating at which iteration the
     proposal auto-tuning procedures all stopped.
+
     \item find.import: a logical indicating if imported cases were to be
     automatically detected.
+
     \item burnin: an integer indicating the pre-defined burnin, used
     when detecting imported cases.
+
     \item find.import.at: an integer indicating at which iteration of
     the preliminary MCMC imported cases were detected.
+
     \item n.runs: the number of independent runs used.
-    \item call: the matched call.
-  }
+
+    \item call: the matched call.  }
 }
 \references{
  Jombart T, Cori A, Didelot X, Cauchemez S, Fraser C and Ferguson N
@@ -225,13 +242,25 @@ epidemiologic and genomic data. PLoS Computational Biology.
 }
 \seealso{
   \itemize{
+    \item \link{plotChains} to visualize MCMC chains.
+
     \item \link{transGraph} and \link{get.tTree} to represent
     transmission trees.
-    \item \link{get.R} and \link{get.Rt} to get reproduction numbers distributions.
+    
+    \item \link{get.R} and \link{get.Rt} to get reproduction numbers
+    distributions.
+    
+    \item \link{get.incid} to get estimates of incidence.
+
     \item \link{get.mu} to get the mutation rate distribution.
+    
     \item \link{simOutbreak} to simulate outbreaks.
+    
     \item \link{selectChains} to select chains from parallel runs which
     converged towards different posterior modes.
+
+    \item \link{fakeOutbreak}, a toy dataset used to illustrate the
+    method.
   }
 }
 \examples{
@@ -282,7 +311,8 @@ get.Rt(res)
 
 ## GET INDIVIDUAL EFFECTIVE REPRODUCTION
 head(get.R(res))
-boxplot(get.R(res), col="grey", xlab="Case",ylab="Effective reproduction number")
+boxplot(get.R(res), col="grey", xlab="Case",
+        ylab="Effective reproduction number")
 
 ## GET MUTATION RATE PER TIME UNIT
 ## per genome
@@ -294,7 +324,7 @@ head(mu)
 
 summary(mu)
 hist(mu, border="lightgrey", col="grey", xlab="Mutation per day and nucleotide",
-   main="Posterior distribution of mutation rate")
+     main="Posterior distribution of mutation rate")
 
 detach(fakeOutbreak)
 

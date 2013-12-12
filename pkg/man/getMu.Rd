@@ -5,7 +5,7 @@
   The function \code{get.mu} is used to obtain a distribution of the
   mutation rate from outbreaker's ouptput (functions \code{outbreaker}
   and \code{outbreaker.parallel}). The mutation rates used in
-  \code{outbreaker}'s model are expressed per generation of infection,
+  outbreaker's model are expressed per generation of infection,
   which can be problematic to interprete biologically. \code{get.mu}
   derives classical estimates of the mutation rate per unit of time,
   with one value being estimated for each chain of the MCMC. By default,

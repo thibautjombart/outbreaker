@@ -5,10 +5,10 @@
   The function \code{selectChains} is used to discard 'bad' MCMC chains
   from outbreaker's ouptput (functions \code{outbreaker} and
   \code{outbreaker.parallel}). This is useful whenever several chains
-  were run and converged towards different distributions. This is
-  typically the case when imported cases are hard to disentangle,
-  resulting in different runs identifying different imports and
-  therefore having different likelihood.
+  were run and converged towards different posterior modes or
+  distributions.  This can happen for instance when imported cases are
+  hard to disentangle, resulting in different runs identifying different
+  imports and therefore having different likelihood.
 
   Three modes are available, depending on the argument \code{select}
   (see also arguments below):
