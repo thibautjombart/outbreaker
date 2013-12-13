@@ -1,9 +1,9 @@
 \contentsline {section}{\numberline {1}Running outbreaker}{2}{section.1}
 \contentsline {subsection}{\numberline {1.1}A simple example}{2}{subsection.1.1}
-\contentsline {subsection}{\numberline {1.2}Assessing convergence and determining the burnin}{5}{subsection.1.2}
-\contentsline {section}{\numberline {2}Interpreting the results}{10}{section.2}
-\contentsline {subsection}{\numberline {2.1}Visualizing reconstructed transmission trees}{10}{subsection.2.1}
-\contentsline {subsection}{\numberline {2.2}Plotting dates of infection}{17}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Accessing posterior distributions}{19}{subsection.2.3}
-\contentsline {subsection}{\numberline {2.4}Mutation rates}{23}{subsection.2.4}
-\contentsline {subsection}{\numberline {2.5}Incidence and reproduction numbers}{25}{subsection.2.5}
+\contentsline {subsection}{\numberline {1.2}Assessing convergence and determining the burnin}{6}{subsection.1.2}
+\contentsline {section}{\numberline {2}Interpreting the results}{11}{section.2}
+\contentsline {subsection}{\numberline {2.1}Visualizing reconstructed transmission trees}{11}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Plotting dates of infection}{19}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Accessing posterior distributions}{22}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Mutation rates}{27}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}Incidence and reproduction numbers}{30}{subsection.2.5}
