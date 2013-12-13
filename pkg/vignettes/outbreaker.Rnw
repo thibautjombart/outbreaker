@@ -484,16 +484,25 @@ legend("topright", lty=c(1,2), leg=c("Median","95% credibility interval"), col="
 \subsection{Incidence and reproduction numbers}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Incidence curves and effective reproduction numbers can be derived from the results of \textit{outbreaker}.
+Incidence curves can be obtained and visualized using \texttt{get.incid}:
 <<>>=
-incid <- get.incid(res)
+incid <- get.incid(res, burnin=2e4)
+class(incid)
+dim(incid)
+incid[,1:10]
 @
-
+Each column in \texttt{incid} is a different realization of an incidence curve corresponding to one
+step of the MCMC.
+Other graphical options are available:
 <<>>=
 args(get.incid)
 incid <- get.incid(res, type="lines",lines.col=transp("black",.1))
 title("Posterior estimates of incidence")
 @
-
+Because a lot of these trajectories overlap, visualizing them all is a bit tricky.
+\textit{ggplot2} will be helpful here.
+We first reformat the data:
 <<>>=
 x <- data.frame(date=as.vector(row(incid)),
                 step=as.vector(col(incid)),
@@ -502,49 +511,56 @@ head(x)
 p <- ggplot(data=x, aes(x=date, y=incidence)) + labs(title="Posterior estimates of incidence")
 @
 
-
+This is for a basic boxplot:
 <<>>=
 p + geom_boxplot(aes(x=factor(date)))
 @
-
 <<>>=
-p + geom_jitter(aes(x=factor(date)), alpha=.2)
+p + geom_boxplot(aes(x=factor(date)))
 @
-
+A noisified version with a smoother can be obtained using:
 <<>>=
-p + geom_jitter(alpha=.1) + geom_smooth(method=lm, formula=y~ns(x,10), size=1)
+p + geom_jitter(aes(x=factor(date)), alpha=.2) + geom_smooth(method=lm, formula=y~ns(x,10), size=1)
 @
+However, it adds artifactual variation and may be best avoided here.
 
-
+Another interesting option is offered by some density-based graphics:
 <<>>=
-p + geom_bin2d()
+p + geom_bin2d() + geom_smooth(method=lm, formula=y~ns(x,10), size=1)
 p + geom_bin2d(binwidth=c(1,1))
 @
-
+or perhaps even better:
 <<>>=
-p + geom_hex(bins=8)
+p + geom_hex(bins=8) + geom_smooth(colour="red",size=1)
 @
+~\\
 
 
-
-
+Effective reproduction numbers over time can be obtained using \texttt{get.Rt}, and given identical outputs to \texttt{get.incid}.
+Effective reproduction numbers per individuals can be obtained by \texttt{get.R}:
 <<>>=
 R <- get.R(res)
+class(R)
 dim(R)
+R[1:6,1:15]
+@
+\texttt{R} is a matrix of effective reproduction numbers with one column per individual and one row
+for each retained step of the MCMC.
+This information can be pooled to get a rough idea of the overall distribution of $R_i$:
+<<>>=
+table(R)
+table(R)/length(R)
 barplot(table(R)/length(R), xlab="Number of secondary cases", main="Posterior estimates of effective reproduction numbers (R)", ylab="Frequency")
 @
-
+And we can use \textit{ggplot2} to visualize the individual distributions:
 <<>>=
 x <- data.frame(case=factor(as.vector(col(R)), levels=as.character(1:30)),R=as.vector(R))
 head(x)
 tail(x)
-@
 
-
-<<>>=
 p <- ggplot(data=x, aes(x=case, y=R)) + labs(title="Posterior estimates of effective reproduction numbers")
-p + geom_boxplot()
-p + geom_boxplot(aes(colour=case))
+p + geom_boxplot(aes(colour=case)) + guides(colour=FALSE)
+
 @
 
 
