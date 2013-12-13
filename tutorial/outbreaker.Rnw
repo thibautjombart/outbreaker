@@ -39,10 +39,10 @@ options(width=80)
 \maketitle
 
 \begin{abstract}
-  This vignette introduces the main functionalities of \textit{outbreaker}, a package implementing a
-  model for disease outbreak reconstruction using epidemiological data and pathogen genome
-  sequences. The emphasis of this document is put on using \textit{outbreaker} and on the
-  visualization and interpretation of results.
+  This vignette introduces the main functionalities of \textit{outbreaker} \cite{outbreaker}, a
+  package implementing a model for disease outbreak reconstruction using epidemiological data and
+  pathogen genome sequences. The emphasis of this document is put on using \textit{outbreaker} and
+  on the visualization and interpretation of results.
   \\
 
   More resources for disease outbreaks analysis in R are available on the \textit{R-epi project}:
@@ -83,6 +83,7 @@ fakeOutbreak$w
 fakeOutbreak$collecDates
 @
 
+
 \texttt{fakeOutbreak} is a list containing \texttt{dat}, a simulated outbreak (obtained by
 \texttt{simOutbreak}), a generation time distribution (\texttt{w}), collection dates for the DNA
 sequences (\texttt{collecDates}), and results from \textit{outbreaker} (\texttt{res}).
@@ -102,7 +103,7 @@ to run 4 MCMC in parallel and 100,000 chains for each MCMC.
 res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
                             dates=collecDates,w.dens=w, n.iter=1e5)
 @
-<<echo=FALSE>>=
+<<echo=FALSE,eval=TRUE>>=
 load("objects/res.RData")
 @
 
@@ -175,11 +176,12 @@ anova(lm(post~run, data=res$chains[res$chains$step>2e4,]))
 @
 
 
-These graphs can be slightly improved by using \textit{ggplot2}.
+These graphs can be slightly improved by using \textit{ggplot2} \cite{ggplot2}.
 We first load the package, and make sure that \texttt{run} is treated as a \texttt{factor}:
 <<>>=
 library(ggplot2)
 library(reshape2)
+library(mgcv)
 x <- res$chains
 x$run <- factor(x$run)
 @
@@ -589,6 +591,11 @@ p + labs(title="Posterior estimates of effective reproduction numbers")
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \subsection{Fixing known ancestries}
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{outbreaker}
 
 
 
