@@ -1,0 +1,9 @@
+\BOOKMARK [1][-]{section.1}{Running outbreaker}{}
+\BOOKMARK [2][-]{subsection.1.1}{A simple example}{section.1}
+\BOOKMARK [2][-]{subsection.1.2}{Assessing convergence and determining the burnin}{section.1}
+\BOOKMARK [1][-]{section.2}{Interpreting the results}{}
+\BOOKMARK [2][-]{subsection.2.1}{Visualizing reconstructed transmission trees}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Plotting dates of infection}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Accessing posterior distributions}{section.2}
+\BOOKMARK [2][-]{subsection.2.4}{Mutation rates}{section.2}
+\BOOKMARK [2][-]{subsection.2.5}{Incidence and reproduction numbers}{section.2}

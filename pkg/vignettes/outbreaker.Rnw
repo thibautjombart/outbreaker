@@ -8,7 +8,7 @@
 \usepackage{array}
 \usepackage{color}
 \usepackage{geometry}
-\geometry{verbose,tmargin=3cm,bmargin=3cm,lmargin=3cm,rmargin=3cm}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
 
 \usepackage[utf8]{inputenc} % for UTF-8/single quotes from sQuote()
 \newcommand{\code}[1]{{{\tt #1}}}
@@ -28,7 +28,7 @@
 
 <<eval=TRUE,echo=FALSE,results='hide'>>=
 library(knitr)
-opts_chunk$set(fig.path='figs/', fig.keep='last', dev='pdf', fig.width=7, fig.height=7,
+opts_chunk$set(fig.path='figs/', fig.keep='high', dev='pdf', fig.width=7, fig.height=7,
                tidy=FALSE, warning=FALSE, fig.show='asis', fig.align='center', cache=FALSE,
                out.width=".6\\textwidth")
 options(width=80)
@@ -41,9 +41,9 @@ options(width=80)
 \begin{abstract}
   This vignette introduces the main functionalities of \textit{outbreaker}, a package implementing a
   model for disease outbreak reconstruction using epidemiological data and pathogen genome
-  sequences. The emphasis of this document is put on using \textit{outbreaker} and exploiting its
-  results, more than providing an introduction to disease outbreak reconstruction. For this, see
-  online tutorials available on the \textit{R-epi project}:
+  sequences. The emphasis of this document is put on using \textit{outbreaker} and on the
+  visualization and interpretation of results. For an introduction to disease outbreak
+  reconstruction, see online tutorials available on the \textit{R-epi project}:
   \url{https://sites.google.com/site/therepiproject/tutorials}.
 \end{abstract}
 
@@ -66,12 +66,22 @@ options(width=80)
 \subsection{A simple example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+In this vignette, we shall use the toy dataset \texttt{fakeOutbreak} distributed with \textit{outbreaker}.
+We first load the package, the dataset, and look at the object's content:
 <<>>=
 library(outbreaker)
-data("fakeOutbreak")
+data(fakeOutbreak)
+class(fakeOutbreak)
 names(fakeOutbreak)
+fakeOutbreak$dat
+fakeOutbreak$w
+fakeOutbreak$collecDates
 @
 
+\texttt{fakeOutbreak} is a list containing \texttt{dat}, a simulated outbreak (obtained by
+\texttt{simOutbreak}), a generation time distribution (\texttt{w}), collection dates for the DNA
+sequences (\texttt{collecDates}), and results from \textit{outbreaker} (\texttt{res}).
+We shall need only the first 3 items, and re-create the fourth.
 <<>>=
 dat <- fakeOutbreak$dat
 w <- fakeOutbreak$w
@@ -81,10 +91,11 @@ barplot(w, main="Generation time distribution", ylab="probability", xlab="days",
 @
 
 
-
+We run \textit{outbreaker} on these data, using the parallel version, and specifying that we want
+to run 4 MCMC in parallel and 100,000 chains for each MCMC.
 <<eval=FALSE>>=
 res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
-                            dates=collecDates,w.dens=w, n.iter=5e4)
+                            dates=collecDates,w.dens=w, n.iter=1e5)
 @
 <<echo=FALSE>>=
 load("objects/res.RData")
@@ -126,6 +137,7 @@ The columns of this \texttt{data.frame} store the following outputs:
   \item \texttt{run}: for parallel runs, the index of the run.
 \end{itemize}
 
+We shall see how this information can be used, visualized and interpreted over the following sections.
 
 
 
@@ -134,111 +146,70 @@ The columns of this \texttt{data.frame} store the following outputs:
 \subsection{Assessing convergence and determining the burnin}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-A MCMC is said to converge when it reaches a stationary state, i.e. its distributional properties a
-constant over time (mean and variance don't depend on which iteration you consider).
+A MCMC is said to converge when it reaches a stationary state, i.e. its distributional properties are
+constant over time (mean and variance don't depend on which window of the MCMC you consider).
 Convergence of the chains is best assessed by comparing parallel runs.
-This can be done using \texttt{plotChains}:
-
+This can be done using \texttt{plotChains}, which we to visualize the trace of the log-posterior
+values of the model:
 <<>>=
 plotChains(res, main="Trace of log-posterior values")
+@
+
+\noindent We set the burnin to a conservative 20,000 steps, and plot the MCMC output as trace and as densities:
+<<>>=
 plotChains(res, main="Trace of log-posterior values \n(burnin removed)",
            burnin=2e4)
 plotChains(res, main="Density log-posterior values \n(burnin removed)",
            burnin=2e4, type="dens")
 @
-
-Note that any element of the model in \texttt{res\$chains} can be plotted using \texttt{plotChains};
-for instance, the mutation rate:
+Here, all four runs have sampled from the same distribution, confirming convergence of the MCMCs.
+Note that this can also be tested using a simple ANOVA, which we use to check that log-posterior
+values do no differ from one run to another:
 <<>>=
-plotChains(res, main="Trace of mu \n(burnin removed)",
-           burnin=2e4, what="mu1")
-plotChains(res, main="Trace of mu \n(burnin removed)",
-           burnin=2e4, what="mu1", type="dens")
+anova(lm(post~run, data=x[x$step>2e4,]))
 @
-(note that in this case, the plotted information is the mutation rate \textit{per generation of
-  infection}, and not per unit of time.
-See section on mutation rates below for an estimation of the rates per unit of time.
+\\
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Interpreting the results}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Visualizing reconstructed transmission trees}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Accessing posterior distributions}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Incidence and reproduction numbers}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Mutation rates}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Improving graphics}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+These graphs can be slightly improved by using \textit{ggplot2}.
+We first load the package, and make sure that \texttt{run} is treated as a \texttt{factor}:
 <<>>=
 library(ggplot2)
 library(reshape2)
 x <- res$chains
 x$run <- factor(x$run)
 @
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Plotting traces and densities}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The basic plot of the log-posterior trace is obtained by:
 <<>>=
 p <- ggplot(x, aes(x=step)) +
     geom_line(aes(y=post, colour=run)) +
     labs(title="Trace of log-posterior", y="log-posterior")
-
 p
 @
+
+The version without the burnin is:
 <<>>=
-p + scale_y_continuous(limits=c(-460,-430))
+p <- ggplot(x[x$step>2e4,], aes(x=step)) +
+    geom_line(aes(y=post, colour=run)) +
+    labs(title="Trace of log-posterior", y="log-posterior")
+p
 @
 
+A model of the mean can be added easily:
 <<>>=
-p + scale_y_continuous(limits=c(-460,-430)) + geom_smooth(aes(y=post))
+p + geom_smooth(aes(y=post))
 @
 
-
+\textit{ggplot2} is also pretty good for plotting distributions.
+Here is an example using 1-dimensional density estimation:
 <<>>=
-p <- ggplot(data=x) + labs(title="Trace of log-posterior", x="log-posterior") +
+p <- ggplot(data=x) + labs(title="Distribution of log-posterior values", x="log-posterior") +
     scale_x_continuous(limits=c(-460,-430))
 p + geom_density(aes(x=post, fill=run), alpha=.3, colour=NA) +
     geom_density(aes(x=post), size=1, colour="black", shape=2, alpha=.8)
 
 @
-
+and another version using histograms:
 <<>>=
 p + geom_histogram(aes(x=post, fill=run, y=..density..), alpha=.7, colour=NA, position="dodge") +
     geom_density(aes(x=post), size=1, colour="black", shape=2, alpha=.8)
@@ -249,15 +220,131 @@ p + geom_histogram(aes(x=post, fill=run, y=..density..), alpha=.7, colour=NA, po
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Interpreting the results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textit{outbreaker} can provide information on:
+\begin{itemize}
+  \item the transmission tree (``who infected whom''); ancestry for case $i$ is noted $\alpha_i$
+  \item the dates of infection; for case $i$, noted $T^{inf}_i$
+  \item the mutation rate per generation of infection ($\mu$)
+  \item the proportion of the outbreak sampled ($\pi$)
+  \item effective reproduction numbers over time or at an individual level $\dagger$
+  \item incidence curves $\dagger$
+  \item the mutation rate per unit of time $\dagger$
+\end{itemize}
+Items indicated with a $\dagger$ are not explicitely modelled by \textit{outbreaker}, but can be derived from the
+posterior samples of trees and parameters.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Visualizing reconstructed transmission trees}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textit{outbreaker} being a Bayesian approach, it does not return a single tree, but a distribution
+of plausible transmission trees.
+A set of ancestries can be visualized by \texttt{transGraph}
+<<>>=
+library(igraph)
+library(adegenet)
+@
+<<>>=
+g <- transGraph(res, thres=0)
+@
+Annotations represent the number of mutations for the ancestries, and their support (frequency in
+the posterior samples).
+Note that this function returns an \textit{igraph} object, which can be used for further plotting
+and customization:
+<<>>=
+g
+plot(g, layout=layout.circle, edge.curved=FALSE, vertex.color=funky(30))
+@
+see \texttt{?plot.igraph} and \texttt{igraph.plotting} for more information on how to customize
+these graphics.
+We illustrate some possibilities below:
+<<>>=
+g <- transGraph(res, thres=0.5, annot="")
+edge.colors <- funky(30)[as.numeric(get.edgelist(g)[,1])]
+plot(g, layout=layout.circle, edge.curved=FALSE, vertex.color=funky(30),
+     edge.color=edge.colors)
+title("Ancestries with support >50% - circular graph")
+
+plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=funky(30),
+     edge.color=edge.colors)
+title("Ancestries with support >50% - other layout")
+@
+
+Here we ensure that cases with higher reproduction numbers look bigger:
+<<>>=
+case.size <- 10+apply(get.R(res),2,mean)*5
+plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=funky(30),
+     edge.color=edge.colors, vertex.size=case.size)
+title("Ancestries with support >50% \n(node size reflects R)")
+@
+Same idea, but this time colors represent dates of infection:
+<<>>=
+Tinf <- x[x$step>=2e4,grep("Tinf", names(x))]
+case.color <- any2col(apply(Tinf,2,mean), col.pal=spectral)
+plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=case.color$col,
+     vertex.size=case.size)
+title("Ancestries with support >50% \n(node size reflects R)")
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+@
+
+The same can be done with a tree formed by consensus ancestries, obtained by \texttt{get.tTree}:
+<<>>=
+plot(get.tTree(res), main="Consensus ancestries - basic plot")
+@
+
+For a customized version where colors represent the mean infection dates:
+<<>>=
+tre <- get.tTree(res)
+plot(tre, edge.curved=TRUE, vertex.color=case.color$col,
+     vertex.size=case.size)
+title("Consensus ancestries \n(x-axis represents time)")
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+@
+and another, without the time axis:
+<<>>=
+g <- as.igraph(get.tTree(res))
+plot(g, edge.curved=FALSE, vertex.color=case.color$col, layout=layout.auto, vertex.size=case.size, edge.label="")
+title("Consensus ancestries")
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+@
+Note that all these plots can be visualized interactively using \texttt{tkplot} (just replace
+\texttt{plot} with \texttt{tkplot} in the above command lines).
+In all these graphs, we can see that cases 1, 4 and 28 have been classified as imported cases.
+For a more systematic assessment of imported cases, we can just look for cases for which the
+ancestor is unknown (NA) in the consensus tree:
+<<>>=
+temp <- get.tTree(res)
+temp$ances
+which(is.na(temp$ances))
+@
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Plotting dates of infection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Dates of infection are stored in the table of MCMC outputs, with columns starting with \texttt{Tinf}:
 <<>>=
 Tinf <- x[x$step>=2e4,c(1,ncol(x),grep("Tinf", names(x)))]
 Tinf[1:5,1:6]
 @
-
+This information can be visualized easily using the basic \texttt{boxplot}:
+<<>>=
+boxplot(Tinf, horizontal=TRUE, las=1, xlab="Date",
+        main="Distribution of infection dates", col=funky(30))
+@
+We can also use \textit{ggplot2}, but this demands a slight reformating of the data:
 <<>>=
 Tinf <- melt(Tinf, id=1:2)
 names(Tinf)[3:4] <- c("case", "date")
@@ -267,23 +354,15 @@ head(Tinf)
 tail(Tinf)
 @
 
+In this case, little is gained in the new plot:
 <<>>=
-ggplot(data=Tinf) + geom_line(aes(x=step,y=date,colour=case), alpha=.5) +
-    labs(y="Infection date", title="Traces of infection dates")
-@
-
-
-<<>>=
-ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=case, alpha=.5)) +
+p <- ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=case), alpha=.5) +
    coord_flip() + labs(y="Infection date", x="", title="Distribution of infection dates")
+p + guides(fill=FALSE)
 @
 
-
-<<>>=
-ggplot(data=Tinf) + geom_violin(aes(x=case,y=date,fill=case, alpha=.5)) +
-   coord_flip() + labs(y="Infection date", x="", title="Distribution of infection dates")
-@
-
+However, it would be simple to compare infection dates of different runs, which may be useful if
+different runs provide slightly different results:
 <<>>=
 ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=run),alpha=.5) + coord_flip() +
     labs(y="Infection date", x="", title="Distribution of infection dates")
@@ -292,53 +371,182 @@ ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=run),alpha=.5) + coord_f
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Accessing posterior distributions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Any element of the model in \texttt{res\$chains} can be plotted using \texttt{plotChains}: it just
+needs to be named in the argument \texttt{what}.
+For instance, the mutation rate:
+<<>>=
+plotChains(res, main="Trace of mu \n(burnin removed)",
+           burnin=2e4, what="mu1")
+plotChains(res, main="Trace of mu \n(burnin removed)",
+           burnin=2e4, what="mu1", type="dens")
+@
+(note that in this case, the plotted information is the mutation rate \textit{per generation of
+  infection}, and not per unit of time.
+See section on mutation rates below for an estimation of the rates per unit of time.
+\\
+
+To derive statistics for a given distribution, one just needs to extract the relevant column, making
+sure to remove the burnin:
+<<>>=
+mu <- res$chains$mu1[res$chains$step>2e4]
+head(mu)
+length(mu)
+head(mu)
+summary(mu)
+@
+Here we have \Sexpr{length(mu)} values to estimate parameters of the distribution of $mu$.
+However, the effective sample size might be smaller if successive values are correlated
+(autocorrelated chains).
+This can be tested easily:
+<<>>=
+cor(mu[-length(mu)], mu[2:length(mu)])
+cor.test(mu[-length(mu)], mu[2:length(mu)])
+@
+No, there is no correlation between successive values.
+\\
+
+
+
+As before, \texttt{ggplot2} versions of the plot can be obtained; here, for the parameter $\pi$
+(proportion of the outbreak sampled):
+<<>>=
+library(ggplot2)
+library(reshape2)
+x <- res$chains[x$step>2e4,]
+x$run <- factor(x$run)
+@
+To plot densities:
+<<>>=
+p <- ggplot(data=x) + labs(title="Posterior distribution of pi", x="Pi (proportion of cases sampled)")
+p + geom_density(aes(x=pi, fill=run), alpha=.3, colour=NA) +
+    geom_density(aes(x=pi), size=1, colour="black", shape=2, alpha=.8)
+@
+Histograms:
+<<>>=
+p + geom_histogram(aes(x=pi, fill=run, y=..density..), alpha=.7, colour=NA, position="dodge") +
+    geom_density(aes(x=pi), size=1, colour="black", shape=2, alpha=.8)
+@
+Using different boxplots for different runs:
+<<>>=
+p + geom_boxplot(aes(x=run, y=pi, fill=run),alpha=.6) + geom_jitter(aes(x=run, y=pi, col=run),alpha=.4)
+@
+Same idea, but using violinplots:
+<<>>=
+p + geom_violin(aes(x=run, y=pi, fill=run),alpha=.6)
+@
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Plotting ancestries}
+\subsection{Mutation rates}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+As mentioned before, mutation rates in \textit{outbreaker}'s model are expressed per generation of infection.
+However, mutation rates per unit of time are biologically easier to interpret.
+These can be obtained using \texttt{get.mu}:
 <<>>=
-library(igraph)
-library(adegenet)
-@
-<<>>=
-g <- transGraph(res, thres=0)
-@
-
-
-<<>>=
-plot(g, layout=layout.circle, edge.curved=FALSE, vertex.color=funky(30))
+mu <- get.mu(res, burnin=2e4)
+summary(mu)
+hist(mu, col="grey",border="lightgrey", xlab="Mutation rate (per genome and unit time)",
+     main="Posterior distribution of mu")
 @
 
-
+Re-expressing the rates per nucleotide, and adding the media and 95\%credibility interval to the histogram:
 <<>>=
-g <- transGraph(res, thres=0.5, annot="")
-edge.colors <- funky(30)[as.numeric(get.edgelist(g)[,1])]
-plot(g, layout=layout.circle, edge.curved=FALSE, vertex.color=funky(30), 
-     edge.color=edge.colors)
-title("Ancestries with support >50% - circular graph")
-
-plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=funky(30), 
-     edge.color=edge.colors)
-title("Ancestries with support >50% - other layout")
-
+mu <- get.mu(res, burnin=2e4, genome.size=ncol(dat$dna))
+summary(mu)
+hist(mu, col="grey",border="lightgrey", xlab="Mutation rate (per genome and unit time)",
+     main="Posterior distribution of mu")
+abline(v=quantile(mu, c(.025, .5, .975)), lty=c(2,1,2), lwd=2, col="royalblue")
+legend("topright", lty=c(1,2), leg=c("Median","95% credibility interval"),
+       col="royalblue", bg="white")
 @
 
+Same idea, using a one-dimensional density estimation:
 <<>>=
-case.size <- 10+apply(get.R(res),2,mean)*5
-plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=funky(30), 
-     edge.color=edge.colors, vertex.size=case.size)
-title("Ancestries with support >50% \n(node size reflects R)")
+plot(density(mu), xlab="Mutation rate (per genome and unit time)",
+     main="Posterior distribution of mu", lwd=3)
+points(jitter(mu), rep(0, length(mu)), pch="|", col=transp("blue"))
+abline(v=quantile(mu, c(.025, .5, .975)), lty=c(2,1,2), lwd=2, col="royalblue")
+legend("topright", lty=c(1,2), leg=c("Median","95% credibility interval"), col="royalblue", bg="white")
 @
 
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Incidence and reproduction numbers}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 <<>>=
-Tinf <- x[x$step>=2e4,grep("Tinf", names(x))]
-case.color <- any2col(apply(Tinf,2,mean), col.pal=spectral)
-plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=case.color$col, 
-     vertex.size=case.size)
-title("Ancestries with support >50% \n(node size reflects R)")
-legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+incid <- get.incid(res)
 @
+
+<<>>=
+args(get.incid)
+incid <- get.incid(res, type="lines",lines.col=transp("black",.1))
+title("Posterior estimates of incidence")
+@
+
+<<>>=
+x <- data.frame(date=as.vector(row(incid)),
+                step=as.vector(col(incid)),
+                incidence=as.vector(incid))
+head(x)
+p <- ggplot(data=x, aes(x=date, y=incidence)) + labs(title="Posterior estimates of incidence")
+@
+
+
+<<>>=
+p + geom_boxplot(aes(x=factor(date)))
+@
+
+<<>>=
+p + geom_jitter(aes(x=factor(date)), alpha=.2)
+@
+
+<<>>=
+p + geom_jitter(alpha=.1) + geom_smooth(method=lm, formula=y~ns(x,10), size=1)
+@
+
+
+<<>>=
+p + geom_bin2d()
+p + geom_bin2d(binwidth=c(1,1))
+@
+
+<<>>=
+p + geom_hex(bins=8)
+@
+
+
+
+
+<<>>=
+R <- get.R(res)
+dim(R)
+barplot(table(R)/length(R), xlab="Number of secondary cases", main="Posterior estimates of effective reproduction numbers (R)", ylab="Frequency")
+@
+
+<<>>=
+x <- data.frame(case=factor(as.vector(col(R)), levels=as.character(1:30)),R=as.vector(R))
+head(x)
+tail(x)
+@
+
+
+<<>>=
+p <- ggplot(data=x, aes(x=case, y=R)) + labs(title="Posterior estimates of effective reproduction numbers")
+p + geom_boxplot()
+p + geom_boxplot(aes(colour=case))
+@
+
 
 
 
