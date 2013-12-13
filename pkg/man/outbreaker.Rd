@@ -28,6 +28,9 @@
   The spatial module implemented in outbreaker is currently under
   development.  Please contact the author before using it.
 
+  For more resources including tutorials, forums, etc., see:
+  \url{http://sites.google.com/site/therepiproject/r-pac/outbreaker}
+
 }
 \usage{
 outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
@@ -259,6 +262,10 @@ epidemiologic and genomic data. PLoS Computational Biology.
 
     \item \link{fakeOutbreak}, a toy dataset used to illustrate the
     method.
+
+    \item For more resources including tutorials, forums, etc., see:
+    \url{http://sites.google.com/site/therepiproject/r-pac/outbreaker}
+
   }
 }
 \examples{
