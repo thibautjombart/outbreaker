@@ -1,11 +1,44 @@
-			CHANGES IN EPIDEMICS VERSION 1.0-1
+			CHANGES IN OUTBREAKER VERSION 1.1-0
+NEW FEATURES
+	o implementing the published version of the model, with a major
+	change in the genetic likelihood and a new procedure for detecting
+	genetic outliers and identifying imported cases
+
+	o updated graphics
+
+	o new function get.my to get mutation rates per unit time (and not
+	per generation of infection)
+
+	o new function selectChains to select best runs when different
+	MCMC converge to different posterior modes
+
+	o possibility of spatial simulation in simOutbreak
+
+	o choice of two mutational models in outbreaker
+
+	o (under development) spatial diffusion model, useable for
+	entirely sampled outbreaks
+
+	o added a 38-pages vignette
+
+	o documentation (manpages) updated
+
+	o toyOutbreak has been renamed fakeOutbreak
+
+BUG FIXES
+	o no longer limitation of genome sizes to 32768 nucleotides (new
+	limit is 2,147,483,648 nucleotides)
+
+
+
+			CHANGES IN OUTBREAKER VERSION 1.0-1
 BUG FIXES
 
 	o fixed the dependencies with other packages
 
 
 
-			CHANGES IN EPIDEMICS VERSION 1.0-0
+			CHANGES IN OUTBREAKER VERSION 1.0-0
 
 NEW FEATURES - FIRST RELEASE OF THE PACKAGE
 
