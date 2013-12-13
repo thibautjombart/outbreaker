@@ -42,14 +42,19 @@ options(width=80)
   This vignette introduces the main functionalities of \textit{outbreaker}, a package implementing a
   model for disease outbreak reconstruction using epidemiological data and pathogen genome
   sequences. The emphasis of this document is put on using \textit{outbreaker} and on the
-  visualization and interpretation of results. For an introduction to disease outbreak
-  reconstruction, see online tutorials available on the \textit{R-epi project}:
-  \url{https://sites.google.com/site/therepiproject/tutorials}.
+  visualization and interpretation of results.
+  \\
+
+  More resources for disease outbreaks analysis in R are available on the \textit{R-epi project}:
+  \url{http://sites.google.com/site/therepiproject}. Questions about \textit{outbreaker}, alonside
+  any question relating to the analysis of epidemics, should be asked on the R-epi forum. To do so, send an
+  email to: \url{r-epi@googlegroups.com}, or visit the website:
+  \url{http://groups.google.com/forum/#!forum/r-epi}.
 \end{abstract}
 
-\newpage
 
 \tableofcontents
+\newpage
 
 
 
@@ -73,7 +78,7 @@ library(outbreaker)
 data(fakeOutbreak)
 class(fakeOutbreak)
 names(fakeOutbreak)
-fakeOutbreak$dat
+class(fakeOutbreak$dat)
 fakeOutbreak$w
 fakeOutbreak$collecDates
 @
@@ -166,9 +171,8 @@ Here, all four runs have sampled from the same distribution, confirming converge
 Note that this can also be tested using a simple ANOVA, which we use to check that log-posterior
 values do no differ from one run to another:
 <<>>=
-anova(lm(post~run, data=x[x$step>2e4,]))
+anova(lm(post~run, data=res$chains[res$chains$step>2e4,]))
 @
-\\
 
 
 These graphs can be slightly improved by using \textit{ggplot2}.
@@ -233,11 +237,11 @@ p + geom_histogram(aes(x=post, fill=run, y=..density..), alpha=.7, colour=NA, po
   \item the dates of infection; for case $i$, noted $T^{inf}_i$
   \item the mutation rate per generation of infection ($\mu$)
   \item the proportion of the outbreak sampled ($\pi$)
-  \item effective reproduction numbers over time or at an individual level $\dagger$
-  \item incidence curves $\dagger$
-  \item the mutation rate per unit of time $\dagger$
+  \item effective reproduction numbers over time or at an individual level $^\dagger$
+  \item incidence curves $^\dagger$
+  \item the mutation rate per unit of time $^\dagger$
 \end{itemize}
-Items indicated with a $\dagger$ are not explicitely modelled by \textit{outbreaker}, but can be derived from the
+Items indicated with a $^\dagger$ are not explicitely modelled by \textit{outbreaker}, but can be derived from the
 posterior samples of trees and parameters.
 
 
@@ -293,7 +297,8 @@ case.color <- any2col(apply(Tinf,2,mean), col.pal=spectral)
 plot(g, layout=layout.auto, edge.curved=FALSE, vertex.color=case.color$col,
      vertex.size=case.size)
 title("Ancestries with support >50% \n(node size reflects R)")
-legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt,
+       title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
 @
 
 The same can be done with a tree formed by consensus ancestries, obtained by \texttt{get.tTree}:
@@ -307,14 +312,17 @@ tre <- get.tTree(res)
 plot(tre, edge.curved=TRUE, vertex.color=case.color$col,
      vertex.size=case.size)
 title("Consensus ancestries \n(x-axis represents time)")
-legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt,
+       title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
 @
 and another, without the time axis:
 <<>>=
 g <- as.igraph(get.tTree(res))
-plot(g, edge.curved=FALSE, vertex.color=case.color$col, layout=layout.auto, vertex.size=case.size, edge.label="")
+plot(g, edge.curved=FALSE, vertex.color=case.color$col, layout=layout.auto,
+     vertex.size=case.size, edge.label="")
 title("Consensus ancestries")
-legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt,
+       title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
 @
 Note that all these plots can be visualized interactively using \texttt{tkplot} (just replace
 \texttt{plot} with \texttt{tkplot} in the above command lines).
@@ -341,7 +349,7 @@ Tinf[1:5,1:6]
 @
 This information can be visualized easily using the basic \texttt{boxplot}:
 <<>>=
-boxplot(Tinf, horizontal=TRUE, las=1, xlab="Date",
+boxplot(Tinf[,-c(1,2)], horizontal=TRUE, las=1, xlab="Date",
         main="Distribution of infection dates", col=funky(30))
 @
 We can also use \textit{ggplot2}, but this demands a slight reformating of the data:
@@ -432,7 +440,8 @@ p + geom_histogram(aes(x=pi, fill=run, y=..density..), alpha=.7, colour=NA, posi
 @
 Using different boxplots for different runs:
 <<>>=
-p + geom_boxplot(aes(x=run, y=pi, fill=run),alpha=.6) + geom_jitter(aes(x=run, y=pi, col=run),alpha=.4)
+p + geom_boxplot(aes(x=run, y=pi, fill=run),alpha=.6) +
+    geom_jitter(aes(x=run, y=pi, col=run),alpha=.4)
 @
 Same idea, but using violinplots:
 <<>>=
@@ -473,7 +482,8 @@ plot(density(mu), xlab="Mutation rate (per genome and unit time)",
      main="Posterior distribution of mu", lwd=3)
 points(jitter(mu), rep(0, length(mu)), pch="|", col=transp("blue"))
 abline(v=quantile(mu, c(.025, .5, .975)), lty=c(2,1,2), lwd=2, col="royalblue")
-legend("topright", lty=c(1,2), leg=c("Median","95% credibility interval"), col="royalblue", bg="white")
+legend("topright", lty=c(1,2), leg=c("Median","95% credibility interval"),
+       col="royalblue", bg="white")
 @
 
 
@@ -520,6 +530,7 @@ p + geom_boxplot(aes(x=factor(date)))
 @
 A noisified version with a smoother can be obtained using:
 <<>>=
+library(splines)
 p + geom_jitter(aes(x=factor(date)), alpha=.2) + geom_smooth(method=lm, formula=y~ns(x,10), size=1)
 @
 However, it adds artifactual variation and may be best avoided here.
@@ -527,13 +538,12 @@ However, it adds artifactual variation and may be best avoided here.
 Another interesting option is offered by some density-based graphics:
 <<>>=
 p + geom_bin2d() + geom_smooth(method=lm, formula=y~ns(x,10), size=1)
-p + geom_bin2d(binwidth=c(1,1))
 @
 or perhaps even better:
 <<>>=
-p + geom_hex(bins=8) + geom_smooth(colour="red",size=1)
+p + geom_hex(bins=8, alpha=.5) + geom_smooth(colour="purple4",size=2)
 @
-~\\
+
 
 
 Effective reproduction numbers over time can be obtained using \texttt{get.Rt}, and given identical outputs to \texttt{get.incid}.
@@ -550,7 +560,8 @@ This information can be pooled to get a rough idea of the overall distribution o
 <<>>=
 table(R)
 table(R)/length(R)
-barplot(table(R)/length(R), xlab="Number of secondary cases", main="Posterior estimates of effective reproduction numbers (R)", ylab="Frequency")
+barplot(table(R)/length(R), xlab="Number of secondary cases",
+        main="Posterior estimates of effective reproduction numbers (R)", ylab="Frequency")
 @
 And we can use \textit{ggplot2} to visualize the individual distributions:
 <<>>=
@@ -558,9 +569,9 @@ x <- data.frame(case=factor(as.vector(col(R)), levels=as.character(1:30)),R=as.v
 head(x)
 tail(x)
 
-p <- ggplot(data=x, aes(x=case, y=R)) + labs(title="Posterior estimates of effective reproduction numbers")
-p + geom_boxplot(aes(colour=case)) + guides(colour=FALSE)
-
+p <- ggplot(data=x, aes(x=case, y=R)) + geom_boxplot(aes(colour=case))
+p <- p + geom_boxplot(aes(colour=case)) + guides(colour=FALSE)
+p + labs(title="Posterior estimates of effective reproduction numbers")
 @
 
 
