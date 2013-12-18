@@ -29,7 +29,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, 
 		  int *move_pi, int *move_spa,
 		  int *find_import, int *burnin, int *find_import_at, 
-		  double *outlier_threshold,
+		  double *outlier_threshold, int *max_K,
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **res_file_name, char **tune_file_name, int *seed){
     /* DECLARATIONS */
@@ -63,7 +63,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CREATE AND INIT GENERATION TIME */
-    gen = alloc_gentime(dat->timespan, *wTrunc, *fTrunc);
+    gen = alloc_gentime(*max_K, *wTrunc, *fTrunc);
     init_gentime(gen, gentimeDens, colltimeDens);
     /* Rprintf("\n>>> gentime info <<<\n"); */
     /* print_gentime(gen); */
