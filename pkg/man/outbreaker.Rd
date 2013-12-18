@@ -43,7 +43,7 @@ outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
            pi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
            move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
            move.pi=TRUE, move.spa=TRUE, outlier.threshold = 5,
-           quiet=TRUE, res.file.name="chains.txt",
+           max.kappa=10, quiet=TRUE, res.file.name="chains.txt",
            tune.file.name="tuning.txt", seed=NULL )
 
 
@@ -58,7 +58,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
            pi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
            move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
            move.pi=TRUE, move.spa=TRUE, outlier.threshold = 5,
-           quiet=TRUE, res.file.name="chains.txt",
+           max.kappa=10, quiet=TRUE, res.file.name="chains.txt",
            tune.file.name="tuning.txt", seed=NULL)
 }
 \arguments{
@@ -160,10 +160,9 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     the spatial parameters. In the spatial model 1, \code{spa1.prior} is
     the mean of an exponential distribution.}
 
-  \item{move.mut,move.pi,move.spa}{logicals
-    indicating whether the named items should be estimated ('moved' in
-    the MCMC), or not, all defaulting to TRUE. \code{move.mut} handles
-    both mutation rates.}
+  \item{move.mut,move.pi,move.spa}{logicals indicating whether the named
+    items should be estimated ('moved' in the MCMC), or not, all
+    defaulting to TRUE. \code{move.mut} handles both mutation rates.}
 
   \item{move.ances,move.kappa,move.Tinf}{vectors of logicals of length
     'n' indicating for which cases different components should be
@@ -173,6 +172,10 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     detecting low likelihood values corresponding to imported
     cases. Outliers have a likelihood \code{outlier.threshold} smaller
     than the average.}
+
+  \item{max.kappa}{an integer indicating the maximum number of
+    generations between a case and its most recent sampled ancestor;
+    defaults to 10.}
   
   \item{quiet}{a logical indicating whether messages should be displayed
     on the screen.}
