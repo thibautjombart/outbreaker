@@ -222,6 +222,8 @@ plotOutbreak <- function(x, burnin=x$burnin, thres.hide=0.2, col=NULL,
     if(is.null(col)){
         entropy <-apply(alphadat, 2, .entropy)
         col <- num2col(entropy, col.pal=col.pal)
+    } else {
+        entropy <- NULL
     }
 
 
