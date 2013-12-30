@@ -1,3 +1,17 @@
+			CHANGES IN OUTBREAKER VERSION 1.1-1
+NEW FEATURES
+	o added an argument max.kappa which allows to limit the number of
+	generations between two sampled cases, thereby avoiding a slowdown
+	whenever the timespan of the outbreak is large (previous limit was
+	the timespan itself, which required computing a large number of
+	convolutions).
+
+BUG FIXES
+	o fixed a bug in plotOutbreak - error occured when plotting with
+	col!=NULL
+	
+
+
 			CHANGES IN OUTBREAKER VERSION 1.1-0
 NEW FEATURES
 	o implementing the published version of the model, with a major
