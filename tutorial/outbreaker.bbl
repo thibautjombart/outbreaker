@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+
+\bibitem{outbreaker}
+Jombart T, Cori A, Didelot X, Cauchemez S, Fraser C, and Ferguson N. (2014)
+\newblock Bayesian reconstruction of disease outbreaks by combining
+  epidemiologic and genomic data.
+\newblock {\em PLoS Computational Biology}, 10(1): e1003457. 
+\newblock Doi: 10.1371/journal.pcbi.1003457.
+
+\bibitem{ggplot2}
+Hadley Wickham.
+\newblock {\em ggplot2: elegant graphics for data analysis}.
+\newblock Springer New York, 2009.
+
+\end{thebibliography}
