@@ -1,3 +1,11 @@
+			CHANGES IN OUTBREAKER VERSION 1.1-2
+
+BUG FIXES
+	o fixed a bug due to the odd conversion of long numbers into
+	characters by read.table.
+
+
+
 			CHANGES IN OUTBREAKER VERSION 1.1-1
 NEW FEATURES
 	o added an argument max.kappa which allows to limit the number of
