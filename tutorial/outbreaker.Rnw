@@ -100,6 +100,7 @@ barplot(w, main="Generation time distribution", ylab="probability", xlab="days",
 We run \textit{outbreaker} on these data, using the parallel version, and specifying that we want
 to run 4 MCMC in parallel and 100,000 chains for each MCMC.
 <<eval=FALSE>>=
+set.seed(1)
 res <-  outbreaker.parallel(n.runs=4, dna=dat$dna,
                             dates=collecDates,w.dens=w, n.iter=1e5)
 @
