@@ -268,7 +268,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## BUILD OUTPUT ##
     ## read table
     chains <- read.table(res.file.name, header=TRUE, stringsAsFactors=FALSE,
-                         colClasses=c("integer", rep("numeric",7), rep("integer", n.ind*2)))
+                         colClasses=c("integer", rep("numeric",7+n.ind*2)))
 
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
