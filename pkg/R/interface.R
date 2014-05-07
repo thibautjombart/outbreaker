@@ -267,13 +267,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ## BUILD OUTPUT ##
     ## read table
-    chains <- read.table(res.file.name, header=TRUE)
-
-    ## force numeric class for post, like, prior
-    ## (weird behaviour of read.table in some R versions)
-    chains$post <- as.numeric(as.character(chains$post))
-    chains$like <- as.numeric(as.character(chains$like))
-    chains$prior <- as.numeric(as.character(chains$prior))
+    chains <- read.table(res.file.name, header=TRUE, stringsAsFactors=FALSE,
+                         colClasses=c("integer", rep("numeric",7), rep("integer", n.ind*2)))
 
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
@@ -413,13 +408,6 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
     res$chains$run <- rep(1:n.runs, each=nrow(res.old[[1]]$chains))
     res$n.runs <- n.runs
     res$call <- match.call()
-
-    ## force numeric class for post, like, prior
-    ## (weird behaviour of read.table in some R versions)
-    res$chains$post <- as.numeric(as.character(res$chains$post))
-    res$chains$like <- as.numeric(as.character(res$chains$like))
-    res$chains$prior <- as.numeric(as.character(res$chains$prior))
-
 
     ## RETURN RESULTS ##
     return(res)
