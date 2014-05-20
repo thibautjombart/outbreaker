@@ -18,7 +18,7 @@
 simOutbreak(R0, infec.curve, n.hosts=200, duration=50, seq.length=1e4,
             mu.transi=1e-4, mu.transv=mu.transi/2,
             rate.import.case=0.01, diverg.import=10, group.freq=1,
-            spatial=TRUE, disp=0.1, area.size=10, reach=1, plot=spatial)
+            spatial=FALSE, disp=0.1, area.size=10, reach=1, plot=spatial)
 
 \method{print}{simOutbreak}(x, \dots)
 
