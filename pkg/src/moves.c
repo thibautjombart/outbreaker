@@ -453,10 +453,10 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnainfo, 
 	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
 	    /* ACCEPT/REJECT STEP */
 	    /* compute the likelihood (no priors for Tinf) */
-	    logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
+	    /* compute only local changes in the likelihood */
+	    logRatio = loglikelihood_local_i(toMove, dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_local_i(toMove, dat, dnainfo, spainfo, gen, currentPar, rng);
+	    /* logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng); */
 
-	    /* ll1 = loglikelihood_all(dat, dnainfo, gen, currentPar, rng); */
-	    /* ll2 = loglikelihood_all(dat, dnainfo, gen, tempPar, rng); */
 
 	    /* if p(new/old) > 1, accept new */
 	    if(logRatio>=0.0) {
@@ -592,8 +592,11 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
       /* ACCEPT/REJECT STEP */
       /* compute the likelihood ratio */
-      ll1 = loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
-      ll2 = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng);
+      /* ll1 = loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng); */
+      /* ll2 = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng); */
+      /* compute only local changes in the likelihood */
+      ll1 = loglikelihood_local_i(toMove, dat, dnainfo, spainfo, gen, currentPar, rng);
+      ll2 = loglikelihood_local_i(toMove, dat, dnainfo, spainfo, gen, tempPar, rng);
       logRatio = ll2 - ll1;
       filter_logprob(&correcRatio);
       logRatio += correcRatio;
@@ -795,8 +798,11 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood ratio */
-	logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng);
-
+	/* logRatio = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng) - loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng); */
+	logRatio = loglikelihood_local_i(A, dat, dnainfo, spainfo, gen, tempPar, rng) + 
+	    loglikelihood_local_i(B, dat, dnainfo, spainfo, gen, tempPar, rng) - 
+	    loglikelihood_local_i(A, dat, dnainfo, spainfo, gen, currentPar, rng) - 
+	    loglikelihood_local_i(B, dat, dnainfo, spainfo, gen, currentPar, rng);
 	/* ll2 = loglikelihood_all(dat, dnainfo, spainfo, gen, tempPar, rng); */
 	/* ll1 = loglikelihood_all(dat, dnainfo, spainfo, gen, currentPar, rng); */
 	/* logRatio = ll2 - ll1; */
