@@ -293,6 +293,8 @@ double loglikelihood_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo, ge
 
 
 
+
+
 /* GENETIC LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
 double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par, gsl_rng *rng){
     int i;
@@ -345,6 +347,28 @@ double loglike_kappa_all(param *par){
 
 
 
+
+
+/* LOCAL LOG-LIKELIHOOD FOR INDIVIDUAL I */
+/* only computed on elements changed by a movement of i */
+/* - p(i|ancestor) */
+/* - p(i's descendents|i) */
+double loglikelihood_local_i(int i, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng){
+    int j;
+    double out=0.0;
+
+    /* i's likelihood */
+    out += loglikelihood_i(i, dat, dnainfo, spainfo, gen, par, rng);
+
+    for(j=0;j<dat->n;j++){
+	/* likelihoods of i's descendents */
+	if(vec_int_i(par->alpha, j)==i) out += loglikelihood_i(j, dat, dnainfo, spainfo, gen, par, rng);
+    }
+
+    filter_logprob(&out);
+
+    return out;
+}
 
 
 /* /\* LOG-LIKELIHOOD ALPHA FOR ALL INDIVIDUALS *\/ */

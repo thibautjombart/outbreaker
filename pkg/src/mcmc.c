@@ -635,9 +635,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* swap ancestries */
 	swap_ancestries(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
 
-	/* /\* move alpha_i and kappa_i*\/ */
-	/* move_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng); */
-
     } /* end of mcmc */
 
 

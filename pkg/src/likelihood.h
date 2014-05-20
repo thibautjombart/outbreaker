@@ -40,6 +40,8 @@ double loglikelihood_spa_all(data *dat, spatial_dist *spainfo, param *par, gsl_r
 
 double loglike_kappa_all(param *par);
 
+double loglikelihood_local_i(int i, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng);
+
 /* double loglike_alpha_all(param *par); */
 
 double logposterior_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, gsl_rng *rng);
