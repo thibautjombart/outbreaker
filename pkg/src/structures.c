@@ -229,6 +229,7 @@ param *alloc_param(int n){
     out->kappa_temp = 0;
     out->mut_model = 0;
     out->spa_model = 0;
+    out->import_method = 0;
 
     /* allocates vectors of integers */
     out->Tinf = alloc_vec_int(n);
@@ -289,6 +290,8 @@ void print_param(param *in){
     Rprintf("%d (param1=%.5f, param2=%.5f)", in->spa_model, in->spa_param1, in->spa_param2);
     Rprintf("\n= parameters of the spatial priors =\n");
     Rprintf("(mean prior param1=%.5f, mean prior param2=%.5f)", in->spa_param1_prior, in->spa_param2_prior);
+    Rprintf("\n= imported case detection method used =\n");
+    Rprintf("%d", in->import_method);
 
     /* Rprintf("\n= phi (proportion of external cases) =\n"); */
     /* Rprintf("%.5f", in->phi); */
@@ -316,6 +319,7 @@ void copy_param(param *in, param *out){
     out->outlier_threshold = in->outlier_threshold;
     out->mut_model = in->mut_model;
     out->spa_model = in->spa_model;
+    out->import_method = in->import_method;
 
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
