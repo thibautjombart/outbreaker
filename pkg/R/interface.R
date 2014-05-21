@@ -11,7 +11,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1,
                        init.spa1=NULL, init.spa2=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
-                       burnin=2e4, find.import=TRUE, import.method=c("genetic","full"),
+                       burnin=2e4, import.method=c("genetic","full","none"),
                        find.import.n=50,
                        pi.param1=10, pi.param2=1,
                        spa1.prior=1, spa2.prior=1,
@@ -36,7 +36,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         dna <- as.DNAbin(matrix('a',ncol=10,nrow=length(dates)))
         move.mut <- FALSE
         mut.model <- 0L
-        import.method <- "full"
+        import.method <- 2L
         if(is.character(init.tree) && match.arg(init.tree)=="seqTrack") init.tree <- "star"
         init.mu1 <- init.mu2 <-0
         init.gamma <- 1
@@ -211,7 +211,11 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         seed <- as.integer(runif(1,min=0,max=2e9))
     }
 
+    ## handle import.method ##
+    if(mut.model==0L) import.method <- 2L
+
     ## handle find.import ##
+    find.import <- import.method > 0L
     if(find.import){
         find.import.n <- max(find.import.n,30) # import at least based on 30 values
         find.import.at <- as.integer(round(burnin + find.import.n*sample.every))
@@ -219,6 +223,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     } else {
         find.import.at <- as.integer(0)
     }
+
 
     ## coerce type for remaining arguments ##
     n.iter <- as.integer(n.iter)
@@ -245,7 +250,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
     burnin <- as.integer(burnin)
-    find.import.int <- as.integer(find.import)
     outlier.threshold <- as.double(outlier.threshold)
     max.kappa <- as.integer(max.kappa)
 
@@ -314,7 +318,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 init.mu1=NULL, init.mu2=init.mu1,
                                 init.spa1=NULL, init.spa2=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
-                                burnin=2e4, find.import=TRUE, import.method=c("genetic","full"),
+                                burnin=2e4, import.method=c("genetic","full","none"),
                                 find.import.n=50,
                                 pi.param1=10, pi.param2=1,
                                 spa1.prior=1, spa2.prior=1,
