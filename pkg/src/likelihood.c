@@ -184,6 +184,9 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnainfo, param *par, gsl_
     int ances;
     double out=0.0;
 
+    /* ESCAPE OF NO EVOLUTION MODEL CHOSEN */
+    if(par->mut_model==0) return 0.0;
+
     /* FIND MOST RECENT SEQUENCED ANCESTOR */
     ances = find_sequenced_ancestor(i, dat, dnainfo, par);
 
@@ -299,6 +302,9 @@ double loglikelihood_all(data *dat, dna_dist *dnainfo, spatial_dist *spainfo, ge
 double loglikelihood_gen_all(data *dat, dna_dist *dnainfo, param *par, gsl_rng *rng){
     int i;
     double out=0.0;
+
+    /* ESCAPE OF NO EVOLUTION MODEL CHOSEN */
+    if(par->mut_model==0) return 0.0;
 
     for(i=0;i<dat->n;i++){
 	out += loglikelihood_gen_i(i, dat, dnainfo, par, rng);

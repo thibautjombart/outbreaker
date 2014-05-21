@@ -35,7 +35,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(is.null(dna)){
         dna <- as.DNAbin(matrix('a',ncol=10,nrow=length(dates)))
         move.mut <- FALSE
-        find.import <- FALSE
+        mut.model <- 0L
+        import.method <- "full"
         if(is.character(init.tree) && match.arg(init.tree)=="seqTrack") init.tree <- "star"
         init.mu1 <- init.mu2 <-0
         init.gamma <- 1
@@ -98,7 +99,13 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## check mutational model ##
     ## check model
     mut.model <- as.integer(mut.model)
-    if(!mut.model %in% c(1L,2L)) stop("unknown mutational model requested; accepted values are: 1, 2")
+    if(!mut.model %in% c(0L,1L,2L)) stop("unknown mutational model requested; accepted values are: 0, 1, 2")
+    ## model 0: no evolution model
+    if(mut.model==0L){
+        init.gamma <- 1
+        init.mu1 <- 1
+        move.mut <- FALSE
+    }
     ## determine gamma
     if(!is.null(init.mu1) && !is.null(init.mu2)){
         init.gamma <- init.mu2/init.mu1
