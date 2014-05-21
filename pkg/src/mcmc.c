@@ -461,10 +461,11 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	  meanInfluence += indivInfluence->values[j];
 	  nbCasesWithInfluence++;
       }
-
-      /* mean influence*/
-      meanInfluence = meanInfluence/nbCasesWithInfluence;
     }
+
+    /* mean influence*/
+    meanInfluence = meanInfluence/nbCasesWithInfluence;
+
 
     /* meanInfluence = mean_vec_double(indivInfluence); */
     Rprintf("\nAverage influence: %f\n", meanInfluence);
