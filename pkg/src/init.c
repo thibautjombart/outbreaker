@@ -125,7 +125,11 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     /* integers */
     par->mut_model = mut_model;
     par->spa_model = spa_model;
-    par->import_method = import_method;
+    if(par->mut_model==0) {
+	par->import_method = 2;
+    } else {
+	par->import_method = import_method;
+    }
 
     /* doubles*/
     par->mu1 = init_mu1;
@@ -196,6 +200,9 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->move_spa1 = move_spa;
     in->move_spa2 = move_spa;
     /* check that we don't move useless things */
+    if(par->mut_model==0){
+	move_mut = FALSE;
+    }
     if(par->spa_model==0){
 	in->move_spa1 = FALSE;
 	in->move_spa2 = FALSE;
