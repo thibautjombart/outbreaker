@@ -24,11 +24,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
     import.method <- match.arg(import.method)
-    if(import.method=="genetic"){
-        import.method <- 1L
-    } else {
-        import.method <- 2L
-    }
+    import.method <- as.integer(match(import.method, c("none", "genetic","full")))-1L
+
 
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)
@@ -292,7 +289,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
     res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
-                find.import=find.import, burnin=burnin, find.import.at=find.import.at, n.runs=1, call=call)
+                burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call)
 
     return(res)
 } # end outbreaker
@@ -357,7 +354,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
 
         ## transfer data onto each child ##
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
-                      "sample.every", "tune.every", "burnin", "find.import", "import.method", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.mu2",
+                      "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.mu2",
                       "init.spa1", "init.spa2", "move.mut", "spa1.prior", "spa2.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa",
                       "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed")
 
@@ -372,7 +369,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
                                                                   tune.every=tune.every, burnin=burnin,
-                                                                  find.import=find.import, import.method=import.method,
+                                                                  import.method=import.method,
                                                                   find.import.n=find.import.n,
                                                                   pi.param1=pi.param1, pi.param2=pi.param2,
                                                                   init.mu1=init.mu1, init.mu2=init.mu2,
