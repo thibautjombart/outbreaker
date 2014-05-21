@@ -255,14 +255,14 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                init.spa1, init.spa2, spa1.prior, spa2.prior,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.spa,
-               find.import.int, import.method, find.import.at, burnin, outlier.threshold,
+               import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[40]]
+    D <- temp[[39]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[41]]
+    stopTuneAt <- temp[[40]]
 
     cat("\nComputations finished.\n\n")
 
