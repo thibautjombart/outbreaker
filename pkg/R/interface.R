@@ -11,7 +11,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1,
                        init.spa1=NULL, init.spa2=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
-                       burnin=2e4, find.import=TRUE, find.import.n=50,
+                       burnin=2e4, find.import=TRUE, import.method=c("genetic","full"),
+                       find.import.n=50,
                        pi.param1=10, pi.param2=1,
                        spa1.prior=1, spa2.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
@@ -22,6 +23,12 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
+    import.method <- match.arg(import.method)
+    if(import.method=="genetic"){
+        import.method <- 1L
+    } else {
+        import.method <- 2L
+    }
 
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)
@@ -248,13 +255,14 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                init.spa1, init.spa2, spa1.prior, spa2.prior,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.spa,
-               find.import.int, burnin, find.import.at, outlier.threshold, max.kappa, quiet,
+               find.import.int, import.method, find.import.at, burnin, outlier.threshold,
+               max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[39]]
+    D <- temp[[40]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[40]]
+    stopTuneAt <- temp[[41]]
 
     cat("\nComputations finished.\n\n")
 
@@ -299,7 +307,8 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 init.mu1=NULL, init.mu2=init.mu1,
                                 init.spa1=NULL, init.spa2=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
-                                burnin=2e4, find.import=TRUE, find.import.n=50,
+                                burnin=2e4, find.import=TRUE, import.method=c("genetic","full"),
+                                find.import.n=50,
                                 pi.param1=10, pi.param2=1,
                                 spa1.prior=1, spa2.prior=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
@@ -337,7 +346,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
 
         ## transfer data onto each child ##
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
-                      "sample.every", "tune.every", "burnin", "find.import", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.mu2",
+                      "sample.every", "tune.every", "burnin", "find.import", "import.method", "find.import.n", "pi.param1", "pi.param2", "init.mu1", "init.mu2",
                       "init.spa1", "init.spa2", "move.mut", "spa1.prior", "spa2.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa",
                       "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed")
 
@@ -352,7 +361,8 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
                                                                   tune.every=tune.every, burnin=burnin,
-                                                                  find.import=find.import, find.import.n=find.import.n,
+                                                                  find.import=find.import, import.method=import.method,
+                                                                  find.import.n=find.import.n,
                                                                   pi.param1=pi.param1, pi.param2=pi.param2,
                                                                   init.mu1=init.mu1, init.mu2=init.mu2,
                                                                   init.spa1=init.spa1, init.spa2=init.spa2,
@@ -387,7 +397,8 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
                                                         tune.every=tune.every, burnin=burnin,
-                                                        find.import=find.import, find.import.n=find.import.n,
+                                                        find.import=find.import, import.method=import.method,
+                                                        find.import.n=find.import.n,
                                                         pi.param1=pi.param1, pi.param2=pi.param2,
                                                         init.mu1=init.mu1, init.mu2=init.mu2,
                                                         init.spa1=init.spa1, init.spa2=init.spa2,
