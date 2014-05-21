@@ -61,7 +61,7 @@ typedef struct{
     double spa_param1_prior, spa_param2_prior; /* parameters of priors of spatial param */
     int kappa_temp; /* used to store temporary kappa for genetic LL */
     double outlier_threshold; /* threshold used in outlier detection */
-    int mut_model; /* genetic mut_model: 0=1 mutation rate; 1=mutation1/mutation2 */
+    int mut_model; /* genetic model: 0=nothing; 1=1 mutation rate; 2=transi/transver */
     int spa_model; /* spatial model: 0=no, 1=model1, 2=model2, ...*/
     int import_method; /* import method: 0=none; 1=based on genetic LL; 2=based on full LL */
     /* double phi; /\* proba of external case *\/ */

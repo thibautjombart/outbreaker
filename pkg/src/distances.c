@@ -153,7 +153,7 @@ dna_dist * compute_dna_distances(list_dnaseq *in, int mut_model){
     dna_dist *out = alloc_dna_dist(N);
 
     /* CHECK MODEL */
-    if(mut_model<1 || mut_model>2) error("\n[in: distances.c->compute_dna_distances]\nModel %d unknown.\n", mut_model);
+    if(mut_model<0 || mut_model>2) error("\n[in: distances.c->compute_dna_distances]\nModel %d unknown.\n", mut_model);
 
 
     /* COMPUTE DISTANCES */
