@@ -28,7 +28,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  double *spa1_prior, double *spa2_prior,
 		  int *move_mut, int *move_alpha, int *move_kappa, int *move_Tinf, 
 		  int *move_pi, int *move_spa,
-		  int *find_import, int *burnin, int *find_import_at, 
+		  int *find_import, int *import_model, int *find_import_at, int *burnin,
 		  double *outlier_threshold, int *max_K,
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **res_file_name, char **tune_file_name, int *seed){
