@@ -369,7 +369,15 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* COLLECT INFORMATION ABOUT ALL GI_i */
 	if(i>=localMcmcPar->burnin && i % outEvery == 0){
 	    for(j=0;j<dat->n;j++){
-		indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnainfo, localPar, rng);
+		/* import method 1: use only genetic log-likelihood */
+		if(par->import_method==1){
+		    indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnainfo, localPar, rng);
+		}
+
+		/* import method 2: use only genetic log-likelihood */
+		if(par->import_method==2){
+		    indivInfluence->values[j] -= loglikelihood_i(j, dat, dnainfo, spainfo, gen, localPar, rng);
+		}
 	    }
 	    /* DEBUGGING */
 	    /* printf("\ninfluence values:\n");fflush(stdout); */
@@ -440,13 +448,23 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
 
       /* average influence across individuals */
-      /* (only cases with a genetic sequence are taken into account) */
-  	if(vec_int_i(dat->idxCasesInDna, j)>=0) {
+
+      /* method 1: only cases with a genetic sequence are taken into account */
+      if(par->import_method==1){
+	  if(vec_int_i(dat->idxCasesInDna, j)>=0) {
+	      meanInfluence += indivInfluence->values[j];
+	      nbCasesWithInfluence++;
+	  }
+      }
+      /* method 2: all cases contribute */
+      if(par->import_method==2){
 	  meanInfluence += indivInfluence->values[j];
 	  nbCasesWithInfluence++;
-	}
+      }
+
+      /* mean influence*/
+      meanInfluence = meanInfluence/nbCasesWithInfluence;
     }
-    meanInfluence = meanInfluence/nbCasesWithInfluence;
 
     /* meanInfluence = mean_vec_double(indivInfluence); */
     Rprintf("\nAverage influence: %f\n", meanInfluence);
