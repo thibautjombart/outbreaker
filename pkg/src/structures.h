@@ -63,6 +63,7 @@ typedef struct{
     double outlier_threshold; /* threshold used in outlier detection */
     int mut_model; /* genetic mut_model: 0=1 mutation rate; 1=mutation1/mutation2 */
     int spa_model; /* spatial model: 0=no, 1=model1, 2=model2, ...*/
+    int import_method; /* import method: 0=none; 1=based on genetic LL; 2=based on full LL */
     /* double phi; /\* proba of external case *\/ */
     /* double phi_param1, phi_param2; /\* parameters of the Beta prior for phi *\/ */
 } param;

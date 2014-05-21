@@ -28,7 +28,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  double *spa1Prior, double *spa2Prior,
 		  int *moveMut, int *moveAlpha, int *moveKappa, int *moveTinf, 
 		  int *movePi, int *moveSpa,
-		  int *findImport, int *import_model, int *findImportAt, int *burnin, 
+		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **resFileName, char **tuneFileName, int *seed){
@@ -44,7 +44,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     int i,j, counter;
 
     bool checkLike;
-
+    bool findImport = (bool) *importMethod>0;
 
     /* INITIALIZE RNG */
     /* rng = create_gsl_rng((time_t) time(NULL)); */
@@ -71,7 +71,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, rng);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng);
     /* print_param(par); */
 
 
@@ -104,7 +104,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
-		    (bool) *movePi, (bool) *moveSpa, (bool) *findImport, *burnin, *findImportAt);
+		    (bool) *movePi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
     /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
     /* print_mcmc_param(mcmcPar); */
 
