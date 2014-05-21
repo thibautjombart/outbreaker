@@ -39,7 +39,8 @@ outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
            init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
            init.spa2=NULL, n.iter=1e5, sample.every=500, tune.every=500,
-           burnin=2e4, find.import=TRUE, find.import.n=50, pi.param1=10,
+           burnin=2e4, import.method=c("genetic","full","none"),
+           find.import.n=50, pi.param1=10,
            pi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
            move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
            move.pi=TRUE, move.spa=TRUE, outlier.threshold = 5,
@@ -54,7 +55,8 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
            init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
            init.spa2=NULL, n.iter=1e5, sample.every=500, tune.every=500,
-           burnin=2e4, find.import=TRUE, find.import.n=50, pi.param1=10,
+           burnin=2e4, import.method=c("genetic","full","none"),
+           find.import.n=50, pi.param1=10,
            pi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
            move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
            move.pi=TRUE, move.spa=TRUE, outlier.threshold = 5,
@@ -135,9 +137,11 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     burnin period, after which the chains are supposed to have mixed;
     estimated values of parameter are only relevant after the burnin
     period. Used only when imported cases are automatically detected.}
-  
-  \item{find.import}{a logical indicating whether imported cases should
-    be automatically detected; defaults to \code{TRUE}.}
+
+  \item{import.burnin}{a character string indicating which method to use
+    for detecting imported cases; available choices are 'gen' (based on
+    genetic likelihood), 'full' (based on full likelihood), and 'none' (no
+    imported case detection).}
   
   \item{find.import.n}{an integer indicating how many chains should be
     used to determine imported cases; note that this corresponds to
