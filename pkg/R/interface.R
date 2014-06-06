@@ -23,6 +23,10 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
+    ## RE-ORDERING OF IMPORT METHOD TO MATCH C SIDE:
+    ## none:0L
+    ## genetic: 1L
+    ## full: 2L
     import.method <- match.arg(import.method)
     import.method <- as.integer(match(import.method, c("none", "genetic","full")))-1L
 
@@ -33,7 +37,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         dna <- as.DNAbin(matrix('a',ncol=10,nrow=length(dates)))
         move.mut <- FALSE
         mut.model <- 0L
-        import.method <- 2L
         if(is.character(init.tree) && match.arg(init.tree)=="seqTrack") init.tree <- "star"
         init.mu1 <- init.mu2 <-0
         init.gamma <- 1
@@ -148,8 +151,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     }
     ## model 1: normal dispersal
     if(spa.model == 1L) {
-        init.spa1 <- 1
-        init.spa2 <- 0
+        if(is.null(init.spa1)) init.spa1 <- 1
+        if(is.null(init.spa2)) init.spa2 <- 0
         spa1.prior <- max(0.0, spa1.prior)
     }
 
@@ -209,7 +212,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     }
 
     ## handle import.method ##
-    if(mut.model==0L) import.method <- 2L
+    if(mut.model==0L && import.method==1L) import.method <- 2L
 
     ## handle find.import ##
     find.import <- import.method > 0L
