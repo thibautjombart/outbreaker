@@ -427,7 +427,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
     res <- res[[1]]
     res$tune.end <- max(sapply(res.old, function(e) e$tune.end))
     res$chains <- Reduce(rbind, lapply(res.old, function(e) e$chains))
-    res$chains$run <- rep(1:n.runs, each=nrow(res.old[[1]]$chains))
+    res$chains$run <- factor(rep(1:n.runs, each=nrow(res.old[[1]]$chains)))
     res$n.runs <- n.runs
     res$call <- match.call()
 
