@@ -6,7 +6,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        mut.model=1, spa.model=1,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
-                       dist.mat=NULL,
+                       dist.mat=NULL, locations=NULL,
                        init.tree=c("seqTrack","random","star"),
                        init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1,
                        init.spa1=NULL, init.spa2=NULL,
@@ -14,9 +14,10 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        burnin=2e4, import.method=c("genetic","full","none"),
                        find.import.n=50,
                        pi.param1=10, pi.param2=1,
+                       phi.param1=5, phi.param2=1,
                        spa1.prior=1, spa2.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE, move.phi=TRUE, move.spa=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL){
@@ -30,6 +31,13 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     import.method <- match.arg(import.method)
     import.method <- as.integer(match(import.method, c("none", "genetic","full")))-1L
 
+    ## HANDLE LOCATIONS FOR STRATIFIED SPATIAL MODEL ##
+    if(!is.null(locations) && !is.null(dist.mat) && spa.model>1){
+        spa.model.stratified <- TRUE
+    } else {
+        locations <- rep(0,length(dates))
+        spa.model.stratified <- FALSE
+    }
 
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)
@@ -231,6 +239,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     tune.every <- as.integer(tune.every)
     pi.param1 <- as.double(pi.param1)
     pi.param2 <- as.double(pi.param2)
+    phi.param1 <- as.double(phi.param1)
+    phi.param2 <- as.double(phi.param2)
     if(is.null(init.mu1)) {
         init.mu1 <- 0.5/ncol(dna)
     }
@@ -245,6 +255,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     move.kappa <- as.integer(rep(move.kappa, length=n.ind))
     move.Tinf <- as.integer(move.Tinf)
     move.pi <- as.integer(move.pi)
+    move.phi <- as.integer(move.phi)
     move.spa <- as.integer(move.spa)
     quiet <- as.integer(quiet)
     res.file.name <- as.character(res.file.name)[1]
@@ -252,6 +263,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     burnin <- as.integer(burnin)
     outlier.threshold <- as.double(outlier.threshold)
     max.kappa <- as.integer(max.kappa)
+    spa.model.stratified <- as.integer(spa.model.stratified)
+    locations <- as.integer(locations)
+
 
     ## create empty output vector for genetic distances ##
     dna.dist <- integer(n.ind*(n.ind-1)/2)
@@ -260,20 +274,20 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
-               dist.mat, spa.model,
+               dist.mat, locations, spa.model, spa.model.stratified,
                ances, init.kappa, n.iter, sample.every, tune.every,
-               pi.param1, pi.param2, init.mu1, init.gamma,
+               pi.param1, pi.param2, phi.param1, phi.param2, init.mu1, init.gamma,
                init.spa1, init.spa2, spa1.prior, spa2.prior,
                move.mut, move.ances, move.kappa, move.Tinf,
-               move.pi, move.spa,
+               move.pi, move.phi, move.spa,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[39]]
+    D <- temp[[44]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[40]]
+    stopTuneAt <- temp[[45]]
 
     cat("\nComputations finished.\n\n")
 
@@ -366,9 +380,10 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                                   mut.model=mut.model, spa.model=spa.model,
+                                                                  spa.model.stratified=spa.model.stratified,
                                                                   w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
-                                                                  dist.mat=dist.mat,
+                                                                  dist.mat=dist.mat, locations=locations,
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
                                                                   tune.every=tune.every, burnin=burnin,
