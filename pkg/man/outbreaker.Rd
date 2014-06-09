@@ -138,7 +138,7 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     estimated values of parameter are only relevant after the burnin
     period. Used only when imported cases are automatically detected.}
 
-  \item{import.burnin}{a character string indicating which method to use
+  \item{import.method}{a character string indicating which method to use
     for detecting imported cases; available choices are 'gen' (based on
     genetic likelihood), 'full' (based on full likelihood), and 'none' (no
     imported case detection).}

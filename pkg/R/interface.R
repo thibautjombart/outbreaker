@@ -408,7 +408,7 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
                                                         tune.every=tune.every, burnin=burnin,
-                                                        find.import=find.import, import.method=import.method,
+                                                        import.method=import.method,
                                                         find.import.n=find.import.n,
                                                         pi.param1=pi.param1, pi.param2=pi.param2,
                                                         init.mu1=init.mu1, init.mu2=init.mu2,
