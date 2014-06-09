@@ -20,14 +20,15 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *length, 
 		  int *idxCasesInDna, int *mutModel, double *gentimeDens, int *wTrunc, 
 		  double *colltimeDens, int *fTrunc,
-		  double *distMat, int *spaModel,
+		  double *distMat, int *locations, int *spaModel, int *spaModelStratified,
 		  int *ances, int *init_kappa, int *nIter, int *outputEvery, int *tuneEvery, 
 		  double *piParam1, double *piParam2, 
+		  double *phiParam1, double *phiParam2, 
 		  double *initMu1, double *initGamma, 
 		  double *initSpa1, double *initSpa2, 
 		  double *spa1Prior, double *spa2Prior,
 		  int *moveMut, int *moveAlpha, int *moveKappa, int *moveTinf, 
-		  int *movePi, int *moveSpa,
+		  int *movePi, int *movePhi, int *moveSpa,
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
@@ -52,7 +53,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CONVERT DATA */
-    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna);
+    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations);
     /* Rprintf("\n>>> Data <<<\n"); */
     /* print_data(dat); */
 
@@ -71,7 +72,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *spaModelStratified, *importMethod, rng);
     /* print_param(par); */
 
 

@@ -32,6 +32,9 @@ data *alloc_data(int n, int nSeq, int length){
     /* indices of DNA sequence for each case */
     out->idxCasesInDna = alloc_vec_int(n);
 
+    /* locations of each case */
+    out->locations = alloc_vec_int(n);
+
     return out;
 } /* end alloc_data */
 
@@ -43,6 +46,7 @@ void free_data(data *in){
     free_vec_int(in->dates);
     free_list_dnaseq(in->dna);
     free_vec_int(in->idxCasesInDna);
+    free_vec_int(in->locations);
     free(in);
 } /* end free_data*/
 
@@ -56,6 +60,8 @@ void print_data(data *in){
     print_list_dnaseq(in->dna);
     Rprintf("\n= Indices of DNA sequences for each case=\n");
     print_vec_int(in->idxCasesInDna);
+    Rprintf("\n= Locations of the cases=\n");
+    print_vec_int(in->locations);
 } /* end print_data*/
 
 
@@ -63,11 +69,11 @@ void print_data(data *in){
 
 /* Create a data object using inputs from R */
 data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
-		   int *nSeq, int *length, int *idxCasesInDna){
+		   int *nSeq, int *length, int *idxCasesInDna, int *locations){
     int i, j, count=0;
     data * out = alloc_data(*n, *nSeq, *length);
 
-    /* FILL IN DATES AND INDICES OF DNA */
+    /* FILL IN VECTORS OF LENGTH N: DATES AND INDICES OF DNA */
     for(i=0;i<*n;i++){
 	/* dates */
 	out->dates->values[i] = Tcollec[i];
@@ -75,6 +81,9 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
 	/* indices of dna sequences for each case */
 	/* -1 if no sequence (index is not in 0:(nSeq-1)) */
         out->idxCasesInDna->values[i] = (idxCasesInDna[i]<0||idxCasesInDna[i]>=*nSeq) ? -1 : idxCasesInDna[i];
+
+	/* locations */
+	out->locations->values[i] = locations[i];
     }
 
     out->timespan = max_vec_int(out->dates) - min_vec_int(out->dates);
@@ -248,9 +257,9 @@ param *alloc_param(int n){
     out->spa_param1_prior = 0.0;
     out->spa_param2_prior = 0.0;
     out->outlier_threshold = 1000.0;
-    /* out->phi = 0.1; */
-    /* out->phi_param1 = 0.0; */
-    /* out->phi_param2 = 0.0; */
+    out->phi = 0.5;
+    out->phi_param1 = 1.0;
+    out->phi_param2 = 1.0;
 
     /* return */
     return out;
@@ -292,11 +301,10 @@ void print_param(param *in){
     Rprintf("(mean prior param1=%.5f, mean prior param2=%.5f)", in->spa_param1_prior, in->spa_param2_prior);
     Rprintf("\n= imported case detection method used =\n");
     Rprintf("%d", in->import_method);
-
-    /* Rprintf("\n= phi (proportion of external cases) =\n"); */
-    /* Rprintf("%.5f", in->phi); */
-    /* Rprintf("\n= priors on phi (parameter of beta distribution) =\n"); */
-    /* Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2); */
+    Rprintf("\n= phi (proportion of nosocomial cases) =\n");
+    Rprintf("%.5f", in->phi);
+    Rprintf("\n= priors on phi (parameter of beta distribution) =\n");
+    Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2);
 } /* end print_param*/
 
 
@@ -312,6 +320,9 @@ void copy_param(param *in, param *out){
     out->pi = in->pi;
     out->pi_param1 = in->pi_param1;
     out->pi_param2 = in->pi_param2;
+    out->phi = in->phi;
+    out->phi_param1 = in->phi_param1;
+    out->phi_param2 = in->phi_param2;
     out->spa_param1 = in->spa_param1;
     out->spa_param2 = in->spa_param2;
     out->spa_param1_prior = in->spa_param1_prior;

@@ -31,6 +31,7 @@
      list_dnaseq * dna; /* sequences */
      vec_int * idxCasesInDna; /* index of DNA sequence  in 'dna' for each case; -1 if DNA missing */
      int timespan; /* timespan of the data */
+     vec_int * locations; /* integer indicating locations of cases - used in stratified dispersal model */
  } data;
 
 
@@ -64,8 +65,8 @@ typedef struct{
     int mut_model; /* genetic model: 0=nothing; 1=1 mutation rate; 2=transi/transver */
     int spa_model; /* spatial model: 0=no, 1=model1, 2=model2, ...*/
     int import_method; /* import method: 0=none; 1=based on genetic LL; 2=based on full LL */
-    /* double phi; /\* proba of external case *\/ */
-    /* double phi_param1, phi_param2; /\* parameters of the Beta prior for phi *\/ */
+    double phi; /* proba of nosocomial infection */
+    double phi_param1, phi_param2; /* parameters of the Beta prior for phi */
 } param;
 
 
@@ -131,7 +132,7 @@ void free_data(data *in);
 
 void print_data(data *in);
 
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna);
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations);
 
 
 
