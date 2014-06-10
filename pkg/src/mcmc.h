@@ -29,6 +29,8 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng);
 
 void tune_pi(mcmc_param * in, gsl_rng *rng);
 
+void tune_phi(mcmc_param * in, gsl_rng *rng);
+
 void tune_spa1(mcmc_param * in, gsl_rng *rng);
 
 void tune_spa2(mcmc_param * in, gsl_rng *rng);
