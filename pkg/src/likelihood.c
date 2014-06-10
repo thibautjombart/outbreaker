@@ -259,8 +259,21 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spainfo, param *par, 
 	}
 	break;
 
-	/* MODEL 2 */
+	/* MODEL 2: stratified exponential */
+	/* Either local/nosocomial transmission, or exponential diffusion */
+	/* phi: proba of local/nosocomial transmisson */
     case 2:
+	ances = vec_int_i(par->alpha, i);
+	if(ances>=0){ /* only if not imported case */
+	    /* if same location / nosocomial transmission */
+	    if(get_int_i(dat->locations,i)==get_int_i(dat->locations,ances)){
+		out = log(par->phi);
+	    } else {
+		/* different locations - non nosocomial */
+		Dij = get_spatial_dist(spainfo, ances, i);
+		out = log((1.0 - par->phi) * gsl_ran_exponential_pdf(Dij, par->spa_param1));
+	    }
+	}
 	break;
 
 	/* DEFAULT */
