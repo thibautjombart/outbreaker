@@ -116,7 +116,8 @@ double logprior_spa1(param *par){
 
 	/* MODEL 2 */
     case 2:
-	break;
+      out = log(gsl_ran_exponential_pdf(par->spa_param1, par->spa_param1_prior));
+      break;
 
 	/* DEFAULT */
     default:
