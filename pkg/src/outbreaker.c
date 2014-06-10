@@ -20,7 +20,7 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *length, 
 		  int *idxCasesInDna, int *mutModel, double *gentimeDens, int *wTrunc, 
 		  double *colltimeDens, int *fTrunc,
-		  double *distMat, int *locations, int *spaModel, int *spaModelStratified,
+		  double *distMat, int *locations, int *spaModel,
 		  int *ances, int *init_kappa, int *nIter, int *outputEvery, int *tuneEvery, 
 		  double *piParam1, double *piParam2, 
 		  double *phiParam1, double *phiParam2, 
@@ -72,7 +72,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *spaModelStratified, *importMethod, rng);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, rng);
     /* print_param(par); */
 
 
