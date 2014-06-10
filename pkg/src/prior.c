@@ -161,7 +161,10 @@ double logprior_all(param *par){
 	out += logprior_spa1(par);
 	out += logprior_spa2(par);
     }
-
+    if(par->spa_model==2){
+	out += logprior_phi(par);
+    }
+    
     filter_logprob(&out);
 
     return(out);
