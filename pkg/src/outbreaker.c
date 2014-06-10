@@ -107,8 +107,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
-    /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
-    /* print_mcmc_param(mcmcPar); */
+    Rprintf("\nMCMC parameters\n");fflush(stdout);
+    print_mcmc_param(mcmcPar);
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);

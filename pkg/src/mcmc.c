@@ -427,23 +427,27 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	}
 
 	/* TUNING */
-	if(i % tuneEvery == 0 && localMcmcPar->tune_all){
-	    tune_mu1(localMcmcPar,rng);
-	    tune_gamma(localMcmcPar,rng);
-	    tune_pi(localMcmcPar,rng);
-	    tune_phi(localMcmcPar,rng);
-	    /* localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_phi; */
-	    localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi ||  localMcmcPar->tune_phi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
+	if(i % tuneEvery == 0){
+	  if(localMcmcPar->tune_mu1) tune_mu1(localMcmcPar,rng);
+	  if(localMcmcPar->tune_gamma) tune_gamma(localMcmcPar,rng);
+	  if(localMcmcPar->tune_pi) tune_pi(localMcmcPar,rng);
+	  if(localMcmcPar->tune_phi) tune_phi(localMcmcPar,rng);
+	  if(localMcmcPar->tune_spa1) tune_spa1(localMcmcPar,rng);
+	  if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng);
+
+	    localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi ||  localMcmcPar->tune_phi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
 	}
 
 	/* MOVEMENTS */
 	/* move mutation rates */
 	if(localMcmcPar->move_mut){
-	    /* move mu1 */
-	    move_mu1(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
+	  /* move mu1 */
+	  move_mu1(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
 
-	    /* move gamma */
+	  /* move gamma */
+	  if(par->mut_model>1){
 	    move_gamma(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
+	  }
 	}
 
 	/* move pi */
@@ -452,11 +456,17 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move phi */
 	if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
 
-	/* move spa1 */
-	if(localMcmcPar->move_spa1) move_spa1(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
+	/* move dispersal parameters */
+	if(localMcmcPar->move_spa){
+	  /* move spa1 */
+	  move_spa1(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
 
-	/* move spa2 */
-	if(localMcmcPar->move_spa2) move_spa2(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
+	  /* move spa2 */
+	  if(par->spa_model>2){
+	    move_spa2(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
+	  }
+
+	}
 
 	/* move Tinf, kappa_i and alpha_i alltogether */
 	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
@@ -466,9 +476,6 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
 	/* swap ancestries */
 	swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
-
-	/* /\* move alpha_i and kappa_i*\/ */
-	/* move_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng); */
 
     } /* end of MCMC */
 
@@ -609,7 +616,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
-	/* mcmcPar->tune_all = TRUE; */
+	/* mcmcPar->tune_any = TRUE; */
 	/* copy_param(par,tempPar); */
 	/* mcmcPar->step_notune = nIter; */
 
@@ -642,17 +649,18 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
 
 	/* TUNING */
-	if(i % tuneEvery == 0 && mcmcPar->tune_all){
-	    tune_mu1(mcmcPar,rng);
-	    tune_gamma(mcmcPar,rng);
-	    tune_pi(mcmcPar,rng);
-	    tune_phi(mcmcPar,rng);
-	    /* mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi; */
-	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi || mcmcPar->tune_spa1 || mcmcPar->tune_spa2;
-	    if(!mcmcPar->tune_all) {
-		mcmcPar->step_notune = i;
-		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
-	    }
+	if(i % tuneEvery == 0 && mcmcPar->tune_any){
+	  if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
+	  if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
+	  if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
+	  if(mcmcPar->tune_phi) tune_phi(mcmcPar,rng);
+	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
+	  if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng);
+	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi || mcmcPar->tune_spa1 || mcmcPar->tune_spa2;
+	  if(!mcmcPar->tune_any) {
+	    mcmcPar->step_notune = i;
+	    /* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
+	  }
 	}
 
 	/* /\* debugging *\/ */
@@ -663,12 +671,15 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* check_loglikelihood_all(dat, dnaInfo, gen, par); */
 
 	/* MOVEMENTS */
+	/* move mutation rates */
 	if(mcmcPar->move_mut){
-	    /* move mu1 */
-	    if(par->mut_model==1 || par->mut_model==2) move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+	  /* move mu1 */
+	  move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 
-	    /* move gamma */
-	    if(par->mut_model==2) move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+	  /* move gamma */
+	  if(par->mut_model>1){
+	    move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+	  }
 	}
 
 	/* move pi */
@@ -677,11 +688,17 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move phi */
 	if(mcmcPar->move_phi) move_phi(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
-	/* move spa1 */
-	if(mcmcPar->move_spa1) move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
+	/* move dispersal parameters */
+	if(mcmcPar->move_spa){
+	  /* move spa1 */
+	  move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
-	/* move spa2 */
-	if(mcmcPar->move_spa2) move_spa2(par, tempPar, dat, spaInfo, mcmcPar, rng);
+	  /* move spa2 */
+	  if(par->spa_model>2){
+	    move_spa2(par, tempPar, dat, spaInfo, mcmcPar, rng);
+	  }
+
+	}
 
 	/* move Tinf, kappa_i and alpha_i alltogether */
 	move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
