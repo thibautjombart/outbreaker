@@ -58,8 +58,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* print_data(dat); */
 
 
-    /* GET TIME SPAN */
-    /* TIMESPAN = max_vec_int(dat->dates) - min_vec_int(dat->dates); */
+    /* /\* GET TIME SPAN *\/ */
+    /* int TIMESPAN = max_vec_int(dat->dates) - min_vec_int(dat->dates); */
     /* Rprintf("\nTimespan is %d\n",TIMESPAN); */
 
 
@@ -73,6 +73,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N);
     init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng);
+    /* Rprintf("\n>>> param <<<\n"); */
     /* print_param(par); */
 
 

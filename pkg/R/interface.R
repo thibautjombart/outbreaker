@@ -138,6 +138,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         if(nrow(dist.mat) != length(dates)) stop("wrong dimension for the matrix of distances")
         if(any(is.na(dist.mat))) stop("NAs in the distance matrix")
     } else {
+        if(spa.model>0) stop("spatial model requested but dist.mat not provided")
         dist.mat <- matrix(0, ncol=length(dates), nrow=length(dates))
         spa.model <- 0L
     }
@@ -151,7 +152,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         init.spa1 <- init.spa2 <- 0
     }
     ## model 1: normal dispersal
-    if(spa.model == 1L) {
+    if(spa.model > 0L) {
         if(is.null(init.spa1)) init.spa1 <- 1
         if(is.null(init.spa2)) init.spa2 <- 0
         spa1.prior <- max(0.0, spa1.prior)

@@ -135,7 +135,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->mu1 = init_mu1;
     par->mu1_prior = init_mu1;
     par->gamma = init_gamma;
-    par->pi = gsl_ran_beta (rng,pi_param1,pi_param2);
+    par->pi = gsl_ran_beta(rng,pi_param1,pi_param2);
     par->pi_param1 = pi_param1;
     par->pi_param2 = pi_param2;
     par->spa_param1 = init_spa1;
@@ -143,7 +143,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->spa_param1_prior = spa1_prior;
     par->spa_param2_prior = spa2_prior;
     par->outlier_threshold = outlier_threshold;
-    par->phi = gsl_ran_beta (rng,phi_param1,phi_param2);
+    par->phi = gsl_ran_beta(rng,phi_param1,phi_param2);
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
 }

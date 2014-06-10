@@ -267,11 +267,16 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
 	if(ances>=0){ /* only if not imported case */
 	    /* if same location / nosocomial transmission */
 	    if(vec_int_i(dat->locations,i)==vec_int_i(dat->locations,ances)){
-		out = log(par->phi);
+	      /* printf("\nlocations of %d and %d are the same", i, ances);fflush(stdout); */
+	      /* printf("\nvalue of phi:%.5f", par->phi);fflush(stdout); */
+	      out = log(par->phi);
 	    } else {
 		/* different locations - non nosocomial */
 		Dij = get_spatial_dist(spaInfo, ances, i);
 		out = log((1.0 - par->phi) * gsl_ran_exponential_pdf(Dij, par->spa_param1));
+		/* printf("\nlocations of %d and %d are different", i, ances);fflush(stdout); */
+		/* printf("\nvalue of LL:%.5f", out);fflush(stdout); */
+		/* printf("\ndetail:(1.0-phi)=%.5f ; p(Dij)=%.15f ; spa1=%.5f", 1.0 - par->phi, gsl_ran_exponential_pdf(Dij, par->spa_param1), par->spa_param1);fflush(stdout); */
 	    }
 	}
 	break;
