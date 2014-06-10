@@ -218,6 +218,33 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
 
 
 
+/* tune moves for phi */
+void tune_phi(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_phi / (double) (in->n_accept_phi + in->n_reject_phi);
+
+    /* acceptable zone: 25-50% acceptance */
+    if(paccept<0.25) {
+	in->sigma_phi /= 1.5;
+	in->n_accept_phi = 0;
+	in->n_reject_phi = 0;
+    } else if (paccept>0.50) {
+	in->sigma_phi *= 1.5;
+	in->n_accept_phi = 0;
+	in->n_reject_phi = 0;
+	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
+	if(in->sigma_phi>1.0){
+	    in->sigma_phi = 1.0;
+	    in->tune_phi = FALSE;
+	}
+    } else {
+	in->tune_phi = FALSE;
+    }
+}
+
+
+
+
 
 /* tune moves for spa1 */
 void tune_spa1(mcmc_param * in, gsl_rng *rng){
