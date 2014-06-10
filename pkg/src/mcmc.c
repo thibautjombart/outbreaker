@@ -45,6 +45,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, spatial_dist *spain
     fprintf(file,"\t%.15f", par->mu1 * par->gamma);
     fprintf(file,"\t%.15f", par->gamma);
     fprintf(file,"\t%.15f", par->pi);
+    fprintf(file,"\t%.15f", par->phi);
     fprintf(file,"\t%.15f", par->spa_param1);
     fprintf(file,"\t%.15f", par->spa_param2);
     for(i=0;i<par->Tinf->length;i++){
@@ -67,6 +68,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, spatial_dist *spain
 	Rprintf("\t%.15f", par->mu1 * par->gamma);
 	Rprintf("\t%.15f", par->gamma);
 	Rprintf("\t%.15f", par->pi);
+	Rprintf("\t%.15f", par->phi);
 	Rprintf("\t%.15f", par->spa_param1);
 	Rprintf("\t%.15f", par->spa_param2);
 	for(i=0;i<par->Tinf->length;i++){
@@ -100,6 +102,8 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_pi / (double) (mcmcPar->n_accept_pi + mcmcPar->n_reject_pi);
     fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_phi / (double) (mcmcPar->n_accept_phi + mcmcPar->n_reject_phi);
+    fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_Tinf / (double) (mcmcPar->n_accept_Tinf + mcmcPar->n_reject_Tinf);
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_spa1 / (double) (mcmcPar->n_accept_spa1 + mcmcPar->n_reject_spa1);
@@ -110,9 +114,10 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_phi);
     fprintf(file,"\t%.15f", mcmcPar->sigma_spa1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_spa2);
-    /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
+    fprintf(file,"\t%.15f", mcmcPar->sigma_phi);
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
 }
 
@@ -359,7 +364,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi");
+	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi\tspa1\tspa2");
 	for(i=0;i<dat->n;i++){
 	    Rprintf("\tTinf_%d", i+1);
 	}
@@ -426,9 +431,9 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	    tune_mu1(localMcmcPar,rng);
 	    tune_gamma(localMcmcPar,rng);
 	    tune_pi(localMcmcPar,rng);
-	    /* tune_phi(localMcmcPar,rng); */
+	    tune_phi(localMcmcPar,rng);
 	    /* localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_phi; */
-	    localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
+	    localMcmcPar->tune_all = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi ||  localMcmcPar->tune_phi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
 	}
 
 	/* MOVEMENTS */
@@ -443,6 +448,9 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
 	/* move pi */
 	if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
+
+	/* move phi */
+	if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, localMcmcPar, rng);
 
 	/* move spa1 */
 	if(localMcmcPar->move_spa1) move_spa1(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
@@ -560,7 +568,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* OUTPUT TO OUTFILE - HEADER */
-    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1\tspa2");
+    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi\tspa1\tspa2");
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
     }
@@ -572,13 +580,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf\tp_accept_spa1\tp_accept_spa2");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tsigma_spa2\tn_like_zero");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_phi\tp_accept_Tinf\tp_accept_spa1\tp_accept_spa2");
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_phi\tsigma_spa1\tsigma_spa2\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1\tspa2");
+	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi\tspa1\tspa2");
 	for(i=0;i<dat->n;i++){
 	    Rprintf("\tTinf_%d", i+1);
 	}
@@ -638,9 +646,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    tune_mu1(mcmcPar,rng);
 	    tune_gamma(mcmcPar,rng);
 	    tune_pi(mcmcPar,rng);
-	    /* tune_phi(mcmcPar,rng); */
+	    tune_phi(mcmcPar,rng);
 	    /* mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi; */
-	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1 || mcmcPar->tune_spa2;
+	    mcmcPar->tune_all = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_phi || mcmcPar->tune_spa1 || mcmcPar->tune_spa2;
 	    if(!mcmcPar->tune_all) {
 		mcmcPar->step_notune = i;
 		/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
@@ -665,6 +673,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* move pi */
 	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
+
+	/* move phi */
+	if(mcmcPar->move_phi) move_phi(par, tempPar, dat, mcmcPar, rng);
 
 	/* move spa1 */
 	if(mcmcPar->move_spa1) move_spa1(par, tempPar, dat, spainfo, mcmcPar, rng);
