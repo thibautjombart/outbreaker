@@ -378,8 +378,9 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
 	break;
 
 	/* MODEL 2 */
-	/* (not implemented yet) */
+	/* stratified dispersal; spa1 is the same as model 1 */
     case 2:
+	tempPar->spa_param1 = gsl_ran_lognormal(rng, log(currentPar->spa_param1), mcmcPar->sigma_spa1);
 	break;
 
 	/* DEFAULT */
@@ -441,8 +442,9 @@ void move_spa2(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
 	break;
 
 	/* MODEL 2 */
-	/* (not implemented yet) */
+	/*  stratified dispersal; spa1 is the same as model 1 */
     case 2:
+	tempPar->spa_param1 = currentPar->spa_param1;
 	break;
 
 	/* DEFAULT */
