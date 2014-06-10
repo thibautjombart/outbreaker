@@ -263,7 +263,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     burnin <- as.integer(burnin)
     outlier.threshold <- as.double(outlier.threshold)
     max.kappa <- as.integer(max.kappa)
-    spa.model.stratified <- as.integer(spa.model.stratified)
     locations <- as.integer(locations)
 
 
@@ -274,7 +273,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
-               dist.mat, locations, spa.model, spa.model.stratified,
+               dist.mat, locations, spa.model,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.param1, pi.param2, phi.param1, phi.param2, init.mu1, init.gamma,
                init.spa1, init.spa2, spa1.prior, spa2.prior,
@@ -382,7 +381,6 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                                   mut.model=mut.model, spa.model=spa.model,
-                                                                  spa.model.stratified=spa.model.stratified,
                                                                   w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
                                                                   dist.mat=dist.mat, locations=locations,
@@ -421,7 +419,6 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                                   mut.model=mut.model, spa.model=spa.model,
-                                                                  spa.model.stratified=spa.model.stratified,
                                                                   w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
                                                                   dist.mat=dist.mat, locations=locations,
