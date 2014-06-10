@@ -175,6 +175,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 
 
     /* INITIALIZE MCMC PARAMETERS */
+    /* parameters of proposal distributions */
     in->sigma_mu1 = 0.0001;
     in->sigma_gamma = 1;
     in->sigma_pi = 0.01;
@@ -197,35 +198,32 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 
     /* FILL IN BOOLEANS */
     in->move_mut = move_mut;
-    in->move_spa1 = move_spa;
-    in->move_spa2 = move_spa;
-    /* check that we don't move useless things */
+    in->move_Tinf = move_Tinf;
+    in->move_pi = move_pi;
+    in->move_phi = move_phi;
+    in->move_spa = move_spa;
+    in->find_import = find_import;
+
+   /* check that we don't move useless things */
     if(par->mut_model==0){
 	move_mut = FALSE;
     }
     if(par->spa_model==0){
-	in->move_spa1 = FALSE;
-	in->move_spa2 = FALSE;
+	in->move_spa = FALSE;
+	in->move_phi = FALSE;
     }
     if(par->spa_model==1){
-	in->move_spa2 = FALSE;
+	in->move_phi = FALSE;
     }
-    in->move_Tinf = move_Tinf;
-    in->move_pi = move_pi;
-    in->move_phi = move_phi;
-    in->find_import = find_import;
 
-    /* ENSURE MOVE-TUNING CONSISTENCY */
-    if(!move_mut){
-	in->tune_mu1 = FALSE;
-	in->tune_gamma = FALSE;
-    }
-    if(!in->move_spa1) in->tune_spa1 = FALSE;
-    if(!in->move_spa2) in->tune_spa2 = FALSE;
-
-    if(!move_pi) in->tune_pi = FALSE;
-    if(!move_phi) in->tune_phi = FALSE;
-    in->tune_all = in->tune_mu1 || in->tune_gamma || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
+    /* SET TUNING BOOLEANS */
+    in->tune_mu1 = move_mut;
+    in->tune_gamma = (move_mut && par->mut_model>1) ? TRUE : FALSE;
+    in->tune_spa1 = in->move_spa;
+    in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE;
+    in->tune_pi = move_pi;
+    in->tune_phi = move_phi;
+    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
 
 } /* end init_mcmc_param */
 

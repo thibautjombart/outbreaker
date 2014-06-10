@@ -98,9 +98,9 @@ typedef struct{
     vec_double *candid_ances_proba; /* vector of proba for candidate ancestors, used to move alpha_i */
     /* double Pmove_alpha_old, Pmove_alpha_new; /\* used for accept ratio when moving alpha_i *\/ */
     int n_like_zero; /* number of times likelihood was zero */
-    bool tune_all, tune_mu1, tune_gamma, tune_pi, tune_phi, tune_spa1, tune_spa2; /* logical indicating whether these proposals should be tuned */
+    bool tune_any, tune_mu1, tune_gamma, tune_pi, tune_phi, tune_spa1, tune_spa2; /* logical indicating whether these proposals should be tuned */
     int step_notune; /* step at which all tuning stopped */
-    bool move_mut, move_Tinf, move_pi, move_phi, move_spa1, move_spa2; /* logical indicating what parameter should be moved */
+    bool move_mut, move_Tinf, move_pi, move_phi, move_spa; /* logical indicating what parameter should be moved */
     vec_double * move_alpha; /* vector indicating which alpha_i to move (1.0) or not (0.0) */
     vec_double * move_kappa; /* vector indicating which kappa_i to move (1.0) or not (0.0) */
     int burnin, find_import_at; /* chains between 'burnin' and 'find_import_at' are used to find imported cases */
