@@ -31,13 +31,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     import.method <- match.arg(import.method)
     import.method <- as.integer(match(import.method, c("none", "genetic","full")))-1L
 
-    ## HANDLE LOCATIONS FOR STRATIFIED SPATIAL MODEL ##
-    if(!is.null(locations) && !is.null(dist.mat) && spa.model>1){
-        spa.model.stratified <- TRUE
-    } else {
-        locations <- rep(0,length(dates))
-        spa.model.stratified <- FALSE
-    }
 
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)
@@ -151,7 +144,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ## check spatial model ##
     spa.model <- as.integer(spa.model)
-    if(!spa.model %in% c(0L,1L)) stop("unknown spatial model requested; accepted values are: 0, 1")
+    if(!spa.model %in% c(0L, 1L, 2L)) stop("unknown spatial model requested; accepted values are: 0, 1, 2")
     ## model 0: no spatial info
     if(spa.model == 0L) {
         dist.mat <- matrix(0, ncol=length(dates), nrow=length(dates))
@@ -162,6 +155,13 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         if(is.null(init.spa1)) init.spa1 <- 1
         if(is.null(init.spa2)) init.spa2 <- 0
         spa1.prior <- max(0.0, spa1.prior)
+    }
+    ## model 2: stratified dispersal
+    if(spa.model == 2L){
+        if(is.null(locations)) stop("Spatial model 2 needs locations for stratified dispersal")
+        if(length(locations)!=length(dates)) stop("wrong length for argument 'locations'")
+        if(is.character(locations)) locations <- factor(locations)
+        locations <- as.integer(locations)
     }
 
 
@@ -285,9 +285,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
-    D <- temp[[44]]
+    D <- temp[[43]]
     D[D<0] <- NA
-    stopTuneAt <- temp[[45]]
+    stopTuneAt <- temp[[44]]
 
     cat("\nComputations finished.\n\n")
 
