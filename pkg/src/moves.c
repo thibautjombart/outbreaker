@@ -315,17 +315,18 @@ void move_phi(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInf
   for(i=0;i < dat->n;i++){
     ances = vec_int_i(currentPar->alpha,i);
 
-    if(vec_int_i(dat->locations,i)==vec_int_i(dat->locations,ances)){
-      sumSameLoc += 1.0;
-    } else {
-      sumDiffLoc += 1.0;
+    if(ances>=0){
+      if(vec_int_i(dat->locations,i)==vec_int_i(dat->locations,ances)){
+	sumSameLoc += 1.0;
+      } else {
+	sumDiffLoc += 1.0;
+      }
     }
   }
 
   tempPar->phi = gsl_ran_beta(rng, currentPar->phi_param1 + sumSameLoc, currentPar->phi_param2 + sumDiffLoc);
   currentPar->phi = tempPar->phi;
 
-  
     /* /\* GENERATE CANDIDATE VALUE FOR PHI *\/ */
     /* /\* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*\/ */
     /* do */
@@ -409,7 +410,7 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
     logRatio -= loglikelihood_spa_all(dat, spaInfo, currentPar, rng);
 
     /* add correction (MH) for lognormal proposal if needed */
-    if(currentPar->spa_model==1){
+    if(currentPar->spa_model>0){
 	logRatio += log(tempPar->spa_param1) - log(currentPar->spa_param1);
     }
 
