@@ -25,7 +25,7 @@
    - indices are provided from 1 to n, i.e. not as C indices (from 0 to n-1)
 */
 
-void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
+void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
     int i;
     double like, prior;
 
@@ -34,7 +34,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnainfo, spatial_dist *spain
     fprintf(file,"\n%d", step);
 
     /* posterior, likelihood, prior */
-    like = loglikelihood_all(dat, dnainfo, spainfo, gen, par, rng);
+    like = loglikelihood_all(dat, dnaInfo, spaInfo, gen, par, rng);
     prior = logprior_all(par);
     fprintf(file,"\t%.15f", like + prior);
     fprintf(file,"\t%.15f", like);
@@ -357,7 +357,7 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 
 /* PRELIM MCMC FOR FINDING OUTLIERS */
 void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
-		      data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
     double meanInfluence = 0.0;
@@ -403,12 +403,12 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	    for(j=0;j<dat->n;j++){
 		/* import method 1: use only genetic log-likelihood */
 		if(par->import_method==1){
-		    indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnainfo, localPar, rng);
+		    indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnaInfo, localPar, rng);
 		}
 
 		/* import method 2: use only genetic log-likelihood */
 		if(par->import_method==2){
-		    indivInfluence->values[j] -= loglikelihood_i(j, dat, dnainfo, spainfo, gen, localPar, rng);
+		    indivInfluence->values[j] -= loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, localPar, rng);
 		}
 	    }
 	    /* DEBUGGING */
@@ -420,7 +420,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
 	    /* printf("\nmost recent sequenced ancestors:\n");fflush(stdout); */
 	    /* for(j=0;j<dat->n;j++){ */
-	    /*   printf("\nancestor of %d: %d",j,find_sequenced_ancestor(j, dat, dnainfo, par)); */
+	    /*   printf("\nancestor of %d: %d",j,find_sequenced_ancestor(j, dat, dnaInfo, par)); */
 	    /*   fflush(stdout); */
 	    /* } */
 	    nbTermsLike++;
@@ -440,35 +440,35 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move mutation rates */
 	if(localMcmcPar->move_mut){
 	    /* move mu1 */
-	    move_mu1(localPar, tempPar, dat, dnainfo, localMcmcPar, rng);
+	    move_mu1(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
 
 	    /* move gamma */
-	    move_gamma(localPar, tempPar, dat, dnainfo, localMcmcPar, rng);
+	    move_gamma(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
 	}
 
 	/* move pi */
 	if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
 
 	/* move phi */
-	if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, localMcmcPar, rng);
+	if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
 
 	/* move spa1 */
-	if(localMcmcPar->move_spa1) move_spa1(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
+	if(localMcmcPar->move_spa1) move_spa1(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
 
 	/* move spa2 */
-	if(localMcmcPar->move_spa2) move_spa2(localPar, tempPar, dat, spainfo, localMcmcPar, rng);
+	if(localMcmcPar->move_spa2) move_spa2(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
 
 	/* move Tinf, kappa_i and alpha_i alltogether */
-	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
+	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
 
 	/* move Tinf */
-	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
+	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
 
 	/* swap ancestries */
-	swap_ancestries(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng);
+	swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
 
 	/* /\* move alpha_i and kappa_i*\/ */
-	/* move_alpha_kappa(localPar, tempPar, dat, dnainfo, spainfo, gen, localMcmcPar, rng); */
+	/* move_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng); */
 
     } /* end of MCMC */
 
@@ -547,7 +547,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
    ==============
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
-	  bool quiet, param *par, data *dat, dna_dist *dnainfo, spatial_dist *spainfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i;
     vec_int *areOutliers = alloc_vec_int(dat->n);
@@ -598,7 +598,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
     }
 
-    fprint_chains(file, dat, dnainfo, spainfo, gen, par, 1, rng, quiet);
+    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet);
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
 
     mcmcPar->step_notune = nIter;
@@ -606,7 +606,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
-	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnainfo, spainfo, gen, mcmcPar, rng);
+	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
 	/* mcmcPar->tune_all = TRUE; */
@@ -637,7 +637,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* OUTPUT TO FILES */
 	if(i % outEvery == 0){
-	    fprint_chains(file, dat, dnainfo, spainfo, gen, par, i, rng, quiet);
+	    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, i, rng, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
 	}
 
@@ -656,41 +656,41 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
 
 	/* /\* debugging *\/ */
-	/* double logLike = loglikelihood_all(dat, dnainfo, gen, par); */
+	/* double logLike = loglikelihood_all(dat, dnaInfo, gen, par); */
 	/* printf("\n\n = Initial Log-likelihood value (in mcmc, before movement): %f\n", logLike); */
 	/* fflush(stdout); */
 
-	/* check_loglikelihood_all(dat, dnainfo, gen, par); */
+	/* check_loglikelihood_all(dat, dnaInfo, gen, par); */
 
 	/* MOVEMENTS */
 	if(mcmcPar->move_mut){
 	    /* move mu1 */
-	    if(par->mut_model==1 || par->mut_model==2) move_mu1(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    if(par->mut_model==1 || par->mut_model==2) move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 
 	    /* move gamma */
-	    if(par->mut_model==2) move_gamma(par, tempPar, dat, dnainfo, mcmcPar, rng);
+	    if(par->mut_model==2) move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 	}
 
 	/* move pi */
 	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
 
 	/* move phi */
-	if(mcmcPar->move_phi) move_phi(par, tempPar, dat, mcmcPar, rng);
+	if(mcmcPar->move_phi) move_phi(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
 	/* move spa1 */
-	if(mcmcPar->move_spa1) move_spa1(par, tempPar, dat, spainfo, mcmcPar, rng);
+	if(mcmcPar->move_spa1) move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
 	/* move spa2 */
-	if(mcmcPar->move_spa2) move_spa2(par, tempPar, dat, spainfo, mcmcPar, rng);
+	if(mcmcPar->move_spa2) move_spa2(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
 	/* move Tinf, kappa_i and alpha_i alltogether */
-	move_Tinf_alpha_kappa(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
+	move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move Tinf */
-	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
+	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* swap ancestries */
-	swap_ancestries(par, tempPar, dat, dnainfo, spainfo, gen, mcmcPar, rng);
+	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
     } /* end of mcmc */
 
@@ -722,7 +722,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 /*     data *dat; */
 /*     gentime *gen; */
 /*     param *par; */
-/*     dna_dist * dnainfo; */
+/*     dna_dist * dnaInfo; */
 /*     mcmc_param * mcmcPar; */
 
 /*     double logPrior, logLike, logPost; */
@@ -780,9 +780,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
 /*     /\* COMPUTE GENETIC DISTANCES *\/ */
-/*     dnainfo = compute_dna_distances(dat->dna); */
+/*     dnaInfo = compute_dna_distances(dat->dna); */
 /*     printf("\n>>> DNA info <<<\n"); */
-/*     print_dna_dist(dnainfo); */
+/*     print_dna_dist(dnaInfo); */
 
 
 /*     /\* COMPUTE PRIORS *\/ */
@@ -790,11 +790,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 /*     printf("\nPrior value (log): %.10f\n", logPrior); */
 
 /*    /\* COMPUTE LIKELIHOOD *\/ */
-/*     logLike = loglikelihood_all(dat, dnainfo, gen, par); */
+/*     logLike = loglikelihood_all(dat, dnaInfo, gen, par); */
 /*     printf("\nLog-likelihood value: %.10f\n", logLike); */
 
 /*     /\* COMPUTE POSTERIOR *\/ */
-/*     logPost = logposterior_all(dat, dnainfo, gen, par); */
+/*     logPost = logposterior_all(dat, dnaInfo, gen, par); */
 /*     printf("\nLog-posterior value: %.10f\n", logPost); */
 
 
@@ -802,7 +802,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 /*     int nIter=10000, outEvery=100; */
 /*     char outFile[256] = "output.txt"; */
 
-/*     mcmc(nIter, outEvery, outFile, FALSE, par, dat, dnainfo, gen, mcmcPar, rng); */
+/*     mcmc(nIter, outEvery, outFile, FALSE, par, dat, dnaInfo, gen, mcmcPar, rng); */
 
 /*     printf("\n\n");fflush(stdout); */
 
@@ -812,7 +812,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 /*     /\* time(&t1); *\/ */
 /*     /\* printf("\nRuntime (%d computations of posterior): \n", ITER); *\/ */
 /*     /\* for(i=0;i<ITER;i++){ *\/ */
-/*     /\* 	logPost = logposterior_all(dat, dnainfo, gen, par); *\/ */
+/*     /\* 	logPost = logposterior_all(dat, dnaInfo, gen, par); *\/ */
 /*     /\* } *\/ */
 /*     /\* time(&t2); *\/ */
 /*     /\* printf("\nellapsed time: %d seconds\n", (int) t2 - (int) t1); *\/ */
@@ -822,7 +822,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 /*     gsl_rng_free(rng); */
 /*     free_data(dat); */
 /*     free_gentime(gen); */
-/*     free_dna_dist(dnainfo); */
+/*     free_dna_dist(dnaInfo); */
 /*     free_param(par); */
 /*     free_mcmc_param(mcmcPar); */
 
