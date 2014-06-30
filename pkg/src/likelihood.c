@@ -19,7 +19,7 @@
 /* i: index of the case for which we seek a sequenced ancestor */
 /* must return -1 if no ancestor sequenced (or i not sequenced) */
 int find_sequenced_ancestor(int i, data *dat, dna_dist *dnaInfo, param *par){
-    int nbNuclCommon = -1, curAnces = i;
+  int nbNuclCommon = -1, curAnces = i, chainLength = 0;
 
     /* escape if no sequence for i */
     if(vec_int_i(dat->idxCasesInDna, i)<0) return -1;
@@ -38,7 +38,18 @@ int find_sequenced_ancestor(int i, data *dat, dna_dist *dnaInfo, param *par){
 	printf("<-%d",curAnces);fflush(stdout);
 	par->kappa_temp += vec_int_i(par->kappa,curAnces);
 	nbNuclCommon = com_nucl_ij(i, curAnces, dat, dnaInfo);
-    } while(nbNuclCommon<1 && curAnces>=0); /* stop if sequenced ancestor found or ancestor is -1 */
+	chainLength++;
+
+	/* add warning if chain length exceeds n (likely loops) */
+	if(chainLength > dat->n){
+	  warning("\n\n!WARNING! Likely loops found in transmission chains when looking for sequenced ancestors.\n");
+	}
+
+	/* continue condition:
+	   - sequenced ancestor found but no common nucleotide
+	   - (and) current ancestor is not -1
+	   - (and) we haven't gone too far back (indicative of a loop in transmission chain) */
+    } while(nbNuclCommon<1 && curAnces>=0 && chainLength < dat->n);
 
    /* debuging */
     if(curAnces>0){

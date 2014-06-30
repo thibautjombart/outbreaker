@@ -555,16 +555,6 @@ plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", ve
 
 
 
-
-
-
-
-
-
-
-
-
-
 ## #####################
 ## ## seqTrack.simOutbreak
 ## #####################
@@ -660,17 +650,4 @@ plot.simOutbreak <- function(x, y=NULL, edge.col="black", col.edge.by="dist", ve
 
 ##     return(res)
 ## } # end sample.simOutbreak
-
-
-
-
-
-
-
-
-
-
-
-
-
 
