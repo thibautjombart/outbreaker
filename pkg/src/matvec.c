@@ -197,7 +197,7 @@ void free_mat_double(mat_double *in){
 */
 
 int vec_int_i(vec_int *in, int i){
-    if(i >= in->length) {
+    if(i >= in->length || i<0) {
       error("\nTrying to access value %d in a vector of size %d\n",i,in->length);
       /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
       /* exit(1); */
@@ -209,8 +209,8 @@ int vec_int_i(vec_int *in, int i){
 
 
 int mat_int_ij(mat_int *in, int i, int j){
-    if(i >= in->n) {
-      error("\nTrying to access item %d in a list of size %d\n",i,in->n);
+    if(i >= in->n || i<0 || j>=in->p || j<0) {
+      error("\nTrying to access item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
       /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
       /* exit(1); */
     }
@@ -222,7 +222,7 @@ int mat_int_ij(mat_int *in, int i, int j){
 
 
 double vec_double_i(vec_double *in, int i){
-    if(i >= in->length) {
+    if(i >= in->length || i<0) {
       error("\nTrying to access value %d in a vector of size %d\n",i,in->length);
       /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
       /* exit(1); */
@@ -234,12 +234,12 @@ double vec_double_i(vec_double *in, int i){
 
 
 double mat_double_ij(mat_double *in, int i, int j){
-    if(i >= in->n) {
-      error("\nTrying to access item %d in a list of size %d\n",i,in->n);
-      /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
-      /* exit(1); */
-    }
-    return vec_double_i(in->rows[i], j);
+  if(i >= in->n || i<0 || j>=in->p || j<0) {
+    error("\nTrying to access item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
+    /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
+    /* exit(1); */
+  }
+  return vec_double_i(in->rows[i], j);
 }
 
 
