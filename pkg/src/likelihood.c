@@ -36,8 +36,10 @@ int find_sequenced_ancestor(int i, data *dat, dna_dist *dnaInfo, param *par){
     do{
 	curAnces = vec_int_i(par->alpha,curAnces); /* move up the ancestry chain */
 	/* printf("<-%d",curAnces);fflush(stdout); */
-	par->kappa_temp += vec_int_i(par->kappa,curAnces);
-	nbNuclCommon = com_nucl_ij(i, curAnces, dat, dnaInfo);
+	if(curAnces>-1){
+	  par->kappa_temp += vec_int_i(par->kappa,curAnces);
+	  nbNuclCommon = com_nucl_ij(i, curAnces, dat, dnaInfo);
+	}
 	chainLength++;
 
 	/* add warning if chain length exceeds n (likely loops) */
@@ -146,22 +148,26 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
 
     /* = EXTERNAL CASES = */
     if(ances < 0){
-	/* PROBA OF SAMPLING TIME */
+      /* PROBA OF SAMPLING TIME */
+      if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){
+	out += NEARMINUSINF;
+      } else {
 	out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
+      }
 
-	/* /\* PROBA OF EXTERNAL CASE *\/ */
-	/* out += log(par->phi); */
+      /* /\* PROBA OF EXTERNAL CASE *\/ */
+      /* out += log(par->phi); */
 
-	/* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
-	out -= log((double) dat->timespan);
+      /* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
+      out -= log((double) dat->timespan);
 
-	/* /\* SIMULATED GENETIC PROBA *\/ */
-	/* out += sim_loglike_gen(dat, par, rng); */
+      /* /\* SIMULATED GENETIC PROBA *\/ */
+      /* out += sim_loglike_gen(dat, par, rng); */
 
-	/* FILTER AND RETURN */
-	filter_logprob(&out);
-	/* printf("\nlikelihood (imported case): %f\n", out);fflush(stdout); */
-	return out;
+      /* FILTER AND RETURN */
+      filter_logprob(&out);
+      /* printf("\nlikelihood (imported case): %f\n", out);fflush(stdout); */
+      return out;
     }
 
 
@@ -215,7 +221,9 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
     if(vec_int_i(dat->idxCasesInDna, i)<0) return 0.0;
 
     /* FIND MOST RECENT SEQUENCED ANCESTOR */
+    Rprintf("\nSeeking most recent sequenced ancestor of %d",i);
     ances = find_sequenced_ancestor(i, dat, dnaInfo, par);
+    Rprintf("\n...found %d",ances);
 
     /* NO DNA INFO AVAIL (IMPORTED CASES/MISSING SEQUENCES) */
     if(ances < 0) {

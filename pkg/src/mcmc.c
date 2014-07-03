@@ -397,7 +397,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
     /* RUN MCMC */
     for(i=2;i<=localMcmcPar->find_import_at;i++){
-	/* printf("i: %d ",i);fflush(stdout); */
+	printf("\ni: %d ",i);fflush(stdout);
 	/* COLLECT INFORMATION ABOUT ALL GI_i */
 	if(i>=localMcmcPar->burnin && i % outEvery == 0){
 	    for(j=0;j<dat->n;j++){
@@ -442,21 +442,30 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* move mutation rates */
 	if(localMcmcPar->move_mut){
 	  /* move mu1 */
+	  Rprintf("\nMoving mu1...");
 	  move_mu1(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
+	  Rprintf(" done!");
 
 	  /* move gamma */
 	  if(par->mut_model>1){
+	    Rprintf("\nMoving gamma...");
 	    move_gamma(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
+	    Rprintf(" done!");
 	  }
 	}
 
 	/* move pi */
+	Rprintf("\nMoving gamma...");
 	if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
+	Rprintf(" done!");
 
 	/* move phi */
+	Rprintf("\nMoving gamma...");
 	if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
+	Rprintf(" done!");
 
 	/* move dispersal parameters */
+	Rprintf("\nMoving spatial param...");
 	if(localMcmcPar->move_spa){
 	  /* move spa1 */
 	  move_spa1(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
@@ -467,15 +476,22 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	  }
 
 	}
+	Rprintf(" done!");
 
 	/* move Tinf, kappa_i and alpha_i alltogether */
+	Rprintf("\nMoving Tinf alpha kappa...");
 	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+	Rprintf(" done!");
 
 	/* move Tinf */
+	Rprintf("\nMoving Tinf ...");
 	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+	Rprintf(" done!");
 
 	/* swap ancestries */
+	Rprintf("\nSwapping ancestries ...");
 	swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+	Rprintf(" done!");
 
     } /* end of MCMC */
 

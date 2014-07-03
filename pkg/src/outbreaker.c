@@ -89,20 +89,20 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* print_spatial_dist(spatialInfo); */
 
 
-   /*  /\* COMPUTE PRIORS *\/ */
-   /*  double logPrior = logprior_all(par); */
-   /*  Rprintf("\nPrior value (log): %.10f\n", logPrior);fflush(stdout); */
+    /* COMPUTE PRIORS */
+    double logPrior = logprior_all(par);
+    Rprintf("\nPrior value (log): %.10f\n", logPrior);fflush(stdout);
 
-   /* /\* COMPUTE LIKELIHOOD *\/ */
-   /*  double logLike = loglikelihood_all(dat, dnaInfo, gen, par, rng); */
-   /*  Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike); */
+   /* COMPUTE LIKELIHOOD */
+    double logLike = loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike);
 
-   /*  /\* COMPUTE POSTERIOR *\/ */
-   /*  double logPost = logposterior_all(dat, dnaInfo, gen, par, rng); */
-   /*  Rprintf("\nLog-posterior value: %.10f\n", logPost);fflush(stdout); */
+    /* COMPUTE POSTERIOR */
+    double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    Rprintf("\nLog-posterior value: %.10f\n", logPost);fflush(stdout);
 
-   /*  /\* ALLOCATE AND INITIALIZE MCMC PARAMETERS *\/ */
-   /*  Rprintf("\nBefore check init LL\n");fflush(stdout);fflush(stdout); */
+    /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
+    Rprintf("\nBefore check init LL\n");fflush(stdout);fflush(stdout);
 
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
@@ -114,12 +114,10 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
-      /* fprintf(stderr, "\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n"); */
-      /* fflush(stdout); */
     }
 
-    /* Rprintf("\nAfter check init LL\n");fflush(stdout); */
-    /* Rprintf("\nBefore MCMC\n");fflush(stdout); */
+    Rprintf("\nAfter check init LL\n");fflush(stdout);
+    Rprintf("\nBefore MCMC\n");fflush(stdout);
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
