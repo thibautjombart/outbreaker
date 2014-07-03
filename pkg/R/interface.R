@@ -3,7 +3,7 @@
 ## main functions
 ##################
 outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
-                       mut.model=1, spa.model=1,
+                       mut.model=1, spa.model=0,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
                        dist.mat=NULL, locations=NULL,
@@ -323,7 +323,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 ## version with multiple runs
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
-                                dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
+                                dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
                                 w.dens, w.trunc=length(w.dens),
                                 f.dens=w.dens, f.trunc=length(f.dens),
                                 dist.mat=NULL, locations=NULL,
