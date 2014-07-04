@@ -360,201 +360,203 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
-    double meanInfluence = 0.0;
+  double meanInfluence = 0.0;
+  
+  bool QUIET=TRUE;
 
-    /* OUTPUT TO SCREEN - HEADER */
-    if(!quiet){
-	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi\tspa1\tspa2");
-	for(i=0;i<dat->n;i++){
-	    Rprintf("\tTinf_%d", i+1);
+  /* OUTPUT TO SCREEN - HEADER */
+  if(!quiet){
+    Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi\tspa1\tspa2");
+    for(i=0;i<dat->n;i++){
+      Rprintf("\tTinf_%d", i+1);
+    }
+    for(i=0;i<dat->n;i++){
+      Rprintf("\talpha_%d", i+1);
+    }
+    for(i=0;i<dat->n;i++){
+      Rprintf("\tkappa_%d", i+1);
+    }
+  }
+
+
+  /* CREATE TEMPORARY PARAMETERS */
+  /* ! do not alter 'par' or mcmcPar !*/
+  param *localPar = alloc_param(dat->n), *tempPar = alloc_param(dat->n);
+  copy_param(par,localPar);
+  copy_param(par,tempPar);
+
+  mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
+  copy_mcmc_param(mcmcPar, localMcmcPar);
+
+  /* CREATE TEMPORARY VECTOR STORING "GLOBAL INFLUENCE" OF EACH INDIVIDUALS */
+  /* let LL be the total log-likelihood, LL[-i] the same without observation i */
+  /* and LL(i) the contrib of 'i' to the total log-likelihood */
+  /* Then: */
+  /* GI_i = LL[-i] - LL = -LL(i) */
+  /* See Hens et al. (2012) AJE, Doi: 10.1093/aje/kws006 */
+
+  vec_double *indivInfluence = alloc_vec_double(dat->n);
+
+  /* RUN MCMC */
+  for(i=2;i<=localMcmcPar->find_import_at;i++){
+    /* if(!QUIET) Rprintf("\ni: %d ",i); */
+    /* COLLECT INFORMATION ABOUT ALL GI_i */
+    if(i>=localMcmcPar->burnin && i % outEvery == 0){
+      for(j=0;j<dat->n;j++){
+	/* import method 1: use only genetic log-likelihood */
+	if(par->import_method==1){
+	  indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnaInfo, localPar, rng);
 	}
-	for(i=0;i<dat->n;i++){
-	    Rprintf("\talpha_%d", i+1);
+
+	/* import method 2: use only genetic log-likelihood */
+	if(par->import_method==2){
+	  indivInfluence->values[j] -= loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, localPar, rng);
 	}
-	for(i=0;i<dat->n;i++){
-	    Rprintf("\tkappa_%d", i+1);
-	}
+      }
+      /* DEBUGGING */
+      /* printf("\ninfluence values:\n");fflush(stdout); */
+      /* print_vec_double(indivInfluence); */
+
+      /* printf("\nancestries:\n");fflush(stdout); */
+      /* print_vec_int(par->alpha); */
+
+      /* printf("\nmost recent sequenced ancestors:\n");fflush(stdout); */
+      /* for(j=0;j<dat->n;j++){ */
+      /*   printf("\nancestor of %d: %d",j,find_sequenced_ancestor(j, dat, dnaInfo, par)); */
+      /*   fflush(stdout); */
+      /* } */
+      nbTermsLike++;
     }
 
+    /* TUNING */
+    if(i % tuneEvery == 0){
+      if(localMcmcPar->tune_mu1) tune_mu1(localMcmcPar,rng);
+      if(localMcmcPar->tune_gamma) tune_gamma(localMcmcPar,rng);
+      if(localMcmcPar->tune_pi) tune_pi(localMcmcPar,rng);
+      if(localMcmcPar->tune_phi) tune_phi(localMcmcPar,rng);
+      if(localMcmcPar->tune_spa1) tune_spa1(localMcmcPar,rng);
+      if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng);
 
-    /* CREATE TEMPORARY PARAMETERS */
-    /* ! do not alter 'par' or mcmcPar !*/
-    param *localPar = alloc_param(dat->n), *tempPar = alloc_param(dat->n);
-    copy_param(par,localPar);
-    copy_param(par,tempPar);
+      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi ||  localMcmcPar->tune_phi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
+    }
 
-    mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
-    copy_mcmc_param(mcmcPar, localMcmcPar);
+    /* MOVEMENTS */
+    /* move mutation rates */
+    if(localMcmcPar->move_mut){
+      /* move mu1 */
+      if(!QUIET) Rprintf("\nMoving mu1...");
+      move_mu1(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
+      if(!QUIET) Rprintf(" done!");
 
-    /* CREATE TEMPORARY VECTOR STORING "GLOBAL INFLUENCE" OF EACH INDIVIDUALS */
-    /* let LL be the total log-likelihood, LL[-i] the same without observation i */
-    /* and LL(i) the contrib of 'i' to the total log-likelihood */
-    /* Then: */
-    /* GI_i = LL[-i] - LL = -LL(i) */
-    /* See Hens et al. (2012) AJE, Doi: 10.1093/aje/kws006 */
+      /* move gamma */
+      if(par->mut_model>1){
+	if(!QUIET) Rprintf("\nMoving gamma...");
+	move_gamma(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
+	if(!QUIET) Rprintf(" done!");
+      }
+    }
 
-    vec_double *indivInfluence = alloc_vec_double(dat->n);
+    /* move pi */
+    if(!QUIET) Rprintf("\nMoving gamma...");
+    if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
+    if(!QUIET) Rprintf(" done!");
 
-    /* RUN MCMC */
-    for(i=2;i<=localMcmcPar->find_import_at;i++){
-	printf("\ni: %d ",i);fflush(stdout);
-	/* COLLECT INFORMATION ABOUT ALL GI_i */
-	if(i>=localMcmcPar->burnin && i % outEvery == 0){
-	    for(j=0;j<dat->n;j++){
-		/* import method 1: use only genetic log-likelihood */
-		if(par->import_method==1){
-		    indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnaInfo, localPar, rng);
-		}
+    /* move phi */
+    if(!QUIET) Rprintf("\nMoving gamma...");
+    if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
+    if(!QUIET) Rprintf(" done!");
 
-		/* import method 2: use only genetic log-likelihood */
-		if(par->import_method==2){
-		    indivInfluence->values[j] -= loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, localPar, rng);
-		}
-	    }
-	    /* DEBUGGING */
-	    /* printf("\ninfluence values:\n");fflush(stdout); */
-	    /* print_vec_double(indivInfluence); */
+    /* move dispersal parameters */
+    if(!QUIET) Rprintf("\nMoving spatial param...");
+    if(localMcmcPar->move_spa){
+      /* move spa1 */
+      move_spa1(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
 
-	    /* printf("\nancestries:\n");fflush(stdout); */
-	    /* print_vec_int(par->alpha); */
+      /* move spa2 */
+      if(par->spa_model>2){
+	move_spa2(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
+      }
 
-	    /* printf("\nmost recent sequenced ancestors:\n");fflush(stdout); */
-	    /* for(j=0;j<dat->n;j++){ */
-	    /*   printf("\nancestor of %d: %d",j,find_sequenced_ancestor(j, dat, dnaInfo, par)); */
-	    /*   fflush(stdout); */
-	    /* } */
-	    nbTermsLike++;
-	}
+    }
+    if(!QUIET) Rprintf(" done!");
 
-	/* TUNING */
-	if(i % tuneEvery == 0){
-	  if(localMcmcPar->tune_mu1) tune_mu1(localMcmcPar,rng);
-	  if(localMcmcPar->tune_gamma) tune_gamma(localMcmcPar,rng);
-	  if(localMcmcPar->tune_pi) tune_pi(localMcmcPar,rng);
-	  if(localMcmcPar->tune_phi) tune_phi(localMcmcPar,rng);
-	  if(localMcmcPar->tune_spa1) tune_spa1(localMcmcPar,rng);
-	  if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng);
+    /* move Tinf, kappa_i and alpha_i alltogether */
+    if(!QUIET) Rprintf("\nMoving Tinf alpha kappa...");
+    move_Tinf_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+    if(!QUIET) Rprintf(" done!");
 
-	    localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi ||  localMcmcPar->tune_phi || localMcmcPar->tune_spa1 || localMcmcPar->tune_spa2;
-	}
+    /* move Tinf */
+    if(!QUIET) Rprintf("\nMoving Tinf ...");
+    if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+    if(!QUIET) Rprintf(" done!");
 
-	/* MOVEMENTS */
-	/* move mutation rates */
-	if(localMcmcPar->move_mut){
-	  /* move mu1 */
-	  Rprintf("\nMoving mu1...");
-	  move_mu1(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
-	  Rprintf(" done!");
+    /* swap ancestries */
+    if(!QUIET) Rprintf("\nSwapping ancestries ...");
+    swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+    if(!QUIET) Rprintf(" done!");
 
-	  /* move gamma */
-	  if(par->mut_model>1){
-	    Rprintf("\nMoving gamma...");
-	    move_gamma(localPar, tempPar, dat, dnaInfo, localMcmcPar, rng);
-	    Rprintf(" done!");
-	  }
-	}
-
-	/* move pi */
-	Rprintf("\nMoving gamma...");
-	if(localMcmcPar->move_pi) move_pi(localPar, tempPar, dat, localMcmcPar, rng);
-	Rprintf(" done!");
-
-	/* move phi */
-	Rprintf("\nMoving gamma...");
-	if(localMcmcPar->move_phi) move_phi(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
-	Rprintf(" done!");
-
-	/* move dispersal parameters */
-	Rprintf("\nMoving spatial param...");
-	if(localMcmcPar->move_spa){
-	  /* move spa1 */
-	  move_spa1(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
-
-	  /* move spa2 */
-	  if(par->spa_model>2){
-	    move_spa2(localPar, tempPar, dat, spaInfo, localMcmcPar, rng);
-	  }
-
-	}
-	Rprintf(" done!");
-
-	/* move Tinf, kappa_i and alpha_i alltogether */
-	Rprintf("\nMoving Tinf alpha kappa...");
-	move_Tinf_alpha_kappa(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
-	Rprintf(" done!");
-
-	/* move Tinf */
-	Rprintf("\nMoving Tinf ...");
-	if(localMcmcPar->move_Tinf) move_Tinf(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
-	Rprintf(" done!");
-
-	/* swap ancestries */
-	Rprintf("\nSwapping ancestries ...");
-	swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
-	Rprintf(" done!");
-
-    } /* end of MCMC */
+  } /* end of MCMC */
 
 
     /* FIND IMPORTED CASES */
     /* compute average GI_i for each individual */
     /* also compute mean influence across sequenced individuals */
-    meanInfluence = 0.0;
-    nbCasesWithInfluence = 0;
+  meanInfluence = 0.0;
+  nbCasesWithInfluence = 0;
+  for(j=0;j<dat->n;j++){
+    /* influence for individuals */
+    indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
+
+    /* average influence across individuals */
+
+    /* method 1: only cases with a genetic sequence are taken into account */
+    if(par->import_method==1){
+      if(vec_int_i(dat->idxCasesInDna, j)>=0) {
+	meanInfluence += indivInfluence->values[j];
+	nbCasesWithInfluence++;
+      }
+    }
+    /* method 2: all cases contribute */
+    if(par->import_method==2){
+      meanInfluence += indivInfluence->values[j];
+      nbCasesWithInfluence++;
+    }
+  }
+
+  /* mean influence*/
+  meanInfluence = meanInfluence/nbCasesWithInfluence;
+
+
+  /* meanInfluence = mean_vec_double(indivInfluence); */
+  Rprintf("\nAverage influence: %f\n", meanInfluence);
+  Rprintf("\nIndividual influences:\n");
+  print_vec_double(indivInfluence);
+  Rprintf("\nThreshold (x%d) for outlier classification: influence > %.5f\n", (int) par->outlier_threshold, par->outlier_threshold*meanInfluence);
+
+  /* browse global influences and define outliers */
+  /* (only if at least 5 cases have a computable influence) */
+  /* printf("\n\nLooking for outliers...\n"); */
+  if(nbCasesWithInfluence>4){
     for(j=0;j<dat->n;j++){
-      /* influence for individuals */
-      indivInfluence->values[j] = vec_double_i(indivInfluence,j)/((double) nbTermsLike);
-
-      /* average influence across individuals */
-
-      /* method 1: only cases with a genetic sequence are taken into account */
-      if(par->import_method==1){
-	  if(vec_int_i(dat->idxCasesInDna, j)>=0) {
-	      meanInfluence += indivInfluence->values[j];
-	      nbCasesWithInfluence++;
-	  }
+      /* outliers = GI_i xxx times larger than the mean */
+      /* ('xxx' defined in par) */
+      /* if((medLogLike - vec_double_i(indivInfluence,j)) > log(par->outlier_threshold)){ */
+      if(vec_double_i(indivInfluence,j) > (par->outlier_threshold * meanInfluence)){
+	areOutliers->values[j] = 1;
+	Rprintf("\nIndividual %d identified as imported case\n",j+1);
+      } else {
+	areOutliers->values[j] = 0;
       }
-      /* method 2: all cases contribute */
-      if(par->import_method==2){
-	  meanInfluence += indivInfluence->values[j];
-	  nbCasesWithInfluence++;
-      }
-    }
+    } /* end setting outliers */
+  } else {
+    Rprintf("\nLess than 5 cases have a genetic sequence - aborting outlier detection");
+  }
 
-    /* mean influence*/
-    meanInfluence = meanInfluence/nbCasesWithInfluence;
-
-
-    /* meanInfluence = mean_vec_double(indivInfluence); */
-    Rprintf("\nAverage influence: %f\n", meanInfluence);
-    Rprintf("\nIndividual influences:\n");
-    print_vec_double(indivInfluence);
-    Rprintf("\nThreshold (x%d) for outlier classification: influence > %.5f\n", (int) par->outlier_threshold, par->outlier_threshold*meanInfluence);
-
-    /* browse global influences and define outliers */
-    /* (only if at least 5 cases have a computable influence) */
-    /* printf("\n\nLooking for outliers...\n"); */
-    if(nbCasesWithInfluence>4){
-      for(j=0;j<dat->n;j++){
-	/* outliers = GI_i xxx times larger than the mean */
-	/* ('xxx' defined in par) */
-	/* if((medLogLike - vec_double_i(indivInfluence,j)) > log(par->outlier_threshold)){ */
-	if(vec_double_i(indivInfluence,j) > (par->outlier_threshold * meanInfluence)){
-	  areOutliers->values[j] = 1;
-	  Rprintf("\nIndividual %d identified as imported case\n",j+1);
-	} else {
-	  areOutliers->values[j] = 0;
-	}
-      } /* end setting outliers */
-    } else {
-      Rprintf("\nLess than 5 cases have a genetic sequence - aborting outlier detection");
-    }
-
-    /* FREE TEMPORARY PARAMETERS */
-    free_param(localPar);
-    free_param(tempPar);
-    free_mcmc_param(localMcmcPar);
-    free_vec_double(indivInfluence);
+  /* FREE TEMPORARY PARAMETERS */
+  free_param(localPar);
+  free_param(tempPar);
+  free_mcmc_param(localMcmcPar);
+  free_vec_double(indivInfluence);
 } /* end mcmc_find_import */
 
 
