@@ -1,4 +1,6 @@
 
+
+rm(list=ls())
 library(outbreaker)
 set.seed(2)
 
@@ -40,7 +42,7 @@ plotChains(res, burn=1e4)
 
 
 par(mfrow=c(5,6))
-#for(i in 1:30) plotChains(res, what=paste("Tinf",i,sep="_"))
+for(i in 1:30) plotChains(res, what=paste("Tinf",i,sep="_"))
 for(i in 1:30) plotChains(res, what=paste("alpha",i,sep="_"))
 
 temp1 <- dat$ances

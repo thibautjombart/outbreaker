@@ -743,7 +743,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
       /* SWAP ONLY IF: A AND B CAN MOVE, AND A ISN'T IMPORTED */
       /* i.e., A>-1 && x>-1 */
-      if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && vec_double_i(mcmcPar->move_alpha, B)>0.0 && x>-1 && A>-1){
+      if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && vec_double_i(mcmcPar->move_alpha, B)>0.0 && x>-1){
 
 	/* SWAP ANCESTRIES */
 	tempPar->alpha->values[A] = B; /* (x->A) changes to (B->A) */
