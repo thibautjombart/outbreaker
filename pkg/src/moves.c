@@ -376,34 +376,17 @@ void move_phi(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInf
 
 /* MOVE VALUES OF SPA_PARAM1 */
 void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng){
-    double logRatio=0.0;
+  double logRatio=0.0;
 
-    /* MOVEMENTS AND CORRECTIONS ARE MODEL-DEPENDENT*/
-   /* switch across models */
-    switch(currentPar->spa_model){
-	/* NULL MODEL - NO SPATIAL INFO */
-	/* no movement */
-    case 0:
-	tempPar->spa_param1 = currentPar->spa_param1;
-	break;
+  /* MOVEMENTS AND CORRECTIONS ARE MODEL-DEPENDENT*/
+  /* spatial model 0: no spatial info */
+  if(currentPar->spa_model == 0) return;
 
-	/* MODEL 1: exponential */
-	/* use log-normal proposal */
-    case 1:
-	tempPar->spa_param1 = gsl_ran_lognormal(rng, log(currentPar->spa_param1), mcmcPar->sigma_spa1);
-	break;
+  /* spatial model 1: exponential diffusion */
+  if(currentPar->spa_model == 1){
+    /* propose new value */
 
-	/* MODEL 2 */
-	/* stratified dispersal; spa1 is the same as model 1 */
-    case 2:
-	tempPar->spa_param1 = gsl_ran_lognormal(rng, log(currentPar->spa_param1), mcmcPar->sigma_spa1);
-	break;
-
-	/* DEFAULT */
-    default:
-	break;
-    }
-
+    tempPar->spa_param1 = gsl_ran_lognormal(rng, log(currentPar->spa_param1), mcmcPar->sigma_spa1);
     /* ACCEPT / REJECT */
     /* compute only spatial part of likelihood as the rest is unchanged */
     logRatio += loglikelihood_spa_all(dat, spaInfo, tempPar, rng);
@@ -411,7 +394,7 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
 
     /* add correction (MH) for lognormal proposal if needed */
     if(currentPar->spa_model>0){
-	logRatio += log(tempPar->spa_param1) - log(currentPar->spa_param1);
+      logRatio += log(tempPar->spa_param1) - log(currentPar->spa_param1);
     }
 
     /* compute the priors */
@@ -420,81 +403,19 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
+      currentPar->spa_param1 = tempPar->spa_param1;
+      mcmcPar->n_accept_spa1 += 1;
+    } else { /* else accept new with proba (new/old) */
+      if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 	currentPar->spa_param1 = tempPar->spa_param1;
 	mcmcPar->n_accept_spa1 += 1;
-    } else { /* else accept new with proba (new/old) */
-	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-	    currentPar->spa_param1 = tempPar->spa_param1;
-	    mcmcPar->n_accept_spa1 += 1;
-	} else { /* reject */
-	    tempPar->spa_param1 = currentPar->spa_param1;
-	    mcmcPar->n_reject_spa1 += 1;
-	}
+      } else { /* reject */
+	tempPar->spa_param1 = currentPar->spa_param1;
+	mcmcPar->n_reject_spa1 += 1;
+      }
     }
+  }
 } /* end move_spa1 */
-
-
-
-
-
-
-/* MOVE VALUES OF SPA_PARAM1 */
-void move_spa2(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng){
-    double logRatio=0.0;
-
-    /* MOVEMENTS AND CORRECTIONS ARE MODEL-DEPENDENT*/
-   /* switch across models */
-    switch(currentPar->spa_model){
-	/* NULL MODEL - NO SPATIAL INFO */
-	/* no movement */
-    case 0:
-	tempPar->spa_param1 = currentPar->spa_param1;
-	break;
-
-	/* MODEL 1: exponential - no spa2 */
-	/* use log-normal proposal */
-    case 1:
-	tempPar->spa_param1 = currentPar->spa_param1;
-	break;
-
-	/* MODEL 2 */
-	/*  stratified dispersal; spa1 is the same as model 1 */
-    case 2:
-	tempPar->spa_param1 = currentPar->spa_param1;
-	break;
-
-	/* DEFAULT */
-    default:
-	break;
-    }
-
-    /* ACCEPT / REJECT */
-    /* compute only spatial part of likelihood as the rest is unchanged */
-    logRatio += loglikelihood_spa_all(dat, spaInfo, tempPar, rng);
-    logRatio -= loglikelihood_spa_all(dat, spaInfo, currentPar, rng);
-
-    /* compute the priors */
-    logRatio += logprior_spa2(tempPar);
-    logRatio -= logprior_spa2(currentPar);
-
-    /* if p(new/old) > 1, accept new */
-    if(logRatio>=0.0) {
-	currentPar->spa_param1 = tempPar->spa_param1;
-	mcmcPar->n_accept_spa2 += 1;
-    } else { /* else accept new with proba (new/old) */
-	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-	    currentPar->spa_param1 = tempPar->spa_param1;
-	    mcmcPar->n_accept_spa2 += 1;
-	} else { /* reject */
-	    tempPar->spa_param1 = currentPar->spa_param1;
-	    mcmcPar->n_reject_spa2 += 1;
-	}
-    }
-} /* end move_spa2 */
-
-
-
-
 
 
 
