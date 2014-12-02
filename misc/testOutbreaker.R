@@ -1,10 +1,10 @@
 
 library(outbreaker)
-set.seed(2)
+set.seed(1)
 
 ## TEST USING TOYOUTBREAK ##
-data(toyOutbreak)
-attach(toyOutbreak)
+data(fakeOutbreak)
+attach(fakeOutbreak)
 plot(dat)
 
 ## dat=dat[1:3]
@@ -34,12 +34,12 @@ plot(dat)
 ##     dev.off()
 ## }
 
-res <-  outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5, find.import=TRUE)
+res <-  outbreaker.parallel(n.runs=4, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, find.import=TRUE, spa.model=0)
 plotChains(res)
 
 
 par(mfrow=c(5,6))
-for(i in 1:30) plotChains(res, what=paste("Tinf",i,sep="_"))
+#for(i in 1:30) plotChains(res, what=paste("Tinf",i,sep="_"))
 for(i in 1:30) plotChains(res, what=paste("alpha",i,sep="_"))
 
 temp1 <- dat$ances
