@@ -259,7 +259,6 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
 	}
       }
       break;
-!
 	/* DEFAULT */
     default:
 	break;
