@@ -294,11 +294,15 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
 	/* printf("\nLooking for spa like for %d\n", i);fflush(stdout); */
 	ances = vec_int_i(par->alpha, i);
 	if(ances>=0){ /* only if not imported case */
-	    /* printf("\nancestor: %d\n", ances);fflush(stdout); */
-	    Dij = get_spatial_dist(spaInfo, ances, i);
+	  /* printf("\nancestor: %d\n", ances);fflush(stdout); */
+	  Dij = get_spatial_dist(spaInfo, ances, i);
+	  if(Dij < 0 || par->spa_param1<0) { /* fool-proof */
+	    out = NEARMINUSINF;
+	  } else {
 	    /* printf("\nDistance: %.5f\n", Dij);fflush(stdout); */
 	    out = log(gsl_ran_exponential_pdf(Dij, par->spa_param1));
 	    /* printf("\nLog-like: %.5f\n", out);fflush(stdout); */
+	  }
 	}
 	break;
 
