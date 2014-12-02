@@ -149,7 +149,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     /* = EXTERNAL CASES = */
     if(ances < 0){
       /* PROBA OF SAMPLING TIME */
-      if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){
+      if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){ /* fool proof */
 	out += NEARMINUSINF;
       } else {
 	out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
@@ -160,9 +160,6 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
 
       /* PROBA OF INFECTION TIME (UNIFORM OVER TIMESPAN) */
       out -= log((double) dat->timespan);
-
-      /* /\* SIMULATED GENETIC PROBA *\/ */
-      /* out += sim_loglike_gen(dat, par, rng); */
 
       /* FILTER AND RETURN */
       filter_logprob(&out);
@@ -177,7 +174,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
 
     /* EPIDEMIOLOGICAL LIKELIHOOD */
     /* LIKELIHOOD OF COLLECTION DATE */
-    if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){
+    if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){ /* fool proof */
       out += NEARMINUSINF;
     } else {
       out += log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
@@ -185,14 +182,14 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
 
     /* LIKELIHOOD OF INFECTION TIME */
     /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
-    if(vec_int_i(par->Tinf,i) <= vec_int_i(par->Tinf,ances)){
+    if(vec_int_i(par->Tinf,i) <= vec_int_i(par->Tinf,ances)){ /* fool proof */
       out += NEARMINUSINF;
     } else {
       out += log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
     }
 
     /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
-    if(vec_int_i(par->kappa,i)<1 || par->pi<=0 || par->pi >1){
+    if(vec_int_i(par->kappa,i)<1 || par->pi<=0 || par->pi >1){ /* fool proof */
       out += NEARMINUSINF;
     } else {
       out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
@@ -239,23 +236,30 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
     switch(par->mut_model){
 	/* MODEL 1: only one type of mutations */
     case 1:
-	if(com_nucl_ij(i, ances, dat, dnaInfo)>0){
-	    /* out += log(gsl_ran_poisson_pdf_fixed((unsigned int) mutation1_ij(i, ances, dat, dnaInfo), (double) com_nucl_ij(i, ances, dat, dnaInfo) * (double) par->kappa_temp * par->mu1)); */
-	    out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
+      if(com_nucl_ij(i, ances, dat, dnaInfo)>0){
+	if(mutation1_ij(i, ances, dat, dnaInfo)<0 || par->kappa_temp<0 || par->mu1<0 || par->mu1 >1){ /* fool proof */
+	  out += NEARMINUSINF;
+	} else {
+	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
 	}
-	break;
+      }
+      break;
 
   /* MODEL 2: transitions and transversions */
     case 2:
-	if(com_nucl_ij(i, ances, dat, dnaInfo)>0){
-	    /* transitions */
-	    out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
+      if(com_nucl_ij(i, ances, dat, dnaInfo)>0){
+	if(mutation1_ij(i, ances, dat, dnaInfo)<0 || mutation2_ij(i, ances, dat, dnaInfo)<0 || par->kappa_temp<0 || par->mu1<0 || par->mu1 >1 || par->gamma<0){ /* fool proof */
+	  out += NEARMINUSINF;
+	} else {
+	  /* transitions */
+	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
 
-	    /* transversions */
-	    out += log(proba_mut(mutation2_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp,  par->gamma * par->mu1));
+	  /* transversions */
+	  out += log(proba_mut(mutation2_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp,  par->gamma * par->mu1));
 	}
-	break;
-
+      }
+      break;
+!
 	/* DEFAULT */
     default:
 	break;
