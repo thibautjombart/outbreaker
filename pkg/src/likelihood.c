@@ -192,7 +192,11 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     }
 
     /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
-    out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
+    if(vec_int_i(par->kappa,i)<1 || par->pi<=0 || par->pi >1){
+      out += NEARMINUSINF;
+    } else {
+      out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
+    }
 
     /* SPATIAL LIKELIHOOD */
     out += loglikelihood_spa_i(i, dat, spaInfo, par, rng);
