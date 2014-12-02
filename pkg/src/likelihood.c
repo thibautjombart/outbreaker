@@ -332,7 +332,7 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
     default:
 	break;
     }
- 
+
     /* RETURN */
     filter_logprob(&out);
 
@@ -409,7 +409,11 @@ double loglike_kappa_all(param *par){
     double out = 0.0;
     int i;
     for(i=0;i<par->n;i++){
+      if(vec_int_i(par->kappa,i)<1){ /* fool-proof */
+	out += NEARMINUSINF;
+      } else {
 	out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
+      }
     }
     filter_logprob(&out);
     return out;
@@ -433,7 +437,7 @@ double loglikelihood_local_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *
 
     for(j=0;j<dat->n;j++){
 	/* likelihoods of i's descendents */
-	if(vec_int_i(par->alpha, j)==i) out += loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, par, rng);
+	if(i!=j && vec_int_i(par->alpha, j)==i) out += loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, par, rng);
     }
 
     filter_logprob(&out);
