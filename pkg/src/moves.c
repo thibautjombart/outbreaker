@@ -741,9 +741,9 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
     if(A>-1){
       x = vec_int_i(currentPar->alpha, A);
 
-      /* SWAP ONLY IF: A AND B CAN MOVE, AND A ISN'T NOT IMPORTED */
+      /* SWAP ONLY IF: A AND B CAN MOVE, AND A ISN'T IMPORTED */
       /* i.e., A>-1 && x>-1 */
-      if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && vec_double_i(mcmcPar->move_alpha, B)>0.0 && x>-1){
+      if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && vec_double_i(mcmcPar->move_alpha, B)>0.0 && x>-1 && A>-1){
 
 	/* SWAP ANCESTRIES */
 	tempPar->alpha->values[A] = B; /* (x->A) changes to (B->A) */
@@ -754,10 +754,11 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	tempPar->Tinf->values[B] = vec_int_i(currentPar->Tinf,A);
 
 	/* ALL DESCENDENTS OF B BECOME DESCENDENTS OF A */
+	/* ALL DESCENDENTS OF A BECOME DESCENDENTS OF B */
 	for(j=0;j<dat->n;j++){
 	  /* if case 'j' can move... */
 	  if(vec_double_i(mcmcPar->move_alpha, j)>0.0){
-	    /* ...and was descendent of B, it becomes descendent of A */
+	    /* if this case was descendent of B, it becomes descendent of A */
 	    if(j!=A && vec_int_i(currentPar->alpha, j)==B){
 	      tempPar->alpha->values[j] = A;
 	      /* /\* DEBUGGING *\/ */
@@ -790,10 +791,15 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	/* ACCEPT/REJECT STEP */
 	/* compute the likelihood ratio */
 	/* logRatio = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
-	logRatio = loglikelihood_local_i(A, dat, dnaInfo, spaInfo, gen, tempPar, rng) + 
-	  loglikelihood_local_i(B, dat, dnaInfo, spaInfo, gen, tempPar, rng) - 
-	  loglikelihood_local_i(A, dat, dnaInfo, spaInfo, gen, currentPar, rng) - 
-	  loglikelihood_local_i(B, dat, dnaInfo, spaInfo, gen, currentPar, rng);
+	/* need to be careful with local likelihood: */
+	/* in 'current' config, LL(B) is counted twice as because of A->B */
+	/* in 'temp' config, LL(A) is counted twice as because of B->A */
+	logRatio = loglikelihood_local_i(A, dat, dnaInfo, spaInfo, gen, tempPar, rng) +
+	  loglikelihood_local_i(B, dat, dnaInfo, spaInfo, gen, tempPar, rng) -
+	  loglikelihood_local_i(A, dat, dnaInfo, spaInfo, gen, currentPar, rng) -
+	  loglikelihood_local_i(B, dat, dnaInfo, spaInfo, gen, currentPar, rng) -
+	  loglikelihood_i(A, dat, dnaInfo, spaInfo, gen, tempPar, rng) +
+	  loglikelihood_i(B, dat, dnaInfo, spaInfo, gen, currentPar, rng);
 	/* ll2 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng); */
 	/* ll1 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
 	/* logRatio = ll2 - ll1; */
