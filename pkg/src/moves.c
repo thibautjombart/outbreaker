@@ -514,15 +514,13 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	firstImported = find_date_first_import(dat, currentPar);
 
 	/* move i-th Tinf */
-	/* nbDays = 1+gsl_ran_poisson(rng, 1); */
-	/* tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); */
-	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1.0 : -1.0) * gsl_ran_poisson(rng, 1);
+	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1);
 
-	/* constraint: Tinf_i < t_i */
-	if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
+	/* /\* constraint: Tinf_i < t_i *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
 
-	/* constraint: Tinf_i > first imported */
-	if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1;
+	/* /\* constraint: Tinf_i > first imported *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1; */
       }
 
 
@@ -630,12 +628,12 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
 	/* } */
 
+	currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 	currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 	currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-	currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 	mcmcPar->n_accept_Tinf += 1;
-	mcmcPar->n_accept_kappa += 1;
 	mcmcPar->n_accept_alpha += 1;
+	mcmcPar->n_accept_kappa += 1;
       } else { /* else accept new with proba (new/old) */
 	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 	  /* /\* DEBUGGING *\/ */
@@ -670,19 +668,19 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	  /* /\* debugging *\/ */
 	  /* printf("\naccepting move from %d->%d to %d->%d (respective loglike:%f and %f)\n",vec_int_i(currentPar->alpha,toMove), toMove+1, vec_int_i(tempPar->alpha,toMove), toMove+1, ll1, ll2); */
 	  /* fflush(stdout); */
+	  currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 	  currentPar->alpha->values[toMove] = vec_int_i(tempPar->alpha,toMove);
 	  currentPar->kappa->values[toMove] = vec_int_i(tempPar->kappa,toMove);
-	  currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 	  mcmcPar->n_accept_Tinf += 1;
-	  mcmcPar->n_accept_kappa += 1;
 	  mcmcPar->n_accept_alpha += 1;
+	  mcmcPar->n_accept_kappa += 1;
 	} else { /* reject */
 	  tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
-	  tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove);
 	  tempPar->alpha->values[toMove] = vec_int_i(currentPar->alpha,toMove);
+	  tempPar->kappa->values[toMove] = vec_int_i(currentPar->kappa,toMove);
 	  mcmcPar->n_reject_Tinf += 1;
-	  mcmcPar->n_reject_kappa += 1;
 	  mcmcPar->n_reject_alpha += 1;
+	  mcmcPar->n_reject_kappa += 1;
 	}
       } /* end  ACCEPT/REJECT STEP */
     } /* end if ances > -1 */
