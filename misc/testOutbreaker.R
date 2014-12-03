@@ -36,7 +36,8 @@ plot(dat)
 ##     dev.off()
 ## }
 
-res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=2e6, find.import=TRUE, spa.model=0, init.tree="star")
+res <-  outbreaker.parallel(n.runs=3, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e6, find.import=TRUE, spa.model=0, init.tree="star")
+##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=3e6, find.import=TRUE, spa.model=0, init.tree="star")
 plotChains(res)
 plotChains(res, burn=1e4)
 
@@ -103,7 +104,7 @@ dat <- simOutbreak(R0 = 1.5, infec.curve = w, n.hosts = 100, spatial=TRUE)[1:35]
 collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
 D <- as.matrix(dist(dat$xy))
 
-res <-  outbreaker.parallel(6,dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5e4, spa.model=1, find.import=FALSE)
+res <-  outbreaker.parallel(3,dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5e4, spa.model=1, find.import=FALSE)
 plotChains(res)
 
 temp1 <- dat$ances
