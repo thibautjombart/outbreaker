@@ -424,12 +424,14 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
 void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
     double logRatio=0.0;
     int i, toMove = 0;
+    /* bool pb=FALSE; */
 
     /* DETERMINE WHICH Tinf_i TO MOVE */
     sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_Tinf, FALSE, rng);
 
     /* MOVE EACH Tinf_i IN TURN */
     for(i=0;i<mcmcPar->idx_move_Tinf->length;i++){
+      pb = FALSE;
 	toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
 
 	/* move i-th Tinf */
@@ -437,9 +439,15 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 
 	/* MAY NEED TO CHANGE THIS AND ADD CORRECTION */
 	/* constraint: Tinf_i < t_i */
-	if(!vec_int_i(tempPar->Tinf,toMove) < vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
-	/* constraint: Tinf_i >= -truncW */
-	if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW;
+	if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) {
+	  /* Rprintf("\n\nmoving Tinf for case %d, sampled at %d", toMove, vec_int_i(dat->dates,toMove)); */
+	  /* Rprintf("\nProposed: %d -> %d    - would have changed to %d -> %d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], currentPar->Tinf->values[toMove], vec_int_i(dat->dates,toMove)-1); */
+	  /* pb=TRUE; */
+	  /* tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
+	}
+
+	/* /\* constraint: Tinf_i >= -truncW *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW; */
 
 	/* PROCEED TO ACCEPT/REJECT ONLY IF TINF HAS CHANGED */
 	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
@@ -454,13 +462,22 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 	    if(logRatio>=0.0) {
 		/* printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
 		/* fflush(stdout); */
-
+	      if(pb){
+		Rprintf("\n!Fuckup!\n");
+		Rprintf("\nAccepted Tinf = %d -> %d for case %d: ances=%d, Tinf ances=%d, ti=%d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], toMove, currentPar->alpha->values[toMove], currentPar->Tinf->values[currentPar->alpha->values[toMove]], vec_int_i(dat->dates,toMove));
+	      }
 		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		mcmcPar->n_accept_Tinf += 1;
 	    } else { /* else accept new with proba (new/old) */
 		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 		/*     printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
 		/* fflush(stdout); */
+		  if(pb){
+		    Rprintf("\n\n!Fuckup!");
+		    Rprintf("\nAccepted Tinf = %d -> %d for case %d: ances=%d, Tinf ances=%d, ti=%d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], toMove, currentPar->alpha->values[toMove], currentPar->Tinf->values[currentPar->alpha->values[toMove]], vec_int_i(dat->dates,toMove));
+		  }
+		  currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+		  mcmcPar->n_accept_Tinf += 1;
 
 		    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		    mcmcPar->n_accept_Tinf += 1;
@@ -516,11 +533,11 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* move i-th Tinf */
 	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * gsl_ran_poisson(rng, 1);
 
-	/* constraint: Tinf_i < t_i */
-	if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
+	/* /\* constraint: Tinf_i < t_i *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
 
-	/* constraint: Tinf_i > first imported */
-	if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1;
+	/* /\* constraint: Tinf_i > first imported *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1; */
       }
 
 
