@@ -728,6 +728,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* swap ancestries */
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
+	/* check timing of elements of the tree */
+	if(!check_timing_all(dat, par)) Rprintf("\n!! error in iteration %d",i);
     } /* end of mcmc */
 
 
