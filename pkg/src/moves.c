@@ -431,7 +431,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 
     /* MOVE EACH Tinf_i IN TURN */
     for(i=0;i<mcmcPar->idx_move_Tinf->length;i++){
-      pb = FALSE;
+      /* pb = FALSE; */
 	toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
 
 	/* move i-th Tinf */
@@ -462,20 +462,20 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 	    if(logRatio>=0.0) {
 		/* printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
 		/* fflush(stdout); */
-	      if(pb){
-		Rprintf("\n!Fuckup!\n");
-		Rprintf("\nAccepted Tinf = %d -> %d for case %d: ances=%d, Tinf ances=%d, ti=%d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], toMove, currentPar->alpha->values[toMove], currentPar->Tinf->values[currentPar->alpha->values[toMove]], vec_int_i(dat->dates,toMove));
-	      }
+	      /* if(pb){ */
+	      /* 	Rprintf("\n!Fuckup!\n"); */
+	      /* 	Rprintf("\nAccepted Tinf = %d -> %d for case %d: ances=%d, Tinf ances=%d, ti=%d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], toMove, currentPar->alpha->values[toMove], currentPar->Tinf->values[currentPar->alpha->values[toMove]], vec_int_i(dat->dates,toMove)); */
+	      /* } */
 		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		mcmcPar->n_accept_Tinf += 1;
 	    } else { /* else accept new with proba (new/old) */
 		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 		/*     printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
 		/* fflush(stdout); */
-		  if(pb){
-		    Rprintf("\n\n!Fuckup!");
-		    Rprintf("\nAccepted Tinf = %d -> %d for case %d: ances=%d, Tinf ances=%d, ti=%d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], toMove, currentPar->alpha->values[toMove], currentPar->Tinf->values[currentPar->alpha->values[toMove]], vec_int_i(dat->dates,toMove));
-		  }
+		  /* if(pb){ */
+		  /*   Rprintf("\n\n!Fuckup!"); */
+		  /*   Rprintf("\nAccepted Tinf = %d -> %d for case %d: ances=%d, Tinf ances=%d, ti=%d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], toMove, currentPar->alpha->values[toMove], currentPar->Tinf->values[currentPar->alpha->values[toMove]], vec_int_i(dat->dates,toMove)); */
+		  /* } */
 		  currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		  mcmcPar->n_accept_Tinf += 1;
 
