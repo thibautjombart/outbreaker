@@ -558,6 +558,34 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo
 
 
 
+/* CHECK TIMING FOR ALL INDIVIDUALS */
+/* returns TRUE if all is fine, FALSE if there is a timing problem */
+bool check_timing_all(data *dat, param *par){
+    int i, ances;
+    double temp;
+    bool allgood=TRUE;
+
+    for(i=0;i<dat->n;i++){
+      ances = vec_int_i(par->alpha, i);
+      if(ances>-1){
+	/* check that Tinf_i > Tinf_alpha.i */
+	if(!vec_int_i(par->Tinf, i) > vec_int_i(par->Tinf, ances)){
+	  allgood = FALSE;
+	  Rprintf("\nTiming problem: %d (Tinf:%d) -> %d (Tinf:%d)", ances, vec_int_i(par->Tinf, ances), i, vec_int_i(par->Tinf, i));
+	}
+
+	/* check that t_i > Tinf_i */
+	if(!vec_int_i(dat->dates, i) > vec_int_i(par->Tinf, i)){
+	  allgood = FALSE;
+	  Rprintf("\nTiming problem, case %d: Tinf=%d, sample date=%d", i, vec_int_i(par->Tinf, i), vec_int_i(dat->dates, i));
+	}
+      }
+    }
+
+    return allgood;
+} /* end check_loglikelihood_all */
+
+
 
 
 /*

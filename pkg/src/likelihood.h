@@ -50,4 +50,6 @@ double sim_loglike_gen(data *dat, param *par, gsl_rng *rng);
 
 bool check_loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, gsl_rng *rng);
 
+bool check_timing_all(data *dat, param *par);
+
 #endif
