@@ -402,7 +402,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   for(i=2;i<=localMcmcPar->find_import_at;i++){
     /* if(!QUIET) Rprintf("\ni: %d ",i); */
     /* COLLECT INFORMATION ABOUT ALL GI_i */
-    if(i>=localMcmcPar->burnin && i % outEvery == 0){
+    if((i>=localMcmcPar->burnin) && (i % outEvery == 0)){
       for(j=0;j<dat->n;j++){
 	/* import method 1: use only genetic log-likelihood */
 	if(par->import_method==1){
@@ -668,7 +668,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
 
 	/* TUNING */
-	if(i % tuneEvery == 0 && mcmcPar->tune_any){
+	if((i % tuneEvery == 0) && (mcmcPar->tune_any)){
 	  if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
 	  if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
 	  if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
