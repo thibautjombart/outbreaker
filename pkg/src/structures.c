@@ -428,7 +428,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->sigma_phi = 0.0;
     out->sigma_spa1 = 0.0;
     out->sigma_spa2 = 0.0;
-    out->lambda_Tinf = 0.0;
+    out->sigma_Tinf = 0.0;
 
 
     /* RETURN */
@@ -460,7 +460,7 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\nsigma for phi: %.10f",in->sigma_phi);
     Rprintf("\nsigma for spa1: %.10f",in->sigma_spa1);
     Rprintf("\nsigma for spa2: %.10f",in->sigma_spa2);
-    Rprintf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
+    Rprintf("\nsigma for Tinf: %.10f",in->sigma_Tinf);
     Rprintf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     Rprintf("\nnb moves for alpha: %d",in->n_move_alpha);
     Rprintf("\nnb moves for kappa: %d",in->n_move_kappa);
@@ -564,7 +564,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
 
     out->sigma_mu1 = in->sigma_mu1;
     out->sigma_gamma = in->sigma_gamma;
-    out->lambda_Tinf = in->lambda_Tinf;
+    out->sigma_Tinf = in->sigma_Tinf;
     out->sigma_pi = in->sigma_pi;
     out->sigma_spa1 = in->sigma_spa1;
     out->sigma_spa2 = in->sigma_spa2;

@@ -90,6 +90,7 @@ typedef struct{
     double sigma_pi; /* sigma for normal proposal for pi */
     double sigma_phi; /* sigma for normal proposal for phi */
     double sigma_spa1, sigma_spa2; /* sigma for proposal for spa1 and spa2 */
+    double sigma_Tinf; /* sigma for proposal for Tinf */
     vec_int *idx_move_Tinf; /* vector of length n_move_Tinf giving indices of Tinf_i to move */
     vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
     vec_int *idx_move_kappa; /* vector of length n_move_kappa giving indices of kappa_i to move */
@@ -98,7 +99,7 @@ typedef struct{
     vec_double *candid_ances_proba; /* vector of proba for candidate ancestors, used to move alpha_i */
     /* double Pmove_alpha_old, Pmove_alpha_new; /\* used for accept ratio when moving alpha_i *\/ */
     int n_like_zero; /* number of times likelihood was zero */
-    bool tune_any, tune_mu1, tune_gamma, tune_pi, tune_phi, tune_spa1, tune_spa2; /* logical indicating whether these proposals should be tuned */
+    bool tune_any, tune_mu1, tune_gamma, tune_pi, tune_phi, tune_spa1, tune_spa2, tune_Tinf; /* logical indicating whether these proposals should be tuned */
     int step_notune; /* step at which all tuning stopped */
     bool move_mut, move_Tinf, move_pi, move_phi, move_spa; /* logical indicating what parameter should be moved */
     vec_double * move_alpha; /* vector indicating which alpha_i to move (1.0) or not (0.0) */

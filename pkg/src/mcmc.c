@@ -279,29 +279,29 @@ void tune_spa1(mcmc_param * in, gsl_rng *rng){
 
 
 
-/* tune moves for spa2 */
-void tune_spa2(mcmc_param * in, gsl_rng *rng){
-    /* get acceptance proportion */
-    double paccept = (double) in->n_accept_spa2 / (double) (in->n_accept_spa2 + in->n_reject_spa2);
+/* /\* tune moves for spa2 *\/ */
+/* void tune_spa2(mcmc_param * in, gsl_rng *rng){ */
+/*     /\* get acceptance proportion *\/ */
+/*     double paccept = (double) in->n_accept_spa2 / (double) (in->n_accept_spa2 + in->n_reject_spa2); */
 
-    /* acceptable zone: 25-50% acceptance */
-    if(paccept<0.25) {
-	in->sigma_spa2 /= 1.5;
-	in->n_accept_spa2 = 0;
-	in->n_reject_spa2 = 0;
-    } else if (paccept>0.50) {
-	in->sigma_spa2 *= 1.5;
-	in->n_accept_spa2 = 0;
-	in->n_reject_spa2 = 0;
-	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
-	if(in->sigma_spa2>1.0){
-	    in->sigma_spa2 = 1.0;
-	    in->tune_spa2 = FALSE;
-	}
-    } else {
-	in->tune_spa2 = FALSE;
-    }
-}
+/*     /\* acceptable zone: 25-50% acceptance *\/ */
+/*     if(paccept<0.25) { */
+/* 	in->sigma_spa2 /= 1.5; */
+/* 	in->n_accept_spa2 = 0; */
+/* 	in->n_reject_spa2 = 0; */
+/*     } else if (paccept>0.50) { */
+/* 	in->sigma_spa2 *= 1.5; */
+/* 	in->n_accept_spa2 = 0; */
+/* 	in->n_reject_spa2 = 0; */
+/* 	/\* do not allow sigma to be > 1 (for lognormal not to go crazy) *\/ */
+/* 	if(in->sigma_spa2>1.0){ */
+/* 	    in->sigma_spa2 = 1.0; */
+/* 	    in->tune_spa2 = FALSE; */
+/* 	} */
+/*     } else { */
+/* 	in->tune_spa2 = FALSE; */
+/*     } */
+/* } */
 
 
 
@@ -333,16 +333,25 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 
 
 
-/* void tune_Tinf(mcmc_param * in, gsl_rng *rng){ */
-/*     /\* get acceptance proportion *\/ */
-/*     double paccept = (double) in->n_accept_Tinf / (double) (in->n_accept_Tinf + in->n_reject_Tinf); */
 
-/*     /\* Note: Tinf treated as univariate as each value is accepted/rejected independently *\/ */
-/*     /\* acceptable zone: 35-45% acceptance *\/ */
-/*     if(paccept<0.35) { */
-/* 	in->lambda_Tinf /= 1.5; */
-/*     } else if (paccept>0.45) in->lambda_Tinf *= 1.5; */
-/* } */
+/* tune moves for Tinf */
+void tune_Tinf(mcmc_param * in, gsl_rng *rng){
+    /* get acceptance proportion */
+    double paccept = (double) in->n_accept_Tinf / (double) (in->n_accept_Tinf + in->n_reject_Tinf);
+
+    /* acceptable zone: 25-50% acceptance */
+    if(paccept<0.25) {
+	in->sigma_Tinf /= 1.5;
+	in->n_accept_Tinf = 0;
+	in->n_reject_Tinf = 0;
+    } else if (paccept>0.50) {
+	in->sigma_Tinf *= 1.5;
+	in->n_accept_Tinf = 0;
+	in->n_reject_Tinf = 0;
+    } else {
+	in->tune_Tinf = FALSE;
+    }
+}
 
 
 
@@ -356,12 +365,12 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 */
 
 /* PRELIM MCMC FOR FINDING OUTLIERS */
-void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
+void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par,
 		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
-  
+
   bool QUIET=TRUE;
 
   /* OUTPUT TO SCREEN - HEADER */
@@ -436,9 +445,10 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       if(localMcmcPar->tune_pi) tune_pi(localMcmcPar,rng);
       /* if(localMcmcPar->tune_phi) tune_phi(localMcmcPar,rng); */
       if(localMcmcPar->tune_spa1) tune_spa1(localMcmcPar,rng);
+      if(localMcmcPar->tune_Tinf) tune_Tinf(localMcmcPar,rng);
       /* if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng); */
 
-      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1;
+      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_Tinf;
     }
 
     /* MOVEMENTS */
@@ -606,7 +616,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf\tp_accept_spa1");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
 
 
@@ -675,7 +685,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	  /* if(mcmcPar->tune_phi) tune_phi(mcmcPar,rng); */
 	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
 	  /* if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng); */
-	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
+	  if(mcmcPar->tune_Tinf) tune_Tinf(mcmcPar,rng);
+	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1 || mcmcPar->tune_Tinf;
 	  if(!mcmcPar->tune_any) {
 	    mcmcPar->step_notune = i;
 	    /* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */

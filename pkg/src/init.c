@@ -182,6 +182,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->sigma_phi = 0.01;
     in->sigma_spa1 = 0.01;
     in->sigma_spa2 = 0.01;
+    in->sigma_Tinf = 1;
     in->step_notune = 0;
     in->burnin = burnin;
     in->find_import_at = find_import_at;
@@ -220,10 +221,11 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_mu1 = move_mut;
     in->tune_gamma = (move_mut && par->mut_model>1) ? TRUE : FALSE;
     in->tune_spa1 = in->move_spa;
-    in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE;
+    /* in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE; */
     in->tune_pi = move_pi;
-    in->tune_phi = move_phi;
-    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
+    in->tune_Tinf = move_Tinf;
+    /* in->tune_phi = move_phi; */
+    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_Tinf;
 
 } /* end init_mcmc_param */
 

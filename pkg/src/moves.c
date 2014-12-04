@@ -306,68 +306,68 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
 
 
 
-/* MOVE VALUES OF PHI */
-void move_phi(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng){
-  double sumSameLoc=0.0, sumDiffLoc=0.0;
-  int i, ances;
+/* /\* MOVE VALUES OF PHI *\/ */
+/* void move_phi(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng){ */
+/*   double sumSameLoc=0.0, sumDiffLoc=0.0; */
+/*   int i, ances; */
 
-  /* USE GIBBS SAMPLER */
-  for(i=0;i < dat->n;i++){
-    ances = vec_int_i(currentPar->alpha,i);
+/*   /\* USE GIBBS SAMPLER *\/ */
+/*   for(i=0;i < dat->n;i++){ */
+/*     ances = vec_int_i(currentPar->alpha,i); */
 
-    if(ances>=0){
-      if(vec_int_i(dat->locations,i)==vec_int_i(dat->locations,ances)){
-	sumSameLoc += 1.0;
-      } else {
-	sumDiffLoc += 1.0;
-      }
-    }
-  }
+/*     if(ances>=0){ */
+/*       if(vec_int_i(dat->locations,i)==vec_int_i(dat->locations,ances)){ */
+/* 	sumSameLoc += 1.0; */
+/*       } else { */
+/* 	sumDiffLoc += 1.0; */
+/*       } */
+/*     } */
+/*   } */
 
-  tempPar->phi = gsl_ran_beta(rng, currentPar->phi_param1 + sumSameLoc, currentPar->phi_param2 + sumDiffLoc);
-  currentPar->phi = tempPar->phi;
+/*   tempPar->phi = gsl_ran_beta(rng, currentPar->phi_param1 + sumSameLoc, currentPar->phi_param2 + sumDiffLoc); */
+/*   currentPar->phi = tempPar->phi; */
 
-    /* /\* GENERATE CANDIDATE VALUE FOR PHI *\/ */
-    /* /\* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*\/ */
-    /* do */
-    /* { */
-    /* 	tempPar->phi = gsl_ran_lognormal(rng,log(currentPar->phi),mcmcPar->sigma_phi); */
-    /* 	/\* which should be the same as: *\/ */
-    /* 	/\* tempPar->phi = currentPar->phi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_phi); *\/ */
-    /* } while(tempPar->phi>1.0); */
+/*     /\* /\\* GENERATE CANDIDATE VALUE FOR PHI *\\/ *\/ */
+/*     /\* /\\* HERE REPLACE WITH TRUNCATED LOGNORMAL (no values >1) )*\\/ *\/ */
+/*     /\* do *\/ */
+/*     /\* { *\/ */
+/*     /\* 	tempPar->phi = gsl_ran_lognormal(rng,log(currentPar->phi),mcmcPar->sigma_phi); *\/ */
+/*     /\* 	/\\* which should be the same as: *\\/ *\/ */
+/*     /\* 	/\\* tempPar->phi = currentPar->phi*gsl_ran_lognormal(rng,0,mcmcPar->sigma_phi); *\\/ *\/ */
+/*     /\* } while(tempPar->phi>1.0); *\/ */
 
 
-    /* /\* ACCEPT / REJECT *\/ */
-    /* /\* likelihood *\/ */
-    /* 	logRatio += loglikelihood_spa_all(dat, spaInfo, tempPar, rng) - loglikelihood_spa_all(dat, spaInfo, currentPar, rng); */
+/*     /\* /\\* ACCEPT / REJECT *\\/ *\/ */
+/*     /\* /\\* likelihood *\\/ *\/ */
+/*     /\* 	logRatio += loglikelihood_spa_all(dat, spaInfo, tempPar, rng) - loglikelihood_spa_all(dat, spaInfo, currentPar, rng); *\/ */
 
-    /* /\* prior *\/ */
-    /* logRatio += logprior_phi(tempPar) - logprior_phi(currentPar); */
+/*     /\* /\\* prior *\\/ *\/ */
+/*     /\* logRatio += logprior_phi(tempPar) - logprior_phi(currentPar); *\/ */
 
-    /* /\* ADD CORRECTION FOR MH truncated lognormal *\/ */
-    /* QCur = gsl_cdf_gaussian_P(-log(currentPar->phi),mcmcPar->sigma_phi); */
-    /* QTemp = gsl_cdf_gaussian_P(-log(tempPar->phi),mcmcPar->sigma_phi); */
-    /* logRatio +=  log(tempPar->phi) - log(currentPar->phi); /\* correction for lognormal *\/ */
-    /* logRatio +=   log(QCur) - log(QTemp); /\* correction for truncation (no values >1) *\/ */
+/*     /\* /\\* ADD CORRECTION FOR MH truncated lognormal *\\/ *\/ */
+/*     /\* QCur = gsl_cdf_gaussian_P(-log(currentPar->phi),mcmcPar->sigma_phi); *\/ */
+/*     /\* QTemp = gsl_cdf_gaussian_P(-log(tempPar->phi),mcmcPar->sigma_phi); *\/ */
+/*     /\* logRatio +=  log(tempPar->phi) - log(currentPar->phi); /\\* correction for lognormal *\\/ *\/ */
+/*     /\* logRatio +=   log(QCur) - log(QTemp); /\\* correction for truncation (no values >1) *\\/ *\/ */
 
-    /* /\* if p(new/old) > 1, accept new *\/ */
-    /* if(logRatio>=0.0) { */
-    /* 	currentPar->phi = tempPar->phi; */
-    /* 	mcmcPar->n_accept_phi += 1; */
-    /* 	/\* printf("\nAccepting new value\n"); *\/ */
-    /* } else { /\* else accept new with proba (new/old) *\/ */
-    /* 	if(log(gsl_rng_uniform(rng)) <= logRatio){ /\* accept *\/ */
-    /* 	    currentPar->phi = tempPar->phi; */
-    /* 	    mcmcPar->n_accept_phi += 1; */
-    /* 	    /\* printf("\nAccepting new value\n"); *\/ */
-    /* 	} else { /\* reject *\/ */
-    /* 	    tempPar->phi = currentPar->phi; */
-    /* 	    mcmcPar->n_reject_phi += 1; */
-    /* 	    /\* printf("\nRejecting new value\n"); *\/ */
-    /* 	} */
-    /* } */
+/*     /\* /\\* if p(new/old) > 1, accept new *\\/ *\/ */
+/*     /\* if(logRatio>=0.0) { *\/ */
+/*     /\* 	currentPar->phi = tempPar->phi; *\/ */
+/*     /\* 	mcmcPar->n_accept_phi += 1; *\/ */
+/*     /\* 	/\\* printf("\nAccepting new value\n"); *\\/ *\/ */
+/*     /\* } else { /\\* else accept new with proba (new/old) *\\/ *\/ */
+/*     /\* 	if(log(gsl_rng_uniform(rng)) <= logRatio){ /\\* accept *\\/ *\/ */
+/*     /\* 	    currentPar->phi = tempPar->phi; *\/ */
+/*     /\* 	    mcmcPar->n_accept_phi += 1; *\/ */
+/*     /\* 	    /\\* printf("\nAccepting new value\n"); *\\/ *\/ */
+/*     /\* 	} else { /\\* reject *\\/ *\/ */
+/*     /\* 	    tempPar->phi = currentPar->phi; *\/ */
+/*     /\* 	    mcmcPar->n_reject_phi += 1; *\/ */
+/*     /\* 	    /\\* printf("\nRejecting new value\n"); *\\/ *\/ */
+/*     /\* 	} *\/ */
+/*     /\* } *\/ */
 
-} /* end move_phi */
+/* } /\* end move_phi *\/ */
 
 
 
@@ -435,19 +435,19 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 	toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
 
 	/* move i-th Tinf */
-	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * gsl_ran_poisson(rng, 1);
+	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * (1+gsl_ran_poisson(rng, 1));
 
 	/* MAY NEED TO CHANGE THIS AND ADD CORRECTION */
-	/* constraint: Tinf_i < t_i */
-	if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) {
-	  /* Rprintf("\n\nmoving Tinf for case %d, sampled at %d", toMove, vec_int_i(dat->dates,toMove)); */
-	  /* Rprintf("\nProposed: %d -> %d    - would have changed to %d -> %d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], currentPar->Tinf->values[toMove], vec_int_i(dat->dates,toMove)-1); */
-	  /* pb=TRUE; */
-	  tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
-	}
+	/* /\* constraint: Tinf_i < t_i *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) { */
+	/*   /\* Rprintf("\n\nmoving Tinf for case %d, sampled at %d", toMove, vec_int_i(dat->dates,toMove)); *\/ */
+	/*   /\* Rprintf("\nProposed: %d -> %d    - would have changed to %d -> %d", currentPar->Tinf->values[toMove], tempPar->Tinf->values[toMove], currentPar->Tinf->values[toMove], vec_int_i(dat->dates,toMove)-1); *\/ */
+	/*   /\* pb=TRUE; *\/ */
+	/*   tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
+	/* } */
 
-	/* constraint: Tinf_i >= -truncW */
-	if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW;
+	/* /\* constraint: Tinf_i >= -truncW *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW; */
 
 	/* PROCEED TO ACCEPT/REJECT ONLY IF TINF HAS CHANGED */
 	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
@@ -531,13 +531,13 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	firstImported = find_date_first_import(dat, currentPar);
 
 	/* move i-th Tinf */
-	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * gsl_ran_poisson(rng, 1);
+	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * (1+gsl_ran_poisson(rng, 1));
 
-	/* constraint: Tinf_i < t_i */
-	if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
+	/* /\* constraint: Tinf_i < t_i *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
 
-	/* constraint: Tinf_i > first imported */
-	if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1;
+	/* /\* constraint: Tinf_i > first imported *\/ */
+	/* if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1; */
       }
 
 
