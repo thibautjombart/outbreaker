@@ -169,7 +169,7 @@ void print_gentime(gentime *in){
 /* get density from generation time funtion at time 't' with 'kappa_i' generations*/
 double gentime_dens(gentime *in, int t, int kappa_i){
     /* error if requested kappa_i does not exist */
-    if(kappa_i > in->maxK || kappa_i<1){
+  if((kappa_i > in->maxK) || (kappa_i<1)){
       error("\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK);
       /* fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK); */
       /* fflush(stdout); */
