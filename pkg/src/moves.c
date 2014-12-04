@@ -582,7 +582,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
       /* MOVE KAPPA */
       /* if not imported and moveable */
-      if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
+      if((vec_int_i(tempPar->alpha,toMove)>=0) && (vec_double_i(mcmcPar->move_kappa,toMove)>0.0)){
 	/* propose new, 'intelligent' kappa */
 	nbDaysTemp = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, vec_int_i(tempPar->alpha,toMove));
 	tempPar->kappa->values[toMove] = choose_kappa_i(nbDaysTemp, gen, rng);
@@ -760,7 +760,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
       /* SWAP ONLY IF: A AND B CAN MOVE, AND A ISN'T IMPORTED */
       /* i.e., A>-1 && x>-1 */
-      if(vec_double_i(mcmcPar->move_alpha, A)>0.0 && vec_double_i(mcmcPar->move_alpha, B)>0.0 && x>-1){
+      if((vec_double_i(mcmcPar->move_alpha, A)>0.0) && (vec_double_i(mcmcPar->move_alpha, B)>0.0) && (x>-1)){
 
 	/* SWAP ANCESTRIES */
 	tempPar->alpha->values[A] = B; /* (x->A) changes to (B->A) */
@@ -776,7 +776,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	  /* if case 'j' can move... */
 	  if(vec_double_i(mcmcPar->move_alpha, j)>0.0){
 	    /* if this case was descendent of B, it becomes descendent of A */
-	    if(j!=A && vec_int_i(currentPar->alpha, j)==B){
+	    if((j!=A) && (vec_int_i(currentPar->alpha, j)==B)){
 	      tempPar->alpha->values[j] = A;
 	      /* /\* DEBUGGING *\/ */
 	      /* if(j==A) { */
@@ -796,7 +796,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	      /*   getchar(); */
 	      /* } */
 	      /* ...and descendents of A becomes descendent of B (except for B!!) */
-	    } else if(j!=B && vec_int_i(currentPar->alpha, j)==A){
+	    } else if((j!=B) && (vec_int_i(currentPar->alpha, j)==A)){
 	      tempPar->alpha->values[j] = B;
 	      /* /\* DEBUGGING *\/ */
 	      /* if(j==B) Rprintf("Here's the mess: j==B"); */
