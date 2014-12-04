@@ -197,7 +197,7 @@ void free_mat_double(mat_double *in){
 */
 
 int vec_int_i(vec_int *in, int i){
-    if(i >= in->length || i<0) {
+  if((i >= in->length) || (i<0)) {
       error("\n[in: vec_int_i] Trying to access value %d in a vector of size %d\n",i,in->length);
       /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
       /* exit(1); */
@@ -209,7 +209,7 @@ int vec_int_i(vec_int *in, int i){
 
 
 int mat_int_ij(mat_int *in, int i, int j){
-    if(i >= in->n || i<0 || j>=in->p || j<0) {
+  if((i >= in->n) || (i<0) || (j>=in->p) || (j<0)) {
       error("\n[in: mat_int_i] Trying to access item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
       /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
       /* exit(1); */
@@ -222,7 +222,7 @@ int mat_int_ij(mat_int *in, int i, int j){
 
 
 double vec_double_i(vec_double *in, int i){
-    if(i >= in->length || i<0) {
+  if((i >= in->length) || (i<0)) {
       error("\n[in: vec_double_i] Trying to access value %d in a vector of size %d\n",i,in->length);
       /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
       /* exit(1); */
@@ -234,7 +234,7 @@ double vec_double_i(vec_double *in, int i){
 
 
 double mat_double_ij(mat_double *in, int i, int j){
-  if(i >= in->n || i<0 || j>=in->p || j<0) {
+  if((i >= in->n) || (i<0) || (j>=in->p) || (j<0)) {
     error("\n[in: mat_double_i] Trying to access item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
     /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
     /* exit(1); */
@@ -322,8 +322,8 @@ void print_gsl_vector(gsl_vector *in, char format[256]){
 /* check if an integer 'x' is in a vector of integers, and returns the matching position */
 int in_vec_int(int x, vec_int *vec){
     int i=0;
-    while(i<vec->length && x!=vec_int_i(vec, i)) i++; /* note: condition needs to be in this order */
-    if(i==vec->length || vec->length<1) return -1; /* -1 will mean: no match*/
+    while((i<vec->length) && (x!=vec_int_i(vec, i))) i++; /* note: condition needs to be in this order */
+    if((i==vec->length) || (vec->length<1)) return -1; /* -1 will mean: no match*/
     return i;
 }
 
@@ -402,8 +402,8 @@ int draw_multinom_censored(vec_double *prob, int n, gsl_rng * rng){
 
 /* sample values of a vector of integers with/without replacement */
 void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
-    if(in->length<1 || out->length<1) return;
-    if(out->length > in->length && !replace){
+  if((in->length<1) || (out->length<1)) return;
+  if((out->length > in->length) && !replace){
       error("\n[in: matvec.c->sample_vec_int]\nReplace is FALSE but sample size (%d) is bigger than input vector (%d)",out->length,in->length);
   	/* fprintf(stderr, "\n[in: matvec.c->sample_vec_int]\nReplace is FALSE but sample size (%d) is bigger than input vector (%d)",out->length,in->length); */
     	/* exit(1); */
@@ -425,8 +425,8 @@ void sample_vec_int(vec_int *in, vec_int *out, bool replace, gsl_rng * rng){
 void draw_vec_int_multinom(vec_int *in, vec_int *out, vec_double *prob, gsl_rng * rng){
     int i;
     /* checks */
-    if(in->length<1 || out->length<1) return;
-    if(in->length != prob->length){
+    if((in->length<1) || (out->length<1)) return;
+    if((in->length) != (prob->length)){
       error("\n[in: matvec.c->draw_vec_int_multinom]\nInput vector and vector of probabilities have different lengths (in:%d, prob:%d)", in->length, prob->length);
       /* fprintf(stderr, "\n[in: matvec.c->draw_vec_int_multinom]\nInput vector and vector of probabilities have different lengths (in:%d, prob:%d)", in->length, prob->length); */
       /* exit(1); */
@@ -468,7 +468,7 @@ void sort_vec_int(vec_int *in, vec_int *out, vec_int *idx){
 	    /* if(in_vec_int(i, idx)>=0){ */
 	    /* 	printf("\nindex %d found in array idx (position:%d)", i, in_vec_int(i, idx)); */
 	    /* } */
-	    if(in_vec_int(i, idx)<0 && curMin>=vec_int_i(in,i)) {
+	  if((in_vec_int(i, idx)<0) && (curMin>=vec_int_i(in,i))) {
 		/* printf("\nentering the loop, i=%d\n",i); */
 		/* printf("\nidx:"); print_vec_int(idx); */
 		/* printf("\nmatch i in idx: %d\n", in_vec_int(i, idx)); */
@@ -514,7 +514,7 @@ void sort_vec_double(vec_double *in, vec_double *out, vec_int *idx){
 	curMinIdx=0;
 
 	for(i=0;i<in->length;i++){
-	    if(in_vec_int(i, idx)<0 && curMin>=vec_double_i(in,i)) {
+	  if((in_vec_int(i, idx)<0) && (curMin>=vec_double_i(in,i))) {
 		curMin=vec_double_i(in,i);
 		curMinIdx = i;
 	    }
@@ -849,7 +849,7 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
     int u, t;
 
     /* check sizes */
-    if(in_a->length != in_b->length || in_a->length!=out->length){
+    if((in_a->length != in_b->length) || (in_a->length!=out->length)){
       error("\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length);
       /* fprintf(stderr, "\n[in: matvec.c->convol_vec_double]\nInputs and output vectors have different lengths (in_a:%d in_b:%d out:%d)",in_a->length, in_b->length, out->length); */
       /* exit(1); */
