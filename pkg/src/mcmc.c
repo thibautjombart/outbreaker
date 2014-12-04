@@ -115,6 +115,7 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
+    fprintf(file,"\t%.15f", mcmcPar->sigma_Tinf);
     fprintf(file,"\t%.15f", mcmcPar->sigma_spa1);
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
@@ -617,7 +618,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf\tp_accept_spa1");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_Tinf\tsigma_spa1\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
