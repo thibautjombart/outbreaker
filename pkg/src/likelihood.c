@@ -99,10 +99,10 @@ int mutation2_ij(int i, int j, data *dat, dna_dist *dnaInfo){
 /* FIND NB OF COMPARABLE NUCLEOTIDES BETWEEN CASES I AND J */
 int com_nucl_ij(int i, int j, data *dat, dna_dist *dnaInfo){
     /* return -1 if i or j is unknown case */
-    if(i<0 || j<0) return -1;
+  if((i<0) || (j<0)) return -1;
 
     /* if 1 missing sequence, return -1 */
-    if(vec_int_i(dat->idxCasesInDna,i)<0 || vec_int_i(dat->idxCasesInDna,j)<0) return -1;
+  if((vec_int_i(dat->idxCasesInDna,i)<0) || (vec_int_i(dat->idxCasesInDna,j)<0)) return -1;
 
     return mat_int_ij(dnaInfo->nbcommon, vec_int_i(dat->idxCasesInDna,i), vec_int_i(dat->idxCasesInDna,j));
 } /* end mutation1_ij */
@@ -112,7 +112,7 @@ int com_nucl_ij(int i, int j, data *dat, dna_dist *dnaInfo){
 /* Fixed version of gsl_ran_poisson_pdf */
 /* Original returns P(0|0) = NaN; this one returns 1.0 */
 double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
-    if(mu <= NEARZERO && k==0) return 1.0;
+  if((mu <= NEARZERO) && (k==0)) return 1.0;
     return gsl_ran_poisson_pdf(k, mu);
 } /* gsl_ran_poisson_pdf_fixed */
 
@@ -189,7 +189,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     }
 
     /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
-    if(vec_int_i(par->kappa,i)<1 || par->pi<=0 || par->pi >1){ /* fool proof */
+    if((vec_int_i(par->kappa,i)<1) || (par->pi<=0) || (par->pi >1)){ /* fool proof */
       out += NEARMINUSINF;
     } else {
       out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
@@ -237,7 +237,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
 	/* MODEL 1: only one type of mutations */
     case 1:
       if(com_nucl_ij(i, ances, dat, dnaInfo)>0){
-	if(mutation1_ij(i, ances, dat, dnaInfo)<0 || par->kappa_temp<0 || par->mu1<0 || par->mu1 >1){ /* fool proof */
+	if((mutation1_ij(i, ances, dat, dnaInfo)<0) || (par->kappa_temp<0) || (par->mu1<0) || (par->mu1 >1)){ /* fool proof */
 	  out += NEARMINUSINF;
 	} else {
 	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
@@ -248,7 +248,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
   /* MODEL 2: transitions and transversions */
     case 2:
       if(com_nucl_ij(i, ances, dat, dnaInfo)>0){
-	if(mutation1_ij(i, ances, dat, dnaInfo)<0 || mutation2_ij(i, ances, dat, dnaInfo)<0 || par->kappa_temp<0 || par->mu1<0 || par->mu1 >1 || par->gamma<0){ /* fool proof */
+	if((mutation1_ij(i, ances, dat, dnaInfo)<0) || (mutation2_ij(i, ances, dat, dnaInfo)<0) || (par->kappa_temp<0) || (par->mu1<0) || (par->mu1 >1) || (par->gamma<0)){ /* fool proof */
 	  out += NEARMINUSINF;
 	} else {
 	  /* transitions */
@@ -295,7 +295,7 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
 	if(ances>=0){ /* only if not imported case */
 	  /* printf("\nancestor: %d\n", ances);fflush(stdout); */
 	  Dij = get_spatial_dist(spaInfo, ances, i);
-	  if(Dij < 0 || par->spa_param1<0) { /* fool-proof */
+	  if((Dij < 0) || (par->spa_param1<0)) { /* fool-proof */
 	    out = NEARMINUSINF;
 	  } else {
 	    /* printf("\nDistance: %.5f\n", Dij);fflush(stdout); */
@@ -436,7 +436,7 @@ double loglikelihood_local_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *
 
     for(j=0;j<dat->n;j++){
 	/* likelihoods of i's descendents */
-	if(i!=j && vec_int_i(par->alpha, j)==i) out += loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, par, rng);
+      if((i!=j) && (vec_int_i(par->alpha, j)==i)) out += loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, par, rng);
     }
 
     filter_logprob(&out);
@@ -569,13 +569,13 @@ bool check_timing_all(data *dat, param *par){
       ances = vec_int_i(par->alpha, i);
       if(ances>-1){
 	/* check that Tinf_i > Tinf_alpha.i */
-	if(!vec_int_i(par->Tinf, i) > vec_int_i(par->Tinf, ances)){
+	if(! (vec_int_i(par->Tinf, i) > vec_int_i(par->Tinf, ances))){
 	  allgood = FALSE;
 	  Rprintf("\nTiming problem: %d (Tinf:%d) -> %d (Tinf:%d)", ances, vec_int_i(par->Tinf, ances), i, vec_int_i(par->Tinf, i));
 	}
 
 	/* check that t_i > Tinf_i */
-	if(!vec_int_i(dat->dates, i) > vec_int_i(par->Tinf, i)){
+	if(! (vec_int_i(dat->dates, i) > vec_int_i(par->Tinf, i))){
 	  allgood = FALSE;
 	  Rprintf("\nTiming problem, case %d: Tinf=%d, sample date=%d", i, vec_int_i(par->Tinf, i), vec_int_i(dat->dates, i));
 	}
