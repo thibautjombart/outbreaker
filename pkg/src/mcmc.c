@@ -146,11 +146,11 @@ void tune_mu1(mcmc_param * in, gsl_rng *rng){
 
     /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
-	in->sigma_mu1 /= 1.5;
+      in->sigma_mu1 *=  gsl_rng_uniform_pos(rng);
 	in->n_accept_mu1 = 0;
 	in->n_reject_mu1 = 0;
     } else if (paccept>0.50) {
-	in->sigma_mu1 *= 1.5;
+	in->sigma_mu1 *= 1 + gsl_rng_uniform_pos(rng);
 	in->n_accept_mu1 = 0;
 	in->n_reject_mu1 = 0;
 	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
@@ -174,11 +174,11 @@ void tune_gamma(mcmc_param * in, gsl_rng *rng){
 
     /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
-	in->sigma_gamma /= 1.5;
+	in->sigma_gamma *= gsl_rng_uniform_pos(rng);
 	in->n_accept_gamma = 0;
 	in->n_reject_gamma = 0;
     } else if (paccept>0.50) {
-	in->sigma_gamma *= 1.5;
+	in->sigma_gamma *= 1 + gsl_rng_uniform_pos(rng);
 	in->n_accept_gamma = 0;
 	in->n_reject_gamma = 0;
 	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
@@ -202,11 +202,11 @@ void tune_pi(mcmc_param * in, gsl_rng *rng){
 
     /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
-	in->sigma_pi /= 1.5;
+	in->sigma_pi *= gsl_rng_uniform_pos(rng);
 	in->n_accept_pi = 0;
 	in->n_reject_pi = 0;
     } else if (paccept>0.50) {
-	in->sigma_pi *= 1.5;
+	in->sigma_pi *= 1 + gsl_rng_uniform_pos(rng);
 	in->n_accept_pi = 0;
 	in->n_reject_pi = 0;
 	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
@@ -230,11 +230,11 @@ void tune_phi(mcmc_param * in, gsl_rng *rng){
 
     /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
-	in->sigma_phi /= 1.5;
+	in->sigma_phi *= gsl_rng_uniform_pos(rng);
 	in->n_accept_phi = 0;
 	in->n_reject_phi = 0;
     } else if (paccept>0.50) {
-	in->sigma_phi *= 1.5;
+	in->sigma_phi *= 1 + gsl_rng_uniform_pos(rng);
 	in->n_accept_phi = 0;
 	in->n_reject_phi = 0;
 	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
@@ -258,11 +258,11 @@ void tune_spa1(mcmc_param * in, gsl_rng *rng){
 
     /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
-	in->sigma_spa1 /= 1.5;
+	in->sigma_spa1 *= gsl_rng_uniform_pos(rng);
 	in->n_accept_spa1 = 0;
 	in->n_reject_spa1 = 0;
     } else if (paccept>0.50) {
-	in->sigma_spa1 *= 1.5;
+	in->sigma_spa1 *= 1 + gsl_rng_uniform_pos(rng);
 	in->n_accept_spa1 = 0;
 	in->n_reject_spa1 = 0;
 	/* do not allow sigma to be > 1 (for lognormal not to go crazy) */
@@ -286,11 +286,11 @@ void tune_spa1(mcmc_param * in, gsl_rng *rng){
 
 /*     /\* acceptable zone: 25-50% acceptance *\/ */
 /*     if(paccept<0.25) { */
-/* 	in->sigma_spa2 /= 1.5; */
+/* 	in->sigma_spa2 /= 1 + gsl_rng_uniform_pos(rng); */
 /* 	in->n_accept_spa2 = 0; */
 /* 	in->n_reject_spa2 = 0; */
 /*     } else if (paccept>0.50) { */
-/* 	in->sigma_spa2 *= 1.5; */
+/* 	in->sigma_spa2 *= 1 + gsl_rng_uniform_pos(rng); */
 /* 	in->n_accept_spa2 = 0; */
 /* 	in->n_reject_spa2 = 0; */
 /* 	/\* do not allow sigma to be > 1 (for lognormal not to go crazy) *\/ */
@@ -313,11 +313,11 @@ void tune_spa1(mcmc_param * in, gsl_rng *rng){
 
 /*     /\* acceptable zone: 35-45% acceptance *\/ */
 /*     if(paccept<0.25) { */
-/* 	in->sigma_phi /= 1.5; */
+/* 	in->sigma_phi /= 1 + gsl_rng_uniform_pos(rng); */
 /* 	in->n_accept_phi = 0; */
 /* 	in->n_reject_phi = 0; */
 /*     } else if (paccept>0.50) { */
-/* 	in->sigma_phi *= 1.5; */
+/* 	in->sigma_phi *= 1 + gsl_rng_uniform_pos(rng); */
 /* 	in->n_accept_phi = 0; */
 /* 	in->n_reject_phi = 0; */
 /* 	/\* do not allow sigma to be > 1 (for lognormal not to go crazy) *\/ */
@@ -341,11 +341,11 @@ void tune_Tinf(mcmc_param * in, gsl_rng *rng){
 
     /* acceptable zone: 25-50% acceptance */
     if(paccept<0.25) {
-	in->sigma_Tinf /= 1.5;
+	in->sigma_Tinf *= gsl_rng_uniform_pos(rng);
 	in->n_accept_Tinf = 0;
 	in->n_reject_Tinf = 0;
     } else if (paccept>0.50) {
-	in->sigma_Tinf *= 1.5;
+	in->sigma_Tinf *= 1 + gsl_rng_uniform_pos(rng);
 	in->n_accept_Tinf = 0;
 	in->n_reject_Tinf = 0;
     } else {
