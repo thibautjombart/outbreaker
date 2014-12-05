@@ -47,7 +47,7 @@ outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
            tune.file.name="tuning.txt", seed=NULL)
 
 
-outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
+outbreaker.parallel(n.runs, parallel=TRUE, n.cores=NULL,
            dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
            w.dens, w.trunc=length(w.dens), f.dens=w.dens,
            f.trunc=length(f.dens), dist.mat=NULL,

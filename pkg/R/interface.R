@@ -325,7 +325,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 ###############################
 ## version with multiple runs
 ###############################
-outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NULL,
+outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
                                 w.dens, w.trunc=length(w.dens),
                                 f.dens=w.dens, f.trunc=length(f.dens),
@@ -343,7 +343,6 @@ outbreaker.parallel <- function(n.runs, parallel=require("parallel"), n.cores=NU
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## SOME CHECKS ##
-    if(parallel && !require(parallel)) stop("parallel package requested but not installed")
     if(parallel && is.null(n.cores)){
         n.cores <- detectCores()
         n.cores <- min(n.cores, 6)
