@@ -285,7 +285,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 			areSus <- areSus[-newId]
 			Sus.groups <- Sus.groups[-newId]
 			res$status[newId] <- "I"
-            } else {
+		}      
+      
+      }else{
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
 
@@ -335,30 +337,16 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             }
 
             ## group of the imported cases
-	    if(imp.case.group == "assign"){
 		##find group frequencies in population
 		freqs <- group.sizes/n.hosts
 		##assign groups to imported cases based on relative group frequencies in population
 		res$group <- c(res$group, sample(1:l,size=nbImpCases))		
-	   } else { ##assign imported cases to new group
-		##check whether this is the first time we are doing it
-		if(ft == TRUE){
-			##extending transmission matrix
-			trans.mat <- cbind(rbind(trans.mat,rep(1,l)),rep(1,l+1))
-			##now the rows do not add to 1 but I think this is okay because sample() normalises probability vectors so I don't need to
-			##assign new cases to new group
-			res$group <- c(res$group, rep(l+1,nbImpCases))
-		}else{
-			##just assign new cases to extra group
-			res$group <-c(res$group, rep(l+1,nbImpCases))
-		}
 
 
             ## dna sequences of the new infections
             newSeq <- t(sapply(1:nbImpCases, function(i) seq.dupli(EVE, diverg.import)))
             res$dna <- rbind(res$dna, newSeq)
         }
-
 
         ## set recovered status ##
         res$status[res$id[(t-res$onset) >= t.clear]] <- "R"
