@@ -26,41 +26,39 @@
   computer. This requires the base package \code{parallel}.
 
   The spatial module implemented in outbreaker is currently under
-  development.  Please contact the author before using it.
+  development. Please contact the author before using it.
 
   For more resources including tutorials, forums, etc., see:
   \url{http://sites.google.com/site/therepiproject/r-pac/outbreaker}
 
 }
 \usage{
-outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
+outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
            w.dens, w.trunc=length(w.dens), f.dens=w.dens,
-           f.trunc=length(f.dens), dist.mat=NULL, locations=NULL,
+           f.trunc=length(f.dens), dist.mat=NULL,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
-           init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
-           init.spa2=NULL, n.iter=1e5, sample.every=500, tune.every=500,
-           burnin=2e4, import.method=c("genetic","full","none"),
-           find.import.n=50, pi.param1=10, pi.param2=1, phi.param1=5,
-           phi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
+           init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL, n.iter=1e5,
+           sample.every=500, tune.every=500, burnin=2e4,
+           import.method=c("genetic","full","none"), find.import.n=50,
+           pi.prior1=10, pi.prior2=1, spa1.prior=1, move.mut=TRUE,
            move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
-           move.pi=TRUE, move.phi=TRUE, move.spa=TRUE, outlier.threshold = 5,
-           max.kappa=10, quiet=TRUE, res.file.name="chains.txt",
-           tune.file.name="tuning.txt", seed=NULL )
+           move.pi=TRUE, move.spa=TRUE, outlier.threshold
+           = 5, max.kappa=10, quiet=TRUE, res.file.name="chains.txt",
+           tune.file.name="tuning.txt", seed=NULL)
 
 
 outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
-           dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=1,
+           dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
            w.dens, w.trunc=length(w.dens), f.dens=w.dens,
-           f.trunc=length(f.dens), dist.mat=NULL, locations=NULL,
+           f.trunc=length(f.dens), dist.mat=NULL,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
-           init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
-           init.spa2=NULL, n.iter=1e5, sample.every=500, tune.every=500,
-           burnin=2e4, import.method=c("genetic","full","none"),
-           find.import.n=50, pi.param1=10, pi.param2=1, phi.param1=5,
-           phi.param2=1, spa1.prior=1, spa2.prior=1, move.mut=TRUE,
+           init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL, n.iter=1e5,
+           sample.every=500, tune.every=500, burnin=2e4,
+           import.method=c("genetic","full","none"), find.import.n=50,
+           pi.prior1=10, pi.prior2=1, spa1.prior=1, move.mut=TRUE,
            move.ances=TRUE, move.kappa=TRUE, move.Tinf=TRUE,
-           move.pi=TRUE,move.phi=TRUE, move.spa=TRUE, outlier.threshold = 5,
-           max.kappa=10, quiet=TRUE, res.file.name="chains.txt",
+           move.pi=TRUE, move.spa=TRUE, outlier.threshold
+           = 5, max.kappa=10, quiet=TRUE, res.file.name="chains.txt",
            tune.file.name="tuning.txt", seed=NULL)
 }
 \arguments{
@@ -84,8 +82,9 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     transitions (mu1) / transversions (mu2).}
   
   \item{spa.model}{an integer indicating the spatial model to be
-    used. 0: no spatial model. 1: exponential kernel.}
-  
+    used. 0: no spatial model (default). 1: exponential kernel (under
+    development).}
+ 
   \item{w.dens}{a vector of numeric values indicating the generation
     time distribution, reflecting the infectious potential of a case
     t=0, 1, 2, ... time steps after infection. By convention,
@@ -108,8 +107,8 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
   \item{dist.mat}{a matrix of pairwise spatial distances between the
     cases.}
 
-  \item{locations}{a factor indicating the location of individuals used
-    to defined local transmissions in the stratified dispersal model}
+  %% \item{locations}{a factor indicating the location of individuals used
+  %%   to defined local transmissions in the stratified dispersal model}
   
   \item{init.tree}{the tree used to initialize the MCMC. Can be either a
     character string indicating how this tree should be computed, or a
@@ -152,26 +151,26 @@ outbreaker.parallel(n.runs, parallel=require("parallel"), n.cores=NULL,
     + output.every*find.import.n) chains will be used in the prior run
     to determine imported cases. Defaults to \code{50}.}
   
-  \item{pi.param1, pi.param2}{two numeric values being the parameters of
+  \item{pi.prior1, pi.prior2}{two numeric values being the parameters of
     the Beta distribution used as a prior for \eqn{\pi}. This prior
     is Beta(10,1) by default, indicating that a majority of cases are
     likely to have been observed. Use Beta(1,1) for a flat prior.}
 
-  \item{phi.param1, phi.param2}{two numeric values being the parameters of
-    the Beta distribution used as a prior for \eqn{\phi}. This prior
-    is Beta(5,1) by default, indicating that a majority of cases are
-    likely to have been observed. Use Beta(1,1) for a flat prior.}
+  %% \item{phi.param1, phi.param2}{two numeric values being the parameters of
+  %%   the Beta distribution used as a prior for \eqn{\phi}. This prior
+  %%   is Beta(5,1) by default, indicating that a majority of cases are
+  %%   likely to have been observed. Use Beta(1,1) for a flat prior.}
 
   \item{init.mu1,init.mu2}{initial values for the mutation rates (mu1:
     transitions; mu2: transversions).}
 
-  \item{init.spa1,init.spa2}{initial values of the spatial parameters.}
+  \item{init.spa1}{initial values of the spatial parameter.}
 
-  \item{spa1.prior,spa2.prior}{parameters of the prior distribution for
+  \item{spa1.prior}{parameters of the prior distribution for
     the spatial parameters. In the spatial model 1, \code{spa1.prior} is
     the mean of an exponential distribution.}
 
-  \item{move.mut,move.pi,move.phi,move.spa}{logicals indicating whether
+  \item{move.mut,move.pi,move.spa}{logicals indicating whether
     the named items should be estimated ('moved' in the MCMC), or not,
     all defaulting to TRUE. \code{move.mut} handles both mutation
     rates.}
