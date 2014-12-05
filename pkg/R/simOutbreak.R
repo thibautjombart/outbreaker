@@ -70,16 +70,30 @@ disperse <- function(xy, disp=.1, area.size=10){
 ## disp: mean distance for host movement
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
+<<<<<<< HEAD
                         rate.import.case=0.01, diverg.import=10, group.freq=1,
                         spatial=FALSE, disp=0.1, area.size=10, reach=1,
                         plot=spatial){
+=======
+                        rate.import.case=0.01, diverg.import=10, 
+                        spatial=TRUE, disp=0.1, area.size=10, reach=1,
+                        plot=spatial,
+			group.sizes=1, trans.mat=matrix(ncol=length(group.sizes),nrow=length(group.sizes),rep(1/length(group.sizes),length(group.sizes)^2),imp.case.group="assign"){
+>>>>>>> Started adding groups to simOutbreak
 
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
-    if(any(group.freq<0)) stop("negative group frequencies provided")
-    group.freq <- group.freq/sum(group.freq)
-    K <- length(group.freq)
-    ## host.group <- sample(1:K, size=n.hosts, prob=group.freq, replace=TRUE)
+
+    ## checking that group sizes and number of hosts are the same
+    if(sum(group.sizes)!=n.hosts) stop("group sizes do not add up to number of hosts")
+    l <- length(group.sizes)
+  
+    ## checking that the transmission probabilities sum to one
+    for(i in 1:l){
+	if(sum(trans.mat[i,]) != 1) stop("rows of transmission matrix do not sum to 1")
+    }
+
+    
     R0 <- rep(R0, length=K) # recycle R0
 
     ## normalize gen.time
@@ -161,7 +175,12 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$onset[1] <- 0
     res$id <- 1 # id of infected individuals
     res$ances <- NA
-    res$group <- choose.group(1)
+
+    ##setting up group membership for the number of hosts
+    res$group <- rep(x=1:l,times=group.sizes)
+    ## shuffling group membership randomly
+    res$group <- res$group[sample(1:l)]
+
     EVE <- seq.gen()
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
     class(res$dna) <- "DNAbin"
@@ -248,19 +267,40 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             newAnces <- sample(res$id, size=nbNewInf, replace=TRUE, prob=indivForce)
             res$ances <- c(res$ances,newAnces)
 
-            ## find the groups of the new cases ##
-            newGroup <- choose.group(nbNewInf)
-            res$group <- c(res$group,newGroup)
+            ## vector of the group membership of ancestors
+            Ances.groups <- res$group[newAnces]
+
+
+
 
             ## id of the new cases ##
             if(!spatial){ # non-spatial case - ID doesn't matter
-                areSus <- which(res$status=="S") # IDs of susceptibles
-                newId <- sample(areSus, size=nbNewInf, replace=FALSE)
-                res$id <- c(res$id, newId)
-                res$status[newId] <- "I"
+		
+		areSus <- which(res$status=="S") # IDs of susceptibles
+		Sus.groups <- res$group[areSus]
+
+		##for each ancestor we create a vector which has the probabilities of a member of the current ancestor's group infecting a member of the potential infected person's group
+		##we then use this to sample the newly infected		
+
+		for(j in 1:length(newAnces)){
+			row <- trans.mat[Ances.groups[j],]
+			probvec <- row[Sus.groups]
+			newId <- sample(areSus,size=1,prob=probvec)
+			res$id <- c(res$id,newId)
+			areSus <- areSus[-newId]
+			Sus.groups <- Sus.groups[-newId]
+			res$status[newId] <- "I"
+	       }
+
+
             } else {
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
+
+		    ##it was decided that at least for the moment we will not consider group membership for the spatial case
+		    ##there will be a lot of correlation between someone's group membership and their geographical location
+		    ##especially in somewhere like a hospital ward, must think on how to deal with this
+
                     newId <- sample(areSus, 1, prob=k.spa[newAnces[i],areSus]) # prob depend on location
                     res$id <- c(res$id, newId)
                     res$status[newId] <- "I"
@@ -303,7 +343,24 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             }
 
             ## group of the imported cases
-            res$group <- c(res$group, choose.group(nbImpCases))
+	    if(imp.case.group == "assign"){
+		##find group frequencies in population
+		freqs <- group.sizes/n.hosts
+		##assign groups to imported cases based on relative group frequencies in population
+		res$group <- c(res$group, sample(1:l,size=nbImpCases))		
+	   } else { ##assign imported cases to new group
+		##check whether this is the first time we are doing it
+		if(ft == TRUE){
+			##extending transmission matrix
+			trans.mat <- cbind(rbind(trans.mat,rep(1,l)),rep(1,l+1))
+			##now the rows do not add to 1 but I think this is okay because sample() normalises probability vectors so I don't need to
+			##assign new cases to new group
+			res$group <- c(res$group, rep(l+1,nbImpCases))
+		}else{
+			##just assign new cases to extra group
+			res$group <-c(res$group, rep(l+1,nbImpCases))
+		}
+
 
             ## dna sequences of the new infections
             newSeq <- t(sapply(1:nbImpCases, function(i) seq.dupli(EVE, diverg.import)))
@@ -374,7 +431,7 @@ print.simOutbreak <- function(x, ...){
     cat("\nSize :", x$n,"cases (out of", x$dynam$nsus[1],"susceptible hosts)")
     cat("\nGenome length :", ncol(x$dna),"nucleotids")
     cat("\nDate range :", min(x$onset),"-",max(x$onset))
-    cat("\nGroup distribution:")
+    cat("\nGroup memberships:")
     print(table(x$group))
 
     cat("\nContent:\n")
@@ -505,6 +562,9 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
         }
     }
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=edge.col.pal, x.min=0, x.max=1)
+
+    ##adding in functionality to colour nodes by group membership
+    if(col.edge.by=="group") edge.col <- num2col(x$group, col.pal=edge.col.pal, x.min=0, x.max=1)
 
     ## labels
     n.annot <- sum(annot %in% c("dist","n.gen"))
