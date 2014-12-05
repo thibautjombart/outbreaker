@@ -36,7 +36,8 @@ plot(dat)
 ##     dev.off()
 ## }
 
-res <-  outbreaker.parallel(n.runs=6, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=2e6, find.import=TRUE, spa.model=0, init.tree="star")
+system.time(res <-  outbreaker.parallel(n.runs=7, dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5, find.import=TRUE, spa.model=0, init.tree="star"))
+##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e6, find.import=TRUE, spa.model=0, init.tree="star")
 plotChains(res)
 plotChains(res, burn=1e4)
 
@@ -64,7 +65,7 @@ w <- c(0, 0.5, 1, 0.75)
 
 ## NON-SPATIAL SIMULATION ##
 ## this may generate an error if outbreak doesn't take off
-dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=.5e-4)[1:30]
+dat <- simOutbreak(R0 = 2, infec.curve = w, n.hosts = 100, spatial=FALSE, mu.transi=.5e-4)[1:60]
 ##collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
 collecDates <- dat$onset + 2
 plot(dat)
@@ -74,7 +75,7 @@ plot(dat)
 
 ## run outbreaker
 ##res <-  outbreaker(dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, spa.model=0)
-res <-  outbreaker.parallel(6,dna=dat$dna, dates=collecDates,w.dens=w, n.iter=5e4, spa.model=0)
+res <-  outbreaker.parallel(6,dna=dat$dna, dates=collecDates,w.dens=w, n.iter=1e5, spa.model=0)
 
 plotChains(res)
 
@@ -103,7 +104,7 @@ dat <- simOutbreak(R0 = 1.5, infec.curve = w, n.hosts = 100, spatial=TRUE)[1:35]
 collecDates <- dat$onset + sample(0:3, size=length(dat$onset), replace=TRUE, prob=w)
 D <- as.matrix(dist(dat$xy))
 
-res <-  outbreaker.parallel(6,dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=5e4, spa.model=1, find.import=FALSE)
+res <-  outbreaker.parallel(6,dna=dat$dna, dates=collecDates,w.dens=w, dist.mat=D, n.iter=1e5, spa.model=1, find.import=FALSE)
 plotChains(res)
 
 temp1 <- dat$ances
