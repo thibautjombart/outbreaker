@@ -151,7 +151,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## model 1: normal dispersal
     if(spa.model > 0L) {
         if(is.null(init.spa1)) init.spa1 <- 1
-        if(is.null(init.spa2)) init.spa2 <- 0
+        ## if(is.null(init.spa2)) init.spa2 <- 0
+        init.spa2 <- 0
         spa1.prior <- max(0.0, spa1.prior)
     }
     ## model 2: stratified dispersal
