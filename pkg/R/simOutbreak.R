@@ -73,7 +73,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         rate.import.case=0.01, diverg.import=10, 
                         spatial=TRUE, disp=0.1, area.size=10, reach=1,
                         plot=spatial,
-			group.sizes=1, trans.mat=matrix(ncol=length(group.sizes),nrow=length(group.sizes),rep(1/length(group.sizes),length(group.sizes)^2),imp.case.group="assign"){
+		                  	group.sizes=1, trans.mat=matrix(ncol=length(group.sizes),nrow=length(group.sizes),rep(1/length(group.sizes),length(group.sizes)^2),
+                        imp.case.group="assign")){
 
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
