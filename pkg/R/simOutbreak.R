@@ -296,7 +296,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 			areSus <- areSus[-newId]
 			Sus.groups <- Sus.groups[-newId]
 			res$status[newId] <- "I"
-	       }
+
             } else {
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
