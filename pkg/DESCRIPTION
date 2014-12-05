@@ -5,8 +5,8 @@ Title: Bayesian reconstruction of disease outbreaks by combining epidemiologic a
 Author:  Thibaut Jombart <t.jombart@imperial.ac.uk>, Anne Cori, Joel Hellewell
 Maintainer: Thibaut Jombart <t.jombart@imperial.ac.uk>
 Suggests: EpiEstim
-Depends: R (>= 3.0.0)
-Imports: utils, ape, igraph, adegenet, parallel
+Depends: R (>= 3.0.0), parallel
+Imports: utils, ape, igraph, adegenet
 URL: http://sites.google.com/site/therepiproject/r-pac/outbreaker
 Description: Bayesian reconstruction of disease outbreaks using epidemiological and genetic information.
 License: GPL (>=2)
