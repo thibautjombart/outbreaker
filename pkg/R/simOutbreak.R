@@ -77,6 +77,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         imp.case.group="assign")){
 
 
+
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
 
@@ -90,7 +91,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     }
 
     
+
     R0 <- rep(R0, length=l) # recycle R0
+
 
     ## normalize gen.time
     infec.curve <- infec.curve/sum(infec.curve)
@@ -174,11 +177,13 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
     ##setting up group membership for the number of hosts
     res$group <- rep(x=1:l,times=group.sizes)
+
 	print(res$group)
     ## shuffling group membership randomly
     res$group <- res$group[sample(1:n.hosts,replace=FALSE)]
 	print("shuffled group vec")
 	print(res$group)
+
 
     EVE <- seq.gen()
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
@@ -276,31 +281,23 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             ## id of the new cases ##
             if(!spatial){ # non-spatial case - ID doesn't matter
 		
-		
+
+		areSus <- which(res$status=="S") # IDs of susceptibles
+		Sus.groups <- res$group[areSus]
 
 		##for each ancestor we create a vector which has the probabilities of a member of the current ancestor's group infecting a member of the potential infected person's group
-		##we then use this to sample the newly infected
-
-				
+		##we then use this to sample the newly infected		
 
 		for(j in 1:length(newAnces)){
-			areSus <- which(res$status=="S") # IDs of susceptibles
-			print("areSus")
-			print(areSus)
-			Sus.groups <- res$group[areSus]
-			probvec <- trans.mat[Ances.groups[j],Sus.groups]
-			print("Ances.groups[j]:")
-			print(Ances.groups[j])
-			print("Sus.groups")
-			print(Sus.groups)
-			print("probvec:")
-			print(probvec)
+			row <- trans.mat[Ances.groups[j],]
+			probvec <- row[Sus.groups]
 			newId <- sample(areSus,size=1,prob=probvec)
 			res$id <- c(res$id,newId)
+			areSus <- areSus[-newId]
+			Sus.groups <- Sus.groups[-newId]
 			res$status[newId] <- "I"
-		}      
-      
-      }else{
+	       }
+            } else {
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
 
@@ -350,10 +347,25 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             }
 
             ## group of the imported cases
+
+	    if(imp.case.group == "assign"){
 		##find group frequencies in population
 		freqs <- group.sizes/n.hosts
 		##assign groups to imported cases based on relative group frequencies in population
-		res$group <- c(res$group, sample(1:l,size=nbImpCases,replace=TRUE, prob=freqs))		
+		res$group <- c(res$group, sample(1:l,size=nbImpCases))		
+	   } else { ##assign imported cases to new group
+		##check whether this is the first time we are doing it
+		if(ft == TRUE){
+			##extending transmission matrix
+			trans.mat <- cbind(rbind(trans.mat,rep(1,l)),rep(1,l+1))
+			##now the rows do not add to 1 but I think this is okay because sample() normalises probability vectors so I don't need to
+			##assign new cases to new group
+			res$group <- c(res$group, rep(l+1,nbImpCases))
+		}else{
+			##just assign new cases to extra group
+			res$group <-c(res$group, rep(l+1,nbImpCases))
+		}
+
 
 
             ## dna sequences of the new infections
@@ -559,6 +571,10 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
         }
     }
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=edge.col.pal, x.min=0, x.max=1)
+
+
+    ##adding in functionality to colour nodes by group membership
+    if(col.edge.by=="group") edge.col <- num2col(x$group, col.pal=edge.col.pal, x.min=0, x.max=1)
 
 
     ## labels
