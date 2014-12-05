@@ -70,16 +70,12 @@ disperse <- function(xy, disp=.1, area.size=10){
 ## disp: mean distance for host movement
 simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
-<<<<<<< HEAD
-                        rate.import.case=0.01, diverg.import=10, group.freq=1,
-                        spatial=FALSE, disp=0.1, area.size=10, reach=1,
-                        plot=spatial){
-=======
                         rate.import.case=0.01, diverg.import=10, 
                         spatial=TRUE, disp=0.1, area.size=10, reach=1,
                         plot=spatial,
-			group.sizes=1, trans.mat=matrix(ncol=length(group.sizes),nrow=length(group.sizes),rep(1/length(group.sizes),length(group.sizes)^2),imp.case.group="assign"){
->>>>>>> Started adding groups to simOutbreak
+		                  	group.sizes=1, trans.mat=matrix(ncol=length(group.sizes),nrow=length(group.sizes),rep(1/length(group.sizes),length(group.sizes)^2),
+                        imp.case.group="assign")){
+
 
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
