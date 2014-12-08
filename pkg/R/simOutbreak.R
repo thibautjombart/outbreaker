@@ -537,7 +537,7 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 
     ## colors
     if(vertex.col=="group"){
-	V(out)$color <- num2col(x$group, col.pal=funky)
+	V(out)$color <- num2col(unique(x$group), col.pal=funky)
 	}else{
     V(out)$color <- vertex.col
 	}
