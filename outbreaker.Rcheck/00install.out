@@ -1,0 +1,36 @@
+* installing *source* package ‘outbreaker’ ...
+checking for gsl-config... /usr/bin/gsl-config
+checking if GSL version >= 1.12... checking for gcc... gcc
+checking for C compiler default output file name... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables... 
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+yes
+configure: creating ./config.status
+config.status: creating src/Makevars
+** libs
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c distances.c -o distances.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c genclasses.c -o genclasses.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c init.c -o init.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c likelihood.c -o likelihood.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c matvec.c -o matvec.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c mcmc.c -o mcmc.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c moves.c -o moves.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c outbreaker.c -o outbreaker.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c prior.c -o prior.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I/usr/include -I.     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c structures.c -o structures.o
+gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o outbreaker.so distances.o genclasses.o init.o likelihood.o matvec.o mcmc.o moves.o outbreaker.o prior.o structures.o -L/usr/lib -lgsl -lgslcblas -lm -L/usr/lib/R/lib -lR
+installing to /home/joel/outbreaker-code/outbreaker.Rcheck/outbreaker/libs
+** R
+** data
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (outbreaker)
