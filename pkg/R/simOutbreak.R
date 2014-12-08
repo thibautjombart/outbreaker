@@ -285,17 +285,11 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
 		for(j in 1:length(newAnces)){
 			areSus <- which(res$status=="S") # IDs of susceptibles
-			print("areSus")
-			print(areSus)
 			Sus.groups <- res$group[areSus]
 			probvec <- trans.mat[Ances.groups[j],Sus.groups]
-			print("Ances.groups[j]:")
-			print(Ances.groups[j])
-			print("Sus.groups")
-			print(Sus.groups)
-			print("probvec:")
-			print(probvec)
 			newId <- sample(areSus,size=1,prob=probvec)
+			print(paste("Infector: ", newAnces[j]))
+			print(paste("Infected: ", newId))
 			res$id <- c(res$id,newId)
 			res$status[newId] <- "I"
 		}      
@@ -368,6 +362,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         res$dynam$nrec[t+1] <- sum(res$status=="R")
         res$dynam$ninf[t+1] <- sum(res$status=="I")
         res$dynam$nsus[t+1] <- sum(res$status=="S")
+
+	print("end of round")
     } # end for
 
 
@@ -375,6 +371,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     ## data need to be reordered so that res$id is 1:res$n
     res$n <- nrow(res$dna)
     res$ances <- match(res$ances, res$id)
+    res$group <- res$group[order(res$id)]
     res$id <- 1:res$n
     res$xy <- res$inf.xy # don't keep entire distribution, not right order anymore anyway
     res$inf.xy <- NULL # simpler to just call coords 'xy'
