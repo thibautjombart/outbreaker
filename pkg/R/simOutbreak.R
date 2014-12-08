@@ -22,7 +22,7 @@ disperse <- function(xy, disp=.1, area.size=10){
     ## return
     return(out)
 } # end disperse
-
+options(error=recover)
 
 ## fun test:
 ## library(adegenet)
@@ -90,7 +90,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     }
 
     
-    R0 <- rep(R0, length=K) # recycle R0
+    R0 <- rep(R0, length=l) # recycle R0
 
     ## normalize gen.time
     infec.curve <- infec.curve/sum(infec.curve)
@@ -152,10 +152,10 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     }
 
     ## define the group of 'n' hosts
-    choose.group <- function(n){
-        out <- sample(1:K, size=n, prob=group.freq, replace=TRUE)
-        return(out)
-    }
+    #choose.group <- function(n){
+    #    out <- sample(1:K, size=n, prob=group.freq, replace=TRUE)
+    #    return(out)
+    #}
 
     ## handle 'plot' argument ##
     if(plot && !spatial) warning("Plot only available with spatial model")
@@ -174,8 +174,11 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
     ##setting up group membership for the number of hosts
     res$group <- rep(x=1:l,times=group.sizes)
+	print(res$group)
     ## shuffling group membership randomly
-    res$group <- res$group[sample(1:l)]
+    res$group <- res$group[sample(1:n.hosts,replace=FALSE)]
+	print("shuffled group vec")
+	print(res$group)
 
     EVE <- seq.gen()
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
@@ -238,7 +241,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         }
 
         ## temporal (spatial) force of infection * R0
-        indivForce <- indivForce * R0[res$group]
+	indivGroups <- res$group[res$id]
+        indivForce <- indivForce * R0[indivGroups]
 
         ## global force of infection (R0 \sum_j I_t^j / N)
         N <- res$dynam$nrec[t] + res$dynam$ninf[t] + res$dynam$nsus[t] # this may change because of imports
@@ -272,19 +276,27 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             ## id of the new cases ##
             if(!spatial){ # non-spatial case - ID doesn't matter
 		
-		areSus <- which(res$status=="S") # IDs of susceptibles
-		Sus.groups <- res$group[areSus]
+		
 
 		##for each ancestor we create a vector which has the probabilities of a member of the current ancestor's group infecting a member of the potential infected person's group
-		##we then use this to sample the newly infected		
+		##we then use this to sample the newly infected
+
+				
 
 		for(j in 1:length(newAnces)){
-			row <- trans.mat[Ances.groups[j],]
-			probvec <- row[Sus.groups]
+			areSus <- which(res$status=="S") # IDs of susceptibles
+			print("areSus")
+			print(areSus)
+			Sus.groups <- res$group[areSus]
+			probvec <- trans.mat[Ances.groups[j],Sus.groups]
+			print("Ances.groups[j]:")
+			print(Ances.groups[j])
+			print("Sus.groups")
+			print(Sus.groups)
+			print("probvec:")
+			print(probvec)
 			newId <- sample(areSus,size=1,prob=probvec)
 			res$id <- c(res$id,newId)
-			areSus <- areSus[-newId]
-			Sus.groups <- Sus.groups[-newId]
 			res$status[newId] <- "I"
 		}      
       
@@ -341,7 +353,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 		##find group frequencies in population
 		freqs <- group.sizes/n.hosts
 		##assign groups to imported cases based on relative group frequencies in population
-		res$group <- c(res$group, sample(1:l,size=nbImpCases))		
+		res$group <- c(res$group, sample(1:l,size=nbImpCases,replace=TRUE, prob=freqs))		
 
 
             ## dna sequences of the new infections
@@ -525,8 +537,12 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     ## V(out)$group <- x$group[V(out)$name]
 
     ## colors
+    if(vertex.col=="group"){
+	V(out)$color <- num2col(x$group, col.pal=funky)
+	}else{
     V(out)$color <- vertex.col
-    ## V(out)$color <- fac2col(factor(V(out)$group), col.pal=vertex.col.pal)
+	}
+   
 
 
     ## SET EDGE INFO ##
@@ -544,8 +560,6 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     }
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=edge.col.pal, x.min=0, x.max=1)
 
-    ##adding in functionality to colour nodes by group membership
-    if(col.edge.by=="group") edge.col <- num2col(x$group, col.pal=edge.col.pal, x.min=0, x.max=1)
 
     ## labels
     n.annot <- sum(annot %in% c("dist","n.gen"))
