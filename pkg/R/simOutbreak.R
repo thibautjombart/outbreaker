@@ -282,19 +282,30 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             if(!spatial){ # non-spatial case - ID doesn't matter
 		
 
+
 		areSus <- which(res$status=="S") # IDs of susceptibles
 		Sus.groups <- res$group[areSus]
 
+
 		##for each ancestor we create a vector which has the probabilities of a member of the current ancestor's group infecting a member of the potential infected person's group
-		##we then use this to sample the newly infected		
+		##we then use this to sample the newly infected
+
+				
 
 		for(j in 1:length(newAnces)){
-			row <- trans.mat[Ances.groups[j],]
-			probvec <- row[Sus.groups]
+			areSus <- which(res$status=="S") # IDs of susceptibles
+			print("areSus")
+			print(areSus)
+			Sus.groups <- res$group[areSus]
+			probvec <- trans.mat[Ances.groups[j],Sus.groups]
+			print("Ances.groups[j]:")
+			print(Ances.groups[j])
+			print("Sus.groups")
+			print(Sus.groups)
+			print("probvec:")
+			print(probvec)
 			newId <- sample(areSus,size=1,prob=probvec)
 			res$id <- c(res$id,newId)
-			areSus <- areSus[-newId]
-			Sus.groups <- Sus.groups[-newId]
 			res$status[newId] <- "I"
 		}      
       
@@ -356,7 +367,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 		##find group frequencies in population
 		freqs <- group.sizes/n.hosts
 		##assign groups to imported cases based on relative group frequencies in population
-		res$group <- c(res$group, sample(1:l,size=nbImpCases))		
+		res$group <- c(res$group, sample(1:l,size=nbImpCases,replace=TRUE, prob=freqs))		
 
 
 
@@ -542,7 +553,9 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 
     ## colors
     if(vertex.col=="group"){
-	V(out)$color <- num2col(unique(x$group), col.pal=funky)
+
+	V(out)$color <- num2col(x$group, col.pal=funky)
+
 	}else{
     V(out)$color <- vertex.col
 	}
@@ -565,8 +578,6 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=edge.col.pal, x.min=0, x.max=1)
 
 
-    ##adding in functionality to colour nodes by group membership
-    if(col.edge.by=="group") edge.col <- num2col(x$group, col.pal=edge.col.pal, x.min=0, x.max=1)
 
 
     ## labels
