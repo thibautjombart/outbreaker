@@ -178,11 +178,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     ##setting up group membership for the number of hosts
     res$group <- rep(x=1:l,times=group.sizes)
 
-	print(res$group)
     ## shuffling group membership randomly
     res$group <- res$group[sample(1:n.hosts,replace=FALSE)]
-	print("shuffled group vec")
-	print(res$group)
 
 
     EVE <- seq.gen()
@@ -297,7 +294,6 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 			areSus <- which(res$status=="S") # IDs of susceptibles
 			Sus.groups <- res$group[areSus]
 			probvec <- trans.mat[Ances.groups[j],Sus.groups]
-			print(rbind(areSus,Sus.groups,probvec))
 			newId <- sample(areSus,size=1,prob=probvec)
 			print(paste("infected: ", newId, " in group: ", res$group[newId]))
 			
@@ -380,11 +376,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         res$dynam$ninf[t+1] <- sum(res$status=="I")
         res$dynam$nsus[t+1] <- sum(res$status=="S")
 
-	print("end of round")
     } # end for
 
-    print("res$id:")
-    print(res$id)
+    
 	
 
    ##THE PROBLEM HAS SOMETHING TO DO WITH WHETHER RES$GROUP[RES$ID] is the group of RES$ID or the group of
@@ -394,7 +388,6 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     ## data need to be reordered so that res$id is 1:res$n
     res$n <- nrow(res$dna)
     res$ances <- match(res$ances, res$id)
-    print(rbind(res$id,1:res$n,res$group[res$id]))
     res$group <- res$group[res$id]
     res$id <- 1:res$n
     res$xy <- res$inf.xy # don't keep entire distribution, not right order anymore anyway
@@ -566,8 +559,6 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 	V(out)$color <- num2col(V(out)$group, col.pal=funky)
 	#V(out)$color <- funky(x$group)[x$group]
 
-	print(cbind(V(out)$label,V(out)$color))
-
 	}else{
     V(out)$color <- vertex.col
 	}
@@ -604,7 +595,6 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 
     ## SET LAYOUT ##
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$date, maxx=V(out)$date))
-    print(out)
     return(out)
 } # end as.igraph.simOutbreak
 
