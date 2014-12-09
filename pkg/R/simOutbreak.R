@@ -293,12 +293,14 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 				
 
 		for(j in 1:length(newAnces)){
+			print(paste("Infector: ", newAnces[j], " in group: ", Ances.groups[j]))
 			areSus <- which(res$status=="S") # IDs of susceptibles
 			Sus.groups <- res$group[areSus]
 			probvec <- trans.mat[Ances.groups[j],Sus.groups]
+			print(rbind(areSus,Sus.groups,probvec))
 			newId <- sample(areSus,size=1,prob=probvec)
-			print(paste("Infector: ", newAnces[j]))
-			print(paste("Infected: ", newId))
+			print(paste("infected: ", newId, " in group: ", res$group[newId]))
+			
 			res$id <- c(res$id,newId)
 			res$status[newId] <- "I"
 		}      
@@ -381,16 +383,24 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 	print("end of round")
     } # end for
 
+    print("res$id:")
+    print(res$id)
+	
+
+   ##THE PROBLEM HAS SOMETHING TO DO WITH WHETHER RES$GROUP[RES$ID] is the group of RES$ID or the group of
+   ## res$id[j] = res$group[j]
 
     ## SHAPE AND RETURN OUTPUT ##
     ## data need to be reordered so that res$id is 1:res$n
     res$n <- nrow(res$dna)
     res$ances <- match(res$ances, res$id)
-    res$group <- res$group[order(res$id)]
+    print(rbind(res$id,1:res$n,res$group[res$id]))
+    res$group <- res$group[res$id]
     res$id <- 1:res$n
     res$xy <- res$inf.xy # don't keep entire distribution, not right order anymore anyway
     res$inf.xy <- NULL # simpler to just call coords 'xy'
     res$status <- NULL # we don't need this
+    
 
     findNmut <- function(i){
         if(!is.na(res$ances[i]) && res$ances[i]>0){
@@ -526,8 +536,9 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     from <- as.character(x$ances)
     to <- as.character(x$id)
     isNotNA <- !is.na(from) & !is.na(to)
-    vnames <- unique(c(from,to))
-    vnames <- vnames[!is.na(vnames)]
+    ##vnames <- unique(c(from,to))
+    ##vnames <- vnames[!is.na(vnames)]
+    vnames <- x$id
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames))
 
@@ -545,13 +556,15 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     V(out)$date <- x$onset[V(out)$name]
 
     ## ## groups
-    ## names(x$group) <- x$id
-    ## V(out)$group <- x$group[V(out)$name]
+    ##names(x$group) <- x$id
+    ##V(out)$group <- x$group[V(out)$name]
 
     ## colors
     if(vertex.col=="group"){
 
-	V(out)$color <- num2col(unique(x$group), col.pal=funky)
+	#V(out)$color <- num2col(V(out)$group, col.pal=funky)
+	V(out)$color <- ifelse(x$group == 1,"red","blue")
+	print(cbind(V(out)$label,V(out)$color))
 
 	}else{
     V(out)$color <- vertex.col
@@ -589,7 +602,7 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
 
     ## SET LAYOUT ##
     attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$date, maxx=V(out)$date))
-
+    print(out)
     return(out)
 } # end as.igraph.simOutbreak
 
