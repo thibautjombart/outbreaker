@@ -224,7 +224,7 @@ double colltime_dens(gentime *in, int t){
  =======
 */
 
-param *alloc_param(int n){
+param *alloc_param(int n, int l){
   /* allocate pointer */
     param *out = (param *) malloc(sizeof(param));
     if(out == NULL){
@@ -260,6 +260,9 @@ param *alloc_param(int n){
     out->phi = 0.5;
     out->phi_param1 = 1.0;
     out->phi_param2 = 1.0;
+
+    /* fill in transmission matrix */
+    out->trans_mat = alloc_mat_double(l,l);
 
     /* return */
     return out;
