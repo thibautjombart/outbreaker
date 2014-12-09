@@ -866,14 +866,25 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 
 
+/* MOVING VALUES IN THE TRANSMISSION MATRIX */
+void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng, int l){
+/*Declarations*/
+int i;
+double temp; /*used in loop*/
+
+/* logit transform entries in matrix */
+mat_double *prop_mat = alloc_mat_double(mcmcPar->l,mcmcPar->l);
+copy_mat_double(currentPar->trans_mat,prop_mat);
+vec_double *prop_vec = alloc_vec_double(mcmcPar->l*mcmcPar->l);
+copy_vec_double(*prop_mat->rows,prop_vec);
+
+for(i=0;i<(prop_vec->length - 1);i++){
+	temp = prop_vec->values[i];
+	prop_vec->values[i] = log(temp/(1-temp));
+}
 
 
-
-
-
-
-
-
+}
 
 
 
