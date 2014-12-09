@@ -32,7 +32,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed){
+		  char **resFileName, char **tuneFileName, int *seed, int l){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
@@ -43,6 +43,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     spatial_dist * spatialInfo;
     mcmc_param * mcmcPar;
     int i,j, counter;
+    mat_double *trans_mat;
 
     bool checkLike;
     bool findImport = (bool) *importMethod>0;
@@ -71,8 +72,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CREATE AND INIT PARAMETERS */
-    par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng);
+    par = alloc_param(N,l);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, trans_mat);
     /* Rprintf("\n>>> param <<<\n"); */
     /* print_param(par); */
 
