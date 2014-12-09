@@ -87,7 +87,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, mat_double trans_mat){
     int i, ancesId, T, TmaxLike;
 
     /* Tinf */
@@ -146,6 +146,9 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi = gsl_ran_beta(rng,phi_param1,phi_param2);
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
+
+    /* transmission matrix */
+    par->trans_mat = trans_mat;
 }
 
 

@@ -67,6 +67,7 @@ typedef struct{
     int import_method; /* import method: 0=none; 1=based on genetic LL; 2=based on full LL */
     double phi; /* proba of nosocomial infection */
     double phi_param1, phi_param2; /* parameters of the Beta prior for phi */
+    mat_double *trans_mat; /* matrix for transmission probabilities between different groups */
 } param;
 
 
@@ -83,6 +84,7 @@ typedef struct{
     int n_accept_Tinf, n_reject_Tinf; /* accept/reject for Tinf */
     int n_accept_alpha, n_reject_alpha; /* accept/reject for alpha */
     int n_accept_kappa, n_reject_kappa; /* accept/reject for kappa */
+    int n_accept_trans_mat, n_reject_trans_mat; /* accept/reject for transmission matrix */
     int n_move_Tinf, n_move_alpha, n_move_kappa; /* number of Tinf, kappa and alpha to move at each chain */
     double sigma_mu1; /* sigma for normal proposal for mu1 */
     double sigma_gamma; /* sigma for normal proposal for gamma */
@@ -90,6 +92,7 @@ typedef struct{
     double sigma_pi; /* sigma for normal proposal for pi */
     double sigma_phi; /* sigma for normal proposal for phi */
     double sigma_spa1, sigma_spa2; /* sigma for proposal for spa1 and spa2 */
+    double sigma_trans_mat; /*sigma for proposal for transmission matrix move */
     vec_int *idx_move_Tinf; /* vector of length n_move_Tinf giving indices of Tinf_i to move */
     vec_int *idx_move_alpha; /* vector of length n_move_alpha giving indices of alpha_i to move */
     vec_int *idx_move_kappa; /* vector of length n_move_kappa giving indices of kappa_i to move */
@@ -160,7 +163,7 @@ double colltime_dens(gentime *in, int t);
  =======
 */
 
-param *alloc_param(int n);
+param *alloc_param(int n, int l); /* l is number of groups */
 
 void free_param(param *in);
 
