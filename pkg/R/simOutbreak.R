@@ -558,12 +558,14 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     ## ## groups
     ##names(x$group) <- x$id
     ##V(out)$group <- x$group[V(out)$name]
-
+     
+	V(out)$group <- x$group
     ## colors
     if(vertex.col=="group"){
 
-	#V(out)$color <- num2col(V(out)$group, col.pal=funky)
-	V(out)$color <- ifelse(x$group == 1,"red","blue")
+	V(out)$color <- num2col(V(out)$group, col.pal=funky)
+	#V(out)$color <- funky(x$group)[x$group]
+
 	print(cbind(V(out)$label,V(out)$color))
 
 	}else{
