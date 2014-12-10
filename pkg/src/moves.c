@@ -869,26 +869,30 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 /* MOVING VALUES IN THE TRANSMISSION MATRIX (NEW SCIENTIFIC NAME - JIGGLING THE MATRIX) */
 void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng, int l){
 /*Declarations*/
-int i;
+int i,j;
 double temp; /*used in loop*/
+double logit;
 
 /* logit transform entries in matrix and add normal variable */
-mat_double *prop_mat = alloc_mat_double(mcmcPar->l,mcmcPar->l);
-copy_mat_double(currentPar->trans_mat,prop_mat);
-vec_double *prop_vec = alloc_vec_double(mcmcPar->l*mcmcPar->l);
-copy_vec_double(*prop_mat->rows,prop_vec);
-
-for(i=0;i<(prop_vec->length - 1);i++){
-	temp = prop_vec->values[i];
-	prop_vec->values[i] = log(temp/(1-temp));
-	prop_vec->values[i] += gsl_ran_gaussian(rng, mcmcPar->sigma_trans_mat);
-	temp = prop_vec->values[i];
-	prop_vec->values[i] = gsl_sf_exp(temp)/(1+ gsl_sf_exp(temp));
+for(i=0;i<(currentPar->trans_mat->n - 1);i++){
+	for(j=0;i<(currentPar->trans_mat->p - 1);j++){
+		temp = log(mat_double_ij(currentPar->trans_mat,i,j));
+		logit = 1/(1-temp);
+		logit += gsl_ran_gaussian(rng,mcmcPar->sigma_trans_mat);
+		temp = gsl_sf_exp(logit)/(1+gsl_sf_exp(logit));
+		write_mat_double(tempPar->trans_mat,i,j,temp);
+	}
 }
 
-copy_vec_double(prop_vec,*prop_mat->rows);
-copy_mat_double(prop_mat, tempPar->trans_mat);
-
+/*sum row and divide all entries by sum */
+double rowsum;
+for(i=0;i<(currentPar->trans_mat->n - 1);i++){
+	rowsum = sum_vec_double(tempPar->trans_mat->rows[i]);
+	for(j=0;i<(currentPar->trans_mat->p - 1);j++){
+		temp = mat_double_ij(tempPar->trans_mat,i,j);
+		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
+	}
+}
 /* LIKELIHOOD GOES HERE */
 
 
