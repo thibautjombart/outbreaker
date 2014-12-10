@@ -126,6 +126,18 @@ void copy_mat_int(mat_int *in, mat_int *out);
 
 void copy_mat_double(mat_double *in, mat_double *out);
 
+/* adding write functions for matrices to use on transmission matrices */
+
+void write_vec_int(vec_int *in, int i, int x);
+
+void write_vec_double(vec_double *in, int i, double x);
+
+void write_mat_int(mat_int *in, int i, int j, int x);
+
+void write_mat_double(mat_double *in, int i, int j, double x);
+
+
+
 
 
 /*
