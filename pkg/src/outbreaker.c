@@ -47,6 +47,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     bool checkLike;
     bool findImport = (bool) *importMethod>0;
+    
 
     /* INITIALIZE RNG */
     /* rng = create_gsl_rng((time_t) time(NULL)); */
@@ -107,7 +108,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
-		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt, l);
     /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
     /* print_mcmc_param(mcmcPar); */
 
