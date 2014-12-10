@@ -920,7 +920,18 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 */
 
 
-/* int main(){ */
+/* int main()
+
+    vec_double *test_vec = alloc_vec_double(2);
+    print_vec_double(test_vec);
+    write_vec_double(test_vec,0,3.506);
+    print_vec_double(test_vec);
+
+    mat_double *test_mac = alloc_mat_double(5,5);
+    print_mat_double(test_mac);
+    write_mat_double(test_mac,1,1,2.765);
+    print_mat_double(test_mac); */
+
 /*     /\* RANDOM NUMBER GENERATOR *\/ */
 /*     time_t t = time(NULL); /\* time in seconds, used to change the seed of the random generator *\/ */
 /*     const gsl_rng_type *typ; */
@@ -1069,7 +1080,7 @@ void convol_vec_double(vec_double *in_a, vec_double *in_b, vec_double *out){
 /*     free_mat_double(mat2); */
 /*     gsl_rng_free(rng); */
 /*     return 0; */
-/* } */
+/* } 	*/
 
 
 
