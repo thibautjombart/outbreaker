@@ -626,8 +626,8 @@ void copy_mat_double(mat_double *in, mat_double *out){
 
 void write_vec_int(vec_int *in, int i,int x){
     if(i >= in->length || i<0) {
-      error("\n[in: vec_int_i] Trying to access value %d in a vector of size %d\n",i,in->length);
-      /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
+      error("\n[in: vec_int_i] Trying to write value %d in a vector of size %d\n",i,in->length);
+      /* fprintf(stderr, "\nTrying to write value %d in a vector of size %d\n",i,in->length); */
       /* exit(1); */
     }
     in->values[i] = x;	
@@ -635,8 +635,8 @@ void write_vec_int(vec_int *in, int i,int x){
 
 void write_vec_double(vec_double *in, int i,double x){
     if(i >= in->length || i<0) {
-      error("\n[in: vec_int_i] Trying to access value %d in a vector of size %d\n",i,in->length);
-      /* fprintf(stderr, "\nTrying to access value %d in a vector of size %d\n",i,in->length); */
+      error("\n[in: vec_int_i] Trying to write value %d in a vector of size %d\n",i,in->length);
+      /* fprintf(stderr, "\nTrying to write value %d in a vector of size %d\n",i,in->length); */
       /* exit(1); */
     }
     in->values[i] = x;	
@@ -644,20 +644,20 @@ void write_vec_double(vec_double *in, int i,double x){
 
 void write_mat_int(mat_int *in, int i, int j, int x){
     if(i >= in->n || i<0 || j>=in->p || j<0) {
-      error("\n[in: mat_int_i] Trying to access item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
-      /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
+      error("\n[in: mat_int_i] Trying to write item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
+      /* fprintf(stderr, "\nTrying to write item %d in a list of size %d\n",i,in->n); */
       /* exit(1); */
     }
-    write_vec_int(in->rows[i],j,x);
+    write_vec_int(in->rows[i],j,(double) x);
 }
 
 void write_mat_double(mat_double *in, int i, int j, double x){
     if(i >= in->n || i<0 || j>=in->p || j<0) {
-      error("\n[in: mat_int_i] Trying to access item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
-      /* fprintf(stderr, "\nTrying to access item %d in a list of size %d\n",i,in->n); */
+      error("\n[in: mat_int_i] Trying to write item (%d,%d) in a matrix of dimensions (%d,%d)\n", i, j, in->n, in->p);
+      /* fprintf(stderr, "\nTrying to write item %d in a list of size %d\n",i,in->n); */
       /* exit(1); */
     }
-    write_vec_double(in->rows[i],j,x);
+    write_vec_double(in->rows[i],j,(double) x);
 }
 
 
