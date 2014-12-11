@@ -1200,34 +1200,40 @@ for(i=0;i<(currentPar->trans_mat->n - 1);i++){
 /*
 >>>> TESTING <<<<
 */
-
+/*
 void mat_test(){
 	gsl_rng *rng = create_gsl_rng(time(NULL));
 	mat_double *test_in = alloc_mat_double(3,3);
 	mat_double *test_out = alloc_mat_double(3,3);
 	double sigma = 1;
 	int l = 3;
+	int t,s = 0;
+
+
+	for(t=0;t<l;t++){
+		for(s=0;s<l;s++){		
+			write_mat_double(test_in,t,s,gsl_ran_gaussian(rng,sigma));
+		}
+	}
 
 	print_mat_double(test_in);
 	print_mat_double(test_out);
-
-	printf("%g",mat_double_ij(test_in,0,0));
 
 	test_jiggler(test_in,test_out,l,sigma,rng);
 	
 	print_mat_double(test_out);
 
 }
+*/
 
-
-void test_jiggler(mat_double *inmat, mat_double *outmat, int l, double sigma_trans_mat,gsl_rng *rng){
+/* void test_jiggler(mat_double *inmat, mat_double *outmat, int l, double sigma_trans_mat,gsl_rng *rng){
 /*Declarations*/
-int i,j;
+/* int i,j;
 double temp; /*used in loop*/
-double logit;
+/* double logit;
 
 /* logit transform entries in matrix and add normal variable */
-for(i=0;i<l;i++){
+/* for(i=0;i<l;i++){
 	for(j=0;j<l;j++){
 		temp = log(mat_double_ij(inmat,i,j));
 		logit = 1/(1-temp);
@@ -1238,7 +1244,7 @@ for(i=0;i<l;i++){
 }
 
 /*sum row and divide all entries by sum */
-double rowsum;
+/* double rowsum;
 for(i=0;i<l;i++){
 	rowsum = sum_vec_double(outmat->rows[i]);
 	for(j=0;j<l;j++){
