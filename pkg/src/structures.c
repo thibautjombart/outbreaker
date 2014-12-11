@@ -35,6 +35,9 @@ data *alloc_data(int n, int nSeq, int length){
     /* locations of each case */
     out->locations = alloc_vec_int(n);
 
+    /* group membership */
+    out->group_vec = alloc_vec_int(n);
+
     return out;
 } /* end alloc_data */
 
@@ -69,7 +72,7 @@ void print_data(data *in){
 
 /* Create a data object using inputs from R */
 data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
-		   int *nSeq, int *length, int *idxCasesInDna, int *locations){
+		   int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec){
     int i, j, count=0;
     data * out = alloc_data(*n, *nSeq, *length);
 
@@ -98,6 +101,11 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
 	}
   }
 
+
+   /* FILL IN GROUP MEMBERSHIP */
+   for(i=0;i<*n;i++){
+	out->group_vec->values[i] = group_vec[i];
+   }
 
     /* RETURN */
     return out;
