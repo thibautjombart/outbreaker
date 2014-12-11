@@ -32,6 +32,7 @@
      vec_int * idxCasesInDna; /* index of DNA sequence  in 'dna' for each case; -1 if DNA missing */
      int timespan; /* timespan of the data */
      vec_int * locations; /* integer indicating locations of cases - used in stratified dispersal model */
+     vec_int * group_vec /* integer indicating group membership */
  } data;
 
 
@@ -136,7 +137,7 @@ void free_data(data *in);
 
 void print_data(data *in);
 
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations);
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec);
 
 
 

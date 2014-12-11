@@ -32,7 +32,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed, int l){
+		  char **resFileName, char **tuneFileName, int *seed, int l, int *group_vec[]){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
