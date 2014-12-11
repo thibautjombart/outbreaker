@@ -46,7 +46,9 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 /* move for transmission matrix */
 void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng, int l);
 
+/* temporary testing function*/
 
+void test_jiggler(mat_double *inmat, mat_double *outmat, int l, double sigma_trans_mat,gsl_rng *rng);
 
 /* NO LONGER USED */
 /* void move_alpha(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng); */
