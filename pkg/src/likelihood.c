@@ -338,7 +338,9 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
     return out;
 } /* end loglikelihood_spa_i*/
 
+double loglikelihood_grp_i(int i, data *dat, param *par, gsl_rng *rng){ /*group likelihood for individual i (the transmission from immediate ancestor to individual i) */
 
+}
 
 
 
@@ -418,6 +420,20 @@ double loglike_kappa_all(param *par){
     return out;
 }
 
+/* GROUP LOG-LIKELIHOOD FOR ALL INDIVIDUALS */
+double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng){
+	int i;
+	double out=0.0;
+
+	for(i=0;i<dat->n,i++){
+		out += loglikelihood_grp_i(i,dat,par,rng);
+	}
+
+	/*Need to consider later whether next check is needed - will it return NaN or -INF values at all?*/
+	filter_logprob(&out);
+
+	return out;
+}
 
 
 

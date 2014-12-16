@@ -32,11 +32,15 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
 
 double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, gsl_rng *rng);
 
+double loglikelihood_grp_i(int i, data *dat, param *par, gsl_rng *rng);
+
 double loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, gsl_rng *rng);
 
 double loglikelihood_gen_all(data *dat, dna_dist *dnaInfo, param *par, gsl_rng *rng);
 
 double loglikelihood_spa_all(data *dat, spatial_dist *spaInfo, param *par, gsl_rng *rng);
+
+double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng);
 
 double loglike_kappa_all(param *par);
 
