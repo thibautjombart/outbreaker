@@ -17,7 +17,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
-                       tune.file.name="tuning.txt", seed=NULL){
+                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
@@ -274,6 +274,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     dna.dist <- integer(n.ind*(n.ind-1)/2)
     stopTuneAt <- integer(1)
 
+    ##number of groups from vector of group memberships
+    num.groups <- as.integer(length(unique(group.vec)))
+
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
@@ -286,6 +289,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
+	       num.groups, group.vec,
                PACKAGE="outbreaker")
 
     D <- temp[[43]]
