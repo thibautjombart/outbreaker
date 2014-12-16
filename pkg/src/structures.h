@@ -32,7 +32,7 @@
      vec_int * idxCasesInDna; /* index of DNA sequence  in 'dna' for each case; -1 if DNA missing */
      int timespan; /* timespan of the data */
      vec_int * locations; /* integer indicating locations of cases - used in stratified dispersal model */
-     vec_int * group_vec /* integer indicating group membership */
+     vec_int * group_vec; /* integer indicating group membership */
  } data;
 
 

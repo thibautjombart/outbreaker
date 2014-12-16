@@ -340,6 +340,9 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
 
 double loglikelihood_grp_i(int i, data *dat, param *par, gsl_rng *rng){ /*group likelihood for individual i (the transmission from immediate ancestor to individual i) */
 
+
+
+
 }
 
 
@@ -425,7 +428,7 @@ double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng){
 	int i;
 	double out=0.0;
 
-	for(i=0;i<dat->n,i++){
+	for(i=0;i<dat->n;i++){
 		out += loglikelihood_grp_i(i,dat,par,rng);
 	}
 
