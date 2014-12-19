@@ -147,8 +147,8 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
 
-    /* transmission matrix */
-    par->trans_mat = trans_mat;
+    /* transmission matrix 
+    par->trans_mat = trans_mat; */
 }
 
 

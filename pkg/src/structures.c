@@ -272,7 +272,6 @@ param *alloc_param(int n, int l){
 
     /* fill in transmission matrix */
     out->trans_mat = alloc_mat_double(l,l);
-
     /* return */
     return out;
 } /* end alloc_param */
@@ -284,6 +283,7 @@ void free_param(param *in){
     free_vec_int(in->Tinf);
     free_vec_int(in->alpha);
     free_vec_int(in->kappa);
+    free_mat_double(in->trans_mat);
     free(in);
 } /* end free_param*/
 
@@ -317,6 +317,8 @@ void print_param(param *in){
     Rprintf("%.5f", in->phi);
     Rprintf("\n= priors on phi (parameter of beta distribution) =\n");
     Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2);
+    Rprintf("\n= transmission matrix =\n");
+    print_mat_double(in->trans_mat);
 } /* end print_param*/
 
 
