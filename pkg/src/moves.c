@@ -874,8 +874,8 @@ double temp; /*used in loop*/
 double logit;
 
 /* logit transform entries in matrix and add normal variable */
-for(i=0;i<(currentPar->trans_mat->n - 1);i++){
-	for(j=0;i<(currentPar->trans_mat->p - 1);j++){
+for(i=0;i<l;i++){
+	for(j=0;j<l;j++){
 		temp = log(mat_double_ij(currentPar->trans_mat,i,j));
 		logit = 1/(1-temp);
 		logit += gsl_ran_gaussian(rng,mcmcPar->sigma_trans_mat);
@@ -886,9 +886,9 @@ for(i=0;i<(currentPar->trans_mat->n - 1);i++){
 
 /*sum row and divide all entries by sum */
 double rowsum;
-for(i=0;i<(currentPar->trans_mat->n - 1);i++){
+for(i=0;i<l;i++){
 	rowsum = sum_vec_double(tempPar->trans_mat->rows[i]);
-	for(j=0;i<(currentPar->trans_mat->p - 1);j++){
+	for(j=0;j<l;j++){
 		temp = mat_double_ij(tempPar->trans_mat,i,j);
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}

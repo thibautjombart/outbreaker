@@ -32,7 +32,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed, int l, int *group_vec){
+		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
@@ -44,6 +44,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     mcmc_param * mcmcPar;
     int i,j, counter;
     mat_double *trans_mat;
+    int num_of_groups = *l;
 
     bool checkLike;
     bool findImport = (bool) *importMethod>0;
@@ -73,8 +74,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CREATE AND INIT PARAMETERS */
-    par = alloc_param(N,l);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, trans_mat);
+    par = alloc_param(N,num_of_groups);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
     /* Rprintf("\n>>> param <<<\n"); */
     /* print_param(par); */
 
@@ -108,7 +109,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
-		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt, l);
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
     /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
     /* print_mcmc_param(mcmcPar); */
 
@@ -189,8 +190,8 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec);
-    Rprintf("\n>>> Data <<<\n"); 
-    print_data(dat);
+    /* Rprintf("\n>>> Data <<<\n"); 
+    print_data(dat); */
 
 /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(*maxK, *wTrunc, *fTrunc);
@@ -201,9 +202,35 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
-   init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, trans_mat);
-    Rprintf("\n>>> param <<<\n");
-    print_param(par); 
+   init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
+    /* Rprintf("\n>>> param <<<\n");
+    print_param(par);*/
+
+	/* COMPUTE GENETIC DISTANCES */
+    dnaInfo = compute_dna_distances(dat->dna, *mutModel);
+    /* Rprintf("\n>>> DNA info <<<\n");
+    print_dna_dist(dnaInfo); */
+
+
+    /* CONVERT AND STORE SPATIAL DISTANCES */
+    spatialInfo = doublevec2spatial_dist(distMat, n);
+    /* Rprintf("\n>>> SPATIAL info <<<\n"); 
+     print_spatial_dist(spatialInfo); */
+
+	mcmcPar = alloc_mcmc_param(N);
+    init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
+    /* Rprintf("\nMCMC parameters\n");
+    print_mcmc_param(mcmcPar); */
+
+
+   param *temp_par;
+   temp_par = alloc_param(N,num_of_groups);
+   copy_param(par,temp_par);
+   /* mcmcPar->sigma_trans_mat = 1; */
+   jiggle_trans_mat(par,temp_par,dat,spatialInfo,mcmcPar,rng,num_of_groups);
+   print_mat_double(temp_par->trans_mat);
+   print_mat_double(par->trans_mat);
 
     
 }
