@@ -50,6 +50,7 @@ void free_data(data *in){
     free_list_dnaseq(in->dna);
     free_vec_int(in->idxCasesInDna);
     free_vec_int(in->locations);
+    free_vec_int(in->group_vec);
     free(in);
 } /* end free_data*/
 
@@ -65,6 +66,8 @@ void print_data(data *in){
     print_vec_int(in->idxCasesInDna);
     Rprintf("\n= Locations of the cases=\n");
     print_vec_int(in->locations);
+    Rprintf("\n= Group membership vector=\n");
+    print_vec_int(in->group_vec);
 } /* end print_data*/
 
 
@@ -87,6 +90,9 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
 
 	/* locations */
 	out->locations->values[i] = locations[i];
+
+	/*groups*/
+	out->group_vec->values[i] = group_vec[i];
     }
 
     out->timespan = max_vec_int(out->dates) - min_vec_int(out->dates);
@@ -101,11 +107,6 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
 	}
   }
 
-
-   /* FILL IN GROUP MEMBERSHIP */
-   for(i=0;i<*n;i++){
-	out->group_vec->values[i] = group_vec[i];
-   }
 
     /* RETURN */
     return out;
