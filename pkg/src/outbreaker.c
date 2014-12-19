@@ -165,9 +165,10 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed, int l, int *group_vec){
+		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec){
     /* DECLARATIONS */
     int N = *n;
+    int num_of_groups = *l;
     gsl_rng *rng;
     data *dat;
     gentime *gen;
@@ -190,6 +191,21 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec);
     Rprintf("\n>>> Data <<<\n"); 
     print_data(dat);
+
+/* CREATE AND INIT GENERATION TIME */
+    gen = alloc_gentime(*maxK, *wTrunc, *fTrunc);
+    init_gentime(gen, gentimeDens, colltimeDens);
+    /* Rprintf("\n>>> gentime info <<<\n");
+    	print_gentime(gen); */
+
+
+    /* CREATE AND INIT PARAMETERS */
+    par = alloc_param(N,num_of_groups);
+   init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, trans_mat);
+    Rprintf("\n>>> param <<<\n");
+    print_param(par); 
+
+    
 }
 
 
