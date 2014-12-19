@@ -338,11 +338,37 @@ double loglikelihood_spa_i(int i, data *dat, spatial_dist *spaInfo, param *par, 
     return out;
 } /* end loglikelihood_spa_i*/
 
-double loglikelihood_grp_i(int i, data *dat, param *par, gsl_rng *rng){ /*group likelihood for individual i (the transmission from immediate ancestor to individual i) */
+double loglikelihood_grp_i(int i, data *dat, param *par, gsl_rng *rng){ 
+/*group likelihood for individual i (the transmission from immediate ancestor to individual i) */
+
+/*consider case with no generations between cases */
+if(vec_int_i(par->kappa,i) == 1){
+
+	int ances = vec_int_i(par->alpha,i);
+	if(ances < 0){ /*for imported cases*/
+		return 1;	
+	}else{ /*for internal cases*/
+		int to = vec_int_i(dat->group_vec,i);
+		int from = vec_int_i(dat->group_vec,ances);
+		double prob = mat_double_ij(par->trans_mat,from,to);
+	}
+}
+
+/* case with generations between cases - need to consider permutations of possible groups of
+unseen cases and sum them? */
+/*
+if(vec_int_i(par->kappa,i) > 1){
+	int to = vec_int_i(dat->group_vec,i);
+	int ances = vec_int_i(par->alpha,i);
+	int from = vec_int_i(dat->group_vec,ances);
+	int kap = vec_int_i(par->kappa,i);
 
 
 
+}*/
 
+
+return(log(prob));
 }
 
 
