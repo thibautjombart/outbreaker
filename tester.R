@@ -275,7 +275,6 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
 
     ##number of groups from vector of group memberships
     num.groups <- as.integer(length(unique(group.vec)))
-    print(paste("num.groups = ", num.groups))
     group.vec <- as.integer(group.vec)
 
     temp <- .C("test_R",

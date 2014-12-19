@@ -535,8 +535,9 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\nMove kappa_i:");
     print_vec_double(in->move_kappa);
     if(in->find_import){
-	Rprintf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
+	Rprintf("\nFinding imported cases between chains %d and %d \n", in->burnin, in->find_import_at);
     }
+    
 
 } /* end print_mcmc_param */
 

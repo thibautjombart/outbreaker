@@ -87,9 +87,8 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, mat_double *trans_mat){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l){
     int i, ancesId, T, TmaxLike;
-
     /* Tinf */
     /* TmaxLike = which_max_vec_double(gen->dens->rows[0]); */
     TmaxLike = which_max_vec_double(gen->collTime);
@@ -147,15 +146,20 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
 
-    /* transmission matrix 
-    par->trans_mat = trans_mat; */
+    /* transmission matrix */
+    int j;
+    for(i=0;i<l;i++){
+	for(j=0;j<l;j++){
+		write_mat_double(par->trans_mat,i,j,(double)1/l);
+	}
+    }
 }
 
 
 
 
 
-void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at, int l){
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -175,6 +179,8 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_reject_alpha = 0;
     in->n_accept_kappa = in->n_move_kappa;
     in->n_reject_kappa = 0;
+    in->n_accept_trans_mat = 1;
+    in->n_reject_trans_mat = 0;
 
 
     /* INITIALIZE MCMC PARAMETERS */
@@ -185,6 +191,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->sigma_phi = 0.01;
     in->sigma_spa1 = 0.01;
     in->sigma_spa2 = 0.01;
+    in->sigma_trans_mat=1;
     in->step_notune = 0;
     in->burnin = burnin;
     in->find_import_at = find_import_at;
