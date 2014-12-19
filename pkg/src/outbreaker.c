@@ -148,6 +148,52 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 } /* end R_outbreaker */
 
 
+/* TESTING FUNCTION - the purpose of this function is so that I can pass data in from R, check that all structs are initialised and created correctly and then do simple likelihood calculations without running a whole mcmc*/
+/* to run this: install the package, open R and run source("tester.R") which will define and then run an interface function with parameters defined at the bottom of tester.R */
+void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *length, 
+		  int *idxCasesInDna, int *mutModel, double *gentimeDens, int *wTrunc, 
+		  double *colltimeDens, int *fTrunc,
+		  double *distMat, int *locations, int *spaModel,
+		  int *ances, int *init_kappa, int *nIter, int *outputEvery, int *tuneEvery, 
+		  double *piParam1, double *piParam2, 
+		  double *phiParam1, double *phiParam2, 
+		  double *initMu1, double *initGamma, 
+		  double *initSpa1, double *initSpa2, 
+		  double *spa1Prior, double *spa2Prior,
+		  int *moveMut, int *moveAlpha, int *moveKappa, int *moveTinf, 
+		  int *movePi, int *movePhi, int *moveSpa,
+		  int *importMethod, int *findImportAt, int *burnin, 
+		  double *outlierThreshold, int *maxK,
+		  int *quiet, int *vecDist, int *stepStopTune,
+		  char **resFileName, char **tuneFileName, int *seed, int l, int *group_vec){
+    /* DECLARATIONS */
+    int N = *n;
+    gsl_rng *rng;
+    data *dat;
+    gentime *gen;
+    param *par;
+    dna_dist * dnaInfo;
+    spatial_dist * spatialInfo;
+    mcmc_param * mcmcPar;
+    int i,j, counter;
+    mat_double *trans_mat;
+
+    bool checkLike;
+    bool findImport = (bool) *importMethod>0;
+    
+
+    /* INITIALIZE RNG */
+    rng = create_gsl_rng((time_t) *seed);
+
+
+    /* CONVERT DATA */
+    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec);
+    Rprintf("\n>>> Data <<<\n"); 
+    print_data(dat);
+}
+
+
+
 
 
 
