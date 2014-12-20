@@ -414,6 +414,9 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_accept_kappa = 0;
     out->n_reject_kappa = 0;
     out->n_like_zero = 0;
+    out->n_accept_trans_mat = 0;
+    out->n_reject_trans_mat = 0;
+    
 
     /* movement */
     out->move_mut = TRUE;
@@ -498,6 +501,8 @@ void print_mcmc_param(mcmc_param *in){
 
     Rprintf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
 
+    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat, in->n_reject_trans_mat, (double) in->n_accept_trans_mat / in->n_reject_trans_mat);
+
     Rprintf("\nIndices of Tinf_i to move:\n");
     print_vec_int(in->idx_move_Tinf);
     Rprintf("\nIndices of alpha_i to move:\n");
@@ -573,6 +578,8 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->n_reject_alpha = in->n_reject_alpha;
     out->n_accept_kappa = in->n_accept_kappa;
     out->n_reject_kappa = in->n_reject_kappa;
+    out->n_accept_trans_mat = in->n_accept_trans_mat;
+    out->n_reject_trans_mat = in->n_reject_trans_mat;
 
     out->n_move_Tinf = in->n_move_Tinf;
     out->n_move_alpha = in->n_move_alpha;
