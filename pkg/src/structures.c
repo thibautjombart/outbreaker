@@ -345,7 +345,8 @@ void copy_param(param *in, param *out){
     out->mut_model = in->mut_model;
     out->spa_model = in->spa_model;
     out->import_method = in->import_method;
-
+    
+    copy_mat_double(in->trans_mat,out->trans_mat);
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
