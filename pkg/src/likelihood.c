@@ -352,7 +352,7 @@ if(vec_int_i(par->kappa,i) == 1){
 		int from = vec_int_i(dat->group_vec,ances) - 1;
 		prob = mat_double_ij(par->trans_mat,from,to);
 
-		return(prob);
+		return(log(prob));
 	}
 	return 16;
 }
