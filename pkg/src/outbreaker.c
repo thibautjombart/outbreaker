@@ -234,7 +234,7 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
    print_vec_int(temp_par->kappa);
    print_mat_double(temp_par->trans_mat);
 
-   Rprintf("\n %f \n", loglikelihood_grp_i(2,dat, temp_par, rng));
+   Rprintf("\n %f \n", loglikelihood_grp_i(1,dat, temp_par, rng));
 
     
 }
