@@ -357,7 +357,7 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 
 /* PRELIM MCMC FOR FINDING OUTLIERS */
 void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
-		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng, int l){
 
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
@@ -382,7 +382,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
   /* CREATE TEMPORARY PARAMETERS */
   /* ! do not alter 'par' or mcmcPar !*/
-  param *localPar = alloc_param(dat->n), *tempPar = alloc_param(dat->n);
+  param *localPar = alloc_param(dat->n, l), *tempPar = alloc_param(dat->n, l);
   copy_param(par,localPar);
   copy_param(par,tempPar);
 
@@ -573,7 +573,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
    ==============
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
-	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng, int l){
 
     int i;
     vec_int *areOutliers = alloc_vec_int(dat->n);
@@ -632,7 +632,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
-	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng, l);
 
 	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
 	/* mcmcPar->tune_any = TRUE; */
@@ -652,7 +652,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* CREATE TEMPORARY PARAMETERS */
-    param *tempPar = alloc_param(dat->n);
+    param *tempPar = alloc_param(dat->n, l);
     copy_param(par,tempPar);
 
      /* RUN MAIN MCMC */
@@ -727,6 +727,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* swap ancestries */
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+	/* move trans_mat */
+        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, l);
 
     } /* end of mcmc */
 
