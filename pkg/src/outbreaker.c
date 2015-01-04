@@ -124,7 +124,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng, l);
 
     /* Rprintf("\nAfter MCMC\n");fflush(stdout); */
 
