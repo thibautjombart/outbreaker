@@ -33,6 +33,7 @@
      int timespan; /* timespan of the data */
      vec_int * locations; /* integer indicating locations of cases - used in stratified dispersal model */
      vec_int * group_vec; /* integer indicating group membership */
+     int num_of_groups; /* number of different groups in the data */
  } data;
 
 
@@ -130,13 +131,13 @@ typedef struct{
    DATA
   ======
 */
-data *alloc_data(int n, int nSeq, int length);
+data *alloc_data(int n, int nSeq, int length, int l);
 
 void free_data(data *in);
 
 void print_data(data *in);
 
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec);
+data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec, int *l);
 
 
 
