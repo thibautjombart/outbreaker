@@ -56,7 +56,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CONVERT DATA */
-    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec);
+    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec, l);
     /* Rprintf("\n>>> Data <<<\n"); */
     /* print_data(dat); */
 
@@ -124,7 +124,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng, l);
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
     /* Rprintf("\nAfter MCMC\n");fflush(stdout); */
 
@@ -189,7 +189,7 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 
 
     /* CONVERT DATA */
-    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec);
+    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec, l);
     /* Rprintf("\n>>> Data <<<\n"); 
     print_data(dat); */
 
@@ -264,12 +264,9 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
     }
 
-    Rprintf("\nAfter check init LL\n");
-    Rprintf("\nBefore MCMC\n");
-
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng, l);
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
     
 }
 

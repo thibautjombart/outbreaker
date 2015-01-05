@@ -630,20 +630,20 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    Rprintf("\tkappa_%d", i+1);
 	}
     }
-    Rprintf("\nbefore fprint_chains\n");
+    /* Rprintf("\nbefore fprint_chains\n"); */
     fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet);
-    Rprintf("\n before fprint_mcmc_param \n");
+    /* Rprintf("\n before fprint_mcmc_param \n"); */
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
-    Rprintf("\n after fprint_mcmc_param");
+    /* Rprintf("\n after fprint_mcmc_param"); */
     mcmcPar->step_notune = nIter;
 
-    Rprintf("\nbefore prelim step\n");
-    Rprintf("\n mcmcPar->find_import is %d \n",mcmcPar->find_import);
+    /* Rprintf("\nbefore prelim step\n");
+    Rprintf("\n mcmcPar->find_import is %d \n",mcmcPar->find_import); */
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
-        Rprintf("\nbefore mcmc_find_import call\n");
+        /* Rprintf("\nbefore mcmc_find_import call\n"); */
 	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
-        Rprintf("\nafter mcmc_find_import call\n");
+        /* Rprintf("\nafter mcmc_find_import call\n"); */
 	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
 	/* mcmcPar->tune_any = TRUE; */
 	/* copy_param(par,tempPar); */
@@ -658,10 +658,10 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 		mcmcPar->move_alpha->values[i] = 0.0;
 	    }
 	}
-     Rprintf("prelim mcmc ends");
+     /* Rprintf("prelim mcmc ends"); */
     } /* END PRELIM MCMC FOR FINDING OUTLIERS */
 
-    Rprintf("before creating tempPar");
+    /* Rprintf("before creating tempPar"); */
     /* CREATE TEMPORARY PARAMETERS */
     param *tempPar = alloc_param(dat->n, dat->num_of_groups);
     copy_param(par,tempPar);
