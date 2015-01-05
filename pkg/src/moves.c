@@ -872,6 +872,7 @@ void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, spatial_dist
 int i,j;
 double temp; /*used in loop*/
 double logit;
+double logRatio = 0.0;
 
 /* logit transform entries in matrix and add normal variable */
 for(i=0;i<l;i++){
@@ -893,12 +894,42 @@ for(i=0;i<l;i++){
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}
 }
-/* LIKELIHOOD GOES HERE */
+/* LIKELIHOODS */
+logRatio += loglikelihood_grp_all(dat,tempPar, rng);
+logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
 
+/* accept or reject */
+if(logRatio>=0.0) {
+	/* accepted */
 
+	for(i=0;i<l;i++){
+		for(j=0;j<l;j++){
+			write_mat_double(currentPar->trans_mat,i,j,mat_double_ij(tempPar->trans_mat,i,j));
+		}
+	}
+	mcmcPar->n_accept_trans_mat += 1;
 
+} else {
+	/* rejected, accepted with different prob */
+		if(log(gsl_rng_uniform(rng)) <= logRatio){
+		/* accepted */
+		for(i=0;i<l;i++){
+			for(j=0;j<l;j++){
+				write_mat_double(currentPar->trans_mat,i,j,mat_double_ij(tempPar->trans_mat,i,j));
+			}
+		}
+		mcmcPar->n_accept_trans_mat += 1;
+		} else {
+			for(i=0;i<l;i++){
+				for(j=0;j<l;j++){
+			write_mat_double(tempPar->trans_mat,i,j,mat_double_ij(currentPar->trans_mat,i,j));
+						}
+					}
+		mcmcPar->n_reject_trans_mat += 1;
+		}
 }
-
+}
+	
 
 
 
