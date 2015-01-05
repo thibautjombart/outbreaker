@@ -22,8 +22,8 @@
 dna_dist * alloc_dna_dist(int n){
     dna_dist * out = (dna_dist *) malloc(sizeof(dna_dist));
     if(out==NULL){
-      error("\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n");
-	/* fprintf(stderr, "\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix. Exiting.\n"); */
+      error("\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix during DNA_DIST object allocation. Exiting.\n");
+	/* fprintf(stderr, "\n[in: distances.c->alloc_dna_dist]\nNo memory left for creating distance matrix during DNA_DIST object allocation. Exiting.\n"); */
 	/* exit(1); */
     }
 
@@ -41,8 +41,8 @@ dna_dist * alloc_dna_dist(int n){
 spatial_dist * alloc_spatial_dist(int n){
     spatial_dist * out = (spatial_dist *) malloc(sizeof(spatial_dist));
     if(out==NULL){
-      error("\n[in: distances.c->alloc_spatial_dist]\nNo memory left for creating distance matrix. Exiting.\n");
-	/* fprintf(stderr, "\n[in: distances.c->alloc_spatial_dist]\nNo memory left for creating distance matrix. Exiting.\n"); */
+      error("\n[in: distances.c->alloc_spatial_dist]\nNo memory left for creating distance matrix during SPATIAL_DIST object allocation. Exiting.\n");
+	/* fprintf(stderr, "\n[in: distances.c->alloc_spatial_dist]\nNo memory left for creating distance matrix during SPATIAL_DIST object allocation. Exiting.\n"); */
 	/* exit(1); */
     }
 

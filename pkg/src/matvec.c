@@ -81,7 +81,7 @@ mat_int * alloc_mat_int(int n, int p){
     /* allocate output */
     out = (mat_int *) malloc(sizeof(mat_int));
     if(out == NULL){
-      error("\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
+      error("\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating int distance matrix. Exiting.\n");
       /* fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n"); */
       /* exit(1); */
     }
@@ -89,7 +89,7 @@ mat_int * alloc_mat_int(int n, int p){
     /* fill in content */
     out->rows = (vec_int **) calloc(n, sizeof(vec_int *));
     if(out->rows == NULL){
-      error("\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n");
+      error("\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating double distance matrix. Exiting.\n");
       /* fprintf(stderr, "\n[in: matvec.c->alloc_mat_int]\nNo memory left for creating distance matrix. Exiting.\n"); */
       /* exit(1); */
     }

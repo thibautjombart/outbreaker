@@ -397,7 +397,6 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   /* See Hens et al. (2012) AJE, Doi: 10.1093/aje/kws006 */
 
   vec_double *indivInfluence = alloc_vec_double(dat->n);
-
   /* RUN MCMC */
   for(i=2;i<=localMcmcPar->find_import_at;i++){
     /* if(!QUIET) Rprintf("\ni: %d ",i); */

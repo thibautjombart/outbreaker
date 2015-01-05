@@ -231,10 +231,45 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
    jiggle_trans_mat(par,temp_par,dat,spatialInfo,mcmcPar,rng,num_of_groups);
 
 
-   Rprintf("\n loglikelihood_i:%f \n", loglikelihood_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng));
+   /* Rprintf("\n loglikelihood_i:%f \n", loglikelihood_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng));
    Rprintf("\n loglikelihood_grp_all: %f \n", loglikelihood_grp_all(dat, temp_par, rng));
    Rprintf("\n loglikelihood_all: %f \n", loglikelihood_all(dat, dnaInfo, spatialInfo, gen, temp_par, rng));
-   Rprintf("\n loglikelihood_local_i: %f \n", loglikelihood_local_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng));
+   Rprintf("\n loglikelihood_local_i: %f \n", loglikelihood_local_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng)); */
+
+
+    /* COMPUTE PRIORS */
+    double logPrior = logprior_all(par);
+    Rprintf("\nPrior value (log): %.10f\n", logPrior);
+
+   /* COMPUTE LIKELIHOOD */
+    double logLike = loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike);
+
+    /* COMPUTE POSTERIOR */
+    double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    Rprintf("\nLog-posterior value: %.10f\n", logPost);
+
+    /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
+    Rprintf("\nBefore check init LL\n");
+
+    mcmcPar = alloc_mcmc_param(N);
+    init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
+    /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
+    /* print_mcmc_param(mcmcPar); */
+
+    /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
+    checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    if(!checkLike){
+      warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
+    }
+
+    Rprintf("\nAfter check init LL\n");
+    Rprintf("\nBefore MCMC\n");
+
+    /* RUN MCMC */
+    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng, l);
     
 }
 

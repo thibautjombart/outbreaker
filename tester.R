@@ -329,12 +329,12 @@ testout(dna=NULL, dates=c(1,2,3), idx.dna=NULL,
                        init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, import.method="genetic",
-                       find.import.n=50,
+                       find.import=FALSE,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-                       outlier.threshold = 5, max.kappa=10,
-                       quiet=TRUE, res.file.name="chains.txt",
+                       outlier.threshold = 5, max.kappa=c(1,1,1),
+                       quiet=FALSE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=c(1,1,2))
 
 
