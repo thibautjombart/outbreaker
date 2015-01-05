@@ -229,13 +229,12 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
    copy_param(par,temp_par);
    /* mcmcPar->sigma_trans_mat = 1; */
    jiggle_trans_mat(par,temp_par,dat,spatialInfo,mcmcPar,rng,num_of_groups);
-	
-   print_vec_int(dat->group_vec);
-   print_vec_int(temp_par->kappa);
-   print_mat_double(temp_par->trans_mat);
 
-   Rprintf("\n %f \n", loglikelihood_grp_i(1,dat, temp_par, rng));
 
+   Rprintf("\n loglikelihood_i:%f \n", loglikelihood_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng));
+   Rprintf("\n loglikelihood_grp_all: %f \n", loglikelihood_grp_all(dat, temp_par, rng));
+   Rprintf("\n loglikelihood_all: %f \n", loglikelihood_all(dat, dnaInfo, spatialInfo, gen, temp_par, rng));
+   Rprintf("\n loglikelihood_local_i: %f \n", loglikelihood_local_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng));
     
 }
 
