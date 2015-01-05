@@ -28,13 +28,14 @@
 void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
     int i;
     double like, prior;
-
+    Rprintf("\n In fprint_chains \n");
     /* OUTPUT TO FILE */
     /* chain number */
     fprintf(file,"\n%d", step);
-
+    Rprintf("\n before loglikelihood_all \n");
     /* posterior, likelihood, prior */
     like = loglikelihood_all(dat, dnaInfo, spaInfo, gen, par, rng);
+    Rprintf("\n before logprior_all \n");
     prior = logprior_all(par);
     fprintf(file,"\t%.15f", like + prior);
     fprintf(file,"\t%.15f", like);
@@ -81,6 +82,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 	    Rprintf("\t%d", vec_int_i(par->kappa, i));
 	}
     }
+    Rprintf("\n end of fprint_chains \n");
 } /* end fprint_chains */
 
 
@@ -93,6 +95,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
    step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma | sigma_spa1 | sigma_spa2
 */
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
+    Rprintf("\n start of fprint_mcmc_param \n");
     double temp=0.0;
     /* OUTPUT TO FILE */
     fprintf(file,"\n%d", step);
@@ -119,6 +122,7 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
+    Rprintf("\n end of fprint_mcmc_param \n");
 }
 
 
@@ -357,8 +361,9 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 
 /* PRELIM MCMC FOR FINDING OUTLIERS */
 void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
-		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng, int l){
-
+		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+  Rprintf("\nwithin mcmc_find_import\n");
+  Rprintf("\n l has the value: %d \n", dat->num_of_groups);
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
   
@@ -378,13 +383,16 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       Rprintf("\tkappa_%d", i+1);
     }
   }
-
+  Rprintf("\nbefore temp params for find_import\n");
+  
 
   /* CREATE TEMPORARY PARAMETERS */
   /* ! do not alter 'par' or mcmcPar !*/
-  param *localPar = alloc_param(dat->n, l), *tempPar = alloc_param(dat->n, l);
+  param *localPar = alloc_param(dat->n, dat->num_of_groups), *tempPar = alloc_param(dat->n, dat->num_of_groups);
+  Rprintf("after param allocation");
   copy_param(par,localPar);
   copy_param(par,tempPar);
+  Rprintf("after param copy");
 
   mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
   copy_mcmc_param(mcmcPar, localMcmcPar);
@@ -572,7 +580,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
    ==============
 */
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
-	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng, int l){
+	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
     int i;
     vec_int *areOutliers = alloc_vec_int(dat->n);
@@ -608,7 +616,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
 
-
+    Rprintf("before screen output");
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
 	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
@@ -622,17 +630,20 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    Rprintf("\tkappa_%d", i+1);
 	}
     }
-
+    Rprintf("\nbefore fprint_chains\n");
     fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet);
+    Rprintf("\n before fprint_mcmc_param \n");
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
-
+    Rprintf("\n after fprint_mcmc_param");
     mcmcPar->step_notune = nIter;
 
-
+    Rprintf("\nbefore prelim step\n");
+    Rprintf("\n mcmcPar->find_import is %d \n",mcmcPar->find_import);
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
-	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng, l);
-
+        Rprintf("\nbefore mcmc_find_import call\n");
+	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+        Rprintf("\nafter mcmc_find_import call\n");
 	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
 	/* mcmcPar->tune_any = TRUE; */
 	/* copy_param(par,tempPar); */
@@ -647,13 +658,14 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 		mcmcPar->move_alpha->values[i] = 0.0;
 	    }
 	}
+     Rprintf("prelim mcmc ends");
     } /* END PRELIM MCMC FOR FINDING OUTLIERS */
 
-
+    Rprintf("before creating tempPar");
     /* CREATE TEMPORARY PARAMETERS */
-    param *tempPar = alloc_param(dat->n, l);
+    param *tempPar = alloc_param(dat->n, dat->num_of_groups);
     copy_param(par,tempPar);
-
+  
      /* RUN MAIN MCMC */
     for(i=2;i<=nIter;i++){
 	/* /\* debugging *\/ */
@@ -728,7 +740,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move trans_mat */
-        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, l);
+        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, dat->num_of_groups);
 
     } /* end of mcmc */
 

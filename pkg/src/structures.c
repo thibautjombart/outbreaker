@@ -9,7 +9,7 @@
    DATA
   ======
 */
-data *alloc_data(int n, int nSeq, int length){
+data *alloc_data(int n, int nSeq, int length, int l){
     /* allocate pointer */
     data *out = (data *) malloc(sizeof(data));
     if(out == NULL){
@@ -22,6 +22,7 @@ data *alloc_data(int n, int nSeq, int length){
     out->n = n;
     out->length = length;
     out->nSeq = nSeq;
+    out->num_of_groups = l;
 
     /* dates: collection times for each sequence */
     out->dates = alloc_vec_int(n);
@@ -68,6 +69,7 @@ void print_data(data *in){
     print_vec_int(in->locations);
     Rprintf("\n= Group membership vector=\n");
     print_vec_int(in->group_vec);
+    Rprintf("\n Number of different groups= %d\n",in->num_of_groups);
 } /* end print_data*/
 
 
@@ -75,9 +77,9 @@ void print_data(data *in){
 
 /* Create a data object using inputs from R */
 data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
-		   int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec){
+		   int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec, int *l){
     int i, j, count=0;
-    data * out = alloc_data(*n, *nSeq, *length);
+    data * out = alloc_data(*n, *nSeq, *length, *l);
 
     /* FILL IN VECTORS OF LENGTH N: DATES AND INDICES OF DNA */
     for(i=0;i<*n;i++){
