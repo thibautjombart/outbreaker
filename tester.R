@@ -3,10 +3,11 @@ library(ape)
 options(error=recover)
 
 tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
-w <- c(0,0.5,1,0.75)
-dat <- simOutbreak(R0=2,infec.curve=c(0,1,1,1),n.hosts=100,group.sizes=c(50,50),trans.mat=tm,spatial=FALSE, duration=10)
-plot.simOutbreak(dat,vertex.col="group")
-collecDates <- dat$onset + sample(0:3, size=34, replace=TRUE, prob=w)
+w <- rep((1/12),12)
+load(file="fakegroupOutbreak")
+collecDates <- data$collectionDates
+fake.dna <- data$outbreak$dna
+fake.groups <- data$outbreak$group
 
 testout <- function(dna=NULL, dates, idx.dna=NULL,
                        mut.model=1, spa.model=0,
@@ -33,8 +34,6 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
     ## full: 2L
     import.method <- match.arg(import.method)
     import.method <- as.integer(match(import.method, c("none", "genetic","full")))-1L
-
-
     ## HANDLE MISSING DNA ##
     useDna <- !is.null(dna)
     if(is.null(dna)){
@@ -327,21 +326,22 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
     #return(res)
 } # end test
 
-testout(dna=NULL, dates=c(1,2,3), idx.dna=NULL,
+
+
+testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:34),
                        mut.model=1, spa.model=0,
-                       w.dens=c(0,1,1,1), w.trunc=4,
-                       f.dens=c(0,1,1,1), f.trunc=4,
+                       w.dens=w,
                        dist.mat=NULL,
                        init.tree="seqTrack",
-                       init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
+                       init.kappa=rep(1,34), init.mu1=1,init.mu2=1, init.spa1=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, import.method="genetic",
                        find.import=FALSE,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
-                       move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
+                       move.mut=TRUE, move.ances=TRUE, move.kappa=rep(0,34),
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-                       outlier.threshold = 5, max.kappa=c(1,1,1),
+                       outlier.threshold = 5, max.kappa=rep(1,34),
                        quiet=FALSE, res.file.name="chains.txt",
-                       tune.file.name="tuning.txt", seed=NULL,group.vec=c(1,1,2))
+                       tune.file.name="tuning.txt", seed=NULL,group.vec=fake.groups)
 
 
