@@ -228,9 +228,9 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
     if(vec_int_i(dat->idxCasesInDna, i)<0) return 0.0;
 
     /* FIND MOST RECENT SEQUENCED ANCESTOR */
-    /* Rprintf("\nSeeking most recent sequenced ancestor of %d",i); */
+    /* Rprintf("\nSeeking most recent sequenced ancestor of %d",i);
     ances = find_sequenced_ancestor(i, dat, dnaInfo, par);
-    /* Rprintf("\n...found %d",ances); */
+    Rprintf("\n...found %d",ances); */
 
     /* NO DNA INFO AVAIL (IMPORTED CASES/MISSING SEQUENCES) */
     if(ances < 0) {
@@ -246,7 +246,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
 	if(mutation1_ij(i, ances, dat, dnaInfo)<0 || par->kappa_temp<0 || par->mu1<0 || par->mu1 >1){ /* fool proof */
 	  out += NEARMINUSINF;
 	} else {
-	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
+	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1)); 
 	}
       }
       break;
