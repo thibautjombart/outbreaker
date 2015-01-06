@@ -228,7 +228,7 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
    temp_par = alloc_param(N,num_of_groups);
    copy_param(par,temp_par);
    /* mcmcPar->sigma_trans_mat = 1; */
-   jiggle_trans_mat(par,temp_par,dat,spatialInfo,mcmcPar,rng,num_of_groups);
+   /* jiggle_trans_mat(par,temp_par,dat,spatialInfo,mcmcPar,rng,num_of_groups); */
 
 
    /* Rprintf("\n loglikelihood_i:%f \n", loglikelihood_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng));
@@ -259,14 +259,14 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
     /* print_mcmc_param(mcmcPar); */
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
-    checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    /*checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
-    }
+    }*/
 
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
+    /* mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng); */
     
 }
 
