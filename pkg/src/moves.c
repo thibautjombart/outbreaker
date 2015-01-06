@@ -894,9 +894,12 @@ for(i=0;i<l;i++){
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}
 }
+print_mat_double(tempPar->trans_mat);
 /* LIKELIHOODS */
 logRatio += loglikelihood_grp_all(dat,tempPar, rng);
+Rprintf("logRatio of temp: %f", logRatio);
 logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
+Rprintf("logRatio including current: %f", logRatio);
 
 /* accept or reject */
 if(logRatio>=0.0) {

@@ -1,5 +1,12 @@
 library(outbreaker)
 library(ape)
+options(error=recover)
+
+tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
+w <- c(0,0.5,1,0.75)
+dat <- simOutbreak(R0=2,infec.curve=c(0,1,1,1),n.hosts=100,group.sizes=c(50,50),trans.mat=tm,spatial=FALSE, duration=10)
+plot.simOutbreak(dat,vertex.col="group")
+collecDates <- dat$onset + sample(0:3, size=34, replace=TRUE, prob=w)
 
 testout <- function(dna=NULL, dates, idx.dna=NULL,
                        mut.model=1, spa.model=0,
