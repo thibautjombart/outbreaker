@@ -236,11 +236,14 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
    Rprintf("\n loglikelihood_all: %f \n", loglikelihood_all(dat, dnaInfo, spatialInfo, gen, temp_par, rng));
    Rprintf("\n loglikelihood_local_i: %f \n", loglikelihood_local_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng)); */
 
-    int caseno = 2;
+    int caseno = 3;
     int ances2 = find_sequenced_ancestor(caseno, dat, dnaInfo, par);
+    Rprintf("\n ancestor: %d\n",ances2);
     Rprintf("\n kappa_temp: %d\n",par->kappa_temp);
 Rprintf("\n mu1:%f\n",par->mu1);
-Rprintf("\n mutation_ij:%f\n",mutation1_ij(i, ances2, dat, dnaInfo));
+Rprintf("\n mutation_ij:%d\n",mutation1_ij(caseno, ances2, dat, dnaInfo));
+Rprintf("\n com_nucl_ij:%d\n",com_nucl_ij(caseno, ances2, dat, dnaInfo));
+Rprintf("\n proba_mut: %f\n", proba_mut(0, 10000, 1, 0.5));
 
     double genlike = loglikelihood_gen_i(caseno,dat,dnaInfo,par,rng);
     Rprintf("\n Genetic likelihood for i: %f\n",genlike);
