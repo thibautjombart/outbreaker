@@ -367,7 +367,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
   
-  bool QUIET=TRUE;
+  bool QUIET=FALSE;
 
   /* OUTPUT TO SCREEN - HEADER */
   if(!quiet){
@@ -389,10 +389,10 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   /* CREATE TEMPORARY PARAMETERS */
   /* ! do not alter 'par' or mcmcPar !*/
   param *localPar = alloc_param(dat->n, dat->num_of_groups), *tempPar = alloc_param(dat->n, dat->num_of_groups);
-  Rprintf("after param allocation");
+  Rprintf("\nafter param allocation\n");
   copy_param(par,localPar);
   copy_param(par,tempPar);
-  Rprintf("after param copy");
+  Rprintf("\nafter param copy\n");
 
   mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
   copy_mcmc_param(mcmcPar, localMcmcPar);
@@ -406,18 +406,25 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
   vec_double *indivInfluence = alloc_vec_double(dat->n);
   /* RUN MCMC */
+  Rprintf("\nbefore mcmc loop\n");
   for(i=2;i<=localMcmcPar->find_import_at;i++){
     /* if(!QUIET) Rprintf("\ni: %d ",i); */
     /* COLLECT INFORMATION ABOUT ALL GI_i */
+    Rprintf("\n Before first if, i = %d\n",i);
     if(i>=localMcmcPar->burnin && i % outEvery == 0){
+      Rprintf("\n In first if, before for\n");
       for(j=0;j<dat->n;j++){
+        Rprintf("\n In for, j= %d\n", j);
 	/* import method 1: use only genetic log-likelihood */
 	if(par->import_method==1){
+          Rprintf("before loglikelihood_gen_i");
 	  indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnaInfo, localPar, rng);
+	  Rprintf("after loglikelihood_gen_i");
 	}
 
 	/* import method 2: use only genetic log-likelihood */
 	if(par->import_method==2){
+	  Rprintf("\n In method 2\n");
 	  indivInfluence->values[j] -= loglikelihood_i(j, dat, dnaInfo, spaInfo, gen, localPar, rng);
 	}
       }
@@ -435,7 +442,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       /* } */
       nbTermsLike++;
     }
-
+    Rprintf("\nafter first if, i = %d\n",i);
     /* TUNING */
     if(i % tuneEvery == 0){
       if(localMcmcPar->tune_mu1) tune_mu1(localMcmcPar,rng);
@@ -447,7 +454,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
       localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1;
     }
-
+    Rprintf("\nafter tune\n");
     /* MOVEMENTS */
     /* move mutation rates */
     if(localMcmcPar->move_mut){
@@ -502,7 +509,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf("\nSwapping ancestries ...");
     swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
     if(!QUIET) Rprintf(" done!");
-
+    Rprintf("\n After movements\n");
   } /* end of MCMC */
 
 
