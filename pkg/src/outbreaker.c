@@ -236,7 +236,7 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
    Rprintf("\n loglikelihood_all: %f \n", loglikelihood_all(dat, dnaInfo, spatialInfo, gen, temp_par, rng));
    Rprintf("\n loglikelihood_local_i: %f \n", loglikelihood_local_i(2,dat, dnaInfo, spatialInfo, gen, temp_par, rng)); */
 
-    int caseno = 4;
+   /* int caseno = 4;
     int ances2 = find_sequenced_ancestor(caseno, dat, dnaInfo, par);
     Rprintf("\n ancestor: %d\n",ances2);
     Rprintf("\n kappa_temp: %d\n",par->kappa_temp);
@@ -248,7 +248,7 @@ Rprintf("\n proba_mut: %f\n", proba_mut(1, 9999, 1, 0.5));
 print_dna_dist(dnaInfo);
 
     double genlike = loglikelihood_gen_i(caseno,dat,dnaInfo,par,rng);
-    Rprintf("\n Genetic likelihood for i: %f\n",genlike);
+    Rprintf("\n Genetic likelihood for i: %f\n",genlike); */
 
     /* COMPUTE PRIORS */
     double logPrior = logprior_all(par);
@@ -272,14 +272,14 @@ print_dna_dist(dnaInfo);
     /* print_mcmc_param(mcmcPar); */
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
-    /*checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
-    }*/
+    }
 
     /* RUN MCMC */
-    /* mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng); */
+    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
     
 }
 
