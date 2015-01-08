@@ -4,10 +4,16 @@ options(error=recover)
 
 tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
 w <- rep((1/12),12)
-load(file="fakegroupOutbreak")
-collecDates <- data$collectionDates
-fake.dna <- data$outbreak$dna
-fake.groups <- data$outbreak$group
+##load(file="fakegroupOutbreak")
+##collecDates <- data$collectionDates
+##fake.dna <- data$outbreak$dna
+##fake.groups <- data$outbreak$group
+##nsize <- data$outbreak$n
+load("fakeOutbreak.RData")
+collecDates <- fakeOutbreak$dat$onset+sample(0:3,30,replace=TRUE)
+fake.dna <- fakeOutbreak$dat$dna
+fake.groups <- c(rep(1,15),rep(2,15))
+nsize <- fakeOutbreak$dat$n
 
 testout <- function(dna=NULL, dates, idx.dna=NULL,
                        mut.model=1, spa.model=0,
@@ -328,17 +334,17 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
 
 
 
-testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:34),
+testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        mut.model=1, spa.model=0,
                        w.dens=w,
                        dist.mat=NULL,
                        init.tree="seqTrack",
-                       init.kappa=rep(1,34), init.mu1=0.001,init.mu2=0.5, init.spa1=NULL,
+                       init.kappa=rep(1,nsize), init.mu1=0.001,init.mu2=0.5, init.spa1=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, import.method="genetic",
                        find.import=FALSE,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
-                       move.mut=TRUE, move.ances=TRUE, move.kappa=rep(0,34),
+                       move.mut=TRUE, move.ances=TRUE, move.kappa=rep(0,nsize),
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                        outlier.threshold = 5, max.kappa=rep(1,34),
                        quiet=FALSE, res.file.name="chains.txt",
