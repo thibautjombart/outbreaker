@@ -278,9 +278,11 @@ print_dna_dist(dnaInfo);
     }
 
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
+    /* mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng); */
+
     
+    Rprintf("%f",loglikelihood_grp_all(dat, par, rng));
 }
 
 
