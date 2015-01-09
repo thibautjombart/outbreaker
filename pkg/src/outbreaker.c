@@ -278,11 +278,27 @@ print_dna_dist(dnaInfo);
     }
 
     /* RUN MCMC */
-    /* mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
-	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng); */
+    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
-    
-    Rprintf("%f",loglikelihood_grp_all(dat, par, rng));
+   counter = 0;
+    for(i=0;i<(N-1);i++){
+	for(j=i+1;j<N;j++){
+	    vecDist[counter++] = mutation1_ij(i,j,dat,dnaInfo) + mutation2_ij(i,j,dat,dnaInfo);
+	}
+    }
+
+    /* STORE STEP AT WHICH TUNING STOPPED */
+    *stepStopTune = mcmcPar->step_notune;
+
+    /* FREE MEMORY */
+    free_data(dat);
+    free_gentime(gen);
+    free_param(par);
+    free_dna_dist(dnaInfo);
+    free_mcmc_param (mcmcPar);
+    gsl_rng_free(rng);
+
 }
 
 

@@ -304,37 +304,35 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
 	       num.groups, group.vec,
                PACKAGE="outbreaker")
 
-   ##DONT NEED OUTPUT YET ########
-
-    #D <- temp[[43]]
-    #D[D<0] <- NA
-    #stopTuneAt <- temp[[44]]
-
-    #cat("\nComputations finished.\n\n")
-
+    D <- temp[[43]]
+    D[D<0] <- NA
+    stopTuneAt <- temp[[44]]
+    
+    cat("\nComputations finished.\n\n")
+    
     ## make D a 'dist' object ##
-    #attr(D,"Size") <- n.ind
-    #attr(D,"Diag") <- FALSE
-    #attr(D,"Upper") <- FALSE
-    #class(D) <- "dist"
-
-
+    attr(D,"Size") <- n.ind
+    attr(D,"Diag") <- FALSE
+    attr(D,"Upper") <- FALSE
+    class(D) <- "dist"
+    
+    
     ## BUILD OUTPUT ##
     ## read table
-    #chains <- read.table(res.file.name, header=TRUE, stringsAsFactors=FALSE,
-   #                     colClasses=c("integer", rep("numeric",7+n.ind*2)))
-
-    #chains$run <- rep(1, nrow(chains))
-    #call <- match.call()
-    #res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
-     #           burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call)
-
-    #return(res)
+    chains <- read.table(res.file.name, header=TRUE, stringsAsFactors=FALSE,
+                         colClasses=c("integer", rep("numeric",7+n.ind*2)))
+    
+    chains$run <- rep(1, nrow(chains))
+    call <- match.call()
+    res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
+                burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call)
+    
+    return(res)
 } # end test
 
 
 
-testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
+dat <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        mut.model=1, spa.model=0,
                        w.dens=w,
                        dist.mat=NULL,
@@ -349,5 +347,5 @@ testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        outlier.threshold = 5, max.kappa=rep(1,nsize),
                        quiet=FALSE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=fake.groups)
-
+plotChains(dat)
 
