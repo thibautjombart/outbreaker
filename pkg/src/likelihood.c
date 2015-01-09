@@ -145,7 +145,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     int ances=vec_int_i(par->alpha,i);
     double out=0.0;
 
-    Rprintf("finding likelihood for case %d\n",i);
+    /* Rprintf("finding likelihood for case %d\n",i);*/
     /* = EXTERNAL CASES = */
     if(ances < 0){
       /* PROBA OF SAMPLING TIME */
