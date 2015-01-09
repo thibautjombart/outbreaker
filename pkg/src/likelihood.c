@@ -150,6 +150,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     if(ances < 0){
       /* PROBA OF SAMPLING TIME */
       if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){ /* fool proof */
+	Rprintf("Tinf > collecDate");
 	out += NEARMINUSINF;
       } else {
 	out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
@@ -351,19 +352,23 @@ double loglikelihood_grp_i(int i, data *dat, param *par, gsl_rng *rng){
 /*group likelihood for individual i (the transmission from immediate ancestor to individual i) */
 double prob;
 /*consider case with no generations between cases */
-if(vec_int_i(par->kappa,i) == 1){
 
 	int ances = vec_int_i(par->alpha,i);
+	Rprintf("ances: %d\n",ances);
+	if(ances == -1){return 0;} /* for the initial case */
        	int to = vec_int_i(dat->group_vec,i) - 1;
+	Rprintf("to: %d\n",to);
         int from = vec_int_i(dat->group_vec,ances) - 1;
+	Rprintf("from: %d\n", from);
         prob = mat_double_ij(par->trans_mat,from,to);
+	Rprintf("prob: %f\n", prob);
         filter_logprob(&prob);
+	Rprintf("\n NEXT \n");
         return(log(prob));
-}
+
 
 /* case with generations between cases - need to consider permutations of possible groups of
 unseen cases and sum them? */
-	return 0;
 	
 }
 
@@ -451,6 +456,7 @@ double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng){
 	double out=0.0;
 
 	for(i=1;i<dat->n;i++){
+		Rprintf("i: %d\n",i);
 		out += loglikelihood_grp_i(i,dat,par,rng);
 	} 
 	filter_logprob(&out);
