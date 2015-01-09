@@ -3,7 +3,7 @@ library(ape)
 options(error=recover)
 
 tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
-w <- rep((1/12),12)
+w <- rep((1/30),30)
 ##load(file="fakegroupOutbreak")
 ##collecDates <- data$collectionDates
 ##fake.dna <- data$outbreak$dna
@@ -346,7 +346,7 @@ testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=rep(0,nsize),
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-                       outlier.threshold = 5, max.kappa=rep(1,34),
+                       outlier.threshold = 5, max.kappa=rep(1,nsize),
                        quiet=FALSE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=fake.groups)
 

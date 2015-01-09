@@ -434,11 +434,11 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 
 	/* move i-th Tinf */
 	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * gsl_ran_poisson(rng, 1);
-	Rprintf("\n new i is: %d\n",i);
+	/*Rprintf("\n new i is: %d\n",i);
 	Rprintf("\n old Tinf is: %d\n",currentPar->Tinf->values[toMove]);
         Rprintf("\n new Tinf is: %d \n",tempPar->Tinf->values[toMove]);
 	Rprintf("\n t_i is: %d\n", vec_int_i(dat->dates,toMove));
-	Rprintf("\n -truncW is: %d\n", -gen->truncW);
+	Rprintf("\n -truncW is: %d\n", -gen->truncW);*/
 	/* MAY NEED TO CHANGE THIS AND ADD CORRECTION */
 	/* constraint: Tinf_i < t_i */
 	if(!vec_int_i(tempPar->Tinf,toMove) < vec_int_i(dat->dates,toMove)){ 
