@@ -4,16 +4,16 @@ options(error=recover)
 
 tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
 w <- rep((1/30),30)
-##load(file="fakegroupOutbreak")
-##collecDates <- data$collectionDates
-##fake.dna <- data$outbreak$dna
-##fake.groups <- data$outbreak$group
-##nsize <- data$outbreak$n
-load("fakeOutbreak.RData")
-collecDates <- fakeOutbreak$dat$onset+sample(0:3,30,replace=TRUE)
-fake.dna <- fakeOutbreak$dat$dna
-fake.groups <- c(rep(1,15),rep(2,15))
-nsize <- fakeOutbreak$dat$n
+load(file="fakegroupOutbreak")
+collecDates <- data$collectionDates
+fake.dna <- data$outbreak$dna
+fake.groups <- data$outbreak$group
+nsize <- data$outbreak$n
+##load("fakeOutbreak.RData")
+##collecDates <- fakeOutbreak$dat$onset+sample(0:3,30,replace=TRUE)
+#fake.dna <- fakeOutbreak$dat$dna
+#fake.groups <- c(rep(1,15),rep(2,15))
+#nsize <- fakeOutbreak$dat$n
 
 testout <- function(dna=NULL, dates, idx.dna=NULL,
                        mut.model=1, spa.model=0,
