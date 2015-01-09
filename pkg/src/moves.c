@@ -443,50 +443,46 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 	/* constraint: Tinf_i < t_i */
 	if(!vec_int_i(tempPar->Tinf,toMove) < vec_int_i(dat->dates,toMove)){ 
 		tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1;
-		Rprintf("\nTinf_%d < t_%d, now Tinf = %d\n",i,i,vec_int_i(dat->dates,toMove)-1);
+		/* Rprintf("\nTinf_%d < t_%d, now Tinf = %d\n",i,i,vec_int_i(dat->dates,toMove)-1);*/
 	}
 	/* constraint: Tinf_i >= -truncW */
 	if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW){
 		tempPar->Tinf->values[toMove] = -gen->truncW;
-		Rprintf("\nTinf_%d >= -truncW, now Tinf = %d\n",i, -gen->truncW);
+		/* Rprintf("\nTinf_%d >= -truncW, now Tinf = %d\n",i, -gen->truncW);*/
 	}
 	/* PROCEED TO ACCEPT/REJECT ONLY IF TINF HAS CHANGED */
 	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
 	    /* ACCEPT/REJECT STEP */
 	    /* compute the likelihood (no priors for Tinf) */
 	    /* compute only local changes in the likelihood */
-	    Rprintf("Tinf has changed, accept/reject time\n");
-	    double top = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng);
-	    Rprintf("new Tinf likelihood: %f\n", top);
-	    double bottom = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
-	    Rprintf("old Tinf likelihood %f\n",bottom);
-	    logRatio = top - bottom;
-	    Rprintf("logRatio: %f\n", logRatio);
-	    /* logRatio = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
+	    /*Rprintf("Tinf has changed, accept/reject time\n");*/
+	    /*double top = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng);
+	    /* Rprintf("new Tinf likelihood: %f\n", top);*/
+	    /*double bottom = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
+	    /* Rprintf("old Tinf likelihood %f\n",bottom); */
+	    /*logRatio = top - bottom;
+	    /* Rprintf("logRatio: %f\n", logRatio);*/
+	    logRatio = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng);
 
 
 	    /* if p(new/old) > 1, accept new */
 	    if(logRatio>=0.0) {
 		/* printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
 		/* fflush(stdout); */
-		Rprintf("accepted due to logRatio\n");
 		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		mcmcPar->n_accept_Tinf += 1;
 	    } else { /* else accept new with proba (new/old) */
 		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
 		/*     printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
 		/* fflush(stdout); */
-		    Rprintf("accepted due to uniform variable");
 		    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
 		    mcmcPar->n_accept_Tinf += 1;
 		} else { /* reject */
 		    tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
 		    mcmcPar->n_reject_Tinf += 1;
-		    Rprintf("rejected due to uniform variable");
 		}
 	    }
 	} /* end if Tinf has changed */
-	Rprintf("Tinf did not change");
     } /* end for each indiv to move */
 } /* end move_Tinf*/
 
@@ -911,12 +907,12 @@ for(i=0;i<l;i++){
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}
 }
-print_mat_double(tempPar->trans_mat);
+/* print_mat_double(tempPar->trans_mat); */
 /* LIKELIHOODS */
 logRatio += loglikelihood_grp_all(dat,tempPar, rng);
-Rprintf("logRatio of temp: %f", logRatio);
+/* Rprintf("logRatio of temp: %f", logRatio);*/
 logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
-Rprintf("logRatio including current: %f", logRatio);
+/*Rprintf("logRatio including current: %f", logRatio);*/
 
 /* accept or reject */
 if(logRatio>=0.0) {
