@@ -28,14 +28,11 @@
 void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
     int i;
     double like, prior;
-    Rprintf("\n In fprint_chains \n");
     /* OUTPUT TO FILE */
     /* chain number */
     fprintf(file,"\n%d", step);
-    Rprintf("\n before loglikelihood_all \n");
     /* posterior, likelihood, prior */
     like = loglikelihood_all(dat, dnaInfo, spaInfo, gen, par, rng);
-    Rprintf("\n before logprior_all \n");
     prior = logprior_all(par);
     fprintf(file,"\t%.15f", like + prior);
     fprintf(file,"\t%.15f", like);
@@ -62,9 +59,9 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
     /* OUTPUT TO SCREEN */
     if(!quiet){
 	Rprintf("\n%d\t", step);
-	fprintf(file,"\t%.15f", like*prior);
+	/*fprintf(file,"\t%.15f", like*prior);
 	fprintf(file,"\t%.15f", like);
-	fprintf(file,"\t%.15f", prior);
+	fprintf(file,"\t%.15f", prior);*/
 	Rprintf("\t%.15f", par->mu1);
 	Rprintf("\t%.15f", par->mu1 * par->gamma);
 	Rprintf("\t%.15f", par->gamma);
@@ -82,7 +79,6 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 	    Rprintf("\t%d", vec_int_i(par->kappa, i));
 	}
     }
-    Rprintf("\n end of fprint_chains \n");
 } /* end fprint_chains */
 
 
