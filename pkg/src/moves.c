@@ -172,8 +172,11 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, m
     /* only likelihood as priors are flat for mu1 */
     /* compute only genetic part as the epi part is unchanged */
     /* likelihoods */
+    Rprintf("mu: %f\n",tempPar->mu1);
+    Rprintf("kappa_temp: %d\n",tempPar->kappa_temp);
     logRatio += loglikelihood_gen_all(dat, dnaInfo, tempPar, rng);
     logRatio -= loglikelihood_gen_all(dat, dnaInfo, currentPar, rng);
+    Rprintf("logRatio: %f\n",logRatio);
     /* priors */
     logRatio += logprior_mu1(tempPar);
     logRatio -= logprior_mu1(currentPar);
@@ -187,15 +190,18 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, m
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
+	Rprintf("accepted\n");
 	currentPar->mu1 = tempPar->mu1;
 	mcmcPar->n_accept_mu1 += 1;
 	/* printf("\nAccepting new value\n"); */
     } else { /* else accept new with proba (new/old) */
 	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	    Rprintf("accepted\n");
 	    currentPar->mu1 = tempPar->mu1;
 	    mcmcPar->n_accept_mu1 += 1;
 	    /* printf("\nAccepting new value\n"); */
 	} else { /* reject */
+	    Rprintf("rejected\n");
 	    tempPar->mu1 = currentPar->mu1;
 	    mcmcPar->n_reject_mu1 += 1;
 	    /* printf("\nRejecting new value\n"); */
