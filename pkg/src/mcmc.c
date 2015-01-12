@@ -101,7 +101,6 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
    step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma | sigma_spa1 | sigma_spa2
 */
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
-    Rprintf("\n start of fprint_mcmc_param \n");
     double temp=0.0;
     /* OUTPUT TO FILE */
     fprintf(file,"\n%d", step);
@@ -128,7 +127,6 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
-    Rprintf("\n end of fprint_mcmc_param \n");
 }
 
 
@@ -368,8 +366,6 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 /* PRELIM MCMC FOR FINDING OUTLIERS */
 void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool quiet, param *par, 
 		      data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-  Rprintf("\nwithin mcmc_find_import\n");
-  Rprintf("\n l has the value: %d \n", dat->num_of_groups);
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
   
@@ -627,7 +623,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
 
-    Rprintf("before screen output");
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
 	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");

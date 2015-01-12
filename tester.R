@@ -303,7 +303,6 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
 	       num.groups, group.vec,
                PACKAGE="outbreaker")
-    print(temp)
     D <- temp[[43]]
     D[D<0] <- NA
     stopTuneAt <- temp[[44]]

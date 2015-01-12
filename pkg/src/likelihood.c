@@ -151,7 +151,6 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     if(ances < 0){
       /* PROBA OF SAMPLING TIME */
       if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){ /* fool proof */
-	Rprintf("Tinf > collecDate");
 	out += NEARMINUSINF;
       } else {
 	out = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
