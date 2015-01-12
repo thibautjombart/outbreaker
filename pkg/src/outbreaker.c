@@ -263,7 +263,6 @@ print_dna_dist(dnaInfo);
     Rprintf("\nLog-posterior value: %.10f\n", logPost);
 
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
-    Rprintf("\nBefore check init LL\n");
 
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
