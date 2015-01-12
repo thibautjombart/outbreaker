@@ -303,7 +303,7 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
 	       num.groups, group.vec,
                PACKAGE="outbreaker")
-
+    print(temp)
     D <- temp[[43]]
     D[D<0] <- NA
     stopTuneAt <- temp[[44]]
@@ -337,7 +337,7 @@ dat <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        w.dens=w,
                        dist.mat=NULL,
                        init.tree="seqTrack",
-                       init.kappa=rep(0,nsize), init.mu1=0.0001,init.mu2=0.5, init.spa1=NULL,
+                       init.kappa=rep(0,nsize), init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, import.method="genetic",
                        find.import=FALSE,
