@@ -26,7 +26,7 @@
 */
 
 void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
-    int i;
+    int i,j;
     double like, prior;
     /* OUTPUT TO FILE */
     /* chain number */
@@ -55,6 +55,11 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
     for(i=0;i<par->Tinf->length;i++){
 	fprintf(file, "\t%d", vec_int_i(par->kappa, i));
     }
+    for(i=0;i<dat->num_of_groups;i++){
+	for(j=0;j<dat->num_of_groups;j++){
+		fprintf(file, "\t%.15f",mat_double_ij(par->trans_mat,i,j));
+	}
+    }
 
     /* OUTPUT TO SCREEN */
     if(!quiet){
@@ -78,6 +83,11 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 	for(i=0;i<par->Tinf->length;i++){
 	    Rprintf("\t%d", vec_int_i(par->kappa, i));
 	}
+        for(i=0;i<dat->num_of_groups;i++){
+		for(j=0;j<dat->num_of_groups;j++){
+			Rprintf("\t%.15f",mat_double_ij(par->trans_mat,i,j));
+		}
+         }
     }
 } /* end fprint_chains */
 
@@ -378,6 +388,11 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     for(i=0;i<dat->n;i++){
       Rprintf("\tkappa_%d", i+1);
     }
+    for(i=0;i<dat->num_of_groups;i++){
+	for(j=0;j<dat->num_of_groups;j++){
+		Rprintf("\tp_%d%d",i+1,j+1);
+	}
+    }
   }
 
   
@@ -573,7 +588,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
 	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i;
+    int i,j;
     vec_int *areOutliers = alloc_vec_int(dat->n);
 
     /* OPEN OUTPUT FILES */
@@ -602,6 +617,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tkappa_%d", i+1);
     }
+    for(i=0;i<dat->num_of_groups;i++){
+	for(j=0;j<dat->num_of_groups;j++){
+		fprintf(file,"\tp_%d%d",i+1,j+1);
+	}
+    }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
@@ -620,6 +640,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	for(i=0;i<dat->n;i++){
 	    Rprintf("\tkappa_%d", i+1);
 	}
+	for(i=0;i<dat->num_of_groups;i++){
+		for(j=0;j<dat->num_of_groups;j++){
+			Rprintf("\tp_%d%d",i+1,j+1);
+		}
+    	}
     }
     /* Rprintf("\nbefore fprint_chains\n"); */
     fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet);
