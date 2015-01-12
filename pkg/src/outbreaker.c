@@ -276,7 +276,13 @@ print_dna_dist(dnaInfo);
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
     }
-
+    /* print_dna_dist(dnaInfo);
+    Rprintf("in common: %d\n",com_nucl_ij(1,2,dat, dnaInfo));
+    Rprintf("difference: %d\n",mutation1_ij(1,2,dat,dnaInfo));
+    Rprintf("mu: %f\n",par->mu1);
+    Rprintf("calling proba_mut(%d,%d,%d,%f)\n",mutation1_ij(1,2,dat,dnaInfo),com_nucl_ij(1,2,dat, dnaInfo),par->kappa_temp,par->mu1);
+    Rprintf("this calculates pow_int(%f,%d) * pow_int(%f,%d)\n",par->mu1,mutation1_ij(1,2,dat,dnaInfo),1.0-par->mu1, - mutation1_ij(1,2,dat,dnaInfo));
+    Rprintf("value: %f\n",log(gsl_sf_pow_int(par->mu1,mutation1_ij(1,2,dat,dnaInfo)) * gsl_sf_pow_int(1.0-par->mu1,-mutation1_ij(1,2,dat,dnaInfo)))); */
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
