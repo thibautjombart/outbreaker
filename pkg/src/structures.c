@@ -456,6 +456,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->sigma_spa1 = 0.0;
     out->sigma_spa2 = 0.0;
     out->lambda_Tinf = 0.0;
+    out->sigma_trans_mat = 0.0;
 
 
     /* RETURN */
@@ -603,6 +604,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->sigma_spa1 = in->sigma_spa1;
     out->sigma_spa2 = in->sigma_spa2;
     out->n_like_zero = in->n_like_zero;
+    out->tune_trans_mat = in->tune_trans_mat;
 
     out->tune_any = in->tune_any;
     out->tune_mu1 = in->tune_mu1;
@@ -611,11 +613,13 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_spa1 = in->tune_spa1;
     out->tune_spa2 = in->tune_spa2;
     out->step_notune = in->step_notune;
+    out->tune_trans_mat = in->tune_trans_mat;
 
     out->move_mut = in->move_mut;
     out->move_pi = in->move_pi;
     out->move_phi = in->move_phi;
     out->move_spa = in->move_spa;
+    out->move_trans_mat = in->move_trans_mat;
     out->burnin = in->burnin;
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;

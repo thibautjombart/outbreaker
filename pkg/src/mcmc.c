@@ -98,7 +98,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 
 /* print mcmc parameter (e.g. acceptance/rejection) to file
    order is as follows:
-   step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma | sigma_spa1 | sigma_spa2
+   step | global prop accept | accept_mu1 | sigma_mu1 | sigma_gamma | sigma_spa1 | sigma_spa2 | sigma_trans_mat
 */
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
@@ -116,6 +116,8 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_spa1 / (double) (mcmcPar->n_accept_spa1 + mcmcPar->n_reject_spa1);
     fprintf(file,"\t%.5f", temp);
+    temp = (double) mcmcPar->n_accept_trans_mat / (double) (mcmcPar->n_accept_trans_mat + mcmcPar->n_reject_trans_mat);
+    fprintf(file,"\t%.5f",temp);
     /* temp = (double) mcmcPar->n_accept_spa2 / (double) (mcmcPar->n_accept_spa2 + mcmcPar->n_reject_spa2); */
     /* fprintf(file,"\t%.5f", temp); */
   
@@ -124,6 +126,7 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%.15f", mcmcPar->sigma_spa1);
+    fprintf(file,"\t%.15f", mcmcPar->sigma_trans_mat);
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
@@ -313,17 +316,23 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 
 void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
 	double paccept = (double) in->n_accept_trans_mat / (double) (in->n_accept_trans_mat + in->n_reject_trans_mat);
-
+	Rprintf("\ntuning trans_mat\n");
+	Rprintf("n_accept_trans_mat:%d\n",in->n_accept_trans_mat);
+	Rprintf("n_reject_trans_mat:%d\n",in->n_reject_trans_mat);
+	Rprintf("paccept: %f\n",paccept);
 	if(paccept<0.25) {
 		in->sigma_trans_mat /= 1.5;
+		Rprintf("stm: %f\n",in->sigma_trans_mat);
 		in->n_accept_trans_mat = 0;
 		in->n_reject_trans_mat = 0;
 	} else if(paccept > 0.5) {
+		Rprintf("stm: %f\n", in->sigma_trans_mat);
 		in->sigma_trans_mat *= 1.5;
 		in->n_accept_trans_mat = 0;
 		in->n_reject_trans_mat = 0;
 	} else {
 		in->tune_trans_mat = FALSE;
+		Rprintf("no morning tuning tm!");
 	}
 }
 
@@ -461,6 +470,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       /* if(localMcmcPar->tune_phi) tune_phi(localMcmcPar,rng); */
       if(localMcmcPar->tune_spa1) tune_spa1(localMcmcPar,rng);
       /* if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng); */
+      if(localMcmcPar->tune_trans_mat) tune_trans_mat(localMcmcPar,rng);
 
       localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1;
     }
@@ -637,8 +647,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1\tp_accept_trans_mat");
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tsigma_trans_mat\tn_like_zero");
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
@@ -714,7 +724,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	  /* if(mcmcPar->tune_phi) tune_phi(mcmcPar,rng); */
 	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
 	  /* if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng); */
-	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
+	  if(mcmcPar->tune_trans_mat) tune_trans_mat(mcmcPar, rng);
+	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1 || mcmcPar->tune_trans_mat;
 	  if(!mcmcPar->tune_any) {
 	    mcmcPar->step_notune = i;
 	    /* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
@@ -739,9 +750,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 	  }
 	}
-	/* move trans_mat */
-        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, dat->num_of_groups);
-
+	
 	/* move pi */
 	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
 
@@ -768,6 +777,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* swap ancestries */
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+	/* move trans_mat */
+        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, dat->num_of_groups);
 
 	
 
