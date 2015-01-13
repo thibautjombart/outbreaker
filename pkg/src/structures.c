@@ -430,6 +430,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->move_pi = TRUE;
     out->move_phi = TRUE;
     out->move_spa = TRUE;
+    out->move_trans_mat = TRUE;
     /* out->move_phi = TRUE; */
 
     /* tuning */
@@ -438,6 +439,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_gamma = TRUE;
     out->tune_pi = TRUE;
     out->tune_phi = TRUE;
+    out->tune_trans_mat = TRUE;
     out->step_notune = -1;
 
     /* misc */
@@ -533,6 +535,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_phi) Rprintf("phi ");
     if(in->tune_spa1) Rprintf("spa1 ");
     if(in->tune_spa2) Rprintf("spa2 ");
+    if(in->tune_trans_mat) Rprintf("trans_mat ");
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
     Rprintf("\nMoved parameters:");
@@ -543,6 +546,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->move_pi) Rprintf("pi ");
     if(in->move_phi) Rprintf("phi ");
     if(in->move_spa) Rprintf("spa ");
+    if(in->move_trans_mat) Rprintf("trans_mat ");
     Rprintf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
     Rprintf("\nMove kappa_i:");

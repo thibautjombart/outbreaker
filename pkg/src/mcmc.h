@@ -35,6 +35,8 @@ void tune_spa1(mcmc_param * in, gsl_rng *rng);
 
 void tune_spa2(mcmc_param * in, gsl_rng *rng);
 
+void tune_trans_mat(mcmc_param * in, gsl_rng *rng);
+
 
 /* void tune_Tinf(mcmc_param * in, gsl_rng *rng); */
 

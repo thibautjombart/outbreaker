@@ -311,8 +311,21 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
     }
 }
 
+void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
+	double paccept = (double) in->n_accept_trans_mat / (double) (in->n_accept_trans_mat + in->n_reject_trans_mat);
 
-
+	if(paccept<0.25) {
+		in->sigma_trans_mat /= 1.5;
+		in->n_accept_trans_mat = 0;
+		in->n_reject_trans_mat = 0;
+	} else if(paccept > 0.5) {
+		in->sigma_trans_mat *= 1.5;
+		in->n_accept_trans_mat = 0;
+		in->n_reject_trans_mat = 0;
+	} else {
+		in->tune_trans_mat = FALSE;
+	}
+}
 
 
 /* void tune_phi(mcmc_param * in, gsl_rng *rng){ */
@@ -504,6 +517,10 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     /* swap ancestries */
     if(!QUIET) Rprintf("\nSwapping ancestries ...");
     swap_ancestries(localPar, tempPar, dat, dnaInfo, spaInfo, gen, localMcmcPar, rng);
+    if(!QUIET) Rprintf(" done!");
+
+    if(!QUIET) Rprintf("\n Moving trans_mat ...");
+    jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, dat->num_of_groups);
     if(!QUIET) Rprintf(" done!");
   } /* end of MCMC */
 
@@ -722,6 +739,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	    move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 	  }
 	}
+	/* move trans_mat */
+        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, dat->num_of_groups);
 
 	/* move pi */
 	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
@@ -750,8 +769,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* swap ancestries */
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
-	/* move trans_mat */
-        jiggle_trans_mat(par, tempPar, dat, spaInfo, mcmcPar, rng, dat->num_of_groups);
+	
 
     } /* end of mcmc */
 

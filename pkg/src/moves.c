@@ -886,12 +886,13 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng, int l){
 /*Declarations*/
 int i,j;
-double temp; /*used in loop*/
+double temp[1],val; /*used in loop*/
+int groups[l];
 double logit;
 double logRatio = 0.0;
 
 /* logit transform entries in matrix and add normal variable */
-for(i=0;i<l;i++){
+/*for(i=0;i<l;i++){
 	for(j=0;j<l;j++){
 		temp = log(mat_double_ij(currentPar->trans_mat,i,j));
 		logit = 1/(1-temp);
@@ -899,24 +900,39 @@ for(i=0;i<l;i++){
 		temp = gsl_sf_exp(logit)/(1+gsl_sf_exp(logit));
 		write_mat_double(tempPar->trans_mat,i,j,temp);
 	}
-}
+}*/
 
 /*sum row and divide all entries by sum */
-double rowsum;
+/*double rowsum;
 for(i=0;i<l;i++){
 	rowsum = sum_vec_double(tempPar->trans_mat->rows[i]);
 	for(j=0;j<l;j++){
 		temp = mat_double_ij(tempPar->trans_mat,i,j);
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}
+}*/
+for(i=0;i<l;i++){
+	groups[i] = i;
 }
-/* print_mat_double(tempPar->trans_mat); */
+gsl_ran_choose(rng, temp, 1, groups,l, sizeof(int));
+val = gsl_rng_uniform(rng);
+write_mat_double(tempPar->trans_mat,*temp,0,val);
+write_mat_double(tempPar->trans_mat,*temp,1,1-val);
+
+Rprintf("===START===\n");
+Rprintf("candidate matrix:\n");
+print_mat_double(tempPar->trans_mat);
 /* LIKELIHOODS */
 logRatio += loglikelihood_grp_all(dat,tempPar, rng);
 /* Rprintf("logRatio of temp: %f", logRatio);*/
+Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
+Rprintf("previous matrix:\n");
+print_mat_double(currentPar->trans_mat);
+Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
 logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
 /*Rprintf("logRatio including current: %f", logRatio);*/
-
+Rprintf("logRatio: %f\n",logRatio);
+Rprintf("===END===");
 /* accept or reject */
 if(logRatio>=0.0) {
 	/* accepted */
