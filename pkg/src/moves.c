@@ -883,7 +883,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 
 /* MOVING VALUES IN THE TRANSMISSION MATRIX (NEW TEMPORARY SCIENTIFIC NAME - JIGGLING THE MATRIX) */
-void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, spatial_dist *spaInfo, mcmc_param *mcmcPar, gsl_rng *rng, int l){
+void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int l){
 /*Declarations*/
 int i,j;
 double val; /*used in loop*/
@@ -927,24 +927,20 @@ Rprintf("candidate matrix:\n");
 print_mat_double(tempPar->trans_mat);
 /* LIKELIHOODS */
 logRatio += loglikelihood_grp_all(dat,tempPar, rng);
-Rprintf("logRatio of temp: %f", logRatio);
+//Rprintf("logRatio of temp: %f", logRatio);
 Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
 Rprintf("previous matrix:\n");
 print_mat_double(currentPar->trans_mat);
 Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
 logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
-Rprintf("logRatio including current: %f", logRatio);
+//Rprintf("logRatio including current: %f", logRatio);
 Rprintf("logRatio: %f\n",logRatio);
 Rprintf("===END===");
 /* accept or reject */
 if(logRatio>=0.0) {
 	/* accepted */
 	Rprintf("accepted due to lR");
-	for(i=0;i<l;i++){
-		for(j=0;j<l;j++){
-			write_mat_double(currentPar->trans_mat,i,j,mat_double_ij(tempPar->trans_mat,i,j));
-		}
-	}
+	copy_mat_double(tempPar->trans_mat,currentPar->trans_mat);
 	mcmcPar->n_accept_trans_mat += 1;
 
 } else {
@@ -952,20 +948,13 @@ if(logRatio>=0.0) {
 		if(log(gsl_rng_uniform(rng)) <= logRatio){
 		/* accepted */
 		Rprintf("accepted due to unif");
-		for(i=0;i<l;i++){
-			for(j=0;j<l;j++){
-				write_mat_double(currentPar->trans_mat,i,j,mat_double_ij(tempPar->trans_mat,i,j));
-			}
-		}
+		copy_mat_double(tempPar->trans_mat,currentPar->trans_mat);
 		mcmcPar->n_accept_trans_mat += 1;
 		} else {
 			Rprintf("rejected");
-			for(i=0;i<l;i++){
-				for(j=0;j<l;j++){
-			write_mat_double(tempPar->trans_mat,i,j,mat_double_ij(currentPar->trans_mat,i,j));
-						}
-					}
-		mcmcPar->n_reject_trans_mat += 1;
+			copy_mat_double(currentPar->trans_mat,tempPar->trans_mat);
+			mcmcPar->n_reject_trans_mat += 1;
+		
 		}
 }
 }

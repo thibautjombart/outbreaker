@@ -301,8 +301,14 @@ print_dna_dist(dnaInfo);
 		temp = 0.0;
 	}*/
 
-	Rprintf("group likelihood all: %f\n",loglikelihood_grp_all(dat, par, rng));
 
+	param *tempPar = alloc_param(dat->n, dat->num_of_groups);
+	for(i=0;i<1000;i++){
+		jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, *l);
+	}
+	Rprintf("acc/rej: %d/%d\n",mcmcPar->n_accept_trans_mat,mcmcPar->n_reject_trans_mat);
+	tune_trans_mat(mcmcPar,rng);
+	Rprintf("acc/rej: %d/%d\n",mcmcPar->n_accept_trans_mat,mcmcPar->n_reject_trans_mat);
     /* STORE STEP AT WHICH TUNING STOPPED */
     *stepStopTune = mcmcPar->step_notune;
 
