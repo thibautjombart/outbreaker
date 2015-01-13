@@ -5,6 +5,9 @@ options(error=recover)
 tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
 w <- rep((1/30),30)
 load(file="fakegroupOutbreak")
+##data <- simOutbreak(R0 = 2, infec.curve = c(0, 1, 1, 1), n.hosts = 100, 
+##                    duration = 10, spatial = FALSE, group.sizes = c(50, 50), 
+##                    trans.mat = tm)
 collecDates <- data$collectionDates
 fake.dna <- data$outbreak$dna
 fake.groups <- data$outbreak$group
@@ -27,7 +30,7 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
                        find.import.n=50,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=NULL){
@@ -268,6 +271,7 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
     move.kappa <- as.integer(rep(move.kappa, length=n.ind))
     move.Tinf <- as.integer(move.Tinf)
     move.pi <- as.integer(move.pi)
+    move.trans.mat <- as.integer(move.Tmat)
     ## move.phi <- as.integer(move.phi)
     move.phi <- 0L
     move.spa <- as.integer(move.spa)
@@ -297,7 +301,7 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
                pi.prior1, pi.prior2, phi.param1, phi.param2, init.mu1, init.gamma,
                init.spa1, init.spa2, spa1.prior, spa2.prior,
                move.mut, move.ances, move.kappa, move.Tinf,
-               move.pi, move.phi, move.spa,
+               move.pi, move.phi, move.spa, move.trans.mat,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
@@ -331,12 +335,12 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
 
 
 
-dat <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
+res <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        mut.model=1, spa.model=0,
                        w.dens=w,
                        dist.mat=NULL,
                        init.tree="seqTrack",
-                       init.kappa=rep(0,nsize), init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
+                       init.kappa=rep(1,nsize), init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, import.method="genetic",
                        find.import=FALSE,
@@ -346,5 +350,9 @@ dat <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        outlier.threshold = 5, max.kappa=rep(1,nsize),
                        quiet=FALSE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=fake.groups)
-plotChains(dat)
+
+tre <- get.tTree(res)
+col <- rep("lightgrey",34)
+col[which(data$outbreak$ances != tre$ances)] <- "pink"
+plot(tre, annot="", vertex.color=col)
 
