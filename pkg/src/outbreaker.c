@@ -281,9 +281,9 @@ print_dna_dist(dnaInfo);
     Rprintf("mu: %f\n",par->mu1);
     Rprintf("calling proba_mut(%d,%d,%d,%f)\n",mutation1_ij(1,2,dat,dnaInfo),com_nucl_ij(1,2,dat, dnaInfo),par->kappa_temp,par->mu1);
     Rprintf("this calculates pow_int(%f,%d) * pow_int(%f,%d)\n",par->mu1,mutation1_ij(1,2,dat,dnaInfo),1.0-par->mu1, - mutation1_ij(1,2,dat,dnaInfo));
-    Rprintf("value: %f\n",log(gsl_sf_pow_int(par->mu1,mutation1_ij(1,2,dat,dnaInfo)) * gsl_sf_pow_int(1.0-par->mu1,-mutation1_ij(1,2,dat,dnaInfo)))); */
+    Rprintf("value: %f\n",log(gsl_sf_pow_int(par->mu1,mutation1_ij(1,2,dat,dnaInfo)) * gsl_sf_pow_int(1.0-par->mu1,-mutation1_ij(1,2,dat,dnaInfo))));*/
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+    /*mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
    counter = 0;
@@ -291,7 +291,17 @@ print_dna_dist(dnaInfo);
 	for(j=i+1;j<N;j++){
 	    vecDist[counter++] = mutation1_ij(i,j,dat,dnaInfo) + mutation2_ij(i,j,dat,dnaInfo);
 	}
-    }
+    }*/
+
+   	double temp;
+	/*for(i=1;i<34;i++){
+		Rprintf("finding sequenced ancestor for case %d, it is %d\n",i,find_sequenced_ancestor(i,dat,dnaInfo,par));
+		temp = loglikelihood_gen_i(i,dat,dnaInfo,par,rng);
+		Rprintf("likelihood for case %d is: %f\n",i, loglikelihood_gen_i(i,dat,dnaInfo,par,rng));
+		temp = 0.0;
+	}*/
+
+	Rprintf("group likelihood all: %f\n",loglikelihood_grp_all(dat, par, rng));
 
     /* STORE STEP AT WHICH TUNING STOPPED */
     *stepStopTune = mcmcPar->step_notune;

@@ -226,7 +226,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
     double out=0.0;
 
     /* DONT FORGET TO DELETE THIS IF IT IS WRONG */
-    par->kappa_temp = vec_int_i(par->kappa,i);	
+    //par->kappa_temp = vec_int_i(par->kappa,i);	
 
     /* ESCAPE OF NO EVOLUTION MODEL CHOSEN */
     if(par->mut_model==0) return 0.0;

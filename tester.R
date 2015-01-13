@@ -346,13 +346,13 @@ res <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        find.import=FALSE,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=rep(0,nsize),
-                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=rep(1,nsize),
                        quiet=FALSE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=fake.groups)
 
-tre <- get.tTree(res)
-col <- rep("lightgrey",34)
-col[which(data$outbreak$ances != tre$ances)] <- "pink"
-plot(tre, annot="", vertex.color=col)
+##tre <- get.tTree(res)
+##col <- rep("lightgrey",34)
+##col[which(data$outbreak$ances != tre$ances)] <- "pink"
+##plot(tre, annot="", vertex.color=col)
 
