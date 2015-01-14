@@ -601,6 +601,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->sigma_gamma = in->sigma_gamma;
     out->lambda_Tinf = in->lambda_Tinf;
     out->sigma_pi = in->sigma_pi;
+    out->sigma_phi = in->sigma_phi;
     out->sigma_spa1 = in->sigma_spa1;
     out->sigma_spa2 = in->sigma_spa2;
     out->n_like_zero = in->n_like_zero;
