@@ -922,20 +922,20 @@ Rprintf("temp: %f\n",temp);
 write_mat_double(tempPar->trans_mat,*temp,0,val);
 write_mat_double(tempPar->trans_mat,*temp,1,1-val);*/
 
-Rprintf("===START===\n");
-Rprintf("candidate matrix:\n");
-print_mat_double(tempPar->trans_mat);
+//Rprintf("===START===\n");
+//Rprintf("candidate matrix:\n");
+//print_mat_double(tempPar->trans_mat);
 /* LIKELIHOODS */
 logRatio += loglikelihood_grp_all(dat,tempPar, rng);
 //Rprintf("logRatio of temp: %f", logRatio);
-Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
-Rprintf("previous matrix:\n");
-print_mat_double(currentPar->trans_mat);
-Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
+//Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
+//Rprintf("previous matrix:\n");
+//print_mat_double(currentPar->trans_mat);
+//Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
 logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
 //Rprintf("logRatio including current: %f", logRatio);
-Rprintf("logRatio: %f\n",logRatio);
-Rprintf("===END===");
+//Rprintf("logRatio: %f\n",logRatio);
+//Rprintf("===END===");
 /* accept or reject */
 if(logRatio>=0.0) {
 	/* accepted */

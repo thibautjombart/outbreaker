@@ -283,7 +283,7 @@ print_dna_dist(dnaInfo);
     Rprintf("this calculates pow_int(%f,%d) * pow_int(%f,%d)\n",par->mu1,mutation1_ij(1,2,dat,dnaInfo),1.0-par->mu1, - mutation1_ij(1,2,dat,dnaInfo));
     Rprintf("value: %f\n",log(gsl_sf_pow_int(par->mu1,mutation1_ij(1,2,dat,dnaInfo)) * gsl_sf_pow_int(1.0-par->mu1,-mutation1_ij(1,2,dat,dnaInfo))));*/
     /* RUN MCMC */
-    /*mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
    counter = 0;
@@ -291,7 +291,7 @@ print_dna_dist(dnaInfo);
 	for(j=i+1;j<N;j++){
 	    vecDist[counter++] = mutation1_ij(i,j,dat,dnaInfo) + mutation2_ij(i,j,dat,dnaInfo);
 	}
-    }*/
+    }
 
    	double temp;
 	/*for(i=1;i<34;i++){
@@ -302,13 +302,15 @@ print_dna_dist(dnaInfo);
 	}*/
 
 
-	param *tempPar = alloc_param(dat->n, dat->num_of_groups);
-	for(i=0;i<1000;i++){
+	/*param *tempPar = alloc_param(dat->n, dat->num_of_groups);
+	for(i=0;i<50;i++){
 		jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, *l);
+		if(i % 10 == 0){tune_trans_mat(mcmcPar, rng);}
 	}
 	Rprintf("acc/rej: %d/%d\n",mcmcPar->n_accept_trans_mat,mcmcPar->n_reject_trans_mat);
-	tune_trans_mat(mcmcPar,rng);
-	Rprintf("acc/rej: %d/%d\n",mcmcPar->n_accept_trans_mat,mcmcPar->n_reject_trans_mat);
+	/*if(mcmcPar->tune_any){tune_trans_mat(mcmcPar,rng);
+	}else{Rprintf("Tuning is off");}
+	Rprintf("acc/rej: %d/%d\n",mcmcPar->n_accept_trans_mat,mcmcPar->n_reject_trans_mat);*/
     /* STORE STEP AT WHICH TUNING STOPPED */
     *stepStopTune = mcmcPar->step_notune;
 
