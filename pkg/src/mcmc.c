@@ -472,7 +472,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       /* if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng); */
       if(localMcmcPar->tune_trans_mat) tune_trans_mat(localMcmcPar,rng);
 
-      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1;
+      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_trans_mat;
     }
     /* MOVEMENTS */
     /* move mutation rates */
@@ -530,7 +530,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf(" done!");
 
     if(!QUIET) Rprintf("\n Moving trans_mat ...");
-    jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, dat->num_of_groups);
+    jiggle_trans_mat(localPar, tempPar, dat, localMcmcPar, rng, dat->num_of_groups);
     if(!QUIET) Rprintf(" done!");
   } /* end of MCMC */
 
