@@ -779,7 +779,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move trans_mat */
-        jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, dat->num_of_groups);
+        if(mcmcPar->move_trans_mat) jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, dat->num_of_groups);
 
 	
 
