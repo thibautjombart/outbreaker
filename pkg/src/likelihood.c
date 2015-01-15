@@ -185,7 +185,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     /* LIKEHOOD OF TRANSMISSION FROM INFECTOR'S GROUP TO INFECTED'S GROUP */
     /* need to think about what conditional to have here, perhaps if i and alpha_i both have groups? */
 
-    out += loglikelihood_grp_i(i, dat, par, rng);
+    //out += loglikelihood_grp_i(i, dat, par, rng);
     /*Rprintf("Current likelihood: %f\n requesting gentime_dens...\n",out);
     Rprintf("Time of infection for case i: %d\n",vec_int_i(par->Tinf,i));
     Rprintf("Time of infection for ancestor (case %d): %d\n", ances, vec_int_i(par->Tinf,ances));
