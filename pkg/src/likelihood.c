@@ -186,10 +186,6 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     /* need to think about what conditional to have here, perhaps if i and alpha_i both have groups? */
 
     //out += loglikelihood_grp_i(i, dat, par, rng);
-    /*Rprintf("Current likelihood: %f\n requesting gentime_dens...\n",out);
-    Rprintf("Time of infection for case i: %d\n",vec_int_i(par->Tinf,i));
-    Rprintf("Time of infection for ancestor (case %d): %d\n", ances, vec_int_i(par->Tinf,ances));
-    Rprintf("Call: gentime_dens(gen, %d, %d)\n", vec_int_i(par->Tinf, i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i));*/
     /* LIKELIHOOD OF INFECTION TIME */
     /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
     if(vec_int_i(par->Tinf,i) <= vec_int_i(par->Tinf,ances)){ /* fool proof */
@@ -235,9 +231,9 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
     if(vec_int_i(dat->idxCasesInDna, i)<0) return 0.0;
 
     /* FIND MOST RECENT SEQUENCED ANCESTOR */
-    /* Rprintf("\nSeeking most recent sequenced ancestor of %d",i);
+    //Rprintf("\nSeeking most recent sequenced ancestor of %d",i);
     ances = find_sequenced_ancestor(i, dat, dnaInfo, par);
-    Rprintf("\n...found %d",ances); */
+    //Rprintf("\n...found %d",ances);
 
     /* NO DNA INFO AVAIL (IMPORTED CASES/MISSING SEQUENCES) */
     if(ances < 0) {

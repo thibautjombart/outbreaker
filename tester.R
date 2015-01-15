@@ -292,7 +292,8 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
     ##number of groups from vector of group memberships
     num.groups <- as.integer(length(unique(group.vec)))
     group.vec <- as.integer(group.vec)
-
+    print(move.kappa)
+    print(move.Tinf)
     temp <- .C("test_R",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
@@ -340,12 +341,12 @@ res <- testout(dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                        w.dens=w,
                        dist.mat=NULL,
                        init.tree="seqTrack",
-                       init.kappa=rep(1,nsize), init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
+                       init.kappa=1, init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
                        n.iter=1e5, sample.every=500, tune.every=500,
                        burnin=2e4, import.method="genetic",
                        find.import=TRUE,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
-                       move.mut=TRUE, move.ances=TRUE, move.kappa=rep(0,nsize),
+                       move.mut=TRUE, move.ances=1, move.kappa=0,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=rep(1,nsize),
                        quiet=FALSE, res.file.name="chains.txt",

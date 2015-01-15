@@ -190,38 +190,38 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec, l);
-    /* Rprintf("\n>>> Data <<<\n"); 
-    print_data(dat); */
+    /*Rprintf("\n>>> Data <<<\n"); 
+    print_data(dat);*/
 
 /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(*maxK, *wTrunc, *fTrunc);
     init_gentime(gen, gentimeDens, colltimeDens);
-    /* Rprintf("\n>>> gentime info <<<\n");
-    	print_gentime(gen); */
+    Rprintf("\n>>> gentime info <<<\n");
+    	print_gentime(gen);
 
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
-    /* Rprintf("\n>>> param <<<\n");
-    print_param(par);*/
+    Rprintf("\n>>> param <<<\n");
+    print_param(par);
 
 	/* COMPUTE GENETIC DISTANCES */
     dnaInfo = compute_dna_distances(dat->dna, *mutModel);
-    /* Rprintf("\n>>> DNA info <<<\n");
-    print_dna_dist(dnaInfo); */
+    /*Rprintf("\n>>> DNA info <<<\n");
+    print_dna_dist(dnaInfo);*/
 
 
     /* CONVERT AND STORE SPATIAL DISTANCES */
     spatialInfo = doublevec2spatial_dist(distMat, n);
-    /* Rprintf("\n>>> SPATIAL info <<<\n"); 
-     print_spatial_dist(spatialInfo); */
+    /*Rprintf("\n>>> SPATIAL info <<<\n"); 
+     print_spatial_dist(spatialInfo);*/
 
 	mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
-    /* Rprintf("\nMCMC parameters\n");
-    print_mcmc_param(mcmcPar); */
+    Rprintf("\nMCMC parameters\n");
+    print_mcmc_param(mcmcPar);
 
 
    param *temp_par;

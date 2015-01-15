@@ -172,8 +172,8 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, m
     /* only likelihood as priors are flat for mu1 */
     /* compute only genetic part as the epi part is unchanged */
     /* likelihoods */
-    /*Rprintf("mu: %f\n",tempPar->mu1);
-    Rprintf("kappa_temp: %d\n",tempPar->kappa_temp);*/
+    //Rprintf("mu: %f\n",tempPar->mu1);
+    //Rprintf("kappa_temp: %d\n",tempPar->kappa_temp);
     logRatio += loglikelihood_gen_all(dat, dnaInfo, tempPar, rng);
     logRatio -= loglikelihood_gen_all(dat, dnaInfo, currentPar, rng);
     //Rprintf("logRatio: %f\n",logRatio);

@@ -423,6 +423,10 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_like_zero = 0;
     out->n_accept_trans_mat = 0;
     out->n_reject_trans_mat = 0;
+    out->n_accept_phi = 0;
+    out->n_reject_phi = 0;
+    out->n_accept_pi = 0;
+    out->n_reject_pi = 0;
     
 
     /* movement */
