@@ -604,6 +604,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->sigma_phi = in->sigma_phi;
     out->sigma_spa1 = in->sigma_spa1;
     out->sigma_spa2 = in->sigma_spa2;
+    out->sigma_trans_mat = in->sigma_trans_mat;	
     out->n_like_zero = in->n_like_zero;
     out->tune_trans_mat = in->tune_trans_mat;
 

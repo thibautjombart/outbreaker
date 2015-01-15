@@ -433,6 +433,8 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 
   vec_double *indivInfluence = alloc_vec_double(dat->n);
   /* RUN MCMC */
+
+
   for(i=2;i<=localMcmcPar->find_import_at;i++){
     /* if(!QUIET) Rprintf("\ni: %d ",i); */
     /* COLLECT INFORMATION ABOUT ALL GI_i */
@@ -578,12 +580,12 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       /* outliers = GI_i xxx times larger than the mean */
       /* ('xxx' defined in par) */
       /* if((medLogLike - vec_double_i(indivInfluence,j)) > log(par->outlier_threshold)){ */
-      if(vec_double_i(indivInfluence,j) > (par->outlier_threshold * meanInfluence)){
+      /*if(vec_double_i(indivInfluence,j) > (par->outlier_threshold * meanInfluence)){
 	areOutliers->values[j] = 1;
 	Rprintf("\nIndividual %d identified as imported case\n",j+1);
-      } else {
+      } else {*/
 	areOutliers->values[j] = 0;
-      }
+      //}
     } /* end setting outliers */
   } else {
     Rprintf("\nLess than 5 cases have a genetic sequence - aborting outlier detection");
@@ -703,7 +705,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     /* CREATE TEMPORARY PARAMETERS */
     param *tempPar = alloc_param(dat->n, dat->num_of_groups);
     copy_param(par,tempPar);
-  
      /* RUN MAIN MCMC */
     for(i=2;i<=nIter;i++){
 	/* /\* debugging *\/ */
