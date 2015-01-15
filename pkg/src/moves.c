@@ -923,6 +923,7 @@ write_mat_double(tempPar->trans_mat,*temp,0,val);
 write_mat_double(tempPar->trans_mat,*temp,1,1-val);*/
 
 Rprintf("\n===START===\n");
+Rprintf("\n sigma_trans_mat: %f\n",mcmcPar->sigma_trans_mat);
 Rprintf("candidate matrix:\n");
 print_mat_double(tempPar->trans_mat);
 /* LIKELIHOODS */
