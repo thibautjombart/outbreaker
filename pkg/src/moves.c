@@ -893,7 +893,7 @@ double logit;
 double logRatio = 0.0;
 
 /* logit transform entries in matrix and add normal variable */
-/*for(i=0;i<l;i++){
+for(i=0;i<l;i++){
 	for(j=0;j<l;j++){
 		temp = log(mat_double_ij(currentPar->trans_mat,i,j));
 		logit = 1/(1-temp);
@@ -901,19 +901,19 @@ double logRatio = 0.0;
 		temp = gsl_sf_exp(logit)/(1+gsl_sf_exp(logit));
 		write_mat_double(tempPar->trans_mat,i,j,temp);
 	}
-}*/
+}
 
 /*sum row and divide all entries by sum */
-/*double rowsum;
+double rowsum;
 for(i=0;i<l;i++){
 	rowsum = sum_vec_double(tempPar->trans_mat->rows[i]);
 	for(j=0;j<l;j++){
 		temp = mat_double_ij(tempPar->trans_mat,i,j);
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}
-}*/
+}
 // row,col
-double remainder;
+/*double remainder;
 double element;
 for(i=0;i<l;i++){
 	remainder=1.0;
@@ -926,7 +926,7 @@ for(i=0;i<l;i++){
 			remainder -= element;
 		}
 	}
-}
+}*/
 		
 
 
