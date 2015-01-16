@@ -534,7 +534,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf(" done!");
 
     if(!QUIET) Rprintf("\n Moving trans_mat ...");
-    //jiggle_trans_mat(localPar, tempPar, dat, localMcmcPar, rng, dat->num_of_groups);
+    if(localMcmcPar->move_trans_mat) jiggle_trans_mat(localPar, tempPar, dat, localMcmcPar, rng, dat->num_of_groups);
     if(!QUIET) Rprintf(" done!");
   } /* end of MCMC */
 
@@ -782,7 +782,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move trans_mat */
-        //if(mcmcPar->move_trans_mat) jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, dat->num_of_groups);
+        if(mcmcPar->move_trans_mat) jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, dat->num_of_groups);
 
 	
 
