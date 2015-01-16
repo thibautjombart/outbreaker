@@ -893,7 +893,7 @@ double logit;
 double logRatio = 0.0;
 
 /* logit transform entries in matrix and add normal variable */
-for(i=0;i<l;i++){
+/*for(i=0;i<l;i++){
 	for(j=0;j<l;j++){
 		temp = log(mat_double_ij(currentPar->trans_mat,i,j));
 		logit = 1/(1-temp);
@@ -901,42 +901,52 @@ for(i=0;i<l;i++){
 		temp = gsl_sf_exp(logit)/(1+gsl_sf_exp(logit));
 		write_mat_double(tempPar->trans_mat,i,j,temp);
 	}
-}
+}*/
 
 /*sum row and divide all entries by sum */
-double rowsum;
+/*double rowsum;
 for(i=0;i<l;i++){
 	rowsum = sum_vec_double(tempPar->trans_mat->rows[i]);
 	for(j=0;j<l;j++){
 		temp = mat_double_ij(tempPar->trans_mat,i,j);
 		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
 	}
-}
+}*/
 // row,col
-/*for(i=0;i<l;i++){
-	groups[i] = i;
+double remainder;
+double element;
+for(i=0;i<l;i++){
+	remainder=1.0;
+	for(j=0;j<l;j++){
+		if(j== (l-1)){
+			write_mat_double(tempPar->trans_mat,i,j,remainder);
+		}else{
+			element = gsl_ran_flat(rng,0,remainder);
+			write_mat_double(tempPar->trans_mat,i,j,element);
+			remainder -= element;
+		}
+	}
 }
-gsl_ran_choose(rng, temp, 1, groups,l, sizeof(int));
-val = gsl_rng_uniform(rng);
-Rprintf("temp: %f\n",temp);
-write_mat_double(tempPar->trans_mat,*temp,0,val);
-write_mat_double(tempPar->trans_mat,*temp,1,1-val);*/
+		
 
-Rprintf("\n===START===\n");
-Rprintf("\n sigma_trans_mat: %f\n",mcmcPar->sigma_trans_mat);
+
+
+
+/*Rprintf("\n===START===\n");
+//Rprintf("\n sigma_trans_mat: %f\n",mcmcPar->sigma_trans_mat);
 Rprintf("candidate matrix:\n");
-print_mat_double(tempPar->trans_mat);
+print_mat_double(tempPar->trans_mat);*/
 /* LIKELIHOODS */
 logRatio += loglikelihood_grp_all(dat,tempPar, rng);
-Rprintf("logRatio of temp: %f", logRatio);
-Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
-Rprintf("previous matrix:\n");
-print_mat_double(currentPar->trans_mat);
-Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
+//Rprintf("logRatio of temp: %f", logRatio);
+//Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
+/*Rprintf("previous matrix:\n");
+print_mat_double(currentPar->trans_mat);*/
+//Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
 logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
-Rprintf("logRatio including current: %f", logRatio);
-Rprintf("logRatio: %f\n",logRatio);
-Rprintf("\n===END===\n");
+//Rprintf("logRatio including current: %f", logRatio);
+/*Rprintf("logRatio: %f\n",logRatio);
+Rprintf("\n===END===\n");*/
 /* accept or reject */
 if(logRatio>=0.0) {
 	/* accepted */

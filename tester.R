@@ -2,16 +2,22 @@ library(outbreaker)
 library(ape)
 options(error=recover)
 
-tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
-w <- rep((1/30),30)
-load(file="fakegroupOutbreak")
+##tm <- matrix(byrow=TRUE,c(0.8,0.2,0.2,0.8),ncol=2)
+tm <- matrix(byrow=TRUE,c(0.4,0.4,0.2,0.4,0.4,0.2,0.1,0.1,0.8),ncol=3)
+##load(file="fakegroupOutbreak")
+data <- simOutbreak(R0=2, infec.curve=c(0,1,1,1),n.hosts=99,duration=10,spatial=FALSE,group.sizes=c(33,33,33),trans.mat=tm)
+collecDates <- data$onset + sample(0:3,data$n,replace=TRUE)
+fake.dna <- data$dna
+fake.groups <- data$group
+nsize <- data$n
+w <- c(rep(1/10,10),rep(0,40))
 ##data <- simOutbreak(R0 = 2, infec.curve = c(0, 1, 1, 1), n.hosts = 100, 
 ##                    duration = 10, spatial = FALSE, group.sizes = c(50, 50), 
 ##                    trans.mat = tm)
-collecDates <- data$collectionDates
-fake.dna <- data$outbreak$dna
-fake.groups <- data$outbreak$group
-nsize <- data$outbreak$n
+##collecDates <- data$collectionDates
+##fake.dna <- data$outbreak$dna
+##fake.groups <- data$outbreak$group
+##nsize <- data$outbreak$n
 ##load("fakeOutbreak.RData")
 ##collecDates <- fakeOutbreak$dat$onset+sample(0:3,30,replace=TRUE)
 #fake.dna <- fakeOutbreak$dat$dna
