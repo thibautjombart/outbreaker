@@ -14,7 +14,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        find.import.n=50,
                        pi.prior1=10, pi.prior2=1, spa1.prior=1,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
+                       move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL,group.vec=NULL){
@@ -260,6 +260,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## move.phi <- as.integer(move.phi)
     move.phi <- 0L
     move.spa <- as.integer(move.spa)
+    move.trans.mat <- as.integer(move.Tmat)
     quiet <- as.integer(quiet)
     res.file.name <- as.character(res.file.name)[1]
     tune.file.name <- as.character(tune.file.name)[1]
@@ -286,7 +287,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                pi.prior1, pi.prior2, phi.param1, phi.param2, init.mu1, init.gamma,
                init.spa1, init.spa2, spa1.prior, spa2.prior,
                move.mut, move.ances, move.kappa, move.Tinf,
-               move.pi, move.phi, move.spa,
+               move.pi, move.phi, move.spa, move.trans.mat,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
@@ -343,7 +344,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 find.import.n=50,
                                 pi.prior1=10, pi.prior2=1, spa1.prior=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                                move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
+                                move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                                 outlier.threshold = 5, max.kappa=10,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL,
 				group.vec=NULL){
@@ -379,7 +380,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         ## transfer data onto each child ##
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
-                      "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa",
+                      "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa","move.Tmat",
                       "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec")
 
         clusterExport(clust, listArgs, envir=environment())
@@ -399,7 +400,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                                   spa1.prior=spa1.prior,
                                                                   init.mu1=init.mu1, init.mu2=init.mu2, init.spa1=init.spa1,
                                                                   move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
-                                                                  move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa,
+                                                                  move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
                                                                   outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                                   quiet=TRUE, res.file.name=res.file.names[i],
                                                                   tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec))
@@ -435,7 +436,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                         spa1.prior=spa1.prior,
                                                         init.mu1=init.mu1, init.mu2=init.mu2, init.spa1=init.spa1,
                                                         move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
-                                                        move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa,
+                                                        move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
                                                         outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                         quiet=TRUE, res.file.name=res.file.names[i],
                                                         tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec))
