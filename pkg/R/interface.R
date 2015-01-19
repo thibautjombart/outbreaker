@@ -276,6 +276,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ##number of groups from vector of group memberships
     num.groups <- as.integer(length(unique(group.vec)))
+    group.vec <- as.integer(group.vec)
 
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
@@ -344,7 +345,8 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                                 outlier.threshold = 5, max.kappa=10,
-                                quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
+                                quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL,
+				group.vec=NULL){
 
     ## SOME CHECKS ##
     if(parallel && is.null(n.cores)){
@@ -378,7 +380,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
                       "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa",
-                      "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed")
+                      "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec")
 
         clusterExport(clust, listArgs, envir=environment())
 
@@ -400,7 +402,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                                   move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa,
                                                                   outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                                   quiet=TRUE, res.file.name=res.file.names[i],
-                                                                  tune.file.name=tune.file.names[i], seed=seed[i]))
+                                                                  tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec))
 
         ## close parallel processes ##
         stopCluster(clust)
@@ -436,7 +438,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                         move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa,
                                                         outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                         quiet=TRUE, res.file.name=res.file.names[i],
-                                                        tune.file.name=tune.file.names[i], seed=seed[i]))
+                                                        tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec))
     }
 
 
