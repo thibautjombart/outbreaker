@@ -298,8 +298,7 @@ testout <- function(dna=NULL, dates, idx.dna=NULL,
     ##number of groups from vector of group memberships
     num.groups <- as.integer(length(unique(group.vec)))
     group.vec <- as.integer(group.vec)
-    print(move.kappa)
-    print(move.Tinf)
+    print(w.dens)
     temp <- .C("test_R",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,

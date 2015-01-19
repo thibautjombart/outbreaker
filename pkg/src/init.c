@@ -92,8 +92,10 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     /* Tinf */
     /* TmaxLike = which_max_vec_double(gen->dens->rows[0]); */
     TmaxLike = which_max_vec_double(gen->collTime);
+    Rprintf("\nTmaxLike = %d\n",TmaxLike);
     for(i=0;i<dat->n;i++){
 	par->Tinf->values[i] = vec_int_i(dat->dates,i) - TmaxLike;
+	Rprintf("setting par->Tinf->values[%d] = %d - %d = %d\n",i,vec_int_i(dat->dates,i),TmaxLike,vec_int_i(dat->dates,i) - TmaxLike);
     }
 
     /* alpha */
