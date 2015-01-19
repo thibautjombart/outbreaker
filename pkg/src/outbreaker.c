@@ -54,11 +54,11 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* rng = create_gsl_rng((time_t) time(NULL)); */
     rng = create_gsl_rng((time_t) *seed);
 
-
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec, l);
-    /* Rprintf("\n>>> Data <<<\n"); */
-    /* print_data(dat); */
+ 
+    /*Rprintf("\n>>> Data <<<\n");
+    print_data(dat);*/
 
 
     /* /\* GET TIME SPAN *\/ */
@@ -69,21 +69,21 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(*maxK, *wTrunc, *fTrunc);
     init_gentime(gen, gentimeDens, colltimeDens);
-    /* Rprintf("\n>>> gentime info <<<\n"); */
-    /* print_gentime(gen); */
+    /* Rprintf("\n>>> gentime info <<<\n"); 
+    print_gentime(gen);  */
 
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
     init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
-    /* Rprintf("\n>>> param <<<\n"); */
-    /* print_param(par); */
+    Rprintf("\n>>> param <<<\n");
+    print_param(par);
 
 
     /* COMPUTE GENETIC DISTANCES */
     dnaInfo = compute_dna_distances(dat->dna, *mutModel);
-    /* Rprintf("\n>>> DNA info <<<\n"); */
-    /* print_dna_dist(dnaInfo); */
+    /* Rprintf("\n>>> DNA info <<<\n");
+    print_dna_dist(dnaInfo); */
 
 
     /* CONVERT AND STORE SPATIAL DISTANCES */
@@ -110,9 +110,10 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
-    /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
-    /* print_mcmc_param(mcmcPar); */
-
+    /* Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
+    //print_mcmc_param(mcmcPar);
+    print_vec_int(dat->dates);
+    print_vec_int(par->Tinf);
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     if(!checkLike){
@@ -220,8 +221,8 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 	mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
-    Rprintf("\nMCMC parameters\n");
-    print_mcmc_param(mcmcPar);
+    /*Rprintf("\nMCMC parameters\n");
+    print_mcmc_param(mcmcPar);*/
 
 
    param *temp_par;
@@ -262,6 +263,9 @@ print_dna_dist(dnaInfo);
     double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     Rprintf("\nLog-posterior value: %.10f\n", logPost);
 
+        print_vec_int(dat->dates);
+    print_vec_int(par->Tinf);
+
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
 
     mcmcPar = alloc_mcmc_param(N);
@@ -283,7 +287,7 @@ print_dna_dist(dnaInfo);
     Rprintf("this calculates pow_int(%f,%d) * pow_int(%f,%d)\n",par->mu1,mutation1_ij(1,2,dat,dnaInfo),1.0-par->mu1, - mutation1_ij(1,2,dat,dnaInfo));
     Rprintf("value: %f\n",log(gsl_sf_pow_int(par->mu1,mutation1_ij(1,2,dat,dnaInfo)) * gsl_sf_pow_int(1.0-par->mu1,-mutation1_ij(1,2,dat,dnaInfo))));*/
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+    /*mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
    counter = 0;
@@ -312,7 +316,7 @@ print_dna_dist(dnaInfo);
 	}else{Rprintf("Tuning is off");}
 	Rprintf("acc/rej: %d/%d\n",mcmcPar->n_accept_trans_mat,mcmcPar->n_reject_trans_mat);*/
     /* STORE STEP AT WHICH TUNING STOPPED */
-    *stepStopTune = mcmcPar->step_notune;
+    //*stepStopTune = mcmcPar->step_notune;
 
     /* FREE MEMORY */
     free_data(dat);

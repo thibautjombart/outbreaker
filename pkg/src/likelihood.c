@@ -146,7 +146,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     int ances=vec_int_i(par->alpha,i);
     double out=0.0;
 
-    /* Rprintf("finding likelihood for case %d\n",i);*/
+     //Rprintf("finding likelihood for case %d\n",i+1);
     /* = EXTERNAL CASES = */
     if(ances < 0){
       /* PROBA OF SAMPLING TIME */
@@ -177,6 +177,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     /* LIKELIHOOD OF COLLECTION DATE */
     if(vec_int_i(dat->dates,i) <= vec_int_i(par->Tinf,i)){ /* fool proof */
       out += NEARMINUSINF;
+      //Rprintf("\nNEARMINUSINF on case %d due to date < Tinf\n",i+1);
     } else {
       out += log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
     }
@@ -187,9 +188,10 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
 
     out += loglikelihood_grp_i(i, dat, par, rng);
     /* LIKELIHOOD OF INFECTION TIME */
-    /* printf("\ninfection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)))); */
+    //printf("\nllhood infection date: %.10f\n", log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i))));
     if(vec_int_i(par->Tinf,i) <= vec_int_i(par->Tinf,ances)){ /* fool proof */
       out += NEARMINUSINF;
+      //Rprintf("\nNEARMINUSINF on case %d due to Tinf_i < Tinf_ances\n",i+1);
     } else {
       out += log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
     }
@@ -197,6 +199,7 @@ double loglikelihood_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *spaInf
     /* PROBA OF (KAPPA_I-1) UNOBSERVED CASES */
     if(vec_int_i(par->kappa,i)<1 || par->pi<=0 || par->pi >1){ /* fool proof */
       out += NEARMINUSINF;
+      //Rprintf("\nNEARMINUSINF on case %d due to kappa/pi problem\n",i+1);
     } else {
       out += log(gsl_ran_negative_binomial_pdf((unsigned int) vec_int_i(par->kappa,i)-1, par->pi, 1.0));
     }
@@ -564,10 +567,10 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo
 	    /* fflush(stdout); */
 	    if(temp <= NEARMINUSINF) Rprintf(" (i.e., zero)");
 	    /* fflush(stdout); */
-
+	    print_vec_int(par->alpha);
 	    /* display epi likelihood */
 	    ances=vec_int_i(par->alpha,i);
-
+	    Rprintf("\n i=%d: ances = %d", i+1, ances);
 	    /* likelihood of collection date */
 	    temp = log(colltime_dens(gen, vec_int_i(dat->dates,i) - vec_int_i(par->Tinf,i)));
 	    filter_logprob(&temp);
@@ -575,7 +578,7 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo
 	    /* fflush(stdout); */
 	    if(temp <= NEARMINUSINF) Rprintf(" (i.e., zero)");
 	    /* fflush(stdout); */
-
+	    Rprintf("\nabout to find vec_int_i(par->Tinf,%d)\n",ances);
 	    /* likelihood of infection time */
 	    temp = log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
 	    filter_logprob(&temp);
