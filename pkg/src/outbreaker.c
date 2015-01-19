@@ -69,15 +69,15 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(*maxK, *wTrunc, *fTrunc);
     init_gentime(gen, gentimeDens, colltimeDens);
-    /* Rprintf("\n>>> gentime info <<<\n"); 
-    print_gentime(gen);  */
+    Rprintf("\n>>> gentime info <<<\n"); 
+    print_gentime(gen);
 
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
     init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
-    Rprintf("\n>>> param <<<\n");
-    print_param(par);
+    /*Rprintf("\n>>> param <<<\n");
+    print_param(par);*/
 
 
     /* COMPUTE GENETIC DISTANCES */
@@ -114,6 +114,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     //print_mcmc_param(mcmcPar);
     print_vec_int(dat->dates);
     print_vec_int(par->Tinf);
+    print_gentime(gen);
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     if(!checkLike){
@@ -204,8 +205,8 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
-    Rprintf("\n>>> param <<<\n");
-    print_param(par);
+    /*Rprintf("\n>>> param <<<\n");
+    print_param(par);*/
 
 	/* COMPUTE GENETIC DISTANCES */
     dnaInfo = compute_dna_distances(dat->dna, *mutModel);
@@ -225,9 +226,9 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
     print_mcmc_param(mcmcPar);*/
 
 
-   param *temp_par;
+   /*param *temp_par;
    temp_par = alloc_param(N,num_of_groups);
-   copy_param(par,temp_par);
+   copy_param(par,temp_par);*/
    /* mcmcPar->sigma_trans_mat = 1; */
    /* jiggle_trans_mat(par,temp_par,dat,spatialInfo,mcmcPar,rng,num_of_groups); */
 
