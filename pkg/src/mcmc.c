@@ -391,7 +391,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
   
-  bool QUIET=FALSE;
+  bool QUIET=TRUE;
 
   /* OUTPUT TO SCREEN - HEADER */
   if(!quiet){

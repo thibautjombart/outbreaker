@@ -356,16 +356,16 @@ double prob;
 /*consider case with no generations between cases */
 
 	int ances = vec_int_i(par->alpha,i);
-	/* Rprintf("ances: %d\n",ances);*/
+	//Rprintf("ances: %d\n",ances);
 	if(ances == -1){return 0;} /* for the initial case */
        	int to = vec_int_i(dat->group_vec,i) - 1;
-	/* Rprintf("to: %d\n",to);*/
+	//Rprintf("to: %d\n",to);
         int from = vec_int_i(dat->group_vec,ances) - 1;
-	/* Rprintf("from: %d\n", from);*/
+	//Rprintf("from: %d\n", from);
         prob = mat_double_ij(par->trans_mat,from,to);
-	/* Rprintf("prob: %f\n", prob); */
+	//Rprintf("prob: %f\n", prob);
         filter_logprob(&prob);
-	/* Rprintf("\n NEXT \n");*/
+	//Rprintf("\n NEXT \n");
         return(log(prob));
 
 
