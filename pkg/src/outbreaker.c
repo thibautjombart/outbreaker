@@ -69,8 +69,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT GENERATION TIME */
     gen = alloc_gentime(*maxK, *wTrunc, *fTrunc);
     init_gentime(gen, gentimeDens, colltimeDens);
-    Rprintf("\n>>> gentime info <<<\n"); 
-    print_gentime(gen);
+    /*Rprintf("\n>>> gentime info <<<\n"); 
+    print_gentime(gen);*/
 
 
     /* CREATE AND INIT PARAMETERS */
@@ -112,20 +112,18 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
     /* Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
     //print_mcmc_param(mcmcPar);
-    print_vec_int(dat->dates);
-    print_vec_int(par->Tinf);
-    print_gentime(gen);
+    
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
     }
 
-    Rprintf("\nAfter check init LL\n");/* fflush(stdout); */
-    Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
+    //Rprintf("\nAfter check init LL\n");/* fflush(stdout); */
+    //Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
 
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+    /* mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
     /* Rprintf("\nAfter MCMC\n");fflush(stdout); */

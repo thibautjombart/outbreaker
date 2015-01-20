@@ -278,8 +278,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ##number of groups from vector of group memberships
     num.groups <- as.integer(max(group.vec))
     group.vec <- as.integer(group.vec)
-    print("w.dens:")
-    print(w.dens)
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
@@ -385,7 +383,6 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                       "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec")
 
         clusterExport(clust, listArgs, envir=environment())
-	print(w.dens)
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                                   mut.model=mut.model, spa.model=spa.model,
@@ -423,8 +420,6 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         ##                                                     tune.file.name=tune.file.names[i], seed=seed[i]),
         ##                   mc.cores=n.cores, mc.silent=FALSE, mc.cleanup=TRUE, mc.preschedule=TRUE, mc.set.seed=TRUE)
     } else {
-      print("before lapply")
-      print(w.dens)
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                         mut.model=mut.model, spa.model=spa.model,
                                                         w.dens=w.dens, w.trunc=w.trunc,
