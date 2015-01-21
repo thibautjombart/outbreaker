@@ -15,7 +15,7 @@ w <- c(0,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.75,0.75,1,1,0.75,0.5,0.25,0.1,rep(0,20
 tre <- data$ances
 tre[1] <- -1
 
-res <- outbreaker(init.tree="seqTrack",dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
+res <- outbreaker.parallel(n.runs=4,init.tree="seqTrack",dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                            mut.model=1, spa.model=0,
                            w.dens=w,f.dens=w,
                            dist.mat=NULL,
