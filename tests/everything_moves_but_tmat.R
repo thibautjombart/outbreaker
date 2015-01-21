@@ -11,13 +11,13 @@ collecDates <- data$onset + sample(0:3,size=data$n,replace=TRUE)
 fake.dna <- data$dna
 fake.groups <- data$group
 nsize <- data$n
-w <- c(0,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.75,0.75,1,1,0.75,0.5,0.25,0.1)
+w <- c(0,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.75,0.75,1,1,0.75,0.5,0.25,0.1,rep(0,20))
 tre <- data$ances
 tre[1] <- -1
 
 res <- outbreaker(init.tree="seqTrack",dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                            mut.model=1, spa.model=0,
-                           w.dens=w,f.dens=w,w.trunc=16,f.trunc=16,
+                           w.dens=w,f.dens=w,
                            dist.mat=NULL,
                            init.kappa=1, init.mu1=0.02,init.mu2=0.5, init.spa1=NULL,
                            n.iter=1e5, sample.every=500, tune.every=500,
