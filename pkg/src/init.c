@@ -150,11 +150,16 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param2 = phi_param2;
 
     /* transmission matrix */
-    int j=0;
-    for(i=0;i<(l*l);i++){
-		write_mat_double(par->trans_mat,i,j,initTmat[i]);
-		if(i % (l-1) == 0){j += 1;i=0;}
-		if(j == (l-1)){break;}
+    int j=0,k=0,x=0;
+    for(k=0;k<(l*l);k++){	
+		Rprintf("k:%d\n",k);
+		Rprintf("x:%d\n",x);
+		Rprintf("j:%d\n",j);
+		write_mat_double(par->trans_mat,x,j,initTmat[k]);
+		x++;
+		if(x % l == 0	){x=0;j++;}
+		
+		
     }
 }
 
