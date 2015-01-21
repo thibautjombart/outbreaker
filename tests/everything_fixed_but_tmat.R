@@ -7,18 +7,17 @@ data <- list(n=0)
 while(data$n < 10){
 data <- simOutbreak(R0=2, infec.curve=c(0,1,1,1),n.hosts=99,duration=10,spatial=FALSE,group.sizes=c(33,33,33),trans.mat=tm)}
 
-collecDates <- data$onset #+ sample(0:3,data$n,replace=TRUE)
+collecDates <- data$onset
 fake.dna <- data$dna
 fake.groups <- data$group
 nsize <- data$n
 w <- c(rep(1/10,10),rep(0,40))
-f <- c(1)
 tre <- data$ances
 tre[1] <- -1
 
 res <- outbreaker.parallel(n.runs=4,parallel=TRUE,init.tree=tre,dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                            mut.model=1, spa.model=0,
-                           w.dens=w,f.dens=f,
+                           w.dens=w,f.dens=c(0,w),
                            dist.mat=NULL,
                            init.kappa=1, init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
                            n.iter=6e5, sample.every=500, tune.every=500,
@@ -29,7 +28,7 @@ res <- outbreaker.parallel(n.runs=4,parallel=TRUE,init.tree=tre,dna=fake.dna, da
                            move.Tinf=FALSE, move.pi=FALSE, move.spa=FALSE, move.Tmat=TRUE,
                            outlier.threshold = 5,
                            quiet=FALSE, res.file.name="chains.txt",
-                           tune.file.name="tuning.txt",group.vec=fake.groups, init.Tmat = tm)
+                           tune.file.name="tuning.txt",group.vec=fake.groups)
 
 
 

@@ -278,7 +278,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ##number of groups from vector of group memberships
     num.groups <- as.integer(max(group.vec))
     group.vec <- as.integer(group.vec)
-    if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep((1/numgroups),numgroups^2))}
+    if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep((1/num.groups),num.groups^2))}
     init.Tmat <- as.vector(init.Tmat)
     
     
@@ -294,7 +294,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
-	       num.groups, group.vec,
+	             num.groups, group.vec,
                PACKAGE="outbreaker")
 
     D <- temp[[43]]
@@ -350,7 +350,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                                 outlier.threshold = 5, max.kappa=10,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL,
-				group.vec=NULL){
+				group.vec=NULL, init.Tmat=NULL){
 
     ## SOME CHECKS ##
     if(parallel && is.null(n.cores)){
@@ -384,7 +384,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
                       "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa","move.Tmat",
-                      "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec")
+                      "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec","init.Tmat")
 
         clusterExport(clust, listArgs, envir=environment())
         ## set calls to outbreaker on each child ##
@@ -405,7 +405,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                                   move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
                                                                   outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                                   quiet=TRUE, res.file.name=res.file.names[i],
-                                                                  tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec))
+                                                                  tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec,init.Tmat=init.Tmat))
 
         ## close parallel processes ##
         stopCluster(clust)
@@ -441,7 +441,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                         move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
                                                         outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                         quiet=TRUE, res.file.name=res.file.names[i],
-                                                        tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec))
+                                                        tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec, init.Tmat=init.Tmat))
     }
 
 

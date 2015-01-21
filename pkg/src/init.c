@@ -92,11 +92,11 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     /* Tinf */
     /* TmaxLike = which_max_vec_double(gen->dens->rows[0]); */
     TmaxLike = which_max_vec_double(gen->collTime);
-    print_vec_double(gen->collTime);
-    Rprintf("\nTmaxLike = %d\n",TmaxLike);
+    //print_vec_double(gen->collTime);
+    //Rprintf("\nTmaxLike = %d\n",TmaxLike);
     for(i=0;i<dat->n;i++){
 	par->Tinf->values[i] = vec_int_i(dat->dates,i) - TmaxLike;
-	Rprintf("setting par->Tinf->values[%d] = %d - %d = %d\n",i,vec_int_i(dat->dates,i),TmaxLike,vec_int_i(dat->dates,i) - TmaxLike);
+	//Rprintf("setting par->Tinf->values[%d] = %d - %d = %d\n",i,vec_int_i(dat->dates,i),TmaxLike,vec_int_i(dat->dates,i) - TmaxLike);
     }
 
     /* alpha */
@@ -152,9 +152,6 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     /* transmission matrix */
     int j=0,k=0,x=0;
     for(k=0;k<(l*l);k++){	
-		Rprintf("k:%d\n",k);
-		Rprintf("x:%d\n",x);
-		Rprintf("j:%d\n",j);
 		write_mat_double(par->trans_mat,x,j,initTmat[k]);
 		x++;
 		if(x % l == 0	){x=0;j++;}
@@ -224,6 +221,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->move_phi = move_phi;
     in->move_spa = move_spa;
     in->find_import = find_import;
+    in->move_trans_mat = move_trans_mat;
 
    /* check that we don't move useless things */
     if(par->mut_model==0){
