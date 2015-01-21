@@ -26,7 +26,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  double *phiParam1, double *phiParam2, 
 		  double *initMu1, double *initGamma, 
 		  double *initSpa1, double *initSpa2, 
-		  double *spa1Prior, double *spa2Prior,
+		  double *spa1Prior, double *spa2Prior, double *initTmat,
 		  int *moveMut, int *moveAlpha, int *moveKappa, int *moveTinf, 
 		  int *movePi, int *movePhi, int *moveSpa, int *moveTmat,
 		  int *importMethod, int *findImportAt, int *burnin, 
@@ -75,9 +75,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
-    /*Rprintf("\n>>> param <<<\n");
-    print_param(par);*/
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat);
+    Rprintf("\n>>> param <<<\n");
+    print_param(par);
 
 
     /* COMPUTE GENETIC DISTANCES */
@@ -123,7 +123,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     //Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
 
     /* RUN MCMC */
-    mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
+    /*mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);
 
     /* Rprintf("\nAfter MCMC\n");fflush(stdout); */
@@ -202,7 +202,7 @@ void test_R(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *le
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
-   init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
+  /* init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups);
     /*Rprintf("\n>>> param <<<\n");
     print_param(par);*/
 

@@ -87,7 +87,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l, double *initTmat){
     int i, ancesId, T, TmaxLike;
     /* Tinf */
     /* TmaxLike = which_max_vec_double(gen->dens->rows[0]); */
@@ -150,11 +150,11 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param2 = phi_param2;
 
     /* transmission matrix */
-    int j;
-    for(i=0;i<l;i++){
-	for(j=0;j<l;j++){
-		write_mat_double(par->trans_mat,i,j,(double)1/l);
-	}
+    int j=0;
+    for(i=0;i<(l*l);i++){
+		write_mat_double(par->trans_mat,i,j,initTmat[i]);
+		if(i % (l-1) == 0){j += 1;i=0;}
+		if(j == (l-1)){break;}
     }
 }
 
