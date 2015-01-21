@@ -29,7 +29,7 @@ res <- outbreaker.parallel(n.runs=4,parallel=TRUE,init.tree=tre,dna=fake.dna, da
                            move.Tinf=FALSE, move.pi=FALSE, move.spa=FALSE, move.Tmat=TRUE,
                            outlier.threshold = 5,
                            quiet=FALSE, res.file.name="chains.txt",
-                           tune.file.name="tuning.txt",group.vec=fake.groups)
+                           tune.file.name="tuning.txt",group.vec=fake.groups, init.Tmat = tm)
 
 
 
