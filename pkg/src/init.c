@@ -196,7 +196,6 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->sigma_phi = 0.01;
     in->sigma_spa1 = 0.01;
     in->sigma_spa2 = 0.01;
-    in->sigma_trans_mat=2;
     in->step_notune = 0;
     in->burnin = burnin;
     in->find_import_at = find_import_at;
@@ -212,6 +211,11 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
   	/* vector of moved kappa_i*/
 	in->move_kappa->values[i] = move_kappa[i] > 0.0 ? 1.0 : 0.0;
     }
+
+    for(i=0;i<dat->num_of_groups;i++){
+	in->sigma_trans_mat->values[i] = 1.0;
+    }
+
     //Rprintf("move_kappa:");
     //print_vec_double(in->move_kappa);
     /* FILL IN BOOLEANS */

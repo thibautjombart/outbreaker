@@ -949,15 +949,13 @@ logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
 //Rprintf("\n===END===\n");
 /* accept or reject */
 if(logRatio>=0.0) {
-	/* accepted */
 	//Rprintf("accepted due to lR");
 	copy_mat_double(tempPar->trans_mat,currentPar->trans_mat);
 	mcmcPar->n_accept_trans_mat += 1;
 
 } else {
-	/* rejected, accepted with different prob */
+	
 		if(log(gsl_rng_uniform(rng)) <= logRatio){
-		/* accepted */
 		//Rprintf("accepted due to unif");
 		copy_mat_double(tempPar->trans_mat,currentPar->trans_mat);
 		mcmcPar->n_accept_trans_mat += 1;
@@ -968,6 +966,9 @@ if(logRatio>=0.0) {
 		
 		}
 }
+
+
+
 }
 	
 

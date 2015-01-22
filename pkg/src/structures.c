@@ -373,7 +373,7 @@ void copy_param(param *in, param *out){
  ============
 */
 
-mcmc_param *alloc_mcmc_param(int n){
+mcmc_param *alloc_mcmc_param(int n, int l){
   /* allocate pointer */
     mcmc_param *out = (mcmc_param *) malloc(sizeof(mcmc_param));
     if(out == NULL){
@@ -403,6 +403,8 @@ mcmc_param *alloc_mcmc_param(int n){
     out->candid_ances_proba = alloc_vec_double(n+1);
     out->move_alpha = alloc_vec_double(n);
     out->move_kappa = alloc_vec_double(n);
+    out->sigma_trans_mat = alloc_vec_double(l);
+    out->tune_trans_mat = alloc_vec_int(l);
 
     /* FILL IN INTEGERS */
     /* accept/reject counters */
@@ -421,12 +423,12 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_accept_kappa = 0;
     out->n_reject_kappa = 0;
     out->n_like_zero = 0;
-    out->n_accept_trans_mat = 0;
-    out->n_reject_trans_mat = 0;
     out->n_accept_phi = 0;
     out->n_reject_phi = 0;
     out->n_accept_pi = 0;
     out->n_reject_pi = 0;
+    out->n_accept_trans_mat = alloc_vec_double(l);
+    out->n_reject_trans_mat = alloc_vec_double(l);
     
 
     /* movement */
@@ -460,7 +462,6 @@ mcmc_param *alloc_mcmc_param(int n){
     out->sigma_spa1 = 0.0;
     out->sigma_spa2 = 0.0;
     out->lambda_Tinf = 0.0;
-    out->sigma_trans_mat = 0.0;
 
 
     /* RETURN */
@@ -479,6 +480,10 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_double(in->candid_ances_proba);
     free_vec_double(in->move_alpha);
     free_vec_double(in->move_kappa);
+    free_vec_double(in->sigma_trans_mat);
+    free_vec_double(in->n_accept_trans_mat);
+    free_vec_double(in->n_reject_trans_mat);
+    free_vec_int(in->tune_trans_mat);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -515,8 +520,8 @@ void print_mcmc_param(mcmc_param *in){
 
     Rprintf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
 
-    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat, in->n_reject_trans_mat, (double) in->n_accept_trans_mat / in->n_reject_trans_mat);
-
+    /*
+    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat, in->n_reject_trans_mat, (double) in->n_accept_trans_mat / in->n_reject_trans_mat);*/
     Rprintf("\nIndices of Tinf_i to move:\n");
     print_vec_int(in->idx_move_Tinf);
     Rprintf("\nIndices of alpha_i to move:\n");
@@ -540,7 +545,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_phi) Rprintf("phi ");
     if(in->tune_spa1) Rprintf("spa1 ");
     if(in->tune_spa2) Rprintf("spa2 ");
-    if(in->tune_trans_mat) Rprintf("trans_mat ");
+    //if(in->tune_trans_mat) Rprintf("trans_mat ");
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
     Rprintf("\nMoved parameters:");
@@ -594,8 +599,6 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->n_reject_alpha = in->n_reject_alpha;
     out->n_accept_kappa = in->n_accept_kappa;
     out->n_reject_kappa = in->n_reject_kappa;
-    out->n_accept_trans_mat = in->n_accept_trans_mat;
-    out->n_reject_trans_mat = in->n_reject_trans_mat;
 
     out->n_move_Tinf = in->n_move_Tinf;
     out->n_move_alpha = in->n_move_alpha;
@@ -608,9 +611,8 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->sigma_phi = in->sigma_phi;
     out->sigma_spa1 = in->sigma_spa1;
     out->sigma_spa2 = in->sigma_spa2;
-    out->sigma_trans_mat = in->sigma_trans_mat;	
     out->n_like_zero = in->n_like_zero;
-    out->tune_trans_mat = in->tune_trans_mat;
+    
 
     out->tune_any = in->tune_any;
     out->tune_mu1 = in->tune_mu1;
@@ -619,7 +621,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_spa1 = in->tune_spa1;
     out->tune_spa2 = in->tune_spa2;
     out->step_notune = in->step_notune;
-    out->tune_trans_mat = in->tune_trans_mat;
+    copy_vec_int(in->tune_trans_mat,out->tune_trans_mat);    
 
     out->move_mut = in->move_mut;
     out->move_pi = in->move_pi;
@@ -639,6 +641,10 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_vec_double(in->candid_ances_proba, out->candid_ances_proba);
     copy_vec_double(in->move_alpha, out->move_alpha);
     copy_vec_double(in->move_kappa, out->move_kappa);
+    copy_vec_double(in->sigma_trans_mat, out->sigma_trans_mat);
+    copy_vec_double(in->n_accept_trans_mat, out->n_accept_trans_mat);
+    copy_vec_double(in->n_reject_trans_mat, out->n_reject_trans_mat);
+    copy_vec_int(in->tune_trans_mat, out->tune_trans_mat);
 } /* end alloc_mcmc_param */
 
 

@@ -2,7 +2,7 @@ library(outbreaker)
 library(ape)
 options(error=recover)
 
-tm <- matrix(byrow=TRUE,c(0.4,0.4,0.2,0.4,0.4,0.2,0.1,0.1,0.8),ncol=3)
+tm <- matrix(byrow=TRUE,c(0.45,0.45,0.1,0.45,0.45,0.1,0.1,0.1,0.8),ncol=3)
 data <- list(n=0)
 while(data$n < 10){
 data <- simOutbreak(R0=2, infec.curve=c(0,1,1,1),n.hosts=99,duration=10,spatial=FALSE,group.sizes=c(33,33,33),trans.mat=tm)}
@@ -59,6 +59,24 @@ res <- outbreaker.parallel(n.runs=4,parallel=TRUE,init.tree=tre,dna=fake.dna, da
 
 
 
-par(mfrow=c(2,1))
-plotChains(res)
-plotChains(res,burnin=2e4,type="dens")
+#par(mfrow=c(2,1))
+#plotChains(res)
+#plotChains(res,burnin=2e4,type="dens")
+
+par(mfrow=c(3,3))
+plot(1:4804,res$chains$p_11,type='l')
+plot(1:4804,res$chains$p_12,type='l')
+plot(1:4804,res$chains$p_13,type='l')
+plot(1:4804,res$chains$p_21,type='l')
+plot(1:4804,res$chains$p_22,type='l')
+plot(1:4804,res$chains$p_23,type='l')
+plot(1:4804,res$chains$p_31,type='l')
+plot(1:4804,res$chains$p_32,type='l')
+plot(1:4804,res$chains$p_33,type='l')
+print(tm)
+post.tm <- matrix(byrow=TRUE,ncol=3,c(mean(res$chains$p_11),mean(res$chains$p_12),mean(res$chains$p_13),
+                                      mean(res$chains$p_21),mean(res$chains$p_22),mean(res$chains$p_23),
+                                      mean(res$chains$p_31),mean(res$chains$p_32),mean(res$chains$p_33)))
+print(post.tm)
+
+
