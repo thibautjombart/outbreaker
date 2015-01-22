@@ -886,48 +886,36 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int l){
 /*Declarations*/
 int i,j;
-double val; /*used in loop*/
-int groups[l];
-double temp;
-double logit;
-double logRatio = 0.0;
-
-/* logit transform entries in matrix and add normal variable */
-for(i=0;i<l;i++){
-	for(j=0;j<l;j++){
-		temp = log(mat_double_ij(currentPar->trans_mat,i,j));
-		logit = 1/(1-temp);
-		logit += gsl_ran_gaussian(rng,mcmcPar->sigma_trans_mat);
-		temp = gsl_sf_exp(logit)/(1+gsl_sf_exp(logit));
-		write_mat_double(tempPar->trans_mat,i,j,temp);
-	}
-}
-
-/*sum row and divide all entries by sum */
-double rowsum;
-for(i=0;i<l;i++){
-	rowsum = sum_vec_double(tempPar->trans_mat->rows[i]);
-	for(j=0;j<l;j++){
-		temp = mat_double_ij(tempPar->trans_mat,i,j);
-		write_mat_double(tempPar->trans_mat,i,j,temp/rowsum);
-	}
-}
-// row,col
-/*double remainder;
-double element;
-for(i=0;i<l;i++){
-	remainder=1.0;
-	for(j=0;j<l;j++){
-		if(j== (l-1)){
-			write_mat_double(tempPar->trans_mat,i,j,remainder);
-		}else{
-			element = gsl_ran_flat(rng,0,remainder);
-			write_mat_double(tempPar->trans_mat,i,j,element);
-			remainder -= element;
-		}
-	}
-}*/
 		
+
+
+/* for each row */
+for(i=0;i<dat->num_of_groups;i++){
+
+	/* change raw rates */
+	for(j=0;j<dat->num_of_groups,j++){
+		if(j != i){
+			write_mat_double(tempPar->trans_mat_rates,i,j,gsl_ran_lognormal(rng,log(mat_double_ij(currentPar->trans_mat_rates,i,j))),mcmcPar->sigma_trans_mat->values[i]);
+	        }
+	}
+
+	/* change rates to probabilities */
+        double rowsum;
+        for(i=0;i<l;i++){
+		rowsum = sum_vec_double(tempPar->trans_mat_rates->values[i]);
+		for(j=0;j<l;j++){
+			write_mat_double(tempPar->trans_mat_probs,i,j,mat_double_ij(tempPar->trans_mat_rates,i,j)/rowsum);
+         	}
+         }
+
+	 /* log ratio */
+         logRatio = loglikelihood_grp_all(dat,tempPar, rng) - loglikelihood_grp_all(dat,currentPar,rng);
+         /* correction factor */
+	 logRatio = 
+}
+
+
+
 
 
 
@@ -950,7 +938,8 @@ logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
 /* accept or reject */
 if(logRatio>=0.0) {
 	//Rprintf("accepted due to lR");
-	copy_mat_double(tempPar->trans_mat,currentPar->trans_mat);
+	copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
 	mcmcPar->n_accept_trans_mat += 1;
 
 } else {
