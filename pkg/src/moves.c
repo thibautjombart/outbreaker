@@ -882,12 +882,11 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 
 
-/* MOVING VALUES IN THE TRANSMISSION MATRIX (NEW TEMPORARY SCIENTIFIC NAME - JIGGLING THE MATRIX) */
-void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
+/* MOVING VALUES IN THE TRANSMISSION MATRIX */
+void move_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
 /*Declarations*/
 int i,j;
 double logRatio=0.0;
-
 
 /* for each row */
 for(i=0;i<dat->num_of_groups;i++){
@@ -898,24 +897,22 @@ for(i=0;i<dat->num_of_groups;i++){
 			write_mat_double(tempPar->trans_mat_rates,i,j,gsl_ran_lognormal(rng,log(mat_double_ij(currentPar->trans_mat_rates,i,j)),mcmcPar->sigma_trans_mat->values[i]));
 	        }
 	}
-
 	/* change rates to probabilities */
         double rowsum;
-        for(i=0;i<dat->num_of_groups;i++){
-		rowsum = sum_vec_double(tempPar->trans_mat_rates->rows[i]);
+        int h;
+        for(h=0;h<dat->num_of_groups;h++){
+		rowsum = sum_vec_double(tempPar->trans_mat_rates->rows[h]);
 		for(j=0;j<dat->num_of_groups;j++){
-			write_mat_double(tempPar->trans_mat_probs,i,j,mat_double_ij(tempPar->trans_mat_rates,i,j)/rowsum);
+			write_mat_double(tempPar->trans_mat_probs,h,j,mat_double_ij(tempPar->trans_mat_rates,h,j)/rowsum);
          	}
          }
-
 	 /* log ratio */
          logRatio = loglikelihood_grp_all(dat,tempPar, rng) - loglikelihood_grp_all(dat,currentPar,rng);
          /* correction factor */
 	 int k;
 	 for(k=0;k<dat->num_of_groups;k++){
-		if(k != i) {logRatio += log(1/mat_double_ij(currentPar->trans_mat_probs,i,j)) - log(1/mat_double_ij(tempPar->trans_mat_probs,i,j));}
+		if(k != i) {logRatio += log(1/mat_double_ij(currentPar->trans_mat_rates,i,k)) - log(1/mat_double_ij(tempPar->trans_mat_rates,i,k));}
 	 }
-
 	/* accept or reject */
 	if(logRatio>=0.0){
 		/* accept */

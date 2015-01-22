@@ -150,15 +150,21 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param2 = phi_param2;
 
     /* transmission matrices */
+    /* read in rates mat */
     int j=0,k=0,x=0;
-    for(k=0;k<(l*l);k++){	
-		write_mat_double(par->trans_mat_rates,x,j,initTmat[k]);
+    for(k=0;k<(l*l);k++){
+			write_mat_double(par->trans_mat_rates,x,j,initTmat[k]);
 		x++;
 		if(x % l == 0	){x=0;j++;}
 		
 		
     }
-
+    /* set diagonals to 1 */
+    for(i=0;i<l;i++){
+	write_mat_double(par->trans_mat_rates,i,i,1);
+   }
+    
+   /* fill in prob mat */
    double rowsum;
    for(i=0;i<l;i++){
 	rowsum = sum_vec_double(par->trans_mat_rates->rows[i]);
