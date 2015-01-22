@@ -883,27 +883,27 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 
 /* MOVING VALUES IN THE TRANSMISSION MATRIX (NEW TEMPORARY SCIENTIFIC NAME - JIGGLING THE MATRIX) */
-void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int l){
+void jiggle_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){
 /*Declarations*/
 int i,j;
-		
+double logRatio=0.0;
 
 
 /* for each row */
 for(i=0;i<dat->num_of_groups;i++){
 
 	/* change raw rates */
-	for(j=0;j<dat->num_of_groups,j++){
+	for(j=0;j<dat->num_of_groups;j++){
 		if(j != i){
-			write_mat_double(tempPar->trans_mat_rates,i,j,gsl_ran_lognormal(rng,log(mat_double_ij(currentPar->trans_mat_rates,i,j))),mcmcPar->sigma_trans_mat->values[i]);
+			write_mat_double(tempPar->trans_mat_rates,i,j,gsl_ran_lognormal(rng,log(mat_double_ij(currentPar->trans_mat_rates,i,j)),mcmcPar->sigma_trans_mat->values[i]));
 	        }
 	}
 
 	/* change rates to probabilities */
         double rowsum;
-        for(i=0;i<l;i++){
-		rowsum = sum_vec_double(tempPar->trans_mat_rates->values[i]);
-		for(j=0;j<l;j++){
+        for(i=0;i<dat->num_of_groups;i++){
+		rowsum = sum_vec_double(tempPar->trans_mat_rates->rows[i]);
+		for(j=0;j<dat->num_of_groups;j++){
 			write_mat_double(tempPar->trans_mat_probs,i,j,mat_double_ij(tempPar->trans_mat_rates,i,j)/rowsum);
          	}
          }
@@ -911,55 +911,34 @@ for(i=0;i<dat->num_of_groups;i++){
 	 /* log ratio */
          logRatio = loglikelihood_grp_all(dat,tempPar, rng) - loglikelihood_grp_all(dat,currentPar,rng);
          /* correction factor */
-	 logRatio = 
-}
+	 int k;
+	 for(k=0;k<dat->num_of_groups;k++){
+		if(k != i) {logRatio += log(1/mat_double_ij(currentPar->trans_mat_probs,i,j)) - log(1/mat_double_ij(tempPar->trans_mat_probs,i,j));}
+	 }
 
-
-
-
-
-
-
-//Rprintf("\n===START===\n");
-//Rprintf("\n sigma_trans_mat: %f\n",mcmcPar->sigma_trans_mat);
-//Rprintf("candidate matrix:\n");
-//print_mat_double(tempPar->trans_mat);
-/* LIKELIHOODS */
-logRatio += loglikelihood_grp_all(dat,tempPar, rng);
-//Rprintf("logRatio of temp: %f", logRatio);
-//Rprintf("likelihood of candidate: %f\n",loglikelihood_grp_all(dat,tempPar, rng));
-//Rprintf("previous matrix:\n");
-//print_mat_double(currentPar->trans_mat);
-//Rprintf("likelihood of previous: %f\n",loglikelihood_grp_all(dat,currentPar, rng));
-logRatio -= loglikelihood_grp_all(dat,currentPar,rng);
-//Rprintf("logRatio including current: %f", logRatio);
-//Rprintf("logRatio: %f\n",logRatio);
-//Rprintf("\n===END===\n");
-/* accept or reject */
-if(logRatio>=0.0) {
-	//Rprintf("accepted due to lR");
-	copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
-	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	mcmcPar->n_accept_trans_mat += 1;
-
-} else {
-	
+	/* accept or reject */
+	if(logRatio>=0.0){
+		/* accept */
+		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
+		mcmcPar->n_accept_trans_mat->values[i] += 1;
+	}else{
 		if(log(gsl_rng_uniform(rng)) <= logRatio){
-		//Rprintf("accepted due to unif");
-		copy_mat_double(tempPar->trans_mat,currentPar->trans_mat);
-		mcmcPar->n_accept_trans_mat += 1;
-		} else {
-			//Rprintf("rejected");
-			copy_mat_double(currentPar->trans_mat,tempPar->trans_mat);
-			mcmcPar->n_reject_trans_mat += 1;
-		
+		/* accept */
+		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
+		mcmcPar->n_accept_trans_mat->values[i] += 1;
+		}else{
+		/* reject */		
+		copy_mat_double(currentPar->trans_mat_rates,tempPar->trans_mat_rates);
+		copy_mat_double(currentPar->trans_mat_probs,tempPar->trans_mat_probs);
+		mcmcPar->n_reject_trans_mat->values[i] += 1;
 		}
-}
 
+	}/*end accept or reject */
+}/* end of for loop */
+}/* end of function */
 
-
-}
-	
 
 
 
