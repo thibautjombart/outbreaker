@@ -57,7 +57,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
     }
     for(i=0;i<dat->num_of_groups;i++){
 	for(j=0;j<dat->num_of_groups;j++){
-		fprintf(file, "\t%.15f",mat_double_ij(par->trans_mat,i,j));
+		fprintf(file, "\t%.15f",mat_double_ij(par->trans_mat_probs,i,j));
 	}
     }
 
@@ -85,7 +85,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 	}
         for(i=0;i<dat->num_of_groups;i++){
 		for(j=0;j<dat->num_of_groups;j++){
-			Rprintf("\t%.15f",mat_double_ij(par->trans_mat,i,j));
+			Rprintf("\t%.15f",mat_double_ij(par->trans_mat_probs,i,j));
 		}
          }
     }
@@ -102,6 +102,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 */
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
+    int i;
     /* OUTPUT TO FILE */
     fprintf(file,"\n%d", step);
     temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
@@ -116,8 +117,10 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_spa1 / (double) (mcmcPar->n_accept_spa1 + mcmcPar->n_reject_spa1);
     fprintf(file,"\t%.5f", temp);
-    temp = (double) mcmcPar->n_accept_trans_mat / (double) (mcmcPar->n_accept_trans_mat + mcmcPar->n_reject_trans_mat);
+    for(i=0;i<mcmcPar->n_accept_trans_mat->length;i++){
+    temp = (double) mcmcPar->n_accept_trans_mat->values[i] / (double) (mcmcPar->n_accept_trans_mat->values[i] + mcmcPar->n_reject_trans_mat->values[i]);
     fprintf(file,"\t%.5f",temp);
+    }
     /* temp = (double) mcmcPar->n_accept_spa2 / (double) (mcmcPar->n_accept_spa2 + mcmcPar->n_reject_spa2); */
     /* fprintf(file,"\t%.5f", temp); */
   
@@ -126,10 +129,13 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%.15f", mcmcPar->sigma_spa1);
-    fprintf(file,"\t%.15f", mcmcPar->sigma_trans_mat);
+    
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
+    for(i=0;i<mcmcPar->sigma_trans_mat->length;i++){
+    fprintf(file,"\t%.15f", mcmcPar->sigma_trans_mat->values[i]);
+    }
 }
 
 
@@ -337,6 +343,7 @@ void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
 		in->tune_trans_mat->values[i] = 0;
 		Rprintf("no morning tuning tm!");
 	}
+     } /* end of for loop */
 }
 
 
@@ -424,7 +431,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   copy_param(par,localPar);
   copy_param(par,tempPar);
 
-  mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
+  mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n,dat->num_of_groups);
   copy_mcmc_param(mcmcPar, localMcmcPar);
 
   /* CREATE TEMPORARY VECTOR STORING "GLOBAL INFLUENCE" OF EACH INDIVIDUALS */
@@ -479,7 +486,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       /* if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng); */
       if(localMcmcPar->tune_trans_mat) tune_trans_mat(localMcmcPar,rng);
 
-      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_trans_mat;
+      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_any_tmat;
     }
     /* MOVEMENTS */
     /* move mutation rates */
@@ -654,9 +661,14 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1\tp_accept_trans_mat");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tsigma_trans_mat\tn_like_zero");
-
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
+    for(i=0;i<dat->num_of_groups;i++){
+	fprintf(file, "\tpaccept_tmat_row_%d",i+1);
+    }
+    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
+    for(i=0;i<dat->num_of_groups;i++){
+	fprintf(file, "\tsigma_tmat_row_%d",i+1);
+    }
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
 	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
@@ -731,7 +743,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
 	  /* if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng); */
 	  if(mcmcPar->tune_trans_mat) tune_trans_mat(mcmcPar, rng);
-	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1 || mcmcPar->tune_trans_mat;
+	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1 || mcmcPar->tune_any_tmat;
 	  if(!mcmcPar->tune_any) {
 	    mcmcPar->step_notune = i;
 	    /* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */

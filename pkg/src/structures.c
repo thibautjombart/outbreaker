@@ -450,7 +450,7 @@ mcmc_param *alloc_mcmc_param(int n, int l){
     out->tune_gamma = TRUE;
     out->tune_pi = TRUE;
     out->tune_phi = TRUE;
-    out->tune_trans_mat = TRUE;
+    out->tune_any_tmat = TRUE;
     out->step_notune = -1;
 
     /* misc */
@@ -527,7 +527,7 @@ void print_mcmc_param(mcmc_param *in){
 
     int i = 0;
     for(i=0;i<in->n_accept_trans_mat->length;i++){
-    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat, in->n_reject_trans_mat, (double) in->n_accept_trans_mat / in->n_reject_trans_mat);
+    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat->values[i], in->n_reject_trans_mat->values[i], (double) in->n_accept_trans_mat->values[i] / in->n_reject_trans_mat->values[i]);
    }
 
 
@@ -555,7 +555,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_spa1) Rprintf("spa1 ");
     if(in->tune_spa2) Rprintf("spa2 ");
     for(i=0;i<in->tune_trans_mat->length;i++){
-	if(in->tune_trans_mat == 1)Rprintf("trans_mat row %d ", i+1);
+	if(in->tune_trans_mat->values[i] == 1)Rprintf("trans_mat row %d ", i+1);
     }
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
@@ -635,6 +635,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_spa1 = in->tune_spa1;
     out->tune_spa2 = in->tune_spa2;
     out->step_notune = in->step_notune;
+    out->tune_any_tmat = in->tune_any_tmat;
     copy_vec_int(in->tune_trans_mat,out->tune_trans_mat);    
 
     out->move_mut = in->move_mut;

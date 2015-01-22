@@ -161,7 +161,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
    double rowsum;
    for(i=0;i<l;i++){
-	rowsum = sum_vec_double(par->trans_mat_rates->values[i]);
+	rowsum = sum_vec_double(par->trans_mat_rates->rows[i]);
 	for(j=0;j<l;j++){
 		write_mat_double(par->trans_mat_probs,i,j,mat_double_ij(par->trans_mat_rates,i,j)/rowsum);
 	}
@@ -192,8 +192,10 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_reject_alpha = 0;
     in->n_accept_kappa = in->n_move_kappa;
     in->n_reject_kappa = 0;
-    in->n_accept_trans_mat = 1;
-    in->n_reject_trans_mat = 0;
+    for(i=0;i<dat->num_of_groups;i++){
+    	in->n_accept_trans_mat->values[i] = 1;
+    	in->n_reject_trans_mat->values[i] = 0;
+    }
 
 
     /* INITIALIZE MCMC PARAMETERS */
@@ -254,8 +256,17 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE;
     in->tune_pi = move_pi;
     in->tune_phi = move_phi;
-    in->tune_trans_mat = move_trans_mat;
-    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2 || in->tune_trans_mat;
+    if(move_trans_mat == TRUE){
+	for(i=0;i<dat->num_of_groups;i++){
+		in->tune_trans_mat->values[i] = 1;
+	}
+   }else{
+	for(i=0;i<dat->num_of_groups;i++){
+		in->tune_trans_mat->values[i] = 1;
+	}
+   }	
+    in->tune_any_tmat = move_trans_mat;
+    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2 || in->tune_any_tmat;
 
 } /* end init_mcmc_param */
 

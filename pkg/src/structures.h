@@ -107,6 +107,7 @@ typedef struct{
     int n_like_zero; /* number of times likelihood was zero */
     bool tune_any, tune_mu1, tune_gamma, tune_pi, tune_phi, tune_spa1, tune_spa2; /* logical indicating whether these proposals should be tuned */
     vec_int * tune_trans_mat;
+    bool tune_any_tmat;
     int step_notune; /* step at which all tuning stopped */
     bool move_mut, move_Tinf, move_pi, move_phi, move_spa, move_trans_mat; /* logical indicating what parameter should be moved */
     vec_double * move_alpha; /* vector indicating which alpha_i to move (1.0) or not (0.0) */
