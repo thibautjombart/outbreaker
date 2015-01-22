@@ -149,15 +149,23 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
 
-    /* transmission matrix */
+    /* transmission matrices */
     int j=0,k=0,x=0;
     for(k=0;k<(l*l);k++){	
-		write_mat_double(par->trans_mat,x,j,initTmat[k]);
+		write_mat_double(par->trans_mat_rates,x,j,initTmat[k]);
 		x++;
 		if(x % l == 0	){x=0;j++;}
 		
 		
     }
+
+   double rowsum;
+   for(i=0;i<l;i++){
+	rowsum = sum_vec_double(par->trans_mat_rates->values[i]);
+	for(j=0;j<l;j++){
+		write_mat_double(par->trans_mat_probs,i,j,mat_double_ij(par->trans_mat_rates,i,j)/rowsum);
+	}
+   }	
 }
 
 

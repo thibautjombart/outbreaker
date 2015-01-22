@@ -362,7 +362,7 @@ double prob;
 	//Rprintf("to: %d\n",to);
         int from = vec_int_i(dat->group_vec,ances) - 1;
 	//Rprintf("from: %d\n", from);
-        prob = mat_double_ij(par->trans_mat,from,to);
+        prob = mat_double_ij(par->trans_mat_probs,from,to);
 	//Rprintf("prob: %f\n", prob);
         filter_logprob(&prob);
 	//Rprintf("\n NEXT \n");

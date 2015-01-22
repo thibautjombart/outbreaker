@@ -278,7 +278,8 @@ param *alloc_param(int n, int l){
     out->phi_param2 = 1.0;
 
     /* fill in transmission matrix */
-    out->trans_mat = alloc_mat_double(l,l);
+    out->trans_mat_rates = alloc_mat_double(l,l);
+    out->trans_mat_probs = alloc_mat_double(l,l);
     /* return */
     return out;
 } /* end alloc_param */
@@ -290,7 +291,8 @@ void free_param(param *in){
     free_vec_int(in->Tinf);
     free_vec_int(in->alpha);
     free_vec_int(in->kappa);
-    free_mat_double(in->trans_mat);
+    free_mat_double(in->trans_mat_rates);
+    free_mat_double(in->trans_mat_probs);
     free(in);
 } /* end free_param*/
 
@@ -324,8 +326,10 @@ void print_param(param *in){
     Rprintf("%.5f", in->phi);
     Rprintf("\n= priors on phi (parameter of beta distribution) =\n");
     Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2);
-    Rprintf("\n= transmission matrix =\n");
-    print_mat_double(in->trans_mat);
+    Rprintf("\n= transmission rate matrix =\n");
+    print_mat_double(in->trans_mat_rates);
+    Rprintf("\n= transmission probability matrix =\n");
+    print_mat_double(in->trans_mat_probs);
 } /* end print_param*/
 
 
@@ -353,7 +357,8 @@ void copy_param(param *in, param *out){
     out->spa_model = in->spa_model;
     out->import_method = in->import_method;
     
-    copy_mat_double(in->trans_mat,out->trans_mat);
+    copy_mat_double(in->trans_mat_rates,out->trans_mat_rates);
+    copy_mat_double(in->trans_mat_probs,out->trans_mat_probs);
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
@@ -520,8 +525,12 @@ void print_mcmc_param(mcmc_param *in){
 
     Rprintf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
 
-    /*
-    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat, in->n_reject_trans_mat, (double) in->n_accept_trans_mat / in->n_reject_trans_mat);*/
+    int i = 0;
+    for(i=0;i<in->n_accept_trans_mat->length;i++){
+    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat, in->n_reject_trans_mat, (double) in->n_accept_trans_mat / in->n_reject_trans_mat);
+   }
+
+
     Rprintf("\nIndices of Tinf_i to move:\n");
     print_vec_int(in->idx_move_Tinf);
     Rprintf("\nIndices of alpha_i to move:\n");
@@ -545,11 +554,16 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_phi) Rprintf("phi ");
     if(in->tune_spa1) Rprintf("spa1 ");
     if(in->tune_spa2) Rprintf("spa2 ");
-    //if(in->tune_trans_mat) Rprintf("trans_mat ");
+    for(i=0;i<in->tune_trans_mat->length;i++){
+	if(in->tune_trans_mat == 1)Rprintf("trans_mat row %d ", i+1);
+    }
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
     Rprintf("\nMoved parameters:");
     if(in->move_mut) Rprintf("mu1 gamma ");
+    for(i=0;i<in->tune_trans_mat->length;i++){
+	Rprintf("trans_mat row %d ", i+1);
+    }
     /* if(in->move_alpha) Rprintf("alpha "); */
     /* if(in->move_kappa) Rprintf("kappa "); */
     if(in->move_Tinf) Rprintf("Tinf ");

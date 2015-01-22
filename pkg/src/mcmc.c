@@ -315,23 +315,26 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 }
 
 void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
-	double paccept = (double) in->n_accept_trans_mat / (double) (in->n_accept_trans_mat + in->n_reject_trans_mat);
-	Rprintf("\ntuning trans_mat\n");
+
+	int i;
+	for(i=0;i<in->n_accept_trans_mat->length;i++){
+	double paccept = (double) in->n_accept_trans_mat->values[i] / (double) (in->n_accept_trans_mat->values[i] + in->n_reject_trans_mat->values[i]);
+	/*Rprintf("\ntuning trans_mat\n");
 	Rprintf("n_accept_trans_mat:%d\n",in->n_accept_trans_mat);
 	Rprintf("n_reject_trans_mat:%d\n",in->n_reject_trans_mat);
-	Rprintf("paccept: %f\n",paccept);
+	Rprintf("paccept: %f\n",paccept);*/
 	if(paccept<0.25) {
-		in->sigma_trans_mat /= 1.5;
+		in->sigma_trans_mat->values[i] /= 1.5;
 		Rprintf("stm: %f\n",in->sigma_trans_mat);
-		in->n_accept_trans_mat = 0;
-		in->n_reject_trans_mat = 0;
+		in->n_accept_trans_mat->values[i] = 0;
+		in->n_reject_trans_mat->values[i] = 0;
 	} else if(paccept > 0.5) {
 		Rprintf("stm: %f\n", in->sigma_trans_mat);
-		in->sigma_trans_mat *= 1.5;
-		in->n_accept_trans_mat = 0;
-		in->n_reject_trans_mat = 0;
+		in->sigma_trans_mat->values[i] *= 1.5;
+		in->n_accept_trans_mat->values[i] = 0;
+		in->n_reject_trans_mat->values[i] = 0;
 	} else {
-		in->tune_trans_mat = FALSE;
+		in->tune_trans_mat->values[i] = 0;
 		Rprintf("no morning tuning tm!");
 	}
 }

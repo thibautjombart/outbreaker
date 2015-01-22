@@ -69,7 +69,8 @@ typedef struct{
     int import_method; /* import method: 0=none; 1=based on genetic LL; 2=based on full LL */
     double phi; /* proba of nosocomial infection */
     double phi_param1, phi_param2; /* parameters of the Beta prior for phi */
-    mat_double *trans_mat; /* matrix for transmission probabilities between different groups */
+    mat_double *trans_mat_rates; /* matrix for transmission probabilities between different groups */
+    mat_double *trans_mat_probs;
 } param;
 
 
