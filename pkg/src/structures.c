@@ -527,7 +527,7 @@ void print_mcmc_param(mcmc_param *in){
 
     int i = 0;
     for(i=0;i<in->n_accept_trans_mat->length;i++){
-    Rprintf("\ntrans_mat: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_trans_mat->values[i], in->n_reject_trans_mat->values[i], (double) in->n_accept_trans_mat->values[i] / in->n_reject_trans_mat->values[i]);
+    Rprintf("\ntrans_mat_row_%d: nb. accepted: %f   nb. rejected: %f   (acc/rej ratio:%.3f)", i+1, in->n_accept_trans_mat->values[i], in->n_reject_trans_mat->values[i], (double) in->n_accept_trans_mat->values[i] / in->n_reject_trans_mat->values[i]);
    }
 
 

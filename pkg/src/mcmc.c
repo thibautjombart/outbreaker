@@ -331,17 +331,17 @@ void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
 	Rprintf("paccept: %f\n",paccept);*/
 	if(paccept<0.25) {
 		in->sigma_trans_mat->values[i] /= 1.5;
-		Rprintf("stm: %f\n",in->sigma_trans_mat);
+		//Rprintf("stm: %f\n",in->sigma_trans_mat);
 		in->n_accept_trans_mat->values[i] = 0;
 		in->n_reject_trans_mat->values[i] = 0;
 	} else if(paccept > 0.5) {
-		Rprintf("stm: %f\n", in->sigma_trans_mat);
+		//Rprintf("stm: %f\n", in->sigma_trans_mat);
 		in->sigma_trans_mat->values[i] *= 1.5;
 		in->n_accept_trans_mat->values[i] = 0;
 		in->n_reject_trans_mat->values[i] = 0;
 	} else {
 		in->tune_trans_mat->values[i] = 0;
-		Rprintf("no morning tuning tm!");
+	
 	}
      } /* end of for loop */
 }
@@ -453,8 +453,6 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 	/* import method 1: use only genetic log-likelihood */
 	if(par->import_method==1){
 	  indivInfluence->values[j] -= loglikelihood_gen_i(j,dat, dnaInfo, localPar, rng);
-	  Rprintf("indivInfluence[%d]: %f\n",j,indivInfluence->values[j]);
-	  Rprintf("loglike_gen_%d: %f\n",j,loglikelihood_gen_i(j,dat, dnaInfo, localPar, rng));
 	}
 
 	/* import method 2: use only genetic log-likelihood */
@@ -544,7 +542,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf(" done!");
 
     if(!QUIET) Rprintf("\n Moving trans_mat ...");
-    if(localMcmcPar->move_trans_mat) jiggle_trans_mat(localPar, tempPar, dat, localMcmcPar, rng, dat->num_of_groups);
+    if(localMcmcPar->move_trans_mat) move_trans_mat(localPar, tempPar, dat, localMcmcPar, rng);
     if(!QUIET) Rprintf(" done!");
   } /* end of MCMC */
 
@@ -663,11 +661,11 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
     for(i=0;i<dat->num_of_groups;i++){
-	fprintf(file, "\tpaccept_tmat_row_%d",i+1);
+	fprintf(mcmcFile, "\tpaccept_tmat_row_%d",i+1);
     }
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
     for(i=0;i<dat->num_of_groups;i++){
-	fprintf(file, "\tsigma_tmat_row_%d",i+1);
+	fprintf(mcmcFile, "\tsigma_tmat_row_%d",i+1);
     }
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
@@ -797,7 +795,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move trans_mat */
-        if(mcmcPar->move_trans_mat) jiggle_trans_mat(par, tempPar, dat, mcmcPar, rng, dat->num_of_groups);
+        if(mcmcPar->move_trans_mat) move_trans_mat(par, tempPar, dat, mcmcPar, rng);
 
 	
 
