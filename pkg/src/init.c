@@ -229,7 +229,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     }
 
     for(i=0;i<dat->num_of_groups;i++){
-	in->sigma_trans_mat->values[i] = 1.0;
+	in->sigma_trans_mat->values[i] = 0.56;
     }
 
     //Rprintf("move_kappa:");

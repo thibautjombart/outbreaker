@@ -362,11 +362,11 @@ double prob;
 	//Rprintf("to: %d\n",to);
         int from = vec_int_i(dat->group_vec,ances) - 1;
 	//Rprintf("from: %d\n", from);
-        prob = mat_double_ij(par->trans_mat_probs,from,to);
+        prob = log(mat_double_ij(par->trans_mat_probs,from,to));
 	//Rprintf("prob: %f\n", prob);
         filter_logprob(&prob);
 	//Rprintf("\n NEXT \n");
-        return(log(prob));
+        return(prob);
 
 
 /* case with generations between cases - need to consider permutations of possible groups of

@@ -44,7 +44,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng);
 
 /* move for transmission matrix */
-void move_trans_mat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng);
+void move_trans_mat(FILE *bugfile, param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, int step);
 
 
 /* NO LONGER USED */
