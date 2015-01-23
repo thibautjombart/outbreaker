@@ -276,9 +276,16 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     stopTuneAt <- integer(1)
 
     ##number of groups from vector of group memberships
-    num.groups <- as.integer(max(group.vec))
-    group.vec <- as.integer(group.vec)
-    if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep((1/num.groups),num.groups^2))}
+    if(is.null(group.vec)){
+      num.groups <- as.integer(1)
+      group.vec <- as.integer(rep(1,length(dates)))
+    }else{
+      num.groups <- as.integer(max(group.vec))
+      group.vec <- as.integer(group.vec)
+    }
+    
+    if(is.null(group.vec)){num.groups=as.integer(1)}
+    if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep((1/num.groups),times=num.groups^2))}
     init.Tmat <- as.vector(init.Tmat)
     
     

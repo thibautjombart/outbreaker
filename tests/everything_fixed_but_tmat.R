@@ -15,13 +15,13 @@ w <- c(rep(1/10,10),rep(0,40))
 tre <- data$ances
 tre[1] <- -1
 
-res <- outbreaker.parallel(n.runs=4,parallel=TRUE,init.tree=tre,dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
+res <- outbreaker(init.tree=tre,dna=fake.dna, dates=collecDates, idx.dna=c(1:nsize),
                            mut.model=1, spa.model=0,
                            w.dens=w,f.dens=c(0,w),
                            dist.mat=NULL,
                            init.kappa=1, init.mu1=0.01,init.mu2=0.5, init.spa1=NULL,
-                           n.iter=6e5, sample.every=500, tune.every=500,
-                           burnin=2e5, import.method="genetic",
+                           n.iter=1e5, sample.every=500, tune.every=500,
+                           burnin=2e4, import.method="genetic",
                            find.import=TRUE,
                            pi.prior1=10, pi.prior2=1, spa1.prior=1,
                            move.mut=FALSE, move.ances=FALSE, move.kappa=FALSE,

@@ -635,8 +635,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_spa1 = in->tune_spa1;
     out->tune_spa2 = in->tune_spa2;
     out->step_notune = in->step_notune;
-    out->tune_any_tmat = in->tune_any_tmat;
-    copy_vec_int(in->tune_trans_mat,out->tune_trans_mat);    
+    out->tune_any_tmat = in->tune_any_tmat;   
 
     out->move_mut = in->move_mut;
     out->move_pi = in->move_pi;
