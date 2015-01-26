@@ -110,7 +110,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     mcmcPar = alloc_mcmc_param(N, num_of_groups);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
-    /*Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
+    //Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
     //print_mcmc_param(mcmcPar);
     
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
@@ -120,8 +120,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     }
 
     //Rprintf("\nAfter check init LL\n");/* fflush(stdout); */
-    //Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
-
+    Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
