@@ -112,7 +112,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 */
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
-    int i;
+    int i,j;
     /* OUTPUT TO FILE */
     fprintf(file,"\n%d", step);
     temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
@@ -127,10 +127,13 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_spa1 / (double) (mcmcPar->n_accept_spa1 + mcmcPar->n_reject_spa1);
     fprintf(file,"\t%.5f", temp);
-    for(i=0;i<mcmcPar->n_accept_trans_mat->length;i++){
-    temp = (double) mcmcPar->n_accept_trans_mat->values[i] / (double) (mcmcPar->n_accept_trans_mat->values[i] + mcmcPar->n_reject_trans_mat->values[i]);
+    for(i=0;i<mcmcPar->n_accept_trans_mat->n;i++){
+	for(j=0;j<mcmcPar->n_accept_trans_mat->n;j++){
+    temp = (double) mat_int_ij(mcmcPar->n_accept_trans_mat,i,j) / (double) (mat_int_ij(mcmcPar->n_accept_trans_mat,i,j) + mat_int_ij(mcmcPar->n_reject_trans_mat,i,j));
     fprintf(file,"\t%.5f",temp);
+        }
     }
+	
     /* temp = (double) mcmcPar->n_accept_spa2 / (double) (mcmcPar->n_accept_spa2 + mcmcPar->n_reject_spa2); */
     /* fprintf(file,"\t%.5f", temp); */
   
@@ -143,8 +146,11 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
     /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
-    for(i=0;i<mcmcPar->sigma_trans_mat->length;i++){
-    fprintf(file,"\t%.15f", mcmcPar->sigma_trans_mat->values[i]);
+
+    for(i=0;i<mcmcPar->sigma_trans_mat->n;i++){
+	for(j=0;j<mcmcPar->sigma_trans_mat->n;j++){
+		fprintf(file,"\t%.15f", mat_double_ij(mcmcPar->sigma_trans_mat,i,j));
+         }
     }
 }
 
@@ -331,35 +337,36 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
 }
 
 void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
+int i,j;
+double temp,paccept;
 
-	int i;
-	for(i=0;i<in->n_accept_trans_mat->length;i++){
-	double paccept = (double) in->n_accept_trans_mat->values[i] / (double) (in->n_accept_trans_mat->values[i] + in->n_reject_trans_mat->values[i]);
-	/*Rprintf("\ntuning trans_mat\n");
-	Rprintf("n_accept_trans_mat:%d\n",in->n_accept_trans_mat);
-	Rprintf("n_reject_trans_mat:%d\n",in->n_reject_trans_mat);
-	Rprintf("paccept: %f\n",paccept);*/
-	if(paccept<0.25) {
-		in->sigma_trans_mat->values[i] /= 1.5;
-		//Rprintf("stm: %f\n",in->sigma_trans_mat);
-		in->n_accept_trans_mat->values[i] = 0;
-		in->n_reject_trans_mat->values[i] = 0;
-	} else if(paccept > 0.5) {
-		//Rprintf("stm: %f\n", in->sigma_trans_mat);
-		in->sigma_trans_mat->values[i] *= 1.5;
-		in->n_accept_trans_mat->values[i] = 0;
-		in->n_reject_trans_mat->values[i] = 0;
-		if(in->sigma_trans_mat->values[i] > 1.0){
-			in->sigma_trans_mat->values[i] = 1.0;
-			in->tune_trans_mat->values[i] = 0;
+for(i=0;i<in->n_accept_trans_mat->n;i++){
+	for(j=0;j<in->n_accept_trans_mat->n;j++){
+		if(j!=i){
+		
+		paccept = (double) mat_int_ij(in->n_accept_trans_mat,i,j) / (double) (mat_int_ij(in->n_accept_trans_mat,i,j) + mat_int_ij(in->n_reject_trans_mat,i,j));
+
+
+		if(paccept<0.25){
+			temp = mat_double_ij(in->sigma_trans_mat,i,j);
+			write_mat_double(in->sigma_trans_mat,i,j,temp/1.5);
+		} else if(paccept > 0.5){
+			temp = mat_double_ij(in->sigma_trans_mat,i,j)*1.5;
+			if(temp <= 1){
+			write_mat_double(in->sigma_trans_mat,i,j,temp);
+			}else{
+			write_mat_double(in->sigma_trans_mat,i,j,1);
+			}
+			
+		}else{
+			write_mat_int(in->tune_trans_mat,i,j,0);
 		}
-	} else {
-		in->tune_trans_mat->values[i] = 0;
-	
+
+		}
 	}
-     } /* end of for loop */
 }
 
+}
 
 /* void tune_phi(mcmc_param * in, gsl_rng *rng){ */
 /*     /\* get acceptance proportion *\/ */
@@ -461,7 +468,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   vec_double *indivInfluence = alloc_vec_double(dat->n);
   /* RUN MCMC */
 
-
+  Rprintf("just before");
   for(i=2;i<=localMcmcPar->find_import_at;i++){
     /* if(!QUIET) Rprintf("\ni: %d ",i); */
     /* COLLECT INFORMATION ABOUT ALL GI_i */
@@ -642,7 +649,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     int i,j;
     vec_int *areOutliers = alloc_vec_int(dat->n);
-
+    Rprintf("inside mcmc");
     /* OPEN OUTPUT FILES */
     FILE *file = fopen(outputFile,"w");
     if(file==NULL){
@@ -661,7 +668,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	error("\n ya done broke the bug file");
     }
 
-
+    Rprintf("before output");
     /* OUTPUT TO OUTFILE - HEADER */
     fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
     for(i=0;i<dat->n;i++){
@@ -683,15 +690,19 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 		fprintf(file,"\tt_%d%d",i+1,j+1);
 	}
     }
-
+    Rprintf("mcmc file header");
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
     for(i=0;i<dat->num_of_groups;i++){
-	fprintf(mcmcFile, "\tpaccept_tmat_row_%d",i+1);
+	for(j=0;j<dat->num_of_groups;j++){
+		fprintf(mcmcFile, "\tpaccept_tmat_elem[%d,%d]",i+1,j+1);
+	}
     }
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
     for(i=0;i<dat->num_of_groups;i++){
-	fprintf(mcmcFile, "\tsigma_tmat_row_%d",i+1);
+	for(j=0;j<dat->num_of_groups;j++){
+		fprintf(mcmcFile, "\tsigma_tmat_elem[%d,%d]",i+1,j+1);
+	}
     }
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
@@ -716,15 +727,14 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 		}
     	}
     }
-    /* Rprintf("\nbefore fprint_chains\n"); */
+     Rprintf("\nbefore fprint_chains\n"); 
     fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet);
-    /* Rprintf("\n before fprint_mcmc_param \n"); */
+    Rprintf("\n before fprint_mcmc_param \n");
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
-    /* Rprintf("\n after fprint_mcmc_param"); */
+    Rprintf("\n after fprint_mcmc_param"); 
     mcmcPar->step_notune = nIter;
 
-    /* Rprintf("\nbefore prelim step\n");
-    Rprintf("\n mcmcPar->find_import is %d \n",mcmcPar->find_import); */
+     Rprintf("\nbefore prelim step\n");
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
         /* Rprintf("\nbefore mcmc_find_import call\n"); */

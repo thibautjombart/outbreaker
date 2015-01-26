@@ -885,38 +885,71 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 /* MOVING VALUES IN THE TRANSMISSION MATRIX */
 void move_trans_mat(FILE *bugfile, param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, int step){
 /*Declarations*/
-int i,j,h;
+int i=0,j=0,h,z;
 double logRatio=0.0;
-double rowsum,new;
-bool earlierbug = FALSE;
-vec_double *newvals,*oldvals;
-newvals = alloc_vec_double(2);
-oldvals = alloc_vec_double(2);
-int z=0;
-copy_mat_double(currentPar->trans_mat_rates,tempPar->trans_mat_rates);
+double rowsum,oldrate,elemsigma,temprate,oldlike,newlike;
+int temp=0,res=0;
+mat_double *oldmat = alloc_mat_double(dat->num_of_groups,dat->num_of_groups);
+bool fpr = FALSE;
 
-
-/* for each row, co-ords go row,column */
-	//Rprintf("\nStarting move...\n");
 for(i=0;i<dat->num_of_groups;i++){
-	//Rprintf("Moving row %d...\n",i+1);
-	//Rprintf("row sigma is %f\n",mcmcPar->sigma_trans_mat->values[i]);
-	//Rprintf("Current rate mat:\n");
-	//print_mat_double(currentPar->trans_mat_rates);
-	/* change raw rates */
-	z=0;
-	for(j=0;j<dat->num_of_groups;j++){
-		if(j != i){
-			new = gsl_ran_lognormal(rng,log(mat_double_ij(currentPar->trans_mat_rates,i,j)),mcmcPar->sigma_trans_mat->values[i]);
-			write_mat_double(tempPar->trans_mat_rates,i,j,new);
-			newvals->values[z] = new;
-			oldvals->values[z] = mat_double_ij(currentPar->trans_mat_rates,i,j);
-			z++;
-	        }
-	}
+   for(j=0;j<dat->num_of_groups;j++){
+	if(i != j){
+	oldrate = mat_double_ij(currentPar->trans_mat_rates,i,j);
+	elemsigma = mat_double_ij(mcmcPar->sigma_trans_mat,i,j);
+	temprate = gsl_ran_lognormal(rng, log(oldrate), elemsigma);
+	write_mat_double(tempPar->trans_mat_rates,i,j,temprate);
 	
+	//Rprintf("[%d,%d]\n",i+1,j+1);
+	//print_mat_double(currentPar->trans_mat_rates);
+	//print_mat_double(tempPar->trans_mat_rates);
+	oldlike = loglikelihood_grp_all(dat, currentPar, rng);
+	newlike = loglikelihood_grp_all(dat,tempPar, rng);
+	logRatio = newlike - oldlike;
+	filter_logprob(&logRatio);
+	logRatio += (log(temprate) - log(oldrate));
+
+	if(logRatio >= 0){
+		res = 1;
+		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
+		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp+1);
+		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+	}else if(log(gsl_rng_uniform(rng)) <= logRatio){
+		res = 1;
+		write_mat_double(currentPar->trans_mat_rates,i,j,temprate);
+		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
+		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp+1);
+		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+	}else{
+		res = 0;
+		write_mat_double(tempPar->trans_mat_rates,i,j,oldrate);
+		temp = mat_int_ij(mcmcPar->n_reject_trans_mat,i,j);
+		write_mat_int(mcmcPar->n_reject_trans_mat,i,j,temp+1);
+		copy_mat_double(currentPar->trans_mat_rates,tempPar->trans_mat_rates);
+	}
+
+	if(temprate - oldrate > 100){	
+	fprintf(bugfile,"On step %d, changing elem[%d,%d] - old: %f, new: %f, sigma: %f - oldlh: %f, newlh: %f, LR: %f - result: %d\n",step,i+1,j+1,oldrate,temprate,elemsigma,oldlike,newlike,logRatio,res);
+	for(i=0;i<dat->num_of_groups;i++){
+	   for(j=0;j<dat->num_of_groups;j++){
+		fprintf(bugfile, "%f ",mat_double_ij(tempPar->trans_mat_rates,i,j));
+	   }
+		fprintf(bugfile,"\n");
+        }
+	}
+
+
+        } /* if end */
+   } /*j loop end */
+}  /*i loop end */
+} /*function end*/
+
+
+
+
+
 	/*bug reporter*/
-	if(newvals->values[0] - oldvals->values[0] > 10 ||  newvals->values[1] - oldvals->values[1] > 10){
+	/*if(newvals->values[0] - oldvals->values[0] > 10 ||  newvals->values[1] - oldvals->values[1] > 10){
 		fprintf(bugfile, "\nProblem with step %d\n", step);
 		if(newvals->values[0] - oldvals->values[0] > 10){
 			fprintf(bugfile, "The element %f went to %f\n",oldvals->values[0],newvals->values[0]);	 
@@ -926,67 +959,9 @@ for(i=0;i<dat->num_of_groups;i++){
 		}
 		fprintf(bugfile, "sigma for this row is: %f\n",mcmcPar->sigma_trans_mat->values[i]);
 		earlierbug=TRUE;
-	}
+	}*/
 	/*end bug report*/
-		
-
-
-
-
-
-	//Rprintf("candidate rate mat:\n");
-	//print_mat_double(tempPar->trans_mat_rates);
-	/* change rates to probabilities */
-        for(h=0;h<dat->num_of_groups;h++){
-		rowsum = sum_vec_double(tempPar->trans_mat_rates->rows[h]);
-		for(j=0;j<dat->num_of_groups;j++){
-			write_mat_double(tempPar->trans_mat_probs,h,j,mat_double_ij(tempPar->trans_mat_rates,h,j)/rowsum);
-         	}
-         }
-	//Rprintf("converted to probability mat:\n");
-	//print_mat_double(tempPar->trans_mat_probs);
-	 /* log ratio */
-	//Rprintf("calculating logRatio...\n");
-         logRatio = loglikelihood_grp_all(dat,tempPar, rng) - loglikelihood_grp_all(dat,currentPar,rng);
-	//Rprintf("%f\n",logRatio);
-         /* correction factor */
-	//Rprintf("adding correction factor...\n");
-	 int k;
-	 for(k=0;k<dat->num_of_groups;k++){
-		if(k != i) {
-		logRatio += log(mat_double_ij(tempPar->trans_mat_rates,i,k)) - log(mat_double_ij(currentPar->trans_mat_rates,i,k));
-		//Rprintf("adding correction factor for element [%d,%d]\n",k+1,i+1);			
-		}
-	 }
-	//Rprintf("final logRatio: %f\n",logRatio);
-	/* accept or reject */
-	if(earlierbug){
-			fprintf(bugfile,"How is this affecting the likelihood?\n");		
-			fprintf(bugfile,"The logRatio for this change is: %f\n",logRatio);}
-	if(logRatio>=0.0){
-		/* accept */
-		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
-		copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-		mcmcPar->n_accept_trans_mat->values[i] += 1;
-		if(earlierbug){fprintf(bugfile,"The change was accepted due to logRatio\n");}
-	}else{
-		if(log(gsl_rng_uniform(rng)) <= logRatio){
-		/* accept */
-		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
-		copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-		mcmcPar->n_accept_trans_mat->values[i] += 1;
-		if(earlierbug){fprintf(bugfile,"The change was accepted due to uniform variable\n");}
-		}else{
-		/* reject */		
-		copy_mat_double(currentPar->trans_mat_rates,tempPar->trans_mat_rates);
-		copy_mat_double(currentPar->trans_mat_probs,tempPar->trans_mat_probs);
-		mcmcPar->n_reject_trans_mat->values[i] += 1;
-		if(earlierbug){fprintf(bugfile,"The change was rejected\n");}
-		}
-	earlierbug=FALSE;
-	}/*end accept or reject */
-}/* end of for loop */
-}/* end of function */
+	
 
 
 

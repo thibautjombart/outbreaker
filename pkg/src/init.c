@@ -179,7 +179,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool move_trans_mat, bool find_import, int burnin, int find_import_at){
-    int i, N = dat->n;
+    int i,j, N = dat->n;
 
     /* INITIALIZE COUNTERS */
     /* the first set of parameters is accepted by definition */
@@ -199,10 +199,15 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_accept_kappa = in->n_move_kappa;
     in->n_reject_kappa = 0;
     for(i=0;i<dat->num_of_groups;i++){
-    	in->n_accept_trans_mat->values[i] = 1;
-    	in->n_reject_trans_mat->values[i] = 0;
+	for(j=0;j<dat->num_of_groups;j++){
+		write_mat_int(in->n_accept_trans_mat,i,j,1);
+	}
     }
-
+    for(i=0;i<dat->num_of_groups;i++){
+	for(j=0;j<dat->num_of_groups;j++){
+		write_mat_int(in->n_reject_trans_mat,i,j,0);
+	}
+    }
 
     /* INITIALIZE MCMC PARAMETERS */
     /* parameters of proposal distributions */
@@ -229,7 +234,11 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     }
 
     for(i=0;i<dat->num_of_groups;i++){
-	in->sigma_trans_mat->values[i] = 0.56;
+	for(j=0;j<dat->num_of_groups;j++){
+		if(i != j){
+			write_mat_double(in->sigma_trans_mat,i,j,0.5);
+		}
+	}
     }
 
     //Rprintf("move_kappa:");
@@ -264,11 +273,15 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_phi = move_phi;
     if(move_trans_mat == TRUE){
 	for(i=0;i<dat->num_of_groups;i++){
-		in->tune_trans_mat->values[i] = 1;
+	   for(j=0;j<dat->num_of_groups;j++){
+	       write_mat_int(in->tune_trans_mat,i,j,1);
+	   }
 	}
    }else{
 	for(i=0;i<dat->num_of_groups;i++){
-		in->tune_trans_mat->values[i] = 1;
+	   for(j=0;j<dat->num_of_groups;j++){
+	       write_mat_int(in->tune_trans_mat,i,j,0);
+	   }
 	}
    }	
     in->tune_any_tmat = move_trans_mat;
