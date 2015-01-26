@@ -422,7 +422,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   int i, j, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
   
-  bool QUIET=TRUE;
+  bool QUIET=FALSE;
 
   /* OUTPUT TO SCREEN - HEADER */
   if(!quiet){
@@ -566,8 +566,16 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf(" done!");
 
     if(!QUIET) Rprintf("\n Moving trans_mat ...");
-    if(localMcmcPar->move_trans_mat) move_trans_mat(bugfile, localPar, tempPar, dat, localMcmcPar, rng, dnaInfo, spaInfo, gen,i);
+	// move_trans_mat(bugfile, localPar, tempPar, dat, localMcmcPar, rng, dnaInfo, spaInfo, gen,i);
+    if(localMcmcPar->move_trans_mat){
+	for(i=0;i<dat->num_of_groups;i++){
+	    for(j=0;j<dat->num_of_groups;j++){
+		if(i != j) move_tmat_indiv(localPar, tempPar, dat, localMcmcPar, rng, i ,j);
+	    }
+	}
+    }
     if(!QUIET) Rprintf(" done!");
+    
   } /* end of MCMC */
 
 
@@ -836,7 +844,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move trans_mat */
-        if(mcmcPar->move_trans_mat) move_trans_mat(bugfile, par, tempPar, dat, mcmcPar, rng, dnaInfo, spaInfo, gen, i);
+        if(mcmcPar->move_trans_mat){ //move_trans_mat(bugfile, par, tempPar, dat, mcmcPar, rng, dnaInfo, spaInfo, gen, i);
+	for(i=0;i<dat->num_of_groups;i++){
+	    for(j=0;j<dat->num_of_groups;j++){
+		if(i != j) move_tmat_indiv(par, tempPar, dat, mcmcPar, rng, i ,j);
+	    }
+	}
+	}/*end of trans_mat if */
 
 	
 

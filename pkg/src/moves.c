@@ -906,26 +906,28 @@ for(i=0;i<dat->num_of_groups;i++){
 	oldlike = loglikelihood_grp_all(dat, currentPar, rng);
 	newlike = loglikelihood_grp_all(dat,tempPar, rng);
 	logRatio = newlike - oldlike;
+	logRatio += log(temprate);
+	logRatio -= log(oldrate);
 	filter_logprob(&logRatio);
-	logRatio += (log(temprate) - log(oldrate));
 
 	if(logRatio >= 0){
 		res = 1;
+		write_mat_double(currentPar->trans_mat_rates,i,j,temprate);
 		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
 		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp+1);
-		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		//copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
 	}else if(log(gsl_rng_uniform(rng)) <= logRatio){
 		res = 1;
 		write_mat_double(currentPar->trans_mat_rates,i,j,temprate);
 		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
 		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp+1);
-		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		//copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
 	}else{
 		res = 0;
 		write_mat_double(tempPar->trans_mat_rates,i,j,oldrate);
 		temp = mat_int_ij(mcmcPar->n_reject_trans_mat,i,j);
 		write_mat_int(mcmcPar->n_reject_trans_mat,i,j,temp+1);
-		copy_mat_double(currentPar->trans_mat_rates,tempPar->trans_mat_rates);
+		//copy_mat_double(currentPar->trans_mat_rates,tempPar->trans_mat_rates);
 	}
 
 	if(temprate - oldrate > 100){	
@@ -944,8 +946,32 @@ for(i=0;i<dat->num_of_groups;i++){
 }  /*i loop end */
 } /*function end*/
 
+void move_tmat_indiv(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i, int j){
+double old, sigma, new, logRatio, temp;
 
+	old = mat_double_ij(currentPar->trans_mat_rates,i,j);
+	sigma = mat_double_ij(mcmcPar->sigma_trans_mat,i,j);
+	new = gsl_ran_lognormal(rng, log(old), sigma);
+	write_mat_double(tempPar->trans_mat_rates,i,j,new);
+	
+	logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
+	logRatio += log(new) - log(old);
+	filter_logprob(&logRatio);	
 
+	if(logRatio >= 0){
+		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
+		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp++);
+	}else if(log(gsl_rng_uniform(rng)) <= logRatio){
+		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
+		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp++);
+	} else {
+		copy_mat_double(currentPar->trans_mat_rates, tempPar->trans_mat_rates);
+		temp = mat_int_ij(mcmcPar->n_reject_trans_mat,i,j);
+		write_mat_int(mcmcPar->n_reject_trans_mat,i,j,temp++);
+	}
+}
 
 
 	/*bug reporter*/
