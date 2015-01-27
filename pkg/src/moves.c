@@ -974,6 +974,9 @@ double old, sigma, new, logRatio, temp;
 }
 
 
+
+
+
 	/*bug reporter*/
 	/*if(newvals->values[0] - oldvals->values[0] > 10 ||  newvals->values[1] - oldvals->values[1] > 10){
 		fprintf(bugfile, "\nProblem with step %d\n", step);
