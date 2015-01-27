@@ -949,8 +949,13 @@ double old, sigma, new, logRatio, temp;
 	new = gsl_ran_lognormal(rng, log(old), sigma);
 	write_mat_double(tempPar->trans_mat_rates,i,j,new);
 	
+	/* likelihood ratio */
 	logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
+	/* lognormal correction */
 	logRatio += log(new) - log(old);
+	/* priors */
+	logRatio += logprior_trans_mat(new) - logprior_trans_mat(old);
+	/* filter */
 	filter_logprob(&logRatio);	
 
 	if(logRatio >= 0){

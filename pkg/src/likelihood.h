@@ -50,7 +50,7 @@ double loglikelihood_local_i(int i, data *dat, dna_dist *dnaInfo, spatial_dist *
 
 /* double loglike_alpha_all(param *par); */
 
-double logposterior_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, gsl_rng *rng);
+double logposterior_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, gsl_rng *rng, mcmc_param *mcmcPar);
 
 double sim_loglike_gen(data *dat, param *par, gsl_rng *rng);
 

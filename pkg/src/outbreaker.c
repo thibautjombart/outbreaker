@@ -91,19 +91,6 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* Rprintf("\n>>> SPATIAL info <<<\n"); */
     /* print_spatial_dist(spatialInfo); */
 
-
-    /* COMPUTE PRIORS */
-    double logPrior = logprior_all(par);
-    Rprintf("\nPrior value (log): %.10f\n", logPrior);/* fflush(stdout); */
-
-   /* COMPUTE LIKELIHOOD */
-    double logLike = loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
-    Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike);
-
-    /* COMPUTE POSTERIOR */
-    double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng);
-    Rprintf("\nLog-posterior value: %.10f\n", logPost);/* fflush(stdout); */
-
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
     Rprintf("\nBefore check init LL\n");/* fflush(stdout); */
 
@@ -112,6 +99,18 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
     //Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
     //print_mcmc_param(mcmcPar);
+
+    /* COMPUTE PRIORS */
+    double logPrior = logprior_all(par, mcmcPar);
+    Rprintf("\nPrior value (log): %.10f\n", logPrior);/* fflush(stdout); */
+
+   /* COMPUTE LIKELIHOOD */
+    double logLike = loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike);
+
+    /* COMPUTE POSTERIOR */
+    double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng, mcmcPar);
+    Rprintf("\nLog-posterior value: %.10f\n", logPost);/* fflush(stdout); */
     
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);

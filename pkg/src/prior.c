@@ -147,12 +147,19 @@ double logprior_spa2(param *par){
 /*     return out; */
 /* } */
 
+double logprior_trans_mat(double elem){
+
+   double out=0.0;
+   out = log(gsl_ran_exponential_pdf(elem,1000));
+
+   return out;
+}
+	
 
 
 
-
-double logprior_all(param *par){
-    /* int i; */
+double logprior_all(param *par,mcmc_param *mcmcPar){
+    int i,j;
     double out=0.0;
 
     out += logprior_mu1(par);
@@ -165,7 +172,15 @@ double logprior_all(param *par){
     if(par->spa_model==2){
 	out += logprior_phi(par);
     }
+    for(i=0;i<mcmcPar->rowSkip->length;i++){
+	for(j=0;j<mcmcPar->rowSkip->length;j++){
+	   if(j != vec_int_i(mcmcPar->rowSkip,i)) out+= logprior_trans_mat(mat_double_ij(par->trans_mat_rates,i,j));
+	}
+    }
     
+
+
+
     filter_logprob(&out);
 
     return(out);
