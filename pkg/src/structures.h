@@ -103,6 +103,7 @@ typedef struct{
     vec_int *all_idx; /* vector of integers 0:(n-1) */
     vec_int *candid_ances; /* vector of candidate ancestors, used to move alpha_i */
     vec_double *candid_ances_proba; /* vector of proba for candidate ancestors, used to move alpha_i */
+    vec_int *rowSkip; /*vector used to denote which entries are set to 1 for each row of trans_mat_rates*/
     /* double Pmove_alpha_old, Pmove_alpha_new; /\* used for accept ratio when moving alpha_i *\/ */
     int n_like_zero; /* number of times likelihood was zero */
     bool tune_any, tune_mu1, tune_gamma, tune_pi, tune_phi, tune_spa1, tune_spa2; /* logical indicating whether these proposals should be tuned */
