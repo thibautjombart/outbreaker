@@ -508,7 +508,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
   /* bool checkABA = look_for_aba(currentPar, dat); */
   /* bool oldCheckABA = checkABA; */
   /* if(checkABA) Rprintf("\nABA detected when entering move_Tinf_alpha_kappa"); */
-
   /* DETERMINE WHICH INDIVIDUAL TO MOVE */
   draw_vec_int_multinom(mcmcPar->all_idx, mcmcPar->idx_move_alpha, mcmcPar->move_alpha, rng);
 
@@ -516,7 +515,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
   for(i=0;i<mcmcPar->idx_move_alpha->length;i++){
     /* initialize correction for asymetric proposal */
     correcRatio=0.0;
-
     /* CURRENT INDIVIDUAL TO MOVE */
     toMove = vec_int_i(mcmcPar->idx_move_alpha,i);
 
@@ -528,7 +526,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
       if(mcmcPar->move_Tinf){
 	/* find first imported case */
 	firstImported = find_date_first_import(dat, currentPar);
-
 	/* move i-th Tinf */
 	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1) * gsl_ran_poisson(rng, 1);
 
@@ -538,7 +535,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* constraint: Tinf_i > first imported */
 	if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1;
       }
-
 
       /* MOVE ALPHA IF MOVEABLE  */
       if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
@@ -577,7 +573,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/* } */
 	correcRatio += log(nbCandidTemp) - log(nbCandidCurrent);
       }
-
 
       /* MOVE KAPPA */
       /* if not imported and moveable */
