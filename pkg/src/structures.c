@@ -410,6 +410,7 @@ mcmc_param *alloc_mcmc_param(int n, int l){
     out->move_kappa = alloc_vec_double(n);
     out->sigma_trans_mat = alloc_mat_double(l,l);
     out->tune_trans_mat = alloc_mat_int(l,l);
+    out->rowSkip = alloc_vec_int(l);
 
     /* FILL IN INTEGERS */
     /* accept/reject counters */
@@ -489,6 +490,7 @@ void free_mcmc_param(mcmc_param *in){
     free_mat_int(in->n_accept_trans_mat);
     free_mat_int(in->n_reject_trans_mat);
     free_mat_int(in->tune_trans_mat);
+    free_vec_int(in->rowSkip);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -669,6 +671,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_mat_int(in->n_accept_trans_mat, out->n_accept_trans_mat);
     copy_mat_int(in->n_reject_trans_mat, out->n_reject_trans_mat);
     copy_mat_int(in->tune_trans_mat, out->tune_trans_mat);
+    copy_vec_int(in->rowSkip, out->rowSkip);
 } /* end alloc_mcmc_param */
 
 
