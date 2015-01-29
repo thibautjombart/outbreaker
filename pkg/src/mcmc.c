@@ -440,17 +440,21 @@ for(h=0;h<dat->num_of_groups;h++){
 } /* MCMC end */
 /* rates check! */
 for(i=0;i<dat->num_of_groups;i++){
-   if(max_vec_double(grpPar->trans_mat_rates->rows[i]) - min_vec_double(grpPar->trans_mat_rates->rows[i]) > 100){
+   if(max_vec_double(grpPar->trans_mat_rates->rows[i]) - min_vec_double(grpPar->trans_mat_rates->rows[i]) > 400){
 	write_vec_int(mcmcPar->rowSkip,i,which_max_vec_double(grpPar->trans_mat_rates->rows[i]));
    }
 }
+
+/* copy rates to external par for normalising*/
+copy_mat_double(grpPar->trans_mat_rates,par->trans_mat_rates);
+
 if(!quiet) Rprintf("group mcmc finished...");
 /* free memory */
 free_param(grpPar);
 free_param(tempgrpPar);
 free_mcmc_param(grpmcmcPar);
 
-
+//error("end here");
 } /* function end */
 
 
@@ -700,7 +704,8 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
 	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i,j,h;
+    int i,j,h,z;
+    double rowmax;
     vec_int *areOutliers = alloc_vec_int(dat->n);
     Rprintf("inside mcmc");
     /* OPEN OUTPUT FILES */
@@ -790,15 +795,16 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
    /* MINI MCMC TO SET TRANS MAT UP */
    mcmc_grp_prelim(quiet,par,dat,mcmcPar,rng);
-
    /* update par->trans_mat_rates as per findings */
+   /* DO THE THING THAT ANNE SUGGESTED - divide whole row by largest value */
    if(!quiet) Rprintf("update trans mat\n");
    print_vec_int(mcmcPar->rowSkip);
    for(h=0;h<dat->num_of_groups;h++){
-	write_mat_double(par->trans_mat_rates,h,(double) vec_int_i(mcmcPar->rowSkip,h),1.0);
-	Rprintf("writing element [%d,%d] to 1\n",h,vec_int_i(mcmcPar->rowSkip,h));
+	rowmax = vec_double_i(par->trans_mat_rates->rows[h],vec_int_i(mcmcPar->rowSkip,h));
+	for(z=0;z<dat->num_of_groups;z++){
+	write_mat_double(par->trans_mat_rates,h,z,(mat_double_ij(par->trans_mat_rates,h,z)/rowmax));
+	}
    }
-   print_mat_double(par->trans_mat_rates);
    /* continue as normal */
 
   

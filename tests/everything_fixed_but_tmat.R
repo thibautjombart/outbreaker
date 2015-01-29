@@ -4,14 +4,14 @@ options(error=recover)
 
 tm <- matrix(byrow=TRUE,c(0.45,0.45,0.1,0.45,0.45,0.1,0.1,0.1,0.8),ncol=3)
 data <- list(n=0)
-while(data$n < 10){
+while(data$n < 20){
 data <- simOutbreak(R0=2, infec.curve=c(0,1,1,1),n.hosts=99,duration=10,spatial=FALSE,group.sizes=c(33,33,33),trans.mat=tm)}
 
 collecDates <- data$onset
 fake.dna <- data$dna
 fake.groups <- data$group
 nsize <- data$n
-w <- c(rep(1/10,10),rep(0,40))
+w <- c(0,0.25,075,1,0.5)
 tre <- data$ances
 tre[1] <- -1
 
@@ -64,9 +64,9 @@ res <- outbreaker(init.tree=tre,dna=fake.dna, dates=collecDates, idx.dna=c(1:nsi
 #plotChains(res,burnin=2e4,type="dens")
 
 par(mfrow=c(3,3))
-plot(1:length(res$chains$p_11),res$chains$p_11,type='l')
-plot(1:length(res$chains$p_11),res$chains$p_12,type='l')
-plot(1:length(res$chains$p_11),res$chains$p_13,type='l')
+plot(1:length(res$chains$t_11),res$chains$p_11,type='l')
+plot(1:length(res$chains$t_11),res$chains$p_12,type='l')
+plot(1:length(res$chains$t_11),res$chains$p_13,type='l')
 plot(1:length(res$chains$p_11),res$chains$p_21,type='l')
 plot(1:length(res$chains$p_11),res$chains$p_22,type='l')
 plot(1:length(res$chains$p_11),res$chains$p_23,type='l')
