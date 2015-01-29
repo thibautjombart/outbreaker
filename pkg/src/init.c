@@ -241,9 +241,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 
     for(i=0;i<dat->num_of_groups;i++){
 	for(j=0;j<dat->num_of_groups;j++){
-		if(i != j){
 			write_mat_double(in->sigma_trans_mat,i,j,0.5);
-		}
 	}
     }
 

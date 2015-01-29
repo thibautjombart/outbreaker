@@ -942,12 +942,13 @@ for(i=0;i<dat->num_of_groups;i++){
 } /*function end*/
 
 void move_tmat_indiv(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i, int j){
-double old, sigma, new, logRatio, temp;
+double old, sigma, new, logRatio=0.0, temp;
 
 	old = mat_double_ij(currentPar->trans_mat_rates,i,j);
 	sigma = mat_double_ij(mcmcPar->sigma_trans_mat,i,j);
 	new = gsl_ran_lognormal(rng, log(old), sigma);
 	write_mat_double(tempPar->trans_mat_rates,i,j,new);
+	
 	
 	/* likelihood ratio */
 	logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
@@ -956,17 +957,22 @@ double old, sigma, new, logRatio, temp;
 	/* priors */
 	logRatio += logprior_trans_mat(new) - logprior_trans_mat(old);
 	/* filter */
-	filter_logprob(&logRatio);	
-
+	filter_logprob(&logRatio);
+	//Rprintf("i: %d, j: %d, old: %f, new: %f prior old: %f, prior new: %f\n",i,j,old,new,logprior_trans_mat(new),logprior_trans_mat(old));
+	//Rprintf("prior old: %f - prior new: %f\n", logprior_trans_mat(new),logprior_trans_mat(old));	
+	//Rprintf("old: %f - new: %f - lR: %f - sigma: %f -  res: ",old,new,logRatio,sigma);
 	if(logRatio >= 0){
+		//Rprintf("accepted\n");
 		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
 		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
 		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp++);
 	}else if(log(gsl_rng_uniform(rng)) <= logRatio){
+		//Rprintf("accepted\n");
 		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
 		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
 		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp++);
 	} else {
+		//Rprintf("rejected\n");
 		copy_mat_double(currentPar->trans_mat_rates, tempPar->trans_mat_rates);
 		temp = mat_int_ij(mcmcPar->n_reject_trans_mat,i,j);
 		write_mat_int(mcmcPar->n_reject_trans_mat,i,j,temp++);

@@ -22,6 +22,8 @@ double logprior_mu1(param *par);
 
 double logprior_gamma(param *par);
 
+double logprior_trans_mat(double elem);
+
 double logprior_all(param *par, mcmc_param *mcmcPar);
 
 
