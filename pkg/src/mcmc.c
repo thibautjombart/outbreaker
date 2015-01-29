@@ -60,11 +60,7 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
 		fprintf(file, "\t%.15f",mat_double_ij(par->trans_mat_probs,i,j));
 	}
     }
-    for(i=0;i<dat->num_of_groups;i++){
-	for(j=0;j<dat->num_of_groups;j++){
-		fprintf(file, "\t%.15f",mat_double_ij(par->trans_mat_rates,i,j));
-	}
-    }
+
 
     /* OUTPUT TO SCREEN */
     if(!quiet){
@@ -91,11 +87,6 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
         for(i=0;i<dat->num_of_groups;i++){
 		for(j=0;j<dat->num_of_groups;j++){
 			Rprintf("\t%.15f",mat_double_ij(par->trans_mat_probs,i,j));
-		}
-         }
-	for(i=0;i<dat->num_of_groups;i++){
-		for(j=0;j<dat->num_of_groups;j++){
-			Rprintf("\t%.15f",mat_double_ij(par->trans_mat_rates,i,j));
 		}
          }
     }
@@ -129,8 +120,10 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     fprintf(file,"\t%.5f", temp);
     for(i=0;i<mcmcPar->n_accept_trans_mat->n;i++){
 	for(j=0;j<mcmcPar->n_accept_trans_mat->n;j++){
+	   if(j!=vec_int_i(mcmcPar->rowSkip,i)){
     temp = (double) mat_int_ij(mcmcPar->n_accept_trans_mat,i,j) / (double) (mat_int_ij(mcmcPar->n_accept_trans_mat,i,j) + mat_int_ij(mcmcPar->n_reject_trans_mat,i,j));
     fprintf(file,"\t%.5f",temp);
+	   }
         }
     }
 	
@@ -149,7 +142,9 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
 
     for(i=0;i<mcmcPar->sigma_trans_mat->n;i++){
 	for(j=0;j<mcmcPar->sigma_trans_mat->n;j++){
+	   if(j!=vec_int_i(mcmcPar->rowSkip,i)){
 		fprintf(file,"\t%.15f", mat_double_ij(mcmcPar->sigma_trans_mat,i,j));
+	   }
          }
     }
 }
@@ -340,33 +335,36 @@ void tune_trans_mat(mcmc_param * in, gsl_rng *rng){
 int i,j;
 double temp,paccept;
 
+in->tune_any_tmat = FALSE;
+
 for(i=0;i<in->n_accept_trans_mat->n;i++){
 	for(j=0;j<in->n_accept_trans_mat->n;j++){
-		if(j!=i){
+	    if(j!= vec_int_i(in->rowSkip,j)){
 		
-		paccept = (double) mat_int_ij(in->n_accept_trans_mat,i,j) / (double) (mat_int_ij(in->n_accept_trans_mat,i,j) + mat_int_ij(in->n_reject_trans_mat,i,j));
+	    paccept = (double) mat_int_ij(in->n_accept_trans_mat,i,j) / (double) (mat_int_ij(in->n_accept_trans_mat,i,j) + mat_int_ij(in->n_reject_trans_mat,i,j));
 
-
-		if(paccept<0.25){
-			temp = mat_double_ij(in->sigma_trans_mat,i,j);
-			write_mat_double(in->sigma_trans_mat,i,j,temp/1.5);
-		} else if(paccept > 0.5){
-			temp = mat_double_ij(in->sigma_trans_mat,i,j)*1.5;
-			if(temp <= 1){
-			write_mat_double(in->sigma_trans_mat,i,j,temp);
-			}else{
-			write_mat_double(in->sigma_trans_mat,i,j,1);
-			}
-			
+	    if(mat_int_ij(in->tune_trans_mat,i,j) == 1){
+	     if(paccept<0.25){
+		temp = mat_double_ij(in->sigma_trans_mat,i,j);
+		write_mat_double(in->sigma_trans_mat,i,j,temp/1.5);
+		in->tune_any_tmat = TRUE;
+	     } else if(paccept > 0.5){
+		temp = mat_double_ij(in->sigma_trans_mat,i,j)*1.5;
+		in->tune_any_tmat = TRUE;
+		if(temp <= 1){
+		  write_mat_double(in->sigma_trans_mat,i,j,temp);
 		}else{
-			write_mat_int(in->tune_trans_mat,i,j,0);
-		}
+		  write_mat_double(in->sigma_trans_mat,i,j,1);
+		}	
+	     }else{
+		write_mat_int(in->tune_trans_mat,i,j,0);
+	     }/*end of paccept if*/
+	    }/* end of tune_trans_mat if*/
+	    }/*end of j!= if */
+       }/*end of j for loop */
+  }/*end of i for loop */
 
-		}
-	}
-}
-
-}
+}/* end of function */
 
 /* void tune_phi(mcmc_param * in, gsl_rng *rng){ */
 /*     /\* get acceptance proportion *\/ */
@@ -454,7 +452,6 @@ free_param(grpPar);
 free_param(tempgrpPar);
 free_mcmc_param(grpmcmcPar);
 
-//error("end here");
 } /* function end */
 
 
@@ -494,10 +491,6 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     }
   }
 
-  FILE *bugfile = fopen("bug file.txt","w");
-    if(bugfile==NULL){
-	error("\n ya done broke the bug file");
-    }
 
   /* CREATE TEMPORARY PARAMETERS */
   /* ! do not alter 'par' or mcmcPar !*/
@@ -616,7 +609,6 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf(" done!");
 
     if(!QUIET) Rprintf("\n Moving trans_mat ...");
-	// move_trans_mat(bugfile, localPar, tempPar, dat, localMcmcPar, rng, dnaInfo, spaInfo, gen,i);
     if(localMcmcPar->move_trans_mat){
 	for(h=0;h<dat->num_of_groups;h++){
 	    for(j=0;j<dat->num_of_groups;j++){
@@ -681,7 +673,6 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   } else {
     Rprintf("\nLess than 5 cases have a genetic sequence - aborting outlier detection");
   }
-  fclose(bugfile);
   /* FREE TEMPORARY PARAMETERS */
   free_param(localPar);
   free_param(tempPar);
@@ -707,6 +698,22 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     int i,j,h,z;
     double rowmax;
     vec_int *areOutliers = alloc_vec_int(dat->n);
+
+    /* MINI MCMC TO SET TRANS MAT UP */
+   mcmc_grp_prelim(quiet,par,dat,mcmcPar,rng);
+   /* update par->trans_mat_rates as per findings */
+   /* DO THE THING THAT ANNE SUGGESTED - divide whole row by largest value */
+   if(!quiet) Rprintf("update trans mat\n");
+   print_vec_int(mcmcPar->rowSkip);
+   for(h=0;h<dat->num_of_groups;h++){
+	rowmax = vec_double_i(par->trans_mat_rates->rows[h],vec_int_i(mcmcPar->rowSkip,h));
+	for(z=0;z<dat->num_of_groups;z++){
+	write_mat_double(par->trans_mat_rates,h,z,(mat_double_ij(par->trans_mat_rates,h,z)/rowmax));
+	}
+   }
+   /* continue as normal */
+
+
     Rprintf("inside mcmc");
     /* OPEN OUTPUT FILES */
     FILE *file = fopen(outputFile,"w");
@@ -721,10 +728,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
       /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile); */
       /* exit(1); */
     }
-    FILE *bugfile = fopen("bug file.txt","w");
-    if(bugfile==NULL){
-	error("\n ya done broke the bug file");
-    }
+
 
     Rprintf("before output");
     /* OUTPUT TO OUTFILE - HEADER */
@@ -743,23 +747,22 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 		fprintf(file,"\tp_%d%d",i+1,j+1);
 	}
     }
-    for(i=0;i<dat->num_of_groups;i++){
-	for(j=0;j<dat->num_of_groups;j++){
-		fprintf(file,"\tt_%d%d",i+1,j+1);
-	}
-    }
     Rprintf("mcmc file header");
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
+    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf\tp_accept_spa1");
     for(i=0;i<dat->num_of_groups;i++){
 	for(j=0;j<dat->num_of_groups;j++){
+		if(j!=vec_int_i(mcmcPar->rowSkip,i)){
 		fprintf(mcmcFile, "\tpaccept_tmat_elem[%d,%d]",i+1,j+1);
+		}
 	}
     }
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
     for(i=0;i<dat->num_of_groups;i++){
 	for(j=0;j<dat->num_of_groups;j++){
+		if(j!=vec_int_i(mcmcPar->rowSkip,i)){
 		fprintf(mcmcFile, "\tsigma_tmat_elem[%d,%d]",i+1,j+1);
+		}
 	}
     }
     /* OUTPUT TO SCREEN - HEADER */
@@ -779,36 +782,15 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 			Rprintf("\tp_%d%d",i+1,j+1);
 		}
     	}
-	for(i=0;i<dat->num_of_groups;i++){
-		for(j=0;j<dat->num_of_groups;j++){
-			Rprintf("\tt_%d%d",i+1,j+1);
-		}
-    	}
     }
-     Rprintf("\nbefore fprint_chains\n"); 
     fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet, mcmcPar);
-    Rprintf("\n before fprint_mcmc_param \n");
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
-    Rprintf("\n after fprint_mcmc_param"); 
     mcmcPar->step_notune = nIter;
 
 
-   /* MINI MCMC TO SET TRANS MAT UP */
-   mcmc_grp_prelim(quiet,par,dat,mcmcPar,rng);
-   /* update par->trans_mat_rates as per findings */
-   /* DO THE THING THAT ANNE SUGGESTED - divide whole row by largest value */
-   if(!quiet) Rprintf("update trans mat\n");
-   print_vec_int(mcmcPar->rowSkip);
-   for(h=0;h<dat->num_of_groups;h++){
-	rowmax = vec_double_i(par->trans_mat_rates->rows[h],vec_int_i(mcmcPar->rowSkip,h));
-	for(z=0;z<dat->num_of_groups;z++){
-	write_mat_double(par->trans_mat_rates,h,z,(mat_double_ij(par->trans_mat_rates,h,z)/rowmax));
-	}
-   }
-   /* continue as normal */
+   
 
   
-     Rprintf("\nbefore prelim step\n");
     /* PRELIM STEP - FINDING OUTLIERS */
     if(mcmcPar->find_import){
         /* Rprintf("\nbefore mcmc_find_import call\n"); */
@@ -910,7 +892,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
 	/* move trans_mat */
-        if(mcmcPar->move_trans_mat){ //move_trans_mat(bugfile, par, tempPar, dat, mcmcPar, rng, dnaInfo, spaInfo, gen, i);
+        if(mcmcPar->move_trans_mat){
 	for(h=0;h<dat->num_of_groups;h++){
 	    for(j=0;j<dat->num_of_groups;j++){
 		if(j != vec_int_i(mcmcPar->rowSkip,h)) move_tmat_indiv(par, tempPar, dat, mcmcPar, rng, h ,j);
@@ -926,7 +908,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     /* CLOSE OUTPUT OUTFILE */
     fclose(file);
     fclose(mcmcFile);
-    fclose(bugfile);
 
     /* FREE TEMPORARY PARAMETERS */
     free_param(tempPar);

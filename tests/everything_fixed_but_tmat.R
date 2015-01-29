@@ -64,9 +64,9 @@ res <- outbreaker(init.tree=tre,dna=fake.dna, dates=collecDates, idx.dna=c(1:nsi
 #plotChains(res,burnin=2e4,type="dens")
 
 par(mfrow=c(3,3))
-plot(1:length(res$chains$t_11),res$chains$p_11,type='l')
-plot(1:length(res$chains$t_11),res$chains$p_12,type='l')
-plot(1:length(res$chains$t_11),res$chains$p_13,type='l')
+plot(1:length(res$chains$p_11),res$chains$p_11,type='l')
+plot(1:length(res$chains$p_11),res$chains$p_12,type='l')
+plot(1:length(res$chains$p_11),res$chains$p_13,type='l')
 plot(1:length(res$chains$p_11),res$chains$p_21,type='l')
 plot(1:length(res$chains$p_11),res$chains$p_22,type='l')
 plot(1:length(res$chains$p_11),res$chains$p_23,type='l')
