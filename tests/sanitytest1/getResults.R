@@ -12,15 +12,7 @@ for(current in in.files){
 
   for(i in 1:3){
     for(j in 1:3){
-      
-      if(j!=rowSkip[i]){
-        if(lbmat[i,j] < 0){winmat[i,j] <- winmat[i,j] + 1}
-      }
-      
-      if(j==rowSkip[i]){
-        if(ubmat[i,j] > 0){winmat[i,j] <- winmat[i,j] + 1}
-      }
-      
+      if(lbmat[i,j]<1/3 & ubmat[i,j] > 1/3){winmat[i,j] <- winmat[i,j]+ 1}
     }
   }
   
