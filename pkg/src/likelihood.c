@@ -575,7 +575,6 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo
 	    out = FALSE;
 	    //Rprintf("\nlikelihood for ancestry of %d is zero", i+1);
 	    /* fflush(stdout); */
-
 	    /* display genetic likelihood */
 	    temp = loglikelihood_gen_i(i, dat, dnaInfo, par, rng);
 	    filter_logprob(&temp);
@@ -598,7 +597,10 @@ bool check_loglikelihood_all(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo
 	    /* likelihood of infection time */
 	    temp = log(gentime_dens(gen, vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), vec_int_i(par->kappa,i)));
 	    filter_logprob(&temp);
-	    //Rprintf("\ni=%d: infection time (Tinf=%d,Tances=%d) log-like is: %f", i+1, vec_int_i(par->Tinf,i),vec_int_i(par->Tinf,ances), temp);
+	    print_vec_int(par->Tinf);
+	    Rprintf("\ni=%d: infection time (Tinf=%d,Tances=%d) log-like is: %f", i+1, vec_int_i(par->Tinf,i),vec_int_i(par->Tinf,ances), temp);
+	    Rprintf("\nError from calling log(gentime_dens(gen,%d,%d))",vec_int_i(par->Tinf,i)-vec_int_i(par->Tinf,ances),vec_int_i(par->kappa,i));
+	    Rprintf("\nThis calls for mat_double_ij(gen->dens,%d,%d) = %f",vec_int_i(par->kappa,i)-1,vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances), mat_double_ij(gen->dens,vec_int_i(par->kappa,i)-1,vec_int_i(par->Tinf,i) - vec_int_i(par->Tinf,ances)));
 	    /* fflush(stdout); */
 
 	    /* spatial likelihood*/

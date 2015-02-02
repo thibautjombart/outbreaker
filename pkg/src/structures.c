@@ -202,12 +202,13 @@ double gentime_dens(gentime *in, int t, int kappa_i){
 
     /* error if requested time is <= 0 */
     if(t <= 0){
-      /* warning("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (min: 1).\n", t); */
+      error("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (min: 1).\n", t); 
       return 0.0;
     }
 
     /* otherwise fetch density value */
     double out=mat_double_ij(in->dens, kappa_i-1, t);
+    //Rprintf("gentime_dens returning %f",out);
     return out;
 }
 

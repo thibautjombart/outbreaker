@@ -413,7 +413,7 @@ void mcmc_grp_prelim(bool quiet, param *par, data *dat, mcmc_param *mcmcPar, gsl
 int i,j,h;
 int checkEvery = 500;
 
-if(!quiet) Rprintf("Finding optimal parameters for group transmission matrix...");
+Rprintf("Finding optimal parameters for group transmission matrix...");
 
 /* creating temporary parameters */
 param *grpPar = alloc_param(dat->n, dat->num_of_groups);
@@ -446,7 +446,7 @@ for(i=0;i<dat->num_of_groups;i++){
 /* copy rates to external par for normalising*/
 copy_mat_double(grpPar->trans_mat_rates,par->trans_mat_rates);
 
-if(!quiet) Rprintf("group mcmc finished...");
+Rprintf("group mcmc finished...");
 /* free memory */
 free_param(grpPar);
 free_param(tempgrpPar);
@@ -714,7 +714,6 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
    /* continue as normal */
 
 
-    Rprintf("inside mcmc");
     /* OPEN OUTPUT FILES */
     FILE *file = fopen(outputFile,"w");
     if(file==NULL){
@@ -730,7 +729,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
 
-    Rprintf("before output");
+
     /* OUTPUT TO OUTFILE - HEADER */
     fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
     for(i=0;i<dat->n;i++){
@@ -747,7 +746,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 		fprintf(file,"\tp_%d%d",i+1,j+1);
 	}
     }
-    Rprintf("mcmc file header");
+
     /* OUTPUT TO MCMCOUTFILE - HEADER */
     fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\tp_accept_Tinf\tp_accept_spa1");
     for(i=0;i<dat->num_of_groups;i++){
@@ -1045,6 +1044,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 /*
   gcc instructions
+
 
   gcc -o mcmc matvec.c genclasses.c structures.c init.c distances.c prior.c likelihood.c moves.c mcmc.c -lgsl -lgslcblas -Wall -g
 
