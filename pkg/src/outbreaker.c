@@ -92,7 +92,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* print_spatial_dist(spatialInfo); */
 
     /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
-    Rprintf("\nBefore check init LL\n");/* fflush(stdout); */
+    //Rprintf("\nBefore check init LL\n");/* fflush(stdout); */
 
     mcmcPar = alloc_mcmc_param(N, num_of_groups);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
@@ -117,9 +117,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     if(!checkLike){
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
     }
-
+    
     //Rprintf("\nAfter check init LL\n");/* fflush(stdout); */
-    Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
+    //Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
 
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
