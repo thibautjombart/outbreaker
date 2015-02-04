@@ -1,17 +1,46 @@
-\documentclass{amsbook}
+\documentclass[11pt,a4paper]{report}
 \usepackage{tikz}
+\usepackage[round]{natbib}
 \title{Adding a spatial element to Outbreaker}
 \begin{document}
 \maketitle
+\chapter*{Statement of Originality}
+\thispagestyle{empty}
+\noindent I certify that this thesis, and the research to which it refers, are the product of my own work, conducted during the current year of the MRes in Biomedical Research at Imperial College London. Any ideas or quotations from the work of other people, published or otherwise, or from my own previous work are fully acknowledged in accordance with the standard referencing practices of the discipline. The Outbreaker model referenced in this thesis is the work of Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser and Neil Ferguson at the Department of Infectious Disease Epidemiology at Imperial College London.
+\newpage
+
+\chapter*{Abstract}
+\thispagestyle{empty}
+This is where my abstract goes
+\newpage
+
+\chapter*{Acknowledgements}
+\thispagestyle{empty}
+This is where my acknowledgements go
+\newpage
+
+\tableofcontents
+\pagestyle{plain}
+\newpage
+
+\chapter*{Abbreviations}
+\thispagestyle{empty}
+This is where my abbreviations go
+\newpage
+
 
 \chapter{Introduction}
-\section{Aims}
-The aim of this project is to see if group structure or contact structure data can be added to the Outbreaker model by NAME HERE to help us infer information about the transmission dynamics between different groups or to further improve the process of inferring the most likely transmission tree for an outbreak. In certain outbreak scenarios it may be possible to separate the cases of infection into two or more distinct groups, the groups could be defined by what ward a patient is on in a hospital, what class a child is in at school or perhaps whether a case is a child or an adult. An interesting question in this scenario might be whether individuals in the same group are more likely to infect each other and less likely to infect individuals in the other group. We will aim to add a framework to the outbreaker model that allows further outbreak parameters to be estimated which may help us answer this question. Additionally, we will see how we can incorporate contract tracing data into outbreaker and how this can be used to help the statistical inference. In this first section I will introduce the Outbreaker package and go through the previous body of work which led up to the development of Outbreaker.
+Previous work which sought to estimate transmission rates between different groups within a population has involved using large epidemiological datasets to fit different compartmental models for different groups or more intricate modelling of a particular outbreak. Crucially these approaches seek to estimate transmission rates between groups in isolation from other epidemiological properties; this approach relegates the study of group structure to afterthought, to be performed after more pragmatic epidemic and public health properties have been understood.
 
-The Outbreaker package uses a Markov chain Monte Carlo process to try and sample from the posterior probability distribution of various parameters and pieces of augmented data. Specifically, it uses DNA sequence data and case data collected from an outbreak along with a generation time distribution and a time-to-collection distribution to infer the likely infector of each case. These likely ancestors can be combined into a transmission tree and if we are fairly confident in the truth of our assembled transmission tree then we can infer further properties about the outbreak from it such as the rate of mutation of nucleotides in the DNA sequence of the pathogen and the effective reproduction numbers of individuals through time.
+In this paper we hope to add a spatial framework to an existing general Bayesian model (and corresponding R package Outbreaker) for predicting transmission routes of a pathogen during an outbreak. In the package epidemiological and genetic data collected from outbreaks is used to derive sampled from the posterior distribution of transmission trees, this method could be extended to include further data about the spatial structure of the population to see how well we can estimate parameters representing transmission rates between different groups. Additionally, this spatial structure data may also serve to improve the quality of the model output in situations where genetic data is not present; in the past genetic data has been shown to play an important role in placing constraints on potential transmission trees, making the job of finding the most likely transmission trees easier than with epidemiological data alone. By introducing group structure as part of an effective existing model it is hoped that this will allow the study of the population structure of an outbreak to begin sooner, as well as inviting in any wider benefits that this sort of analysis may bring to other areas of the model.
+\section{Aims}
+The aim of this project is to see if information about the spatial structure of a population can be added to the Outbreaker model of \citet{outbrkr}, to help us estimate information about the transmission dynamics between different groups or to further improve the process of deriving transmission tree from the posterior distribution using outbreak data. In certain outbreak scenarios it may be possible to separate the cases of infection into two or more distinct groups, the groups could be defined by what ward a patient is on in a hospital, what class a child is in at school or perhaps whether a case is a child or an adult. An interesting question in this scenario might be whether individuals in the same group are more likely to infect each other and less likely to infect individuals in the other group. We will aim to add a framework to the outbreaker model that allows further parameters to be estimated which may help us answer this question. In this first section I will introduce the Outbreaker package and go through the previous body of work which led up to the development of the Outbreaker model.
+
 
 \section{A Brief History}
-The Outbreaker model builds upon previous methods that use a similar process of assigning a likelihood value to transmission trees (out of potentially thousands of configurations) and then searching for the tree with the maximum likelihood value or using the likelihood of a tree to sample from the posterior distribution of the trees given the data we have collected. The earliest implementation of this approach was Haydon et al, 2002, who proposed a likelihood function for transmission trees that describe the transmission of foot-and-mouth disease between farms in the UK. Their likelihood function for each transmission event is a product of two independent terms. The first term gives a likelihood value based upon whether the timings of the infection between two farms match well. We can assign a value based upon how well the period farm A was infectious during overlaps with the predicted time period that farm B was infected during. The better these time periods overlap, the more likely we think that this infection event is. The second term gives a likelihood value based on how far apart the two farms are, seeing as animals on different farms do not freely mix (especially during an outbreak) then there is only the possibility of an aerial infection which is more plausible the closer two farms are. For each tree we can consider the likelihood of all of the separate events in the tree and come to an overall likelihood for the tree, Haydon et al proposed an algorithm which would work towards producing the transmission tree with the highest overall likelihood.
+The Outbreaker package uses a Markov chain Monte Carlo process to try and sample from the posterior probability distribution of various parameters and pieces of augmented data. Specifically, it uses DNA sequence data and case data collected from an outbreak along with a generation time distribution and a time-to-collection distribution to infer the likely infector of each case. These likely ancestors can be combined into a transmission tree and if we are fairly confident in the truth of our assembled transmission tree then we can infer further properties about the outbreak from it such as the rate of mutation of nucleotides in the DNA sequence of the pathogen and the effective reproduction numbers of individuals through time.
+
+The Outbreaker model builds upon previous methods that use a similar process of assigning a likelihood value to transmission trees (out of potentially thousands of tree configurations) and then searching for the tree with the maximum likelihood value or using the likelihood of a tree to sample from the posterior distribution of the trees given the data we have collected. The earliest implementation of this approach was Haydon et al, 2002, who proposed a likelihood function for transmission trees that describe the transmission of foot-and-mouth disease between farms in the UK. Their likelihood function for each transmission event is a product of two independent terms. The first term gives a likelihood value based upon whether the timings of the infection between two farms match well. We can assign a value based upon how well the period farm A was infectious during overlaps with the predicted time period that farm B was infected during. The better these time periods overlap, the more likely we think that this infection event is. The second term gives a likelihood value based on how far apart the two farms are, seeing as animals on different farms do not freely mix (especially during an outbreak) then there is only the possibility of an aerial infection which is more plausible the closer two farms are. For each tree we can consider the likelihood of all of the separate events in the tree and come to an overall likelihood for the tree, Haydon et al proposed an algorithm which would work towards producing the transmission tree with the highest overall likelihood.
 
 As genetic sequencing became faster and cheaper, Cottam et al could expand this model by including a genetic likelihood term. Now that most infected cases could also provide a DNA sequence of the pathogen then the DNA sequences could be compared to see if they can help figure out the ancestor of each case. Infectious diseases mutate quickly and therefore mutations in the DNA sequences can occur during one generation. We can compare the DNA sequences and produce a likelihood that one case is the ancestor of another case depending on how similar the two sampled DNA sequences are, the more similar two sequences are the more likely that one is an ancestor of the other. Cottam et al proceeded by selecting the transmission tree configurations which had the highest genetic likelihoods and then using the previous epidemiological likelihood (based on infection and collection times) to choose 4 final trees which accounted for 95\% of the sum of the likelihood for every possible tree. Further alterations to the approach were made by Ypma et al ,2012, who combined the genetic and epidemiological likelihoods into a single term, therefore removing the assumption that the two likelihoods are independent. This is an important assumption to consider because more mutations will occur in a DNA sequence over longer periods of time so we expect that there will be some correlation between the generation times and the number of mutations that we find.
 
@@ -23,9 +52,9 @@ The Outbreaker model is a combination of these approaches, it uses an MCMC appro
 \subsection{Markov Chain Monte Carlo Processes}
 Markov Chain Monte Carlo processes are a combination of two statistical tools, the easiest of the two is Monte Carlo methods. Monte Carlo methods aim to approximate values such as the expected value of a probability distribution by using a large number of samples from that distribution. To work out the expected value of a probability distribution analytically we would integrate over every possible value in the distribution multiplied by the probability of it occurring. Using Monte Carlo methods we would approximate this integration by sampling from the probability distribution thousands of times and taking the mean average of the results. Put simply, Monte Carlo is a way of approximating values of interest given lots of the right samples.
 
-Markov Chains play the role of providing these samples, a Markov Chain is a chain of subsequent states where the next state in the chain is decided by probabilities which are only determined by the current state. A simple discrete Markov Chain may have 3 states called A, B and C, if we are currently in state A then whatever state we move to next only depends on the probability of moving from state A to states B or C. If I move to state B then the fact that I was just previously in state A does not play a role in my decision making about what state I will go to next. If we run certain Markov Chains for long periods of time we will find that they settle into a stationary distribution which determines what the probability of the chain being in each state at each time is. If we have a stationary distribution of interest, such as $p(X=A)=p(X=B)=p(X=C)=\frac{1}{3}$ then we can devise a Markov Chain that will have this distribution as its stationary distribution, run it for a while until it converges upon this steady state, and then use the values in the Markov Chain as samples from our distribution of interest.
+Markov Chains play the role of providing these samples, a Markov Chain is a chain of subsequent states where the next state in the chain is decided by probabilities which are only determined by the current state. A simple discrete Markov Chain may have 3 states called A, B and C, if we are currently in state A then whatever state we move to next only depends on the probability of moving from state A to states B or C (or back to A). If I then move to state B then the fact that I was just previously in state A does not play a role in my decision making about what state I will go to next. If we run certain Markov Chains for long periods of time we will find that they settle into a stationary distribution which determines what the probability of the chain being in each state at any time is. If we have a stationary distribution of interest, such as $p(X=A)=p(X=B)=p(X=C)=\frac{1}{3}$ then we can devise a Markov Chain that will have states A, B and C and this distribution as its stationary distribution, run it for a while until it converges upon this stationary distribution, and then use the values in the Markov Chain as samples from this distribution of interest.
 
-We can use the Metropolis-Hastings algorithm to easily find Markov Chains that have a specified stationary distribution, therefore our stationary distribution could be very complex and we could still use a fairly simple Markov Chain to sample from it. We can then use these stationary distribution samples in our Monte Carlo methods to make approximations about the distribution. Metropolis-Hastings can also be used in a Bayesian setting by specifying the stationary distribution as a posterior distribution of interest. This means that instead of having to find a posterior distribution analytically we can instead use an MCMC process to sample from it and then make inferences about it. This is what the Outbreaker model does in the specific context of finding the posterior distribution of transmission trees when given outbreak data.
+We can use the Metropolis-Hastings algorithm to easily find Markov Chains that have a specified stationary distribution, therefore our stationary distribution could be very complex and we could still use a fairly simple Markov Chain to sample from it. We can then use these stationary distribution samples in our Monte Carlo methods to make approximations about the distribution. Metropolis-Hastings can also be used in a Bayesian setting by specifying the stationary distribution as a posterior distribution of interest. This means that instead of having to find a posterior distribution analytically we can instead use an MCMC process to sample from it and then make inferences about the distribution from our samples. This is what the Outbreaker model does in the specific context of finding the posterior distribution of transmission trees when given outbreak data. The posterior distribution that the Outbreaker model tries to sample from is complex, yet we can use the relatively straightforward Metropolis-Hastings algorithm  to construct a Markov Chain with a stationary distribution equal to our posterior distribution.
 
 
 \section{Metropolis-Hastings Algorithm}
@@ -38,7 +67,7 @@ We can use the Metropolis-Hastings algorithm to sample from our target density $
 \item We then generate a random variable $U_1 \sim U[0,1]$, if $\alpha(X_0,X_1) > U_1$ then we accept $X_1$ as a sample from $\pi$. If not then we set $X_1 \leftarrow X_0$ and accept this as a sample.
 \item We repeat this process for thousands of iterations, saving all of the accepted values in a chain. These values are samples from our target density $\pi$.
 \end{itemize}
-The need to find the values $\pi(X)$ presents a problem because it requires that we know the target distribution which we are trying to sample from and this might not be the case. We can get around this when looking for posterior densities by substituting in the likelihood function which is usually easier to calculate. If our target density is a posterior density of the form $\pi(X | D)$ with parameter $X$ and observed data $D$ then we can write this as
+The need to find the values $\pi(X)$ presents a problem because it requires that we know (or can at least find probability values from) the target distribution which we are trying to sample from and this might not be the case. We can get around this when looking for posterior densities by substituting in the likelihood function which is usually easier to calculate. If our target density is a posterior density of the form $\pi(X | D)$ with parameter $X$ and observed data $D$ then we can write this as
 \[ \pi(\theta | D) \propto \frac{\pi(D | \theta) \times \pi(\theta)}{\pi(D)} \]
 Since $D$ represents fixed data, $\pi(D)$ is a constant and therefore cancels out in the equation for $\alpha(x,y)$ so we are left with
 \[ \alpha(X_0,X_1) = min\left(\frac{\pi(D | X_0)\pi(X_0)p(X_1,X_0)}{\pi(D | X_1)\pi(X_1)p(X_0,X_1)}\right) \]
@@ -80,14 +109,114 @@ This likelihood term is multiplied onto the existing likelihood term to give an 
 \section{Transmission Rate Matrix Move}
 The parameters in the transmission rate matrix are moved one element at a time except for one element on each row which is set to $1$ and does not move. The other elements in the row should converge upon a value which is the rate of transmission relative to the constrained rate. New candidate elements are generated from a lognormal distribution:
 \[ X_{n+1} \sim lognormal(\log(X_n),\sigma) \]
-Where $\sigma$ is determined by a tuning process which increases or decreases its value based upon the proportion of moves being accepted and rejected. This move is symmetrical so the probability of moving from a value $y$ to another value $x$ has the same probability of moving from the value $x$ to the value $y$. This means that for the transition density $p(x,y) = p(y,x)$ so these values cancel each other out in the function $\alpha(x,y)$.
+Where $\sigma$ is determined by a tuning process which increases or decreases its value based upon the proportion of moves being accepted and rejected. The lognormal distribution is not symmetrical so we need to introduce a correction factor to account for the fact that in the transition density $p(x,y) \neq p(y,x)$. We also need to include the term from our prior distribution for the rate parameter, in this circumstance an exponential prior with a mean of 1000 was chosen. This allows rates to vary considerably but remain above zero and with a decreasing probability approaching 1000, this is sensible when we consider that one element on the row has been fixed to 1 so we would think it was very unlikely that the other rates on the row are as large as 1000. This gives the following process for updating an element in the transmission rates matrix, it is the standard Metropolis-Hastings algorithm except we have taken the logarithm of values to preserve accuracy during computation:
+\begin{itemize}
+\item Using the old rate parameter, $\theta_n$, a candidate rate parameter is chosen: $\theta_{n+1} \sim lognormal(\log(\theta_n),\sigma)$.
+\item Calculate the log ratio: $ LR = \log(\Omega_3(\theta_{n+1})) - \log(\Omega_3(\theta_{n}))$
+\item Add the correction factor for the lognormal distribution: 
+\[ LR + \log(\theta_{n+1}) - \log(\theta_n) \]
+\item Add the values of the priors for the old and candidate rates: 
+\[ LR + \log(\exp(\theta_{n+1},\lambda=\frac{1}{1000})) - \log(\exp(\theta_{n},\lambda=\frac{1}{1000}))\]
+\item If $LR > 0$, we accept $\theta_{n+1}$ as a sample.
+\item If $LR < 0$ then we generate a random uniform number, $U$, then if $\log(U) \leq LR$ then we accept $\theta_{n+1}$ as a sample. Otherwise we reject $\theta_{n+1}$ and $\theta_{n+1} \leftarrow \theta_n$.
+\end{itemize}
+The result of this process is a number of samples of the group transmission rate parameters from the posterior distribution, in the next section we will discuss how we can analyse this output and how we can produce data to test the extended model.
+
+\section{Analysing the model output}
 
 
+\section{Simulating Outbreaks With Group Structure}
+To test the new spatial framework in Outbreaker, we need to be able to fit the model to data which was generated using groups within a population that have varying tranmission rates between them.
+The Outbreaker package also has its own outbreak simulation procedure which we can extend to generate outbreak data that has spatial structure. We can modify the formula which chooses the infector of an infected individual (in the program code this is implemented by first choosing the ancestors and then choosing who has been infected by them), currently the individual is chosen by sampling from a multinomial distribution with probabilities:
+\[ \frac{w(t-t_i)}{\sum_i{w(t-t_i)}} \]
+where $w$ is the generation time distribution. We can incorporate the probability of transmission within and between members of different groups into these probabilities by supplying a transmission probability matrix. If we continue with the notation $g_{i}$ as the group of case $i$ and $g_{\alpha_{i}}$ as the group of the immediate ancestor of case $i$ then we can introduce the group transmission probabilities into the multinomial distribution as follows:
+\[ \frac{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}{\sum_i{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}}\]
 
+At the start of the outbreak we would have $n$ individuals, $n_1$ of whom are in group 1, $n_2$ of whom are in group 2 and so on up to group $l$. We can then specify the exact numbers in each group (perhaps indirectly through proportions of the population in each group) when the simulation begins. We would also specify the $l \times l$ matrix of transmission probabilities and perhaps we would choose a group which the infection will begin from. Then the procedure takes place just as before but now new cases have different probabilities of being infected by the existing cases depending on the within and between group transmission probabilities. Finally we can then modify the output of simOutbreak to colour the nodes of the transmission tree depending on group so it is easy to see how the outbreak has moved around the group structure. We would also need to come up with a rule for the group membership of imported cases, they could either be assigned to the existing groups at some specified frequency or marked as group unknown which would bring up questions about how to treat these cases in terms of transmission probabilities. In some situations such as hospital wards it might be sensible to take the first approach, our groups might be in one large ward and one small ward so we would expect imported cases to have joined one of the wards and although their ancestors are not present in our transmission tree we expect them to inherit the transmission dynamics of their group once they join one. For the second scenario we would have to decide what would be a sensible transmission probability between each group and a case where the group is unknown, we might assign a "baseline" transmission probability that we use for any cases where one or both of the groups are unknown during a transmission event. This is a better approach if our groups are set within a larger community that has some probability of transmission between the members (this is equivalent to assigning all imported cases to an extra group with equal within and between group transmission). Another benefit of this second approach is that it also provides a way of dealing with cases where group membership data is missing.
+
+Having implemented this method in simOutbreak, the user can now pass a matrix to the simOutbreak function giving the true values of the transmission probabilities within and between groups, the user must also specify the number of individuals within each group. The number of individuals in each of the groups must sum to the overall number of individuals in the simulation, individuals are then assigned to groups randomly. Imported cases are assigned a group based on the relative sizes of the groups defined by the user. Users can now also colour nodes on the plotted transmission trees by their group membership, this allows us to see how the transmission tree is affected by different group sizes and transmission probabilities. For example, the tree below was created and coloured using three groups with the transmission probability matrix
+\[ \left( \begin{array}{ccc}
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+1 & 0 & 0 \\
+\end{array} \right) \]
+\begin{center}
+\includegraphics[width=180px]{treexample.png}
+\end{center}
+We can now go on to generate some data to see how the method performs on generated data and data from a real outbreak with spatial structure.
 
 \chapter{Results}
 \chapter{Discussion}
+\section{Discuss Results}
+\section{Modelling Assumptions}
+This way of modelling group structure makes some simplifying assumptions, it is important to recognise these assumptions and consider how they may effect the interpretation of the model output. The first and main assumption is that the likelihood terms for the genetic, epidemiological and spatial data are independent, this would imply that we expect no correlation between the likelihoods for our data, yet we would actually expect there to be some correlation. We would expect cases which occur around a similar time to have a high epidemiological likelihood of transmission between each other, but this short time frame means that there has not been much time for the pathogen DNA sequences to diverge, therefore we would also see that some of these cases have similar pathogen DNA sequences and a high genetic likelihood between them. As the Markov Chain approaches true transmission events we would see that the likelihoods rise and fall together, rather than being independent of each other. However, combining these likelihoods would be a very tricky process and would inevitably produce a more complex likelihood function, this having consequences in terms of computational effort when we attempt to compute the likelihood function for thousands of moves. It is also hard to gauge what sort of effect this assumption will have on the output of the model without computing a combined likelihood and comparing the results. One possibility is that having separate likelihoods which are correlated could inflate the overall likelihood value for a tree in places where the individual likelihoods are high. This could lead to a likelihood landscape with more drastic peaks and troughs, making it harder for the Markov Chain to jump between these areas of high likelihood.
+
+A second, less worrying assumption is that transmission probabilities between groups remain constant over time. This assumption serves to constraint the situations to which this model could be fit, depending on whether the assumption would be violated. In most of the scenarios envisioned such as an outbreak in a hospital ward it is probably safe to assume that the transmission rate between groups stays fairly constant over the period of the outbreak. However, this does rule out the model being used to assess the effectiveness of an intervention on reducing the transmission rates between groups where all of the data comes from the same outbreak. Although data from two outbreaks that are similar in every other respect apart from the presence of an intervention strategy during one of the outbreaks could be used to compare the effectiveness of the intervention strategy at preventing between group transmissions.
 
 
+\section{Modelling Limitations}
+In this section I will discuss constraints placed upon the model by adding the group structure framework and vice versa. The new parameters in the model cannot be considered too helpful if they unduly restrict other parts of the model. In this case the significant restraint place on the rest of the model by the group transmission parameters is that we must assume that there are no unsampled cases between infected individuals, thus limiting the situations in which we can use the extended model to those where we can be sure that we have collected data on every case in an outbreak. These sorts of outbreak would be relatively small and in places where data can easily be collected, thankfully the imagined scenario of different wards in a hospital matches this description.
+
+When we are dealing with transmission between two cases where there are unsampled generation between them we do not know the group membership of the unsampled cases which causes problems when we come to assess the likelihood of this transmission event. For example if Rob is in red ward and Mary is in blue ward and we are considering the group likelihood of a transmission event between them with one unsampled generation, Alice say, then the group likelihood would be the product of two probabilities, that Rob gave the infection to Alice and then that Alice gave the infection to Mary. The problem is that we don't know what group Alice belongs to so we don't know what the relevant group transmission probabilities are.
+
+would sum the likelihoods that Rob infected Alice who then infected Mary for the case that Alice is a member of any possible group - in this case red or blue ward.\\
+For small values of $\kappa$ we can easily calculate the sum of these likelihoods, in the image below the group likelihood that Rob infected Mary would be
+ \[ (P_{rb} \cdot P_{bb}) + (P_{rr} \cdot P_{rb}) \]
+
+\begin{center}
+\begin{tikzpicture}
+	\node at (0,0) [circle, draw=red!50, fill=red!20, thick] (r) {Rob};
+	\node at (2,2) [circle, draw=blue!20, fill=blue!10, thick] (b) {Alice};
+	\node at (4,0) [circle, draw=blue!50, fill=blue!20, thick] (g) {Mary};
+	\node at (2,-2) [circle, draw=red!20, fill=red!10, thick] (br) {Alice};
+
+	\draw [->] (r) -- (b) node[midway, above] {$P_{rb}$};
+	\draw [->] (r) -- (br) node[midway, above] {$P_{rr}$};
+	\draw [->] (b) -- (g) node[midway, above] {$P_{bb}$};
+	\draw [->] (br) -- (g) node[midway, above] {$P_{rb}$};
+\end{tikzpicture}
+\end{center}	
+I have called the unsampled case Alice but in reality we would know nothing about them apart from the fact that we must assume that they belong to one of the groups that we are looking at. For a given value of $\kappa$ we have to consider $2^\kappa$ different potential group combinations so for cases where $\kappa$ is large we will have to perform a lot of computations. Below is an example for when $\kappa = 2$ by adding Fred to the transmission path.
+\begin{center}
+\begin{tikzpicture}
+	\node at (0,0) [circle, draw=red!50, fill=red!20, thick] (r) {Rob};
+	\node at (2,2) [circle, draw=blue!20, fill=blue!10, thick] (b) {Alice};
+	\node at (6,0) [circle, draw=blue!50, fill=blue!20, thick] (g) {Mary};
+	\node at (2,-2) [circle, draw=red!20, fill=red!10, thick] (br) {Alice};
+	\node at (4,4) [circle, draw=red!20, fill=red!10, thick] (b2) {Fred};
+	\node at (4,1) [circle, draw=blue!20, fill=blue!10, thick] (b3) {Fred};
+	\node at (4,-1) [circle, draw=red!20, fill=red!10, thick] (br2) {Fred};
+	\node at (4,-4) [circle, draw=blue!20, fill=blue!10, thick] (br3) {Fred};
+
+
+
+
+
+
+
+	\draw [->] (r) -- (b) node[midway, above] {$P_{rb}$};
+	\draw [->] (r) -- (br) node[midway, above] {$P_{rr}$};
+	\draw [->] (b) -- (b2) node[midway, above] {$P_{br}$};
+	\draw [->] (br) -- (br2) node[midway, above] {$P_{rr}$};
+	\draw [->] (b) -- (b3) node[midway, above] {$P_{bb}$};
+	\draw [->] (br) -- (br3) node[midway, above] {$P_{rb}$};
+	\draw [->] (b2) -- (g) node[midway, above] {$P_{rb}$};
+	\draw [->] (br2) -- (g) node[midway, above] {$P_{rb}$};
+	\draw [->] (b3) -- (g) node[midway, above] {$P_{bb}$};
+	\draw [->] (br3) -- (g) node[midway, above] {$P_{bb}$};
+
+
+
+\end{tikzpicture}
+\end{center}
+If we have $n$ groups then calculating the group likelihood for a transmission event with $\kappa$ unsampled cases between them will require $n^\kappa$ individual calculations for each possible permutation of the different groups that the unsampled cases might belong to.
+
+
+
+Kappa >1
+Cartesian co-ordinates
+\citet{outbrkr}
+\bibliographystyle{plainnat}
+\bibliography{references}
 
 \end{document}
