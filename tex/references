@@ -1,0 +1,14 @@
+% This file was created with JabRef 2.10b2.
+% Encoding: UTF-8
+
+
+@Article{outbrkr,
+  Title                    = {Bayesian Reconstruction of Disease Outbreaks by Combining Epidemiologic and Genomic Data},
+  Author                   = {Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser, Neil Ferguson},
+  Journal                  = {PLoS Computational Biology},
+  Year                     = {2014},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
