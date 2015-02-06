@@ -1,15 +1,48 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{5}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Jombart(2014)]{outbrkr}
-Neil Ferguson Christophe Fraser Simon Cauchemez Xavier Didelot Anne
-  Cori~Thibaut Jombart.
+\bibitem[Haydon et~al.(2003)Haydon, Chase-Topping, Shaw, Matthews, Friar,
+  Wilesmith, and J]{Haydon03}
+D.~T Haydon, M~Chase-Topping, D.~J Shaw, L~Matthews, J.~K Friar, J~Wilesmith,
+  and Woolhouse M.~E. J.
+\newblock The construction and analysis of epidemic trees with reference to the
+  2001 foot-and-mouth outbreak.
+\newblock \emph{Proceedings of the Royal Society B: Biological Sciences},
+  270\penalty0 (1511):\penalty0 121--127, 2003.
+
+\bibitem[Jombart et~al.(2014)Jombart, Cori, Didelot, Cauchemez, Fraser, and
+  Ferguson]{outbrkr}
+Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser,
+  and Neil Ferguson.
 \newblock Bayesian reconstruction of disease outbreaks by combining
   epidemiologic and genomic data.
-\newblock \emph{PLoS Computational Biology}, 2014.
+\newblock \emph{PLoS Computational Biology}, 10\penalty0 (1):\penalty0
+  e1003457, 2014.
+
+\bibitem[Morelli et~al.(2012)Morelli, Thébaud, Chadœuf, King, Haydon, and
+  Soubeyrand]{Morelli12}
+Marco~J. Morelli, Gaël Thébaud, Joël Chadœuf, Donald~P. King, Daniel~T.
+  Haydon, and Samuel. Soubeyrand.
+\newblock A bayesian inference framework to reconstruct transmission trees
+  using epidemiological and genetic data.
+\newblock \emph{PLoS Computational Biology}, 8\penalty0 (11):\penalty0
+  e1002768, 2012.
+
+\bibitem[Voss(2014)]{Voss14}
+Jochen Voss.
+\newblock \emph{An Introduction to Statistical Computing - A Simulation-Based
+  Approach}.
+\newblock WIley Series in Computational Statistics. John Wiley and Sons Ltd,
+  2014.
+
+\bibitem[Ypma et~al.(2013)Ypma, Marijn~van Ballegooijen, and Wallinga]{Ypma13}
+Rolf J.~F Ypma, W.~Marijn~van Ballegooijen, and J.~Wallinga.
+\newblock Relating pylogenetic trees to transmission trees of infectious
+  disease outbreaks.
+\newblock \emph{Genetics}, 195\penalty0 (3):\penalty0 1055--62, 2013.
 
 \end{thebibliography}
