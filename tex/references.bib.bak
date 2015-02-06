@@ -2,16 +2,105 @@
 % Encoding: UTF-8
 
 
+@Article{Didelot14,
+  Title                    = {Bayesian inference of infectious disease transmission from whole-genome sequence data},
+  Author                   = {Colijn, Caroline and Gardy, Jennifer and Didelot, Xavier},
+  Journal                  = {Molecular biology and evolution},
+  Year                     = {2014},
+  Number                   = {7},
+  Pages                    = {1869-79},
+  Volume                   = {31},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Haydon03,
+  Title                    = {The construction and analysis of epidemic trees with reference to the 2001 foot-and-mouth outbreak},
+  Author                   = {Haydon, D. T and Chase-Topping, M and Shaw, D. J and Matthews, L and Friar, J. K and Wilesmith, J and Woolhouse M. E. J},
+  Journal                  = {Proceedings of the Royal Society B: Biological Sciences},
+  Year                     = {2003},
+  Number                   = {1511},
+  Pages                    = {121-127},
+  Volume                   = {270},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
 @Article{outbrkr,
   Title                    = {Bayesian Reconstruction of Disease Outbreaks by Combining Epidemiologic and Genomic Data},
-  Author                   = {Neil Ferguson
-Christophe Fraser
-Simon Cauchemez
-Xavier Didelot
-Anne Cori
-Thibaut Jombart},
+  Author                   = {Jombart, Thibaut and Cori, Anne and Didelot, Xavier and Cauchemez, Simon and Fraser, Christophe and Ferguson, Neil},
   Journal                  = {PLoS Computational Biology},
   Year                     = {2014},
+  Number                   = {1},
+  Pages                    = {e1003457},
+  Volume                   = {10},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Jombart11,
+  Title                    = {Reconstructing disease outbreaks from genetic data: a graph approach},
+  Author                   = {Jombart, Thibaut and Eggo, Rosalind M. and Dodd, P. J. and Balloux, F.},
+  Journal                  = {Heredity},
+  Year                     = {2011},
+  Number                   = {2},
+  Pages                    = {383-90},
+  Volume                   = {106},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Morelli12,
+  Title                    = {A Bayesian inference framework to reconstruct transmission trees using epidemiological and genetic data},
+  Author                   = {Morelli, Marco J. and Thébaud, Gaël and Chadœuf, Joël and King, Donald P. and Haydon, Daniel T. and Soubeyrand, Samuel.},
+  Journal                  = {PLoS Computational Biology},
+  Year                     = {2012},
+  Number                   = {11},
+  Pages                    = {e1002768},
+  Volume                   = {8},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Gibson04,
+  Title                    = {Bayesian inference for stochastic epidemics in closed populations},
+  Author                   = {Streftaris, G and Gibson, G. J},
+  Journal                  = {Statistical Modelling 4},
+  Year                     = {2004},
+  Number                   = {1},
+  Pages                    = {63-75},
+  Volume                   = {4},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Wallinga04,
+  Title                    = {Different epidemic curves for severe acute respiratory syndrome reveal similar impacts of control measures},
+  Author                   = {Wallinga, Jacco and Teunis, Peter},
+  Journal                  = {American journal of epidemiology},
+  Year                     = {2004},
+  Number                   = {6},
+  Pages                    = {509-16},
+  Volume                   = {160},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Ypma13,
+  Title                    = {Relating pylogenetic trees to transmission trees of infectious disease outbreaks},
+  Author                   = {Ypma, Rolf J. F and Marijn van Ballegooijen, W. and Wallinga, J.},
+  Journal                  = {Genetics},
+  Year                     = {2013},
+  Number                   = {3},
+  Pages                    = {1055-62},
+  Volume                   = {195},
 
   Owner                    = {joel},
   Timestamp                = {2015.02.04}

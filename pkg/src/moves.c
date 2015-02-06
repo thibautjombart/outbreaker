@@ -941,7 +941,7 @@ for(i=0;i<dat->num_of_groups;i++){
 }  /*i loop end */
 } /*function end*/
 
-void move_tmat_indiv(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i, int j){
+void move_tmat_indiv(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i, int j,bool prelim){
 double old, sigma, new, logRatio=0.0, temp;
 
 	old = mat_double_ij(currentPar->trans_mat_rates,i,j);
@@ -949,13 +949,12 @@ double old, sigma, new, logRatio=0.0, temp;
 	new = gsl_ran_lognormal(rng, log(old), sigma);
 	write_mat_double(tempPar->trans_mat_rates,i,j,new);
 	
-	
 	/* likelihood ratio */
 	logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
 	/* lognormal correction */
 	logRatio += log(new) - log(old);
 	/* priors */
-	logRatio += logprior_trans_mat(new) - logprior_trans_mat(old);
+	if(!prelim)logRatio += logprior_trans_mat(new) - logprior_trans_mat(old);
 	/* filter */
 	filter_logprob(&logRatio);
 	//Rprintf("i: %d, j: %d, old: %f, new: %f prior old: %f, prior new: %f\n",i,j,old,new,logprior_trans_mat(new),logprior_trans_mat(old));

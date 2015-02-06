@@ -431,14 +431,14 @@ if(i % checkEvery == 0) tune_trans_mat(grpmcmcPar,rng);
 /* moves! */
 for(h=0;h<dat->num_of_groups;h++){
     for(j=0;j<dat->num_of_groups;j++){
-	if(h != j) move_tmat_indiv(grpPar, tempgrpPar, dat, grpmcmcPar, rng, h ,j);
+	if(h != j) move_tmat_indiv(grpPar, tempgrpPar, dat, grpmcmcPar, rng, h ,j,TRUE);
      }
 }
 
 } /* MCMC end */
 /* rates check! */
 for(i=0;i<dat->num_of_groups;i++){
-   if(max_vec_double(grpPar->trans_mat_rates->rows[i]) - min_vec_double(grpPar->trans_mat_rates->rows[i]) > 400){
+   if(max_vec_double(grpPar->trans_mat_rates->rows[i]) - min_vec_double(grpPar->trans_mat_rates->rows[i]) > 100){
 	write_vec_int(mcmcPar->rowSkip,i,which_max_vec_double(grpPar->trans_mat_rates->rows[i]));
    }
 }
@@ -612,7 +612,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(localMcmcPar->move_trans_mat){
 	for(h=0;h<dat->num_of_groups;h++){
 	    for(j=0;j<dat->num_of_groups;j++){
-		if(j != vec_int_i(localMcmcPar->rowSkip,h)) move_tmat_indiv(localPar, tempPar, dat, localMcmcPar, rng, h ,j);
+		if(j != vec_int_i(localMcmcPar->rowSkip,h)) move_tmat_indiv(localPar, tempPar, dat, localMcmcPar, rng, h ,j,FALSE);
 	    }
 	}
     }
@@ -894,7 +894,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
         if(mcmcPar->move_trans_mat){
 	for(h=0;h<dat->num_of_groups;h++){
 	    for(j=0;j<dat->num_of_groups;j++){
-		if(j != vec_int_i(mcmcPar->rowSkip,h)) move_tmat_indiv(par, tempPar, dat, mcmcPar, rng, h ,j);
+		if(j != vec_int_i(mcmcPar->rowSkip,h)) move_tmat_indiv(par, tempPar, dat, mcmcPar, rng, h ,j,FALSE);
 	    }
 	}
 	}/*end of trans_mat if */

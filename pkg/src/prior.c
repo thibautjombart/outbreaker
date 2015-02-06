@@ -150,7 +150,7 @@ double logprior_spa2(param *par){
 double logprior_trans_mat(double elem){
 
    double out=0.0;
-   out = log(gsl_ran_exponential_pdf_fixed(elem,1000));
+   out = log(gsl_ran_exponential_pdf_fixed(elem,50));
    //Rprintf("prior: %f\n",out);
    filter_logprob(&out);
    return out;
