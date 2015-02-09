@@ -32,7 +32,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec){
+		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec,int *rowSkip){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
@@ -45,10 +45,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     int i,j, counter;
     mat_double *trans_mat;
     int num_of_groups = *l;
-
     bool checkLike;
     bool findImport = (bool) *importMethod>0;
-    
+    vec_int *skipvec;
 
     /* INITIALIZE RNG */
     /* rng = create_gsl_rng((time_t) time(NULL)); */
@@ -96,7 +95,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     mcmcPar = alloc_mcmc_param(N, num_of_groups);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
-		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt, rowSkip);
     //Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
     //print_mcmc_param(mcmcPar);
 

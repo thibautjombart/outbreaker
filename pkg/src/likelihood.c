@@ -470,7 +470,7 @@ double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng){
 	int i;
 	double out=0.0;
 	
-	normalise_matrix(par);	
+	//normalise_matrix(par);	
 	//Rprintf("normalised matrix:\n");
 	//print_mat_double(par->trans_mat_probs);
 	for(i=0;i<par->n;i++){

@@ -143,7 +143,7 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     for(i=0;i<mcmcPar->sigma_trans_mat->n;i++){
 	for(j=0;j<mcmcPar->sigma_trans_mat->n;j++){
 	   if(j!=vec_int_i(mcmcPar->rowSkip,i)){
-		fprintf(file,"\t%.15f", mat_double_ij(mcmcPar->sigma_trans_mat,i,j));
+		fprintf(file,"\t%.5f", mat_double_ij(mcmcPar->sigma_trans_mat,i,j));
 	   }
          }
     }
@@ -336,25 +336,41 @@ int i,j;
 double temp,paccept;
 
 in->tune_any_tmat = FALSE;
-
+//Rprintf("Hello!\n");
 for(i=0;i<in->n_accept_trans_mat->n;i++){
 	for(j=0;j<in->n_accept_trans_mat->n;j++){
-	    if(j!= vec_int_i(in->rowSkip,j)){
 		
+	    if(j!= vec_int_i(in->rowSkip,i)){
+	    
+	
 	    paccept = (double) mat_int_ij(in->n_accept_trans_mat,i,j) / (double) (mat_int_ij(in->n_accept_trans_mat,i,j) + mat_int_ij(in->n_reject_trans_mat,i,j));
+
+//	  Rprintf("i: %d, j: %d, paccept: %f\n",i,j,paccept);
+/*	  print_mat_int(in->tune_trans_mat);
+	  print_mat_int(in->n_accept_trans_mat);
+	  print_mat_int(in->n_reject_trans_mat);
+	  print_mat_double(in->sigma_trans_mat);*/	
 
 	    if(mat_int_ij(in->tune_trans_mat,i,j) == 1){
 	     if(paccept<0.25){
 		temp = mat_double_ij(in->sigma_trans_mat,i,j);
 		write_mat_double(in->sigma_trans_mat,i,j,temp/1.5);
+//		Rprintf("temp now: %f\n",temp/1.5);
+		write_mat_int(in->n_accept_trans_mat,i,j,1);
+		write_mat_int(in->n_reject_trans_mat,i,j,0);
 		in->tune_any_tmat = TRUE;
+		
 	     } else if(paccept > 0.5){
 		temp = mat_double_ij(in->sigma_trans_mat,i,j)*1.5;
 		in->tune_any_tmat = TRUE;
+		write_mat_int(in->n_accept_trans_mat,i,j,1);
+		write_mat_int(in->n_reject_trans_mat,i,j,0);
 		if(temp <= 1){
 		  write_mat_double(in->sigma_trans_mat,i,j,temp);
+//		  Rprintf("temp now: %f\n",temp);
 		}else{
 		  write_mat_double(in->sigma_trans_mat,i,j,1);
+//		  Rprintf("temp now: 1\n");
 		}	
 	     }else{
 		write_mat_int(in->tune_trans_mat,i,j,0);
@@ -426,19 +442,19 @@ copy_mcmc_param(mcmcPar, grpmcmcPar);
 /* MCMC loop */
 for(i=2;i<=100000;i++){ /* need to pick a decent number for this */
 /* tuning! */
-if(i % checkEvery == 0) tune_trans_mat(grpmcmcPar,rng);
-
+if(i % checkEvery == 0){ 
+	tune_trans_mat(grpmcmcPar,rng);
+}
 /* moves! */
 for(h=0;h<dat->num_of_groups;h++){
-    for(j=0;j<dat->num_of_groups;j++){
-	if(h != j) move_tmat_indiv(grpPar, tempgrpPar, dat, grpmcmcPar, rng, h ,j,TRUE);
-     }
+   move_tmat_indiv(grpPar, tempgrpPar, dat, grpmcmcPar, rng, h,TRUE);
+  
 }
 
 } /* MCMC end */
 /* rates check! */
 for(i=0;i<dat->num_of_groups;i++){
-   if(max_vec_double(grpPar->trans_mat_rates->rows[i]) - min_vec_double(grpPar->trans_mat_rates->rows[i]) > 100){
+   if(max_vec_double(grpPar->trans_mat_rates->rows[i]) - min_vec_double(grpPar->trans_mat_rates->rows[i]) > 1000){
 	write_vec_int(mcmcPar->rowSkip,i,which_max_vec_double(grpPar->trans_mat_rates->rows[i]));
    }
 }
@@ -611,9 +627,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     if(!QUIET) Rprintf("\n Moving trans_mat ...");
     if(localMcmcPar->move_trans_mat){
 	for(h=0;h<dat->num_of_groups;h++){
-	    for(j=0;j<dat->num_of_groups;j++){
-		if(j != vec_int_i(localMcmcPar->rowSkip,h)) move_tmat_indiv(localPar, tempPar, dat, localMcmcPar, rng, h ,j,FALSE);
-	    }
+	     move_tmat_indiv(localPar, tempPar, dat, localMcmcPar, rng, h ,FALSE);
 	}
     }
     if(!QUIET) Rprintf(" done!");
@@ -700,17 +714,23 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     vec_int *areOutliers = alloc_vec_int(dat->n);
 
     /* MINI MCMC TO SET TRANS MAT UP */
-   mcmc_grp_prelim(quiet,par,dat,mcmcPar,rng);
+   //mcmc_grp_prelim(quiet,par,dat,mcmcPar,rng);
    /* update par->trans_mat_rates as per findings */
    /* DO THE THING THAT ANNE SUGGESTED - divide whole row by largest value */
-   if(!quiet) Rprintf("update trans mat\n");
+   /* if(!quiet) Rprintf("update trans mat\n");
    print_vec_int(mcmcPar->rowSkip);
    for(h=0;h<dat->num_of_groups;h++){
-	rowmax = vec_double_i(par->trans_mat_rates->rows[h],vec_int_i(mcmcPar->rowSkip,h));
+	//rowmax = vec_double_i(par->trans_mat_rates->rows[h],vec_int_i(mcmcPar->rowSkip,h));
 	for(z=0;z<dat->num_of_groups;z++){
-	write_mat_double(par->trans_mat_rates,h,z,(mat_double_ij(par->trans_mat_rates,h,z)/rowmax));
+	//write_mat_double(par->trans_mat_rates,h,z,(mat_double_ij(par->trans_mat_rates,h,z)/rowmax));
+	if(z != vec_int_i(mcmcPar->rowSkip,h)){
+		write_mat_double(par->trans_mat_rates,h,z,0.5);
+	}else{
+		write_mat_double(par->trans_mat_rates,h,z,1);
 	}
    }
+   }
+   normalise_matrix(par);
    /* continue as normal */
 
 
@@ -893,9 +913,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	/* move trans_mat */
         if(mcmcPar->move_trans_mat){
 	for(h=0;h<dat->num_of_groups;h++){
-	    for(j=0;j<dat->num_of_groups;j++){
-		if(j != vec_int_i(mcmcPar->rowSkip,h)) move_tmat_indiv(par, tempPar, dat, mcmcPar, rng, h ,j,FALSE);
-	    }
+		 move_tmat_indiv(par, tempPar, dat, mcmcPar, rng, h,FALSE);
+	 
 	}
 	}/*end of trans_mat if */
 
