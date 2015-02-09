@@ -287,7 +287,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(is.null(group.vec)){num.groups=as.integer(1)}
     if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep(1,times=num.groups^2))}
     init.Tmat <- as.vector(init.Tmat)
-    
+    rowSkip<- c(0,1,2)
     
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
@@ -301,15 +301,15 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
-	             num.groups, group.vec,
+	             num.groups, group.vec,rowSkip,
                PACKAGE="outbreaker")
 
     D <- temp[[43]]
     D[D<0] <- NA
     stopTuneAt <- temp[[44]]
-
     cat("\nComputations finished.\n\n")
-
+    rowSkip <- temp[[52]]
+    
     ## make D a 'dist' object ##
     attr(D,"Size") <- n.ind
     attr(D,"Diag") <- FALSE
@@ -325,7 +325,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
     res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
-                burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call)
+                burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call,rowSkip=rowSkip)
 
     return(res)
 } # end outbreaker

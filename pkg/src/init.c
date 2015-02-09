@@ -178,7 +178,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 
-void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool move_trans_mat, bool find_import, int burnin, int find_import_at){
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool move_trans_mat, bool find_import, int burnin, int find_import_at, int *rowSkip){
     int i,j, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -235,7 +235,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 
     for(i=0;i<dat->num_of_groups;i++){
 	/* vector of skipped element each row of trans_mat_rates */
-	in->rowSkip->values[i] = i;
+	in->rowSkip->values[i] = rowSkip[i];
     }
 
 

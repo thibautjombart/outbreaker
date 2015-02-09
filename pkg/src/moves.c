@@ -941,40 +941,72 @@ for(i=0;i<dat->num_of_groups;i++){
 }  /*i loop end */
 } /*function end*/
 
-void move_tmat_indiv(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i, int j,bool prelim){
-double old, sigma, new, logRatio=0.0, temp;
+void move_tmat_indiv(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i,bool prelim){
+double logRatio=0.0, temp,correction;
+int j;
 
-	old = mat_double_ij(currentPar->trans_mat_rates,i,j);
-	sigma = mat_double_ij(mcmcPar->sigma_trans_mat,i,j);
-	new = gsl_ran_lognormal(rng, log(old), sigma);
-	write_mat_double(tempPar->trans_mat_rates,i,j,new);
+	double oldvec[dat->num_of_groups];
+	for(j=0;j<dat->num_of_groups;j++){
+		oldvec[j] = currentPar->trans_mat_probs->rows[i]->values[j];
+	}
 	
+	double newvec[dat->num_of_groups];
+	
+	gsl_ran_dirichlet(rng,dat->num_of_groups,oldvec,newvec); //this fills in new vec with values from a dirichlet distribution
+	
+	/* updating temporary matrix*/
+	for(j=0;j<dat->num_of_groups;j++){
+		write_mat_double(tempPar->trans_mat_probs,i,j,newvec[j]);
+	}
+	//print_mat_double(currentPar->trans_mat_probs);
+	//print_mat_double(tempPar->trans_mat_probs);
+
+	/* correction factor*/
+	//Rprintf("a\n");
+	
+	bool iszero = FALSE;
+	for(j=0;j<dat->num_of_groups;j++){
+		if(newvec[j] == 0) iszero=TRUE;
+	}
+	if(!iszero){
+		 correction = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,newvec,oldvec)-gsl_ran_dirichlet_lnpdf(dat->num_of_groups,oldvec,newvec);
+	}else{
+		correction = NEARMINUSINF;
+	}
+
+	//Rprintf("b\n");
+
+
 	/* likelihood ratio */
 	logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
-	/* lognormal correction */
-	logRatio += log(new) - log(old);
+	//Rprintf("logRatio: %f\n",logRatio);
+	logRatio += correction;
 	/* priors */
-	if(!prelim)logRatio += logprior_trans_mat(new) - logprior_trans_mat(old);
+	//if(!prelim){logRatio += logprior_trans_mat(new) - logprior_trans_mat(old);}
 	/* filter */
 	filter_logprob(&logRatio);
-	//Rprintf("i: %d, j: %d, old: %f, new: %f prior old: %f, prior new: %f\n",i,j,old,new,logprior_trans_mat(new),logprior_trans_mat(old));
+	//Rprintf("i: %d, j: %d, old: %f, new: %f prior old: %f, prior new: %f\n",i,j,old,new,logprior_trans_mat(old),logprior_trans_mat(new));
 	//Rprintf("prior old: %f - prior new: %f\n", logprior_trans_mat(new),logprior_trans_mat(old));	
 	//Rprintf("old: %f - new: %f - lR: %f - sigma: %f -  res: ",old,new,logRatio,sigma);
 	if(logRatio >= 0){
 		//Rprintf("accepted\n");
-		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
+		for(j=0;j<dat->num_of_groups;j++){
 		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
-		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp++);
+		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp+1);
+		}
 	}else if(log(gsl_rng_uniform(rng)) <= logRatio){
 		//Rprintf("accepted\n");
-		copy_mat_double(tempPar->trans_mat_rates,currentPar->trans_mat_rates);
+		copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
+		for(j=0;j<dat->num_of_groups;j++){
 		temp = mat_int_ij(mcmcPar->n_accept_trans_mat,i,j);
-		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp++);
+		write_mat_int(mcmcPar->n_accept_trans_mat,i,j,temp+1);}
 	} else {
 		//Rprintf("rejected\n");
-		copy_mat_double(currentPar->trans_mat_rates, tempPar->trans_mat_rates);
+		copy_mat_double(currentPar->trans_mat_probs, tempPar->trans_mat_probs);
+		for(j=0;j<dat->num_of_groups;j++){
 		temp = mat_int_ij(mcmcPar->n_reject_trans_mat,i,j);
-		write_mat_int(mcmcPar->n_reject_trans_mat,i,j,temp++);
+		write_mat_int(mcmcPar->n_reject_trans_mat,i,j,temp+1);}
 	}
 }
 
