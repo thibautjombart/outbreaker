@@ -150,28 +150,18 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi_param2 = phi_param2;
 
     /* transmission matrices */
-    /* read in rates mat */
+    /* read in probs mat */
     int j=0,k=0,x=0;
     for(k=0;k<(l*l);k++){
-			write_mat_double(par->trans_mat_rates,x,j,initTmat[k]);
+			write_mat_double(par->trans_mat_probs,x,j,initTmat[k]);
 		x++;
 		if(x % l == 0	){x=0;j++;}
 		
 		
     }
-    /* set diagonals to 1 */
-    for(i=0;i<l;i++){
-	write_mat_double(par->trans_mat_rates,i,i,1);
-   }
+
     
-   /* fill in prob mat */
-   double rowsum;
-   for(i=0;i<l;i++){
-	rowsum = sum_vec_double(par->trans_mat_rates->rows[i]);
-	for(j=0;j<l;j++){
-		write_mat_double(par->trans_mat_probs,i,j,mat_double_ij(par->trans_mat_rates,i,j)/rowsum);
-	}
-   }	
+  
 }
 
 
@@ -199,14 +189,10 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_accept_kappa = in->n_move_kappa;
     in->n_reject_kappa = 0;
     for(i=0;i<dat->num_of_groups;i++){
-	for(j=0;j<dat->num_of_groups;j++){
-		write_mat_int(in->n_accept_trans_mat,i,j,1);
-	}
+	write_vec_int(in->n_accept_trans_mat,i,1);
     }
     for(i=0;i<dat->num_of_groups;i++){
-	for(j=0;j<dat->num_of_groups;j++){
-		write_mat_int(in->n_reject_trans_mat,i,j,0);
-	}
+	write_vec_int(in->n_reject_trans_mat,i,0);
     }
 
     /* INITIALIZE MCMC PARAMETERS */
@@ -233,17 +219,6 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 	in->move_kappa->values[i] = move_kappa[i] > 0.0 ? 1.0 : 0.0;
     }
 
-    for(i=0;i<dat->num_of_groups;i++){
-	/* vector of skipped element each row of trans_mat_rates */
-	in->rowSkip->values[i] = rowSkip[i];
-    }
-
-
-    for(i=0;i<dat->num_of_groups;i++){
-	for(j=0;j<dat->num_of_groups;j++){
-			write_mat_double(in->sigma_trans_mat,i,j,0.5);
-	}
-    }
 
     //Rprintf("move_kappa:");
     //print_vec_double(in->move_kappa);
@@ -275,21 +250,9 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE;
     in->tune_pi = move_pi;
     in->tune_phi = move_phi;
-    if(move_trans_mat == TRUE){
-	for(i=0;i<dat->num_of_groups;i++){
-	   for(j=0;j<dat->num_of_groups;j++){
-	       write_mat_int(in->tune_trans_mat,i,j,1);
-	   }
-	}
-   }else{
-	for(i=0;i<dat->num_of_groups;i++){
-	   for(j=0;j<dat->num_of_groups;j++){
-	       write_mat_int(in->tune_trans_mat,i,j,0);
-	   }
-	}
-   }	
-    in->tune_any_tmat = move_trans_mat;
-    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2 || in->tune_any_tmat;
+    	
+
+    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
 
 } /* end init_mcmc_param */
 
