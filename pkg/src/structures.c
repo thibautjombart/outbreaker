@@ -273,6 +273,7 @@ param *alloc_param(int n, int l){
     out->spa_param2 = 0.0;
     out->spa_param1_prior = 0.0;
     out->spa_param2_prior = 0.0;
+    out->tmat_priors = alloc_vec_double(l);
     out->outlier_threshold = 1000.0;
     out->phi = 0.5;
     out->phi_param1 = 1.0;
@@ -292,6 +293,7 @@ void free_param(param *in){
     free_vec_int(in->alpha);
     free_vec_int(in->kappa);
     free_mat_double(in->trans_mat_probs);
+    free_vec_double(in->tmat_priors);
     free(in);
 } /* end free_param*/
 
@@ -327,6 +329,8 @@ void print_param(param *in){
     Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2);
     Rprintf("\n= transmission probability matrix =\n");
     print_mat_double(in->trans_mat_probs);
+    Rprintf("\n= transmission matrix priors = \n");
+    print_vec_double(in->tmat_priors);
 } /* end print_param*/
 
 
@@ -355,6 +359,7 @@ void copy_param(param *in, param *out){
     out->import_method = in->import_method;
     
     copy_mat_double(in->trans_mat_probs,out->trans_mat_probs);
+    copy_vec_double(in->tmat_priors,out->tmat_priors);
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);

@@ -17,7 +17,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
-                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL, init.Tmat=NULL){
+                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL, init.Tmat=NULL,tmat.priors=NULL){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
@@ -86,7 +86,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(is.null(idx.dna)) {
         idx.dna <- 1:nrow(dna)
     }
-
+    print(idx.dna)
     if(any(!idx.dna %in% 1:n.ind)) stop("DNA sequences provided for unknown cases (some idx.dna not in 1:n.ind)")
     if(length(idx.dna)!=nrow(dna)) stop("length of idx.dna does not match the number of DNA sequences")
 
@@ -285,12 +285,15 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     }
     
     if(is.null(group.vec)){num.groups=as.integer(1)}
-    if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep(1,times=num.groups^2))}
+    if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep(1/num.groups,times=num.groups^2))}
     init.Tmat <- as.vector(init.Tmat)
-    rowSkip<- c(0,1,2)
+    if(is.null(tmat.priors)){
+      tmat.priors <- rep(1/num.groups,num.groups)
+    }
+    tmat.priors <- as.double(tmat.priors)
     
     temp <- .C("R_outbreaker",
-               dnaraw, dates, n.ind, n.seq, n.nucl,  idx.dna.for.cases, mut.model,
+               dnaraw, dates, n.ind, n.seq, n.nucl, idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
                dist.mat, locations, spa.model,
                ances, init.kappa, n.iter, sample.every, tune.every,
@@ -301,7 +304,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
-	             num.groups, group.vec,rowSkip,
+	             num.groups, group.vec,tmat.priors,
                PACKAGE="outbreaker")
 
     D <- temp[[43]]
@@ -352,7 +355,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 n.iter=1e5, sample.every=500, tune.every=500,
                                 burnin=2e4, import.method=c("genetic","full","none"),
                                 find.import.n=50,
-                                pi.prior1=10, pi.prior2=1, spa1.prior=1,
+                                pi.prior1=10, pi.prior2=1, spa1.prior=1,tmat.priors=NULL,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                                 outlier.threshold = 5, max.kappa=10,
@@ -390,7 +393,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         ## transfer data onto each child ##
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
-                      "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa","move.Tmat",
+                      "init.spa1", "move.mut", "spa1.prior","tmat.priors", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa","move.Tmat",
                       "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec","init.Tmat")
 
         clusterExport(clust, listArgs, envir=environment())
@@ -406,7 +409,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                                   import.method=import.method,
                                                                   find.import.n=find.import.n,
                                                                   pi.prior1=pi.prior1, pi.prior2=pi.prior2,
-                                                                  spa1.prior=spa1.prior,
+                                                                  spa1.prior=spa1.prior,tmat.priors=tmat.priors,
                                                                   init.mu1=init.mu1, init.mu2=init.mu2, init.spa1=init.spa1,
                                                                   move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                                   move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
@@ -442,7 +445,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                         import.method=import.method,
                                                         find.import.n=find.import.n,
                                                         pi.prior1=pi.prior1, pi.prior2=pi.prior2,
-                                                        spa1.prior=spa1.prior,
+                                                        spa1.prior=spa1.prior,tmat.priors=tmat.priors,
                                                         init.mu1=init.mu1, init.mu2=init.mu2, init.spa1=init.spa1,
                                                         move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                         move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,

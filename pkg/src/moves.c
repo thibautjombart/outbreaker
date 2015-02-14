@@ -894,66 +894,69 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
   for(j=0;j<dat->num_of_groups;j++){
 	oldvec[j] = currentPar->trans_mat_probs->rows[i]->values[j];
    }
-	
+  
   /* sample into newvec from dirichlet distribution given oldvec */
   gsl_ran_dirichlet(rng,dat->num_of_groups,oldvec,newvec); 
 	
-
+  
   /* updating temporary matrix*/
   for(j=0;j<dat->num_of_groups;j++){
 	write_mat_double(tempPar->trans_mat_probs,i,j,newvec[j]);
   }
-
+  
   /* correction factor*/
 	
   for(j=0;j<dat->num_of_groups;j++){
 	if(newvec[j] == 0) iszero=TRUE;
   }
 
-
+  
   if(!iszero){
 	correction = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,newvec,oldvec)-gsl_ran_dirichlet_lnpdf(dat->num_of_groups,oldvec,newvec);
   }else{
 	correction = NEARMINUSINF;
   }
+  
 
-
-
+  Rprintf("i:%d\n",i);
+  print_vec_double(currentPar->trans_mat_probs->rows[i]);
+  print_vec_double(tempPar->trans_mat_probs->rows[i]);
+  
   /* likelihood ratio */
   logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
   logRatio += correction;
-	
-   /* priors */
-   logRatio += logprior_trans_mat(newvec,dat->num_of_groups) - logprior_trans_mat(oldvec,dat->num_of_groups);
-	
+  Rprintf("LR after llhood & correc: %f\n",logRatio);
+  /* priors */
+  logRatio += logprior_sep_tmat(tempPar,i) - logprior_sep_tmat(currentPar,i);
+   Rprintf("LR after priors: %f\n",logRatio);
    /* filter */
    filter_logprob(&logRatio);
 
-
-
+   
+  
    /* accept/reject */
-
+ 
    if(logRatio >= 0){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-
+	Rprintf("accepted");
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
 	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
          
 
    }else if(log(gsl_rng_uniform(rng)) <= logRatio){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	 
+	 Rprintf("accepted");
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
 	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
 	
    } else {
 	copy_mat_double(currentPar->trans_mat_probs, tempPar->trans_mat_probs);
-
+	Rprintf("rejected");
 	temp = vec_int_i(mcmcPar->n_reject_trans_mat,i);
 	write_vec_int(mcmcPar->n_reject_trans_mat,i,temp+1);
 	
    }
-
+ 
 
 }/*function end */
 

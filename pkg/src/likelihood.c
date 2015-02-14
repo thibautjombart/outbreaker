@@ -132,18 +132,6 @@ double proba_mut(int nbmut, int nbnucl, int kappa, double mu){
 }
 
 
-void normalise_matrix(param *in){
-int h,z;
-double rowsum,temp;
-
-	for(h=0;h<in->trans_mat_rates->n;h++){
-	rowsum = sum_vec_double(in->trans_mat_rates->rows[h]);
-            for(z=0;z<in->trans_mat_rates->n;z++){
-		temp = mat_double_ij(in->trans_mat_rates,h,z);
-		write_mat_double(in->trans_mat_probs,h,z,temp/rowsum);
-         	}
-         }
-}
 
 
 
@@ -469,15 +457,12 @@ double loglike_kappa_all(param *par){
 double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng){
 	int i;
 	double out=0.0;
-	
-	//normalise_matrix(par);	
-	//Rprintf("normalised matrix:\n");
-	//print_mat_double(par->trans_mat_probs);
+
 	for(i=0;i<par->n;i++){
 		out += loglikelihood_grp_i(i,dat,par,rng);
 	} 
 	filter_logprob(&out);
-	//Rprintf("llhood: %f\n",out);
+
 	return out;
 }
 
