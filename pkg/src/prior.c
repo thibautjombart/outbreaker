@@ -147,31 +147,13 @@ double logprior_spa2(param *par){
 /*     return out; */
 /* } */
 
-double logprior_trans_mat(param *par, int i){
-
-   int j;
-   double out=0.0;
-   double tempvec[par->tmat_priors->length];
-   double priorvec[par->tmat_priors->length];
-   
-   
-   for(j=0;j<par->tmat_priors->length;j++){
-	 tempvec[j] = par->trans_mat_probs->rows[i]->values[j];
-	 priorvec[j] = par->tmat_priors->values[j];
-   }
-   
-
-   out = gsl_ran_dirichlet_lnpdf(par->tmat_priors->length,priorvec,tempvec);
-   filter_logprob(&out);
-   return out;
-}
 
 double logprior_sep_tmat(param *par, int i){
 
  int j;
  double out=0.0;
- for(j=0;j<par->tmat_priors->length;j++){
-	out += log(gsl_ran_beta_pdf(mat_double_ij(par->trans_mat_probs,i,j),1.8,3.0));
+ for(j=0;j<par->trans_mat_probs->n;j++){
+	out += log(gsl_ran_beta_pdf(mat_double_ij(par->trans_mat_probs,i,j),par->tmat_param1_prior,par->tmat_param2_prior));
  }
 
  filter_logprob(&out);
@@ -195,7 +177,7 @@ double logprior_all(param *par,mcmc_param *mcmcPar){
 	out += logprior_phi(par);
     }
 
-    if(par->tmat_priors->length > 1){
+    if(par->grp_model==1){
      for(i=0;i<mcmcPar->n_accept_trans_mat->length;i++){
 	out+= logprior_sep_tmat(par, i);
      }
