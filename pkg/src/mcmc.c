@@ -396,7 +396,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
     }
   }
 
-
+  
   /* CREATE TEMPORARY PARAMETERS */
   /* ! do not alter 'par' or mcmcPar !*/
   param *localPar = alloc_param(dat->n, dat->num_of_groups), *tempPar = alloc_param(dat->n, dat->num_of_groups);

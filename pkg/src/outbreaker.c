@@ -32,7 +32,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec,int *rowSkip){
+		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec,double *tmat_prior){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
@@ -74,11 +74,11 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat);
-    /* Rprintf("\n>>> param <<<\n");
-    print_param(par); */
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat, tmat_prior);
+    /*Rprintf("\n>>> param <<<\n");
+    print_param(par);*/
 
-
+    
     /* COMPUTE GENETIC DISTANCES */
     dnaInfo = compute_dna_distances(dat->dna, *mutModel);
     /* Rprintf("\n>>> DNA info <<<\n");
@@ -95,7 +95,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     mcmcPar = alloc_mcmc_param(N, num_of_groups);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
-		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt, rowSkip);
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
     //Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
     //print_mcmc_param(mcmcPar);
 
@@ -117,9 +117,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
       warning("\n\n!WARNING! Initial state of the chain has a likelihood of zero. The chain may never converge. Please consider using a different initial tree.\n");
     }
     
-    //Rprintf("\nAfter check init LL\n");/* fflush(stdout); */
-    //Rprintf("\nBefore MCMC\n");/* fflush(stdout); */
-
+    
     /* RUN MCMC */
     mcmc(*nIter, *outputEvery, *resFileName, *tuneFileName, *tuneEvery,
 	 (bool) *quiet, par, dat, dnaInfo, spatialInfo, gen, mcmcPar, rng);

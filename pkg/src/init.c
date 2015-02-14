@@ -87,7 +87,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l, double *initTmat){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l, double *initTmat, double* tmat_prior){
     int i, ancesId, T, TmaxLike;
     /* Tinf */
     /* TmaxLike = which_max_vec_double(gen->dens->rows[0]); */
@@ -160,7 +160,11 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 		
     }
 
+    for(i=0;i<l;i++){
+	write_vec_double(par->tmat_priors,i,tmat_prior[i]);
+    }
     
+ 
   
 }
 
@@ -168,7 +172,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 
-void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool move_trans_mat, bool find_import, int burnin, int find_import_at, int *rowSkip){
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool move_trans_mat, bool find_import, int burnin, int find_import_at){
     int i,j, N = dat->n;
 
     /* INITIALIZE COUNTERS */
