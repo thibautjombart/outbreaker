@@ -147,11 +147,11 @@ double logprior_spa2(param *par){
 /*     return out; */
 /* } */
 
-double logprior_trans_mat(double elem){
+double logprior_trans_mat(double row[],int l){
 
    double out=0.0;
-   out = log(gsl_ran_exponential_pdf_fixed(elem,1.0));
-   Rprintf("prior: %f, elem: %f\n",out,elem);
+   double priorvec[3] = {(1/3),(1/3),(1/3)};
+   out = gsl_ran_dirichlet_lnpdf(l,priorvec,row);
    filter_logprob(&out);
    return out;
 }
@@ -161,6 +161,7 @@ double logprior_trans_mat(double elem){
 double logprior_all(param *par,mcmc_param *mcmcPar){
     int i,j;
     double out=0.0;
+    double tempvec[mcmcPar->n_accept_trans_mat->length];
 
     out += logprior_mu1(par);
     if(par->mut_model>1) out += logprior_gamma(par);
@@ -172,10 +173,18 @@ double logprior_all(param *par,mcmc_param *mcmcPar){
     if(par->spa_model==2){
 	out += logprior_phi(par);
     }
-    for(i=0;i<mcmcPar->rowSkip->length;i++){
-	for(j=0;j<mcmcPar->rowSkip->length;j++){
-	   if(j != vec_int_i(mcmcPar->rowSkip,i)) out+= logprior_trans_mat(mat_double_ij(par->trans_mat_rates,i,j));
-	}
+
+
+    for(i=0;i<mcmcPar->n_accept_trans_mat->length;i++){
+	
+
+      for(j=0;j<mcmcPar->n_accept_trans_mat->length;j++){
+	 tempvec[j] = par->trans_mat_probs->rows[i]->values[j];
+       }
+
+
+      out+= logprior_trans_mat(tempvec,mcmcPar->n_accept_trans_mat->length);
+    
     }
     
 
