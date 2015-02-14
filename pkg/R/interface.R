@@ -3,7 +3,7 @@
 ## main functions
 ##################
 outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
-                       mut.model=1, spa.model=0,
+                       mut.model=1, spa.model=0,grp.model=0,
                        w.dens, w.trunc=length(w.dens),
                        f.dens=w.dens, f.trunc=length(f.dens),
                        dist.mat=NULL,
@@ -17,7 +17,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
-                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL, init.Tmat=NULL,tmat.priors=NULL){
+                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL, init.Tmat=NULL,tmat.prior1=NULL,tmat.prior2=NULL){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
@@ -287,24 +287,25 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(is.null(group.vec)){num.groups=as.integer(1)}
     if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep(1/num.groups,times=num.groups^2))}
     init.Tmat <- as.vector(init.Tmat)
-    if(is.null(tmat.priors)){
-      tmat.priors <- rep(1/num.groups,num.groups)
+    if(is.null(tmat.prior1) | is.null(tmat.prior2)){
+      tmat.prior1 <- as.double(1.8)
+      tmat.prior2 <- as.double(3)
     }
-    tmat.priors <- as.double(tmat.priors)
+    grp.model <- as.integer(grp.model)
     
     temp <- .C("R_outbreaker",
                dnaraw, dates, n.ind, n.seq, n.nucl, idx.dna.for.cases, mut.model,
                w.dens, w.trunc, f.dens, f.trunc,
-               dist.mat, locations, spa.model,
+               dist.mat, locations, spa.model, grp.model,
                ances, init.kappa, n.iter, sample.every, tune.every,
                pi.prior1, pi.prior2, phi.param1, phi.param2, init.mu1, init.gamma,
-               init.spa1, init.spa2, spa1.prior, spa2.prior, init.Tmat,
+               init.spa1, init.spa2, spa1.prior, spa2.prior,tmat.prior1,tmat.prior2, init.Tmat,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.phi, move.spa, move.trans.mat,
                import.method, find.import.at, burnin, outlier.threshold,
                max.kappa, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
-	             num.groups, group.vec,tmat.priors,
+	             num.groups, group.vec,
                PACKAGE="outbreaker")
 
     D <- temp[[43]]
