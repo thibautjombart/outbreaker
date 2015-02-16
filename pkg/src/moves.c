@@ -888,7 +888,7 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
   double newvec[dat->num_of_groups];
   bool iszero = FALSE;
 
-
+  
   /* convert from mat_double to entries in a static array */
 	
   for(j=0;j<dat->num_of_groups;j++){
@@ -918,17 +918,17 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
   }
   
 
-  Rprintf("i:%d\n",i);
-  print_vec_double(currentPar->trans_mat_probs->rows[i]);
-  print_vec_double(tempPar->trans_mat_probs->rows[i]);
+  //Rprintf("i:%d\n",i);
+  //print_vec_double(currentPar->trans_mat_probs->rows[i]);
+  //print_vec_double(tempPar->trans_mat_probs->rows[i]);
   
   /* likelihood ratio */
   logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
   logRatio += correction;
-  Rprintf("LR after llhood & correc: %f\n",logRatio);
+  //Rprintf("LR after llhood & correc: %f\n",logRatio);
   /* priors */
   logRatio += logprior_sep_tmat(tempPar,i) - logprior_sep_tmat(currentPar,i);
-   Rprintf("LR after priors: %f\n",logRatio);
+   //Rprintf("LR after priors: %f\n",logRatio);
    /* filter */
    filter_logprob(&logRatio);
 
@@ -938,20 +938,20 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
  
    if(logRatio >= 0){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	Rprintf("accepted");
+	//Rprintf("accepted");
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
 	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
          
 
    }else if(log(gsl_rng_uniform(rng)) <= logRatio){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	 Rprintf("accepted");
+	 //Rprintf("accepted");
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
 	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
 	
    } else {
 	copy_mat_double(currentPar->trans_mat_probs, tempPar->trans_mat_probs);
-	Rprintf("rejected");
+	//Rprintf("rejected");
 	temp = vec_int_i(mcmcPar->n_reject_trans_mat,i);
 	write_vec_int(mcmcPar->n_reject_trans_mat,i,temp+1);
 	

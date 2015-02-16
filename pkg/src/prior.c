@@ -153,7 +153,9 @@ double logprior_sep_tmat(param *par, int i){
  int j;
  double out=0.0;
  for(j=0;j<par->trans_mat_probs->n;j++){
-	out += log(gsl_ran_beta_pdf(mat_double_ij(par->trans_mat_probs,i,j),par->tmat_param1_prior,par->tmat_param2_prior));
+
+	out+= log(gsl_ran_beta_pdf(mat_double_ij(par->trans_mat_probs,i,j),mat_double_ij(par->tmat_prior1,i,j),mat_double_ij(par->tmat_prior2,i,j)));
+
  }
 
  filter_logprob(&out);
