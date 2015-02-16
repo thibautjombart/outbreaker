@@ -288,9 +288,11 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(is.null(init.Tmat)){init.Tmat <- matrix(ncol=num.groups,rep(1/num.groups,times=num.groups^2))}
     init.Tmat <- as.vector(init.Tmat)
     if(is.null(tmat.prior1) | is.null(tmat.prior2)){
-      tmat.prior1 <- as.double(1.8)
-      tmat.prior2 <- as.double(3)
+      tmat.prior1 <- matrix(rep(as.double(1.8),num.groups^2),ncol=num.groups)
+      tmat.prior2 <- matrix(rep(as.double(3),num.groups^2),ncol=num.groups)
     }
+    tmat.prior1 <- as.vector(tmat.prior1)
+    tmat.prior2 <- as.vector(tmat.prior2)
     grp.model <- as.integer(grp.model)
     
     temp <- .C("R_outbreaker",

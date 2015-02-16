@@ -72,6 +72,8 @@ typedef struct{
     double phi; /* proba of nosocomial infection */
     double phi_param1, phi_param2; /* parameters of the Beta prior for phi */
     mat_double *trans_mat_probs; /* matrix for transmission probabilities between different groups */
+    mat_double *tmat_prior1;
+    mat_double *tmat_prior2;
 } param;
 
 

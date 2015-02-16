@@ -32,7 +32,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec,double *tmat_prior){
+		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
@@ -74,10 +74,9 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat, *tmat_prior1, *tmat_prior2, *grpModel);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat, *grpModel, tmat_prior1, tmat_prior2);
     /*Rprintf("\n>>> param <<<\n");
     print_param(par);*/
-
     
     /* COMPUTE GENETIC DISTANCES */
     dnaInfo = compute_dna_distances(dat->dna, *mutModel);

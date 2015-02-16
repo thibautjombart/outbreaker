@@ -283,6 +283,8 @@ param *alloc_param(int n, int l){
 
     /* fill in transmission matrix */
     out->trans_mat_probs = alloc_mat_double(l,l);
+    out->tmat_prior1 = alloc_mat_double(l,l);
+    out->tmat_prior2 = alloc_mat_double(l,l);
     /* return */
     return out;
 } /* end alloc_param */
@@ -295,6 +297,8 @@ void free_param(param *in){
     free_vec_int(in->alpha);
     free_vec_int(in->kappa);
     free_mat_double(in->trans_mat_probs);
+    free_mat_double(in->tmat_prior1);
+    free_mat_double(in->tmat_prior2);
     free(in);
 } /* end free_param*/
 
@@ -334,6 +338,8 @@ void print_param(param *in){
     print_mat_double(in->trans_mat_probs);
     Rprintf("\n= transmission matrix priors = \n");
     Rprintf(" param1=%.5f, param2=%.5f ",in->tmat_param1_prior,in->tmat_param2_prior);
+    print_mat_double(in->tmat_prior1);
+    print_mat_double(in->tmat_prior2);
 } /* end print_param*/
 
 
@@ -365,6 +371,8 @@ void copy_param(param *in, param *out){
     out->tmat_param2_prior = in->tmat_param2_prior;
     
     copy_mat_double(in->trans_mat_probs,out->trans_mat_probs);
+    copy_mat_double(in->tmat_prior1,out->tmat_prior1);
+    copy_mat_double(in->tmat_prior2,out->tmat_prior2);
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
