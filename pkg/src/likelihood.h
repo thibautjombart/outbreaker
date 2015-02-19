@@ -20,6 +20,9 @@ double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu);
 
 double proba_mut(int nbmut, int nbnucl, int kappa, double mu);
 
+double log_proba_mut(int nbmut, int nbnucl, int kappa, double mu);
+
+
 /*
   ====================
   LIKELIHOOD FUNCTIONS

@@ -126,7 +126,20 @@ double gsl_ran_poisson_pdf_fixed(unsigned int k, double mu){
 /* Formula: p = mu^nbmut x (1-mu)^{(kappa x nbnucl) - nbmut} */
 double proba_mut(int nbmut, int nbnucl, int kappa, double mu){
     double out=0.0;
+    /* old version, numerical approx problems for nbmut high */
     out = gsl_sf_pow_int(mu, nbmut) * gsl_sf_pow_int(1.0-mu, kappa*nbnucl - nbmut);
+    return out;
+}
+
+/* Compute log-proba of ... mutations */
+/* - binomial density without the binomial coefficient - */
+/* Assume that no site can mutate twice over kappa generations */
+/* there are kappa*nbnucl 'draws' (possible mutation occurences) */
+/* Formula: p = mu^nbmut x (1-mu)^{(kappa x nbnucl) - nbmut} */
+double log_proba_mut(int nbmut, int nbnucl, int kappa, double mu){
+    double out=0.0;
+    /* note: integers are automatically promoted to double here */
+    out = nbmut * log(mu) + (kappa*nbnucl - nbmut) * log(1.0-mu);
     return out;
 }
 
@@ -240,7 +253,7 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
 	if(mutation1_ij(i, ances, dat, dnaInfo)<0 || par->kappa_temp<0 || par->mu1<0 || par->mu1 >1){ /* fool proof */
 	  out += NEARMINUSINF;
 	} else {
-	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
+	  out += log_proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1);
 	}
       }
       break;
@@ -252,10 +265,10 @@ double loglikelihood_gen_i(int i, data *dat, dna_dist *dnaInfo, param *par, gsl_
 	  out += NEARMINUSINF;
 	} else {
 	  /* transitions */
-	  out += log(proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1));
+	  out += log_proba_mut(mutation1_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp, par->mu1);
 
 	  /* transversions */
-	  out += log(proba_mut(mutation2_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp,  par->gamma * par->mu1));
+	  out += log_proba_mut(mutation2_ij(i, ances, dat, dnaInfo), com_nucl_ij(i, ances, dat, dnaInfo), par->kappa_temp,  par->gamma * par->mu1);
 	}
       }
       break;
