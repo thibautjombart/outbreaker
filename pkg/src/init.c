@@ -87,7 +87,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l, double *initTmat, int grp_model, double *priorTmat1, double *priorTmat2){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l, double *initTmat, int grp_model, double tmat_prior_mult){
     int i, ancesId, T, TmaxLike;
     /* Tinf */
     /* TmaxLike = which_max_vec_double(gen->dens->rows[0]); */
@@ -149,14 +149,12 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi = gsl_ran_beta(rng,phi_param1,phi_param2);
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
- 
+    par->tmat_prior_mult = tmat_prior_mult;
     /* transmission matrices */
     /* read in probs mat */
     int j=0,k=0,x=0;
     for(k=0;k<(l*l);k++){
 			write_mat_double(par->trans_mat_probs,x,j,initTmat[k]);
-			write_mat_double(par->tmat_prior1,x,j,priorTmat1[k]);
-			write_mat_double(par->tmat_prior2,x,j,priorTmat2[k]);
 		x++;
 		if(x % l == 0	){x=0;j++;}
 		
@@ -194,9 +192,8 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_reject_kappa = 0;
     for(i=0;i<dat->num_of_groups;i++){
 	write_vec_int(in->n_accept_trans_mat,i,1);
-    }
-    for(i=0;i<dat->num_of_groups;i++){
 	write_vec_int(in->n_reject_trans_mat,i,0);
+	write_vec_double(in->tmat_mult,i,5.0);
     }
 
     /* INITIALIZE MCMC PARAMETERS */
@@ -254,9 +251,10 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE;
     in->tune_pi = move_pi;
     in->tune_phi = move_phi;
+    in->tune_tmat = move_trans_mat;
     	
 
-    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
+    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2 || in->tune_tmat;
 
 } /* end init_mcmc_param */
 
