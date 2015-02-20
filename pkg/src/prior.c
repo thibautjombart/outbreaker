@@ -147,11 +147,26 @@ double logprior_spa2(param *par){
 /*     return out; */
 /* } */
 
+double logprior_dirichlet_tmat(double in[4], int i){
+
+ double out;
+ double hyper_params[4] = {0.25,0.25,0.25,0.25};
+
+ out = gsl_ran_dirichlet_lnpdf(4,hyper_params*20,in);
+ Rprintf("\nout = %f\n",out);
+ filter_logprob(&out);
+ return out;
+}
+
 
 double logprior_sep_tmat(param *par, int i){
 
  int j;
  double out=0.0;
+
+ //print_mat_double(par->tmat_prior1);
+ //print_mat_double(par->tmat_prior2);
+
  for(j=0;j<par->trans_mat_probs->n;j++){
 
 	out+= log(gsl_ran_beta_pdf(mat_double_ij(par->trans_mat_probs,i,j),mat_double_ij(par->tmat_prior1,i,j),mat_double_ij(par->tmat_prior2,i,j)));

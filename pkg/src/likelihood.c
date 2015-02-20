@@ -462,7 +462,7 @@ double loglikelihood_grp_all(data *dat, param *par, gsl_rng *rng){
 		out += loglikelihood_grp_i(i,dat,par,rng);
 	} 
 	filter_logprob(&out);
-
+	Rprintf("ll_grp_all: %f\n",out);
 	return out;
 }
 

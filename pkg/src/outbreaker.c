@@ -47,11 +47,14 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     int num_of_groups = *l;
     bool checkLike;
     bool findImport = (bool) *importMethod>0;
-    vec_int *skipvec;
+    double fred1,fred2,fred3,fred4,fredsum;
+    double newfred[4];
+
 
     /* INITIALIZE RNG */
     /* rng = create_gsl_rng((time_t) time(NULL)); */
     rng = create_gsl_rng((time_t) *seed);
+    
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec, l);
@@ -75,7 +78,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* CREATE AND INIT PARAMETERS */
     par = alloc_param(N,num_of_groups);
     init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat, *grpModel, tmat_prior1, tmat_prior2);
-    /*Rprintf("\n>>> param <<<\n");
+    /* Rprintf("\n>>> param <<<\n");
     print_param(par);*/
     
     /* COMPUTE GENETIC DISTANCES */

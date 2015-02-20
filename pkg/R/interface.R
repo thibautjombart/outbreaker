@@ -291,8 +291,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
       tmat.prior1 <- matrix(rep(as.double(1.8),num.groups^2),ncol=num.groups)
       tmat.prior2 <- matrix(rep(as.double(3),num.groups^2),ncol=num.groups)
     }
-    tmat.prior1 <- as.vector(tmat.prior1)
-    tmat.prior2 <- as.vector(tmat.prior2)
+    tmat.prior1 <- as.double(as.vector(tmat.prior1))
+    tmat.prior2 <- as.double(as.vector(tmat.prior2))
     grp.model <- as.integer(grp.model)
     
     temp <- .C("R_outbreaker",
@@ -348,23 +348,23 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 ## version with multiple runs
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
-                                dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
-                                w.dens, w.trunc=length(w.dens),
-                                f.dens=w.dens, f.trunc=length(f.dens),
-                                dist.mat=NULL,
-                                init.tree=c("seqTrack","random","star"),
-                                init.kappa=NULL,
-                                init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
-                                n.iter=1e5, sample.every=500, tune.every=500,
-                                burnin=2e4, import.method=c("genetic","full","none"),
-                                find.import.n=50,
-                                pi.prior1=10, pi.prior2=1, spa1.prior=1,tmat.priors=NULL,
-                                move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                                move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
-                                outlier.threshold = 5, max.kappa=10,
-                                quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL,
-				group.vec=NULL, init.Tmat=NULL){
-
+                       		dna=NULL, dates, idx.dna=NULL,
+                       		mut.model=1, spa.model=0,grp.model=0,
+                       		w.dens, w.trunc=length(w.dens),
+                       		f.dens=w.dens, f.trunc=length(f.dens),
+                       		dist.mat=NULL,
+                       		init.tree=c("seqTrack","random","star"),
+                       		init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
+                       		n.iter=1e5, sample.every=500, tune.every=500,
+                       		burnin=2e4, import.method=c("genetic","full","none"),
+                       		find.import.n=50,
+                       		pi.prior1=10, pi.prior2=1, spa1.prior=1,
+                       		move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
+                       		move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
+                       		outlier.threshold = 5, max.kappa=10,
+                       		quiet=TRUE, res.file.name="chains.txt",
+                       		tune.file.name="tuning.txt", seed=NULL,group.vec=NULL,
+                                init.Tmat=NULL,tmat.prior1=NULL,tmat.prior2=NULL){
     ## SOME CHECKS ##
     if(parallel && is.null(n.cores)){
         n.cores <- detectCores()
@@ -394,15 +394,16 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         clusterEvalQ(clust, library(outbreaker))
 
         ## transfer data onto each child ##
-        listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
+        listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model","grp.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
-                      "init.spa1", "move.mut", "spa1.prior","tmat.priors", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa","move.Tmat",
-                      "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec","init.Tmat")
+                      "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa","move.Tmat",
+                      "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed","group.vec","init.Tmat","tmat.prior1","tmat.prior2")
 
         clusterExport(clust, listArgs, envir=environment())
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                                   mut.model=mut.model, spa.model=spa.model,
+								  grp.model=grp.model,
                                                                   w.dens=w.dens, w.trunc=w.trunc,
                                                                   f.dens=f.dens, f.trunc=f.trunc,
                                                                   dist.mat=dist.mat, ## locations=locations,
@@ -412,13 +413,13 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                                   import.method=import.method,
                                                                   find.import.n=find.import.n,
                                                                   pi.prior1=pi.prior1, pi.prior2=pi.prior2,
-                                                                  spa1.prior=spa1.prior,tmat.priors=tmat.priors,
+                                                                  spa1.prior=spa1.prior,
                                                                   init.mu1=init.mu1, init.mu2=init.mu2, init.spa1=init.spa1,
                                                                   move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                                   move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
                                                                   outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                                   quiet=TRUE, res.file.name=res.file.names[i],
-                                                                  tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec,init.Tmat=init.Tmat))
+                                                                  tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec,init.Tmat=init.Tmat,tmat.prior1=tmat.prior1,tmat.prior2=tmat.prior2))
 
         ## close parallel processes ##
         stopCluster(clust)
@@ -439,6 +440,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                         mut.model=mut.model, spa.model=spa.model,
+                                                        grp.model=grp.model,
                                                         w.dens=w.dens, w.trunc=w.trunc,
                                                         f.dens=f.dens, f.trunc=f.trunc,
                                                         dist.mat=dist.mat,
@@ -448,13 +450,13 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                         import.method=import.method,
                                                         find.import.n=find.import.n,
                                                         pi.prior1=pi.prior1, pi.prior2=pi.prior2,
-                                                        spa1.prior=spa1.prior,tmat.priors=tmat.priors,
+                                                        spa1.prior=spa1.prior,
                                                         init.mu1=init.mu1, init.mu2=init.mu2, init.spa1=init.spa1,
                                                         move.mut=move.mut, move.ances=move.ances, move.kappa=move.kappa,
                                                         move.Tinf=move.Tinf, move.pi=move.pi, move.spa=move.spa, move.Tmat=move.Tmat,
                                                         outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                         quiet=TRUE, res.file.name=res.file.names[i],
-                                                        tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec, init.Tmat=init.Tmat))
+                                                        tune.file.name=tune.file.names[i], seed=seed[i],group.vec=group.vec, init.Tmat=init.Tmat,tmat.prior1=tmat.prior1,tmat.prior2=tmat.prior2))
     }
 
 

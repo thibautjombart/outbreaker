@@ -274,8 +274,6 @@ param *alloc_param(int n, int l){
     out->spa_param2 = 0.0;
     out->spa_param1_prior = 0.0;
     out->spa_param2_prior = 0.0;
-    out->tmat_param1_prior = 0.0;
-    out->tmat_param2_prior = 0.0;
     out->outlier_threshold = 1000.0;
     out->phi = 0.5;
     out->phi_param1 = 1.0;
@@ -337,8 +335,9 @@ void print_param(param *in){
     Rprintf("\n= transmission probability matrix =\n");
     print_mat_double(in->trans_mat_probs);
     Rprintf("\n= transmission matrix priors = \n");
-    Rprintf(" param1=%.5f, param2=%.5f ",in->tmat_param1_prior,in->tmat_param2_prior);
+    Rprintf("\n= param 1 =\n");
     print_mat_double(in->tmat_prior1);
+    Rprintf("\n= param 2 =\n");
     print_mat_double(in->tmat_prior2);
 } /* end print_param*/
 
@@ -367,8 +366,7 @@ void copy_param(param *in, param *out){
     out->spa_model = in->spa_model;
     out->grp_model = in->grp_model;
     out->import_method = in->import_method;
-    out->tmat_param1_prior = in->tmat_param1_prior;
-    out->tmat_param2_prior = in->tmat_param2_prior;
+
     
     copy_mat_double(in->trans_mat_probs,out->trans_mat_probs);
     copy_mat_double(in->tmat_prior1,out->tmat_prior1);
