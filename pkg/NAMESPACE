@@ -1,8 +1,4 @@
 
-## Export all names
-exportPattern("^[^\\.]")
-
-
 ## Import all packages listed as Imports or Depends
 importFrom(utils, "packageDescription")
 
@@ -17,6 +13,17 @@ importFrom(adegenet, "bluepal", "redpal", "greenpal", "seasun", "spectral", "fun
            "num2col", "fac2col", "any2col", "transp", "findMutations", "findMutations.DNAbin")
 
 importFrom(parallel, "detectCores", "makeCluster", "clusterEvalQ", "clusterExport", "parLapply", "stopCluster")
+
+
+## Export all names
+exportPattern("^[^\\.]")
+
+## register S3 methods
+S3method(labels, simOutbreak)
+S3method(plot, simOutbreak)
+S3method(print, simOutbreak)
+S3method(plot, tTree)
+
 
 ## Load DLL
 useDynLib(outbreaker)
