@@ -882,55 +882,64 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
 
 /* declarations */
 
-  double logRatio=0.0, temp,correction;
-  int j;
-  double oldvec[dat->num_of_groups];
-  double newvec[dat->num_of_groups];
+  double logRatio=0.0, temp,correction,rowsum;
+  int k,j,moves;
   bool iszero = FALSE;
+  double toMove[dat->num_of_groups];
+  double moved[dat->num_of_groups];
+  double oldll,newll,from,to,oldpr,newpr;
 
-  
-  /* convert from mat_double to entries in a static array */
-	
   for(j=0;j<dat->num_of_groups;j++){
-	oldvec[j] = currentPar->trans_mat_probs->rows[i]->values[j];
-   }
-  
-  /* sample into newvec from dirichlet distribution given oldvec */
-  gsl_ran_dirichlet(rng,dat->num_of_groups,oldvec,newvec); 
-	
-  
-  /* updating temporary matrix*/
-  for(j=0;j<dat->num_of_groups;j++){
-	write_mat_double(tempPar->trans_mat_probs,i,j,newvec[j]);
+    toMove[j] = mat_double_ij(currentPar->trans_mat_probs,i,j);
   }
   
+  gsl_ran_dirichlet(rng,dat->num_of_groups,toMove*20,moved);
+  
+  for(j=0;j<dat->num_of_groups;j++){
+     write_mat_double(tempPar->trans_mat_probs,i,j,moved[j]);
+  }
+
   /* correction factor*/
 	
   for(j=0;j<dat->num_of_groups;j++){
-	if(newvec[j] == 0) iszero=TRUE;
+	if(mat_double_ij(tempPar->trans_mat_probs,i,j) == 0){
+ 		iszero=TRUE;
+	}
   }
-
-  
-  if(!iszero){
-	correction = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,newvec,oldvec)-gsl_ran_dirichlet_lnpdf(dat->num_of_groups,oldvec,newvec);
+  Rprintf("\niszero = %d\n",iszero);
+  if(iszero==FALSE){
+	from = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,moved*20,toMove);
+	to = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,toMove*20,moved);
+	correction = from - to;
+	Rprintf("from: %f, to: %f, correction: %f\n",from,to,correction);
   }else{
 	correction = NEARMINUSINF;
   }
-  
-
-  //Rprintf("i:%d\n",i);
-  //print_vec_double(currentPar->trans_mat_probs->rows[i]);
-  //print_vec_double(tempPar->trans_mat_probs->rows[i]);
+  Rprintf("i: %d\n",i+1);
+  Rprintf("correction:%f\n",correction);
+  Rprintf("current:\n");
+  print_vec_double(currentPar->trans_mat_probs->rows[i]);
+  Rprintf("temp: \n");
+  print_vec_double(tempPar->trans_mat_probs->rows[i]);
   
   /* likelihood ratio */
-  logRatio = loglikelihood_grp_all(dat, tempPar, rng) - loglikelihood_grp_all(dat, currentPar, rng);
+  newll = loglikelihood_grp_all(dat,tempPar,rng);
+  oldll = loglikelihood_grp_all(dat,currentPar,rng);
+  logRatio = newll - oldll;
+  Rprintf("newll: %f, oldll: %f, logRatio: %f\n",newll,oldll,logRatio);
   logRatio += correction;
-  //Rprintf("LR after llhood & correc: %f\n",logRatio);
+  Rprintf("LR after llhood & correc: %f\n",logRatio);
   /* priors */
-  logRatio += logprior_sep_tmat(tempPar,i) - logprior_sep_tmat(currentPar,i);
-   //Rprintf("LR after priors: %f\n",logRatio);
+  //logRatio += logprior_sep_tmat(tempPar,i) - logprior_sep_tmat(currentPar,i);
+  if(iszero == FALSE){
+  newpr = logprior_dirichlet_tmat(moved,i);
+  oldpr = logprior_dirichlet_tmat(toMove,i);
+  logRatio += newpr - oldpr;
+  Rprintf("newpr: %f, oldpr:%f\n",newpr,oldpr);
+  Rprintf("LR after priors: %f\n",logRatio);
+  }
    /* filter */
-   filter_logprob(&logRatio);
+  filter_logprob(&logRatio);
 
    
   
@@ -938,25 +947,24 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
  
    if(logRatio >= 0){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	//Rprintf("accepted");
+	Rprintf("accepted\n");
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
 	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
          
 
    }else if(log(gsl_rng_uniform(rng)) <= logRatio){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	 //Rprintf("accepted");
+	 Rprintf("accepted\n");
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
 	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
 	
    } else {
 	copy_mat_double(currentPar->trans_mat_probs, tempPar->trans_mat_probs);
-	//Rprintf("rejected");
+	Rprintf("rejected\n");
 	temp = vec_int_i(mcmcPar->n_reject_trans_mat,i);
 	write_vec_int(mcmcPar->n_reject_trans_mat,i,temp+1);
 	
    }
- 
 
 }/*function end */
 

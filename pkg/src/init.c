@@ -149,7 +149,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi = gsl_ran_beta(rng,phi_param1,phi_param2);
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
-
+ 
     /* transmission matrices */
     /* read in probs mat */
     int j=0,k=0,x=0;

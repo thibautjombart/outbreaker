@@ -695,7 +695,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     param *tempPar = alloc_param(dat->n, dat->num_of_groups);
     copy_param(par,tempPar);
      /* RUN MAIN MCMC */
-    for(i=2;i<=nIter;i++){
+    for(i=2;i<=25/*nIter*/;i++){
 	/* /\* debugging *\/ */
 	/* printf("\n\n = MCMC iteration %d =\n",i); */
 	/* fflush(stdout); */

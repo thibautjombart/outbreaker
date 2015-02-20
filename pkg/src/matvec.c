@@ -282,7 +282,7 @@ void print_vec_double(vec_double *in){
     int i;
     Rprintf("Vector of %d doubles: ", in->length);
     /* for(i=0;i<in->length;i++) printf("%d ", in->values[i]); */
-    for(i=0;i<in->length;i++) Rprintf("%.3f ", vec_double_i(in,i));
+    for(i=0;i<in->length;i++) Rprintf("%.20f ", vec_double_i(in,i));
     Rprintf("\n");
 }
 
