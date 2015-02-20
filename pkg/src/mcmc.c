@@ -323,6 +323,37 @@ void tune_spa2(mcmc_param * in, gsl_rng *rng){
     }
 }
 
+void tune_tmat(mcmc_param *in, gsl_rng *rng){
+
+int i;
+double paccept,temp;
+int tuned[in->tmat_mult->length];
+bool tune_any = FALSE;
+	for(i=0;i<in->tmat_mult->length;i++){
+		paccept = (double) vec_int_i(in->n_accept_trans_mat,i)/ (double) (vec_int_i(in->n_accept_trans_mat,i) + vec_int_i(in->n_reject_trans_mat,i));
+		if(paccept<0.25){
+			temp = vec_double_i(in->tmat_mult,i);
+			write_vec_double(in->tmat_mult,i,temp*1.25);
+			write_vec_int(in->n_accept_trans_mat,i,1);
+			write_vec_int(in->n_reject_trans_mat,i,0);
+			tuned[i] = 1;
+		} else if (paccept>0.5) {
+			temp = vec_double_i(in->tmat_mult,i);
+			write_vec_double(in->tmat_mult,i,temp/1.25);
+			write_vec_int(in->n_accept_trans_mat,i,1);
+			write_vec_int(in->n_reject_trans_mat,i,0);
+			tuned[i] = 1;
+		} else {
+			tuned[i] = 0;
+		}
+		Rprintf("i: %d, paccept: %.3f\n,tmat_mult[%d]: %f\n",i,paccept,i,vec_double_i(in->tmat_mult,i));
+	}
+for(i=0;i<in->tmat_mult->length;i++){
+	if(tuned[i] == 1) tune_any = TRUE;
+}
+if(tune_any == FALSE) in->tune_tmat=FALSE;
+
+}
 
 /* void tune_phi(mcmc_param * in, gsl_rng *rng){ */
 /*     /\* get acceptance proportion *\/ */
@@ -374,7 +405,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   int i, j,h, nbTermsLike = 0, nbCasesWithInfluence = 0;
   double meanInfluence = 0.0;
   
-  bool QUIET=TRUE;
+  bool QUIET=FALSE;
 
   /* OUTPUT TO SCREEN - HEADER */
   if(!quiet){
@@ -416,7 +447,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   vec_double *indivInfluence = alloc_vec_double(dat->n);
   /* RUN MCMC */
 
-  Rprintf("just before");
+
   for(i=2;i<=localMcmcPar->find_import_at;i++){
     /* if(!QUIET) Rprintf("\ni: %d ",i); */
     /* COLLECT INFORMATION ABOUT ALL GI_i */
@@ -453,9 +484,9 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
       if(localMcmcPar->tune_pi) tune_pi(localMcmcPar,rng);
       /* if(localMcmcPar->tune_phi) tune_phi(localMcmcPar,rng); */
       if(localMcmcPar->tune_spa1) tune_spa1(localMcmcPar,rng);
+      if(localMcmcPar->tune_tmat) tune_tmat(localMcmcPar,rng);
       /* if(localMcmcPar->tune_spa2) tune_spa2(localMcmcPar,rng); */
-
-      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1;
+      localMcmcPar->tune_any = localMcmcPar->tune_mu1 || localMcmcPar->tune_gamma || localMcmcPar->tune_pi || localMcmcPar->tune_spa1 || localMcmcPar->tune_tmat;
     }
     /* MOVEMENTS */
     /* move mutation rates */
@@ -695,7 +726,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     param *tempPar = alloc_param(dat->n, dat->num_of_groups);
     copy_param(par,tempPar);
      /* RUN MAIN MCMC */
-    for(i=2;i<=25/*nIter*/;i++){
+    for(i=2;i<=nIter;i++){
 	/* /\* debugging *\/ */
 	/* printf("\n\n = MCMC iteration %d =\n",i); */
 	/* fflush(stdout); */
@@ -714,7 +745,8 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	  /* if(mcmcPar->tune_phi) tune_phi(mcmcPar,rng); */
 	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
 	  /* if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng); */
-	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
+	  if(mcmcPar->tune_tmat) tune_tmat(mcmcPar,rng);
+	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1 || mcmcPar->tune_tmat;
 	  if(!mcmcPar->tune_any) {
 	    mcmcPar->step_notune = i;
 	    /* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */

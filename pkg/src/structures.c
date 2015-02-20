@@ -278,11 +278,9 @@ param *alloc_param(int n, int l){
     out->phi = 0.5;
     out->phi_param1 = 1.0;
     out->phi_param2 = 1.0;
-
+    out->tmat_prior_mult = 10;
     /* fill in transmission matrix */
     out->trans_mat_probs = alloc_mat_double(l,l);
-    out->tmat_prior1 = alloc_mat_double(l,l);
-    out->tmat_prior2 = alloc_mat_double(l,l);
     /* return */
     return out;
 } /* end alloc_param */
@@ -295,8 +293,6 @@ void free_param(param *in){
     free_vec_int(in->alpha);
     free_vec_int(in->kappa);
     free_mat_double(in->trans_mat_probs);
-    free_mat_double(in->tmat_prior1);
-    free_mat_double(in->tmat_prior2);
     free(in);
 } /* end free_param*/
 
@@ -334,11 +330,9 @@ void print_param(param *in){
     Rprintf("%d", in->grp_model);
     Rprintf("\n= transmission probability matrix =\n");
     print_mat_double(in->trans_mat_probs);
-    Rprintf("\n= transmission matrix priors = \n");
-    Rprintf("\n= param 1 =\n");
-    print_mat_double(in->tmat_prior1);
-    Rprintf("\n= param 2 =\n");
-    print_mat_double(in->tmat_prior2);
+    Rprintf("\n= transmission matrix priors multiplication = \n");
+    Rprintf("%f",in->tmat_prior_mult);
+
 } /* end print_param*/
 
 
@@ -366,11 +360,10 @@ void copy_param(param *in, param *out){
     out->spa_model = in->spa_model;
     out->grp_model = in->grp_model;
     out->import_method = in->import_method;
+    out->tmat_prior_mult = in->tmat_prior_mult;
 
     
     copy_mat_double(in->trans_mat_probs,out->trans_mat_probs);
-    copy_mat_double(in->tmat_prior1,out->tmat_prior1);
-    copy_mat_double(in->tmat_prior2,out->tmat_prior2);
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
@@ -420,6 +413,7 @@ mcmc_param *alloc_mcmc_param(int n, int l){
     out->candid_ances_proba = alloc_vec_double(n+1);
     out->move_alpha = alloc_vec_double(n);
     out->move_kappa = alloc_vec_double(n);
+    out->tmat_mult = alloc_vec_double(l);
 
     /* FILL IN INTEGERS */
     /* accept/reject counters */
@@ -460,6 +454,7 @@ mcmc_param *alloc_mcmc_param(int n, int l){
     out->tune_gamma = TRUE;
     out->tune_pi = TRUE;
     out->tune_phi = TRUE;
+    out->tune_tmat = TRUE;
     out->step_notune = -1;
 
     /* misc */
@@ -494,6 +489,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_double(in->candid_ances_proba);
     free_vec_double(in->move_alpha);
     free_vec_double(in->move_kappa);
+    free_vec_double(in->tmat_mult);
     free_vec_int(in->n_accept_trans_mat);
     free_vec_int(in->n_reject_trans_mat);
     free(in);
@@ -513,6 +509,8 @@ int i = 0;
     Rprintf("\nsigma for spa1: %.10f",in->sigma_spa1);
     Rprintf("\nsigma for spa2: %.10f",in->sigma_spa2);
     Rprintf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
+    Rprintf("\n Multipliers for Dirichlet proposal: \n");
+    print_vec_double(in->tmat_mult);
     Rprintf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     Rprintf("\nnb moves for alpha: %d",in->n_move_alpha);
     Rprintf("\nnb moves for kappa: %d",in->n_move_kappa);
@@ -563,6 +561,7 @@ int i = 0;
     if(in->tune_phi) Rprintf("phi ");
     if(in->tune_spa1) Rprintf("spa1 ");
     if(in->tune_spa2) Rprintf("spa2 ");
+    if(in->tune_tmat) Rprintf("trans_mat ");
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
     Rprintf("\nMoved parameters:");
@@ -637,6 +636,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_pi = in->tune_pi;
     out->tune_spa1 = in->tune_spa1;
     out->tune_spa2 = in->tune_spa2;
+    out->tune_tmat = in->tune_tmat;
     out->step_notune = in->step_notune;  
 
     out->move_mut = in->move_mut;
@@ -659,6 +659,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_vec_double(in->move_kappa, out->move_kappa);
     copy_vec_int(in->n_accept_trans_mat, out->n_accept_trans_mat);
     copy_vec_int(in->n_reject_trans_mat, out->n_reject_trans_mat);
+    copy_vec_double(in->tmat_mult,out->tmat_mult);
 } /* end alloc_mcmc_param */
 
 
