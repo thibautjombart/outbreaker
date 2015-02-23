@@ -1,4 +1,4 @@
-\begin{thebibliography}{5}
+\begin{thebibliography}{6}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -31,6 +31,13 @@ Marco~J. Morelli, Gaël Thébaud, Joël Chadœuf, Donald~P. King, Daniel~T.
   using epidemiological and genetic data.
 \newblock \emph{PLoS Computational Biology}, 8\penalty0 (11):\penalty0
   e1002768, 2012.
+
+\bibitem[Team(2014)]{Ebola14}
+WHO Ebola~Response Team.
+\newblock Ebola virus disease in west africa - the first 9 months of the
+  epidemic and forward projections.
+\newblock \emph{The New England Journal of Medicine}, 371\penalty0
+  (16):\penalty0 1481--1495, 2014.
 
 \bibitem[Voss(2014)]{Voss14}
 Jochen Voss.
