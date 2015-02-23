@@ -17,7 +17,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        quiet=TRUE, res.file.name="chains.txt",
-                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL, init.Tmat=NULL, tmat.prior.mult=30){
+                       tune.file.name="tuning.txt", seed=NULL,group.vec=NULL, init.Tmat=NULL, tmat.prior.mult=15){
 
     ## CHECKS ##
     ## if(!require(ape)) stop("the ape package is required but not installed")
@@ -86,7 +86,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     if(is.null(idx.dna)) {
         idx.dna <- 1:nrow(dna)
     }
-    print(idx.dna)
     if(any(!idx.dna %in% 1:n.ind)) stop("DNA sequences provided for unknown cases (some idx.dna not in 1:n.ind)")
     if(length(idx.dna)!=nrow(dna)) stop("length of idx.dna does not match the number of DNA sequences")
 
@@ -325,7 +324,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
     res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D, idx.dna=idx.dna, tune.end=stopTuneAt,
-                burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call,rowSkip=rowSkip)
+                burnin=burnin, import.method=import.method, find.import.at=find.import.at, n.runs=1, call=call)
 
     return(res)
 } # end outbreaker

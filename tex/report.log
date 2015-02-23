@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  6 FEB 2015 11:10
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  23 FEB 2015 10:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -443,13 +443,23 @@ Package pdftex.def Info: treexample.png used on input line 148.
 
 [16] [17 <./treexample.png (PNG copy)>]
 Chapter 3.
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no ™ in font cmr10!
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no “ in font cmr10!
 [18
 
 ]
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no ™ in font cmr10!
+ [19]
 Chapter 4.
-[19
+[20
 
-] [20] [21] (./report.bbl [22]
+] [21] [22] (./report.bbl [23]
 Underfull \hbox (badness 3713) in paragraph at lines 19--25
 []\OT1/cmr/m/n/10.95 Thibaut Jom-bart, Anne Cori, Xavier Dide-lot, Si-mon Cauch
 emez,
@@ -463,14 +473,14 @@ Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Å in font cmr10!
 Missing character: There is no “ in font cmr10!
-) [23
+) [24
 
 ] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 10249 strings out of 493304
- 192078 string characters out of 6139871
- 240890 words of memory out of 5000000
- 13509 multiletter control sequences out of 15000+600000
+ 10252 strings out of 493304
+ 192123 string characters out of 6139871
+ 240913 words of memory out of 5000000
+ 13512 multiletter control sequences out of 15000+600000
  10230 words of font info for 36 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  56i,8n,55p,2240b,562s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -488,10 +498,10 @@ ts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type
 nts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10
 .pfb>
-Output written on report.pdf (24 pages, 252018 bytes).
+Output written on report.pdf (25 pages, 257841 bytes).
 PDF statistics:
- 141 PDF objects out of 1000 (max. 8388607)
- 99 compressed objects within 1 object stream
+ 146 PDF objects out of 1000 (max. 8388607)
+ 102 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 

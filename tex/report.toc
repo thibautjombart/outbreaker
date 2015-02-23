@@ -8,11 +8,13 @@
 \contentsline {section}{\numberline {2.1}Group Data and Parameters}{12}
 \contentsline {section}{\numberline {2.2}Group Likelihood}{13}
 \contentsline {section}{\numberline {2.3}Transmission Rate Matrix Move}{14}
-\contentsline {section}{\numberline {2.4}Analysing the model output}{15}
-\contentsline {section}{\numberline {2.5}Simulating Outbreaks With Group Structure}{15}
+\contentsline {section}{\numberline {2.4}Simulating Outbreaks With Group Structure}{15}
 \contentsline {chapter}{\numberline {3}Results}{18}
-\contentsline {chapter}{\numberline {4}Discussion}{19}
-\contentsline {section}{\numberline {4.1}Discuss Results}{19}
-\contentsline {section}{\numberline {4.2}Modelling Assumptions}{19}
-\contentsline {section}{\numberline {4.3}Modelling Limitations}{20}
-\contentsline {section}{\numberline {4.4}Not finished yet}{20}
+\contentsline {section}{\numberline {3.1}Testing Procedures}{18}
+\contentsline {section}{\numberline {3.2}Simulating an Ebola Outbreak}{18}
+\contentsline {section}{\numberline {3.3}Equine Flu Data}{19}
+\contentsline {chapter}{\numberline {4}Discussion}{20}
+\contentsline {section}{\numberline {4.1}Discuss Results}{20}
+\contentsline {section}{\numberline {4.2}Modelling Assumptions}{20}
+\contentsline {section}{\numberline {4.3}Modelling Limitations}{21}
+\contentsline {section}{\numberline {4.4}Not finished yet}{21}
