@@ -276,7 +276,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ##number of groups from vector of group memberships
     if(is.null(group.vec)){
-      num.groups <- as.integer(1)
+      num.groups <- as.integer(0)
       group.vec <- as.integer(rep(1,length(dates)))
     }else{
       num.groups <- as.integer(max(group.vec))
@@ -319,7 +319,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## BUILD OUTPUT ##
     ## read table
     chains <- read.table(res.file.name, header=TRUE, stringsAsFactors=FALSE,
-                         colClasses=c("integer", rep("numeric",7+n.ind*2)))
+                         colClasses=c("integer", rep("numeric",8+(n.ind*3)+(num.groups^2))))
 
     chains$run <- rep(1, nrow(chains))
     call <- match.call()
