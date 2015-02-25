@@ -23,5 +23,5 @@ double temper(double *logPost, int temperature, mcmc_param *mcmcPar){
     temperature = mcmcPar->max_temperature;
   }
   
-  return logPost/temperature;
+  return (*logPost)/temperature;
 }
