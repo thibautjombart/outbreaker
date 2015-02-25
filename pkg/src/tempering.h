@@ -3,10 +3,11 @@
 #define __TEMPERING_H
 
 
-/* compute tempered log-posterior */
+/* COMPUTE TEMPERED LOG-POSTERIOR */
 double temper(double *logPost, int temperature, mcmc_param *mcmcPar);
 
-
+/* COMPUTE TEMPERATURE PRIOR */
+double logprior_temperature(int temperature, mcmc_param *mcmcPar)
 
 
 #endif
