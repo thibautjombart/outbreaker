@@ -31,7 +31,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 		  int *movePi, int *movePhi, int *moveSpa,
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
-		  int *maxTemperature, 
+		  int *maxTemperature, double *priorTemperature,
 		  int *quiet, int *vecDist, int *stepStopTune,
 		  char **resFileName, char **tuneFileName, int *seed){
     /* DECLARATIONS */
@@ -108,7 +108,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     mcmcPar = alloc_mcmc_param(N);
     init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
 		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt, 
-		    *maxTemperature);
+		    *maxTemperature, *priorTemperature);
     /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
     /* print_mcmc_param(mcmcPar); */
 

@@ -418,6 +418,7 @@ mcmc_param *alloc_mcmc_param(int n){
     /* tempering */
     out->current_temperature = 1;
     out->max_temperature = 5;
+    out->prior_temperature = 3;
 
     /* misc */
     out->burnin=0;
@@ -531,6 +532,7 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\nTempering parameters:");
     Rprintf("\nInitial temperature:", in->current_temperature);
     Rprintf("\nMaximum temperature:", in->max_temperature);
+    Rprintf("\nRate for Poisson prior for temperature:", in->prior_temperature);
 
 } /* end print_mcmc_param */
 
@@ -596,6 +598,8 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
 
     out->current_temperature = in->current_temperature;
     out->max_temperature = in->max_temperature;
+    out->prior_temperature = in->prior_temperature;
+
 
     /* copy vectors */
     copy_vec_int(in->idx_move_Tinf, out->idx_move_Tinf);
@@ -606,7 +610,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_vec_double(in->candid_ances_proba, out->candid_ances_proba);
     copy_vec_double(in->move_alpha, out->move_alpha);
     copy_vec_double(in->move_kappa, out->move_kappa);
-} /* end alloc_mcmc_param */
+} /* end copy_mcmc_param */
 
 
 

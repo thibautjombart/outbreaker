@@ -106,6 +106,7 @@ typedef struct{
     int burnin, find_import_at; /* chains between 'burnin' and 'find_import_at' are used to find imported cases */
     bool find_import; /* try to find and fix imported cases after 'burnin'? */
     int current_temperature, max_temperature; /* current temperature of the chain, and max temperature */
+    double prior_temperature; /* rate of a Poisson prior for the temperature distribution */
 } mcmc_param;
 
 

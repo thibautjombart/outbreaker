@@ -7,7 +7,7 @@
 double temper(double *logPost, int temperature, mcmc_param *mcmcPar);
 
 /* COMPUTE TEMPERATURE PRIOR */
-double logprior_temperature(int temperature, mcmc_param *mcmcPar)
+double logprior_temperature(int temperature, mcmc_param *mcmcPar);
 
 
 #endif

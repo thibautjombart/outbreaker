@@ -152,7 +152,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 
-void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at, int max_temperature){
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at, int max_temperature, double prior_temperature){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -226,8 +226,9 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
 
     /* SET TEMPERING PARAM */
-    in->max_temperature = max_temperature;
     in->current_temperature = 1;
+    in->max_temperature = max_temperature;
+    in->prior_temperature = prior_temperature;
 
 } /* end init_mcmc_param */
 
