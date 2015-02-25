@@ -449,20 +449,19 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
     correcRatio=0.0;
 
     /* no movement, automatic acceptance if only one date possible */
-    if((vec_int_i(dat->dates,toMove) - vec_int_i(currentPar->Tinf,ances)) < 2){
+    if(ances>=0 && ((vec_int_i(dat->dates,toMove) - vec_int_i(currentPar->Tinf,ances)) < 2)){
       mcmcPar->n_accept_Tinf += 1;
-    } else {
+    } else { /* movement possible */
       /* move i-th Tinf */
       if(vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(dat->dates,toMove)-1) ){ /* right (upper bound) bouncing */
 	tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove) - 1;
 	correcRatio += log(0.5);
-      } else if(vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(currentPar->Tinf,ances)+1) ){ /* left (lower bound) bouncing */
+      } else if(ances>=0 && (vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(currentPar->Tinf,ances)+1)) ){ /* left (lower bound) bouncing */
 	tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove) + 1;
 	correcRatio += log(0.5);
       } else {
 	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); /* in the middle, no bouncing */
       }
-
 
       /* ACCEPT/REJECT STEP */
       /* compute the likelihood (no priors for Tinf) */
@@ -493,7 +492,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 	  tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
 	  mcmcPar->n_reject_Tinf += 1;
 	}
-      }
+      } /* end accept/reject for indiv toMove */
     } /* end if movement has been proposed */
   } /* end for each indiv to move */
 } /* end move_Tinf*/
@@ -506,6 +505,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
+  return ;
   int i, j, toMove=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0, firstImported=0, ances;
   double logRatio = 0.0, correcRatio = 0.0, ll1 = 0.0, ll2 = 0.0;
 
@@ -532,7 +532,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
     /* make sure that we don't move imported cases */
     ances = vec_int_i(currentPar->alpha, toMove);
     if(ances>-1){
-
       /* MOVE Tinf UNLESS USER DISABLED THIS MOVE */
       if(mcmcPar->move_Tinf){
       	/* move date only if possible */
