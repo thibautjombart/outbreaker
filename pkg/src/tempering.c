@@ -13,27 +13,6 @@
 
 
 
-/* COMPUTE TEMPERED LOG-POSTERIOR */
-/* this one is only used when moving temperature */
-/* temperature is otherwise embedded in parameter movement functions  */
-double temper(double *logPost, int temperature, mcmc_param *mcmcPar){
-  double out=0.0;
-  /* checks */
-  if(temperature<1) {
-    warning("requested temperature (%d) <1 - setting it to one", temperature);
-    temperature = 1;
-  } else if(temperature>mcmcPar->max_temperature){
-    warning("requested temperature (%d) > max_temperature (%d); setting it to %d", temperature, mcmcPar->max_temperature, mcmcPar->max_temperature);
-    temperature = mcmcPar->max_temperature;
-  }
-
-  /* filter and return */
-  out =  (*logPost)/temperature;
-  filter_logprob(&out);
-  return out;
-}
-
-
 
 
 /* COMPUTE TEMPERATURE PRIOR */
