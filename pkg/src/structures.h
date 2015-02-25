@@ -105,7 +105,7 @@ typedef struct{
     vec_double * move_kappa; /* vector indicating which kappa_i to move (1.0) or not (0.0) */
     int burnin, find_import_at; /* chains between 'burnin' and 'find_import_at' are used to find imported cases */
     bool find_import; /* try to find and fix imported cases after 'burnin'? */
-    int current_temperature; /* current temperature of the chain */
+    int current_temperature, max_temperature; /* current temperature of the chain, and max temperature */
 } mcmc_param;
 
 

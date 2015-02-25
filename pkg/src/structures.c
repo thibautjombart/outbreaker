@@ -417,6 +417,7 @@ mcmc_param *alloc_mcmc_param(int n){
 
     /* tempering */
     out->current_temperature = 1;
+    out->max_temperature = 5;
 
     /* misc */
     out->burnin=0;
@@ -529,6 +530,7 @@ void print_mcmc_param(mcmc_param *in){
 
     Rprintf("\nTempering parameters:");
     Rprintf("\nInitial temperature:", in->current_temperature);
+    Rprintf("\nMaximum temperature:", in->max_temperature);
 
 } /* end print_mcmc_param */
 
@@ -592,7 +594,8 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;
 
-    out->current_temperature = in-> current_temperature;
+    out->current_temperature = in->current_temperature;
+    out->max_temperature = in->max_temperature;
 
     /* copy vectors */
     copy_vec_int(in->idx_move_Tinf, out->idx_move_Tinf);
