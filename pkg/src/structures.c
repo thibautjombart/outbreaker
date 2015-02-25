@@ -415,6 +415,9 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_phi = TRUE;
     out->step_notune = -1;
 
+    /* tempering */
+    out->current_temperature = 1;
+
     /* misc */
     out->burnin=0;
     out->find_import_at=10000;
@@ -524,6 +527,9 @@ void print_mcmc_param(mcmc_param *in){
 	Rprintf("\nFinding imported cases between chains %d and %d", in->burnin, in->find_import_at);
     }
 
+    Rprintf("\nTempering parameters:");
+    Rprintf("\nInitial temperature:", in->current_temperature);
+
 } /* end print_mcmc_param */
 
 
@@ -585,6 +591,8 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->burnin = in->burnin;
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;
+
+    out->current_temperature = in-> current_temperature;
 
     /* copy vectors */
     copy_vec_int(in->idx_move_Tinf, out->idx_move_Tinf);
