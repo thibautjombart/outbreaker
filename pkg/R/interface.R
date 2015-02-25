@@ -17,6 +17,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                        outlier.threshold = 5, max.kappa=10,
                        max.temperature=5, prior.temperature=3,
+                       init.temperature=1,
                        quiet=TRUE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL){
 
@@ -268,12 +269,21 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     burnin <- as.integer(burnin)
     outlier.threshold <- as.double(outlier.threshold)
     max.kappa <- as.integer(max.kappa)
-    if(max.temperature<1) max.temperature <- 1
+    ## max.temperature
+    if(max.temperature<1) max.temperature <- 1L
     if(max.temperature>10) {
         warning("maximum temperature is capped at 10")
         max.temperature <- 10L
     }
     max.temperature <- as.integer(max.temperature)
+    ## init.temperature
+    if(init.temperature<1) init.temperature <- 1L
+    if(init.temperature>max.temperature) {
+        warning("initial temperature exceeds maximum temperature")
+        init.temperature <- max.temperature
+    }
+    init.temperature <- as.integer(init.temperature)
+    ## prior.temperature
     if(prior.temperature<0){
         warning("temperature has a Poisson prior; rate cannot be less than zero; setting value to default (3)")
         prior.temperature <- 3
@@ -297,7 +307,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                move.mut, move.ances, move.kappa, move.Tinf,
                move.pi, move.phi, move.spa,
                import.method, find.import.at, burnin, outlier.threshold,
-               max.kappa, max.temperature, prior.temperature, quiet,
+               max.kappa, max.temperature, prior.temperature,
+               init.temperature, quiet,
                dna.dist, stopTuneAt, res.file.name, tune.file.name, seed,
                PACKAGE="outbreaker")
 
@@ -325,7 +336,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     res <- list(chains=chains, collec.dates=dates, w=w.dens[1:w.trunc], f=f.dens[1:f.trunc], D=D,
                 idx.dna=idx.dna, tune.end=stopTuneAt, burnin=burnin, import.method=import.method,
                 find.import.at=find.import.at, n.runs=1,
-                max.temperature=max.temperature, prior.temperature=prior.temperature, call=call)
+                max.temperature=max.temperature, prior.temperature=prior.temperature,
+                init.temperature=init.temperature, call=call)
 
     return(res)
 } # end outbreaker
@@ -356,7 +368,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                                 outlier.threshold = 5, max.kappa=10, max.temperature=5,
-                                prior.temperature = 3,
+                                prior.temperature = 3, init.temperature = 1,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
     ## SOME CHECKS ##
@@ -391,7 +403,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
                       "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa",
-                      "outlier.threshold", "max.kappa", "max.temperature", "prior.temperature", "res.file.names", "tune.file.names", "seed")
+                      "outlier.threshold", "max.kappa", "max.temperature", "prior.temperature", "init.temperature", "res.file.names", "tune.file.names", "seed")
 
         clusterExport(clust, listArgs, envir=environment())
 
@@ -414,6 +426,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                                   outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                                   max.temperature=max.temperature,
                                                                   prior.temperature=prior.temperature,
+                                                                  init.temperature=init.temperature,
                                                                   quiet=TRUE, res.file.name=res.file.names[i],
                                                                   tune.file.name=tune.file.names[i], seed=seed[i]))
 
@@ -452,6 +465,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                                         outlier.threshold = outlier.threshold, max.kappa=max.kappa,
                                                         max.temperature=max.temperature,
                                                         prior.temperature=prior.temperature,
+                                                        init.temperature=init.temperature,
                                                         quiet=TRUE, res.file.name=res.file.names[i],
                                                         tune.file.name=tune.file.names[i], seed=seed[i]))
     }
@@ -466,6 +480,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
     res$n.runs <- n.runs
     res$max.temperature <- max.temperature
     res$prior.temperature <- prior.temperature
+    res$init.temperature <- init.temperature
     res$call <- match.call()
 
     ## RETURN RESULTS ##

@@ -152,7 +152,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
 
 
 
-void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at, int max_temperature, double prior_temperature){
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at, int max_temperature, double prior_temperature, int init_temperature){
     int i, N = dat->n;
 
     /* INITIALIZE COUNTERS */
@@ -186,6 +186,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->burnin = burnin;
     in->find_import_at = find_import_at;
 
+
     /* FILL IN VECTORS */
     for(i=0;i<N;i++) {
 	/* vector of all indices */
@@ -216,6 +217,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 	in->move_phi = FALSE;
     }
 
+
     /* SET TUNING BOOLEANS */
     in->tune_mu1 = move_mut;
     in->tune_gamma = (move_mut && par->mut_model>1) ? TRUE : FALSE;
@@ -225,10 +227,37 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_phi = move_phi;
     in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
 
+
     /* SET TEMPERING PARAM */
+
+    /* current temperature */
     in->current_temperature = 1;
+
+    /* max temperature */
     in->max_temperature = max_temperature;
+    if(max_temperature<1) {
+      warning("[in: init_mcmc_param] maximum temperature (%d) is less than 1; setting it to 1", max_temperature);
+      in->max_temperature = 1;
+    }
+    if(max_temperature>10) warning("[in: init_mcmc_param]maximum temperature (%d) is greater than 10", max_temperature);
+
+    /* prior */
     in->prior_temperature = prior_temperature;
+    if(prior_temperature<0) {
+      warning("[in: init_mcmc_param]rate for the temperature prior (%d) is less than 0; setting it to 0", prior_temperature);
+      in->prior_temperature = 0.0;
+    }
+
+    /* init temperature */
+    in->init_temperature = init_temperature;
+    if(init_temperature<1) {
+      warning("[in: init_mcmc_param]initial temperature (%d) is less than 1; setting it to 1", init_temperature);
+      in->init_temperature = 1;
+    }
+    if(init_temperature>in->max_temperature) {
+      warning("[in: init_mcmc_param]initial temperature (%d) is greater than maximum temperature (%d); setting it to %d", init_temperature, in->max_temperature, in->max_temperature);
+      in->init_temperature = in->max_temperature;
+    }
 
 } /* end init_mcmc_param */
 

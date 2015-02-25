@@ -43,3 +43,15 @@ double logprior_temperature(int temperature, mcmc_param *mcmcPar){
   filter_logprob(&out);
   return out;
 }
+
+
+
+/* /\* MOVE TEMPERATURE *\/ */
+/* void move_temperature(param *par, data *dat, mcmc_param *mcmcPar, gsl_rng *rng){ */
+/*   double oldLogPost, newLogPost; */
+
+/* /\* compute current logposterior value *\/ */
+/*   double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng); */
+  
+/*   /\* *\/ */
+/* } */
