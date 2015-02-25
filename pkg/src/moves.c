@@ -505,7 +505,6 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 
 /* MOVE INFECTION DATES, NB OF GENERATIONS, AND ANCESTRIES */
 void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-  return ;
   int i, j, toMove=0, nbCandidCurrent=0, nbCandidTemp=0, nbDaysCurrent=0, nbDaysTemp=0, firstImported=0, ances;
   double logRatio = 0.0, correcRatio = 0.0, ll1 = 0.0, ll2 = 0.0;
 
