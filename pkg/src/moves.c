@@ -147,6 +147,21 @@ int find_date_first_import(data *dat, param *par){
 
 
 
+
+/* COMPUTE TEMPERED LOG-POSTERIOR */
+/* this one is only used when moving temperature */
+/* temperature is otherwise embedded in parameter movement functions  */
+void temper(double *logPost, mcmc_param *mcmcPar){
+  *logPost =  (*logPost)/(gsl_sf_pow_int(2.0, mcmcPar->current_temperature));
+}
+
+
+
+
+
+
+
+
 /*
   =====
   MOVES
@@ -181,7 +196,7 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, m
     logRatio -= logprior_mu1(currentPar);
 
     /* tempering */
-    logRatio /= mcmcPar->current_temperature;
+    temper(&logRatio, mcmcPar);
 
     /* add correction for MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->mu1),mcmcPar->sigma_mu1);
@@ -239,7 +254,7 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo,
     logRatio -= logprior_gamma(currentPar);
 
     /* tempering */
-    logRatio /= mcmcPar->current_temperature;
+    temper(&logRatio, mcmcPar);
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
@@ -284,7 +299,7 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
     logRatio += logprior_pi(tempPar) - logprior_pi(currentPar);
 
     /* tempering */
-    logRatio /= mcmcPar->current_temperature;
+    temper(&logRatio, mcmcPar);
 
     /* ADD CORRECTION FOR MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->pi),mcmcPar->sigma_pi);
@@ -412,7 +427,7 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
     logRatio -= logprior_spa1(currentPar);
 
     /* tempering */
-    logRatio /= mcmcPar->current_temperature;
+    temper(&logRatio, mcmcPar);
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
@@ -469,7 +484,7 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
       logRatio = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
 
       /* tempering */
-      logRatio /= mcmcPar->current_temperature;
+      temper(&logRatio, mcmcPar);
 
       /* correction factor */
       logRatio += correcRatio;
@@ -615,7 +630,7 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
       logRatio = ll2 - ll1;
 
       /* tempering */
-      logRatio /= mcmcPar->current_temperature;
+      temper(&logRatio, mcmcPar);
 
       /* correction ratio */
       filter_logprob(&correcRatio);
@@ -828,7 +843,7 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	  loglikelihood_i(B, dat, dnaInfo, spaInfo, gen, currentPar, rng);
 
 	/* tempering */
-	logRatio /= mcmcPar->current_temperature;
+	temper(&logRatio, mcmcPar);
 
 	/* ll2 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng); */
 	/* ll1 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
