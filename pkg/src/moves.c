@@ -171,12 +171,17 @@ void move_mu1(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, m
     /* ACCEPT / REJECT */
     /* only likelihood as priors are flat for mu1 */
     /* compute only genetic part as the epi part is unchanged */
+
     /* likelihoods */
     logRatio += loglikelihood_gen_all(dat, dnaInfo, tempPar, rng);
     logRatio -= loglikelihood_gen_all(dat, dnaInfo, currentPar, rng);
+
     /* priors */
     logRatio += logprior_mu1(tempPar);
     logRatio -= logprior_mu1(currentPar);
+
+    /* tempering */
+    logRatio /= mcmcPar->current_temperature;
 
     /* add correction for MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->mu1),mcmcPar->sigma_mu1);
@@ -233,6 +238,8 @@ void move_gamma(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo,
     logRatio += logprior_gamma(tempPar);
     logRatio -= logprior_gamma(currentPar);
 
+    /* tempering */
+    logRatio /= mcmcPar->current_temperature;
 
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
@@ -275,6 +282,9 @@ void move_pi(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, 
 
     /* prior */
     logRatio += logprior_pi(tempPar) - logprior_pi(currentPar);
+
+    /* tempering */
+    logRatio /= mcmcPar->current_temperature;
 
     /* ADD CORRECTION FOR MH truncated lognormal */
     QCur = gsl_cdf_gaussian_P(-log(currentPar->pi),mcmcPar->sigma_pi);
@@ -401,6 +411,9 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
     logRatio += logprior_spa1(tempPar);
     logRatio -= logprior_spa1(currentPar);
 
+    /* tempering */
+    logRatio /= mcmcPar->current_temperature;
+
     /* if p(new/old) > 1, accept new */
     if(logRatio>=0.0) {
       currentPar->spa_param1 = tempPar->spa_param1;
@@ -449,6 +462,8 @@ void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, 
 	    logRatio = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
 	    /* logRatio = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
 
+	    /* tempering */
+	    logRatio /= mcmcPar->current_temperature;
 
 	    /* if p(new/old) > 1, accept new */
 	    if(logRatio>=0.0) {
@@ -588,6 +603,11 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
       ll1 = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
       ll2 = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng);
       logRatio = ll2 - ll1;
+
+      /* tempering */
+      logRatio /= mcmcPar->current_temperature;
+
+      /* correction ratio */
       filter_logprob(&correcRatio);
       logRatio += correcRatio;
 
@@ -800,6 +820,10 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 	  loglikelihood_local_i(B, dat, dnaInfo, spaInfo, gen, currentPar, rng) -
 	  loglikelihood_i(A, dat, dnaInfo, spaInfo, gen, tempPar, rng) +
 	  loglikelihood_i(B, dat, dnaInfo, spaInfo, gen, currentPar, rng);
+
+	/* tempering */
+	logRatio /= mcmcPar->current_temperature;
+
 	/* ll2 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng); */
 	/* ll1 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
 	/* logRatio = ll2 - ll1; */

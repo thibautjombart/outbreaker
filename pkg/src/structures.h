@@ -108,6 +108,7 @@ typedef struct{
     int current_temperature, max_temperature; /* current temperature of the chain, and max temperature */
     double prior_temperature; /* rate of a Poisson prior for the temperature distribution */
     int init_temperature; /* initial temperature for the MCMCMC */
+    int n_accept_temperature, n_reject_temperature; /* accept/reject for kappa */
 } mcmc_param;
 
 

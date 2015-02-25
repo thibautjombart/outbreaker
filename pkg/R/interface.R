@@ -16,7 +16,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                        move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
                        outlier.threshold = 5, max.kappa=10,
-                       max.temperature=5, prior.temperature=3,
+                       max.temperature=10, prior.temperature=3,
                        init.temperature=1,
                        quiet=TRUE, res.file.name="chains.txt",
                        tune.file.name="tuning.txt", seed=NULL){
@@ -367,7 +367,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 pi.prior1=10, pi.prior2=1, spa1.prior=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
                                 move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE,
-                                outlier.threshold = 5, max.kappa=10, max.temperature=5,
+                                outlier.threshold = 5, max.kappa=10, max.temperature=10,
                                 prior.temperature = 3, init.temperature = 1,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL){
 
