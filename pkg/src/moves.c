@@ -435,57 +435,67 @@ void move_spa1(param *currentPar, param *tempPar, data *dat, spatial_dist *spaIn
 
 /* MOVE INFECTION DATES (T_inf) */
 void move_Tinf(param *currentPar, param *tempPar, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
-    double logRatio=0.0;
-    int i, toMove = 0;
+  double logRatio=0.0, correcRatio=0.0;
+  int i, toMove = 0, ances;
 
-    /* DETERMINE WHICH Tinf_i TO MOVE */
-    sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_Tinf, FALSE, rng);
+  /* DETERMINE WHICH Tinf_i TO MOVE */
+  sample_vec_int(mcmcPar->all_idx, mcmcPar->idx_move_Tinf, FALSE, rng);
 
-    /* MOVE EACH Tinf_i IN TURN */
-    for(i=0;i<mcmcPar->idx_move_Tinf->length;i++){
-	toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
+  /* MOVE EACH Tinf_i IN TURN */
+  for(i=0;i<mcmcPar->idx_move_Tinf->length;i++){
+    /* find which case to move */
+    toMove = vec_int_i(mcmcPar->idx_move_Tinf,i);
+    ances = vec_int_i(currentPar->alpha,toMove);
+    correcRatio=0.0;
 
-	/* move i-th Tinf */
-	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); /* * gsl_ran_poisson(rng, 1); */
+    /* no movement, automatic acceptance if only one date possible */
+    if((vec_int_i(dat->dates,toMove) - vec_int_i(currentPar->Tinf,ances)) < 2){
+      mcmcPar->n_accept_Tinf += 1;
+    } else {
+      /* move i-th Tinf */
+      if(vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(dat->dates,toMove)-1) ){ /* right (upper bound) bouncing */
+	tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove) - 1;
+	correcRatio += log(0.5);
+      } else if(vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(currentPar->Tinf,ances)+1) ){ /* left (lower bound) bouncing */
+	tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove) + 1;
+	correcRatio += log(0.5);
+      } else {
+	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); /* in the middle, no bouncing */
+      }
 
-	/* MAY NEED TO CHANGE THIS AND ADD CORRECTION */
-	/* /\* constraint: Tinf_i < t_i *\/ */
-	/* if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
-	/* /\* constraint: Tinf_i >= -truncW *\/ */
-	/* if(vec_int_i(tempPar->Tinf,toMove) < -gen->truncW) tempPar->Tinf->values[toMove] = -gen->truncW; */
 
-	/* PROCEED TO ACCEPT/REJECT ONLY IF TINF HAS CHANGED */
-	if(vec_int_i(tempPar->Tinf,toMove) != vec_int_i(currentPar->Tinf,toMove)){
-	    /* ACCEPT/REJECT STEP */
-	    /* compute the likelihood (no priors for Tinf) */
-	    /* compute only local changes in the likelihood */
-	    logRatio = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
-	    /* logRatio = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
+      /* ACCEPT/REJECT STEP */
+      /* compute the likelihood (no priors for Tinf) */
+      /* compute only local changes in the likelihood */
+      logRatio = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng) - loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
 
-	    /* tempering */
-	    logRatio /= mcmcPar->current_temperature;
+      /* tempering */
+      logRatio /= mcmcPar->current_temperature;
 
-	    /* if p(new/old) > 1, accept new */
-	    if(logRatio>=0.0) {
-		/* printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
-		/* fflush(stdout); */
+      /* correction factor */
+      logRatio += correcRatio;
 
-		currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
-		mcmcPar->n_accept_Tinf += 1;
-	    } else { /* else accept new with proba (new/old) */
-		if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
-		/*     printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
-		/* fflush(stdout); */
+      /* if p(new/old) > 1, accept new */
+      if(logRatio>=0.0) {
+	/* printf("\nTinf_%d: accepting automatically move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
+	/* fflush(stdout); */
 
-		    currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
-		    mcmcPar->n_accept_Tinf += 1;
-		} else { /* reject */
-		    tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
-		    mcmcPar->n_reject_Tinf += 1;
-		}
-	    }
-	} /* end if Tinf has changed */
-    } /* end for each indiv to move */
+	currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+	mcmcPar->n_accept_Tinf += 1;
+      } else { /* else accept new with proba (new/old) */
+	if(log(gsl_rng_uniform(rng)) <= logRatio){ /* accept */
+	  /*     printf("\nTinf_%d: accepting move from %d to %d (respective loglike:%f and %f)\n",toMove+1, vec_int_i(currentPar->Tinf,toMove), vec_int_i(tempPar->Tinf,toMove), ll1, ll2); */
+	  /* fflush(stdout); */
+
+	  currentPar->Tinf->values[toMove] = vec_int_i(tempPar->Tinf,toMove);
+	  mcmcPar->n_accept_Tinf += 1;
+	} else { /* reject */
+	  tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove);
+	  mcmcPar->n_reject_Tinf += 1;
+	}
+      }
+    } /* end if movement has been proposed */
+  } /* end for each indiv to move */
 } /* end move_Tinf*/
 
 
@@ -525,21 +535,23 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 
       /* MOVE Tinf UNLESS USER DISABLED THIS MOVE */
       if(mcmcPar->move_Tinf){
-	/* find first imported case */
-	firstImported = find_date_first_import(dat, currentPar);
+      	/* move date only if possible */
+      	if((vec_int_i(currentPar->Tinf,toMove) - vec_int_i(currentPar->Tinf,ances)) >= 2){
+      	  /* move i-th Tinf */
+      	  if(vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(dat->dates,toMove)-1) ){ /* right (upper bound) bouncing */
+      	    tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove) - 1;
+      	    correcRatio += log(0.5);
+      	  } else if(vec_int_i(currentPar->Tinf,toMove) == (vec_int_i(currentPar->Tinf,ances)+1) ){ /* left (lower bound) bouncing */
+      	    tempPar->Tinf->values[toMove] = vec_int_i(currentPar->Tinf,toMove) + 1;
+      	    correcRatio += log(0.5);
+      	  } else {
+      	    tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); /* in the middle, no bouncing */
+      	  }
+      	} /* end move Tinf */
+      } /* end if Tinf movement enabled */
 
-	/* move i-th Tinf */
-	tempPar->Tinf->values[toMove] += (gsl_rng_uniform(rng) >= 0.5 ? 1 : -1); /* * gsl_ran_poisson(rng, 1); */
 
-	/* /\* constraint: Tinf_i < t_i *\/ */
-	/* if(vec_int_i(tempPar->Tinf,toMove) >= vec_int_i(dat->dates,toMove)) tempPar->Tinf->values[toMove] = vec_int_i(dat->dates,toMove)-1; */
-
-	/* /\* constraint: Tinf_i > first imported *\/ */
-	/* if(vec_int_i(tempPar->Tinf,toMove) <= firstImported) tempPar->Tinf->values[toMove] = firstImported+1; */
-      }
-
-
-      /* MOVE ALPHA IF MOVEABLE  */
+	/* MOVE ALPHA IF MOVEABLE  */
       if(vec_double_i(mcmcPar->move_alpha,toMove)>0.0){
 	/* check number of possible ancestors before/after move */
 	nbCandidCurrent=0;
@@ -575,11 +587,11 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	/*   getchar(); */
 	/* } */
 	correcRatio += log(nbCandidTemp) - log(nbCandidCurrent);
-      }
+      } /* end movement alpha*/
 
 
-      /* MOVE KAPPA */
-      /* if not imported and moveable */
+	/* MOVE KAPPA */
+	/* if not imported and moveable */
       if(vec_int_i(tempPar->alpha,toMove)>=0 && vec_double_i(mcmcPar->move_kappa,toMove)>0.0){
 	/* propose new, 'intelligent' kappa */
 	nbDaysTemp = vec_int_i(tempPar->Tinf,toMove) - vec_int_i(tempPar->Tinf, vec_int_i(tempPar->alpha,toMove));
@@ -592,14 +604,14 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
 	nbDaysCurrent = vec_int_i(currentPar->Tinf,toMove) - vec_int_i(currentPar->Tinf, vec_int_i(currentPar->alpha,toMove));
 	correcRatio += log(gentime_dens(gen, nbDaysCurrent, vec_int_i(currentPar->kappa,toMove)));
 	correcRatio -= log(gentime_dens(gen, nbDaysTemp, vec_int_i(tempPar->kappa,toMove)));
-      }
+      } /* end movement kappa */
 
 
-      /* ACCEPT/REJECT STEP */
-      /* compute the likelihood ratio */
-      /* ll1 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
-      /* ll2 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng); */
-      /* compute only local changes in the likelihood */
+	/* ACCEPT/REJECT STEP */
+	/* compute the likelihood ratio */
+	/* ll1 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, currentPar, rng); */
+	/* ll2 = loglikelihood_all(dat, dnaInfo, spaInfo, gen, tempPar, rng); */
+	/* compute only local changes in the likelihood */
       ll1 = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, currentPar, rng);
       ll2 = loglikelihood_local_i(toMove, dat, dnaInfo, spaInfo, gen, tempPar, rng);
       logRatio = ll2 - ll1;
@@ -610,10 +622,6 @@ void move_Tinf_alpha_kappa(param *currentPar, param *tempPar, data *dat, dna_dis
       /* correction ratio */
       filter_logprob(&correcRatio);
       logRatio += correcRatio;
-
-      /* /\* MH correction *\/ */
-      /* /\* like ratio x ( Pmove(current)/Pmove(temp) ) *\/ */
-
 
       /* if p(new/old) > 1, accept new */
       if(logRatio>=0.0) {
