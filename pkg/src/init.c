@@ -231,7 +231,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     /* SET TEMPERING PARAM */
 
     /* current temperature */
-    in->current_temperature = 1;
+    in->current_temperature = init_temperature;
 
     /* max temperature */
     in->max_temperature = max_temperature;

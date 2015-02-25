@@ -272,8 +272,8 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## max.temperature
     if(max.temperature<1) max.temperature <- 1L
     if(max.temperature>10) {
-        warning("maximum temperature is capped at 10")
-        max.temperature <- 10L
+        warning("maximum temperature is large (>10)")
+        ##max.temperature <- 10L
     }
     max.temperature <- as.integer(max.temperature)
     ## init.temperature

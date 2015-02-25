@@ -25,13 +25,16 @@
    - indices are provided from 1 to n, i.e. not as C indices (from 0 to n-1)
 */
 
-void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet){
+void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, mcmc_param *mcmcPar, int step, gsl_rng *rng, bool quiet){
     int i;
     double like, prior;
 
     /* OUTPUT TO FILE */
     /* chain number */
     fprintf(file,"\n%d", step);
+
+    /* chain temperature */
+    fprintf(file,"\t%d", mcmcPar->current_temperature);
 
     /* posterior, likelihood, prior */
     like = loglikelihood_all(dat, dnaInfo, spaInfo, gen, par, rng);
@@ -61,9 +64,10 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
     /* OUTPUT TO SCREEN */
     if(!quiet){
 	Rprintf("\n%d\t", step);
-	fprintf(file,"\t%.15f", like*prior);
-	fprintf(file,"\t%.15f", like);
-	fprintf(file,"\t%.15f", prior);
+	Rprintf("\n%d\t", mcmcPar->current_temperature);
+	Rprintf(file,"\t%.15f", like*prior);
+	Rprintf(file,"\t%.15f", like);
+	Rprintf(file,"\t%.15f", prior);
 	Rprintf("\t%.15f", par->mu1);
 	Rprintf("\t%.15f", par->mu1 * par->gamma);
 	Rprintf("\t%.15f", par->gamma);
@@ -96,28 +100,24 @@ void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step){
     double temp=0.0;
     /* OUTPUT TO FILE */
     fprintf(file,"\n%d", step);
+    fprintf(file,"\t%d", mcmcPar->current_temperature);
     temp = (double) mcmcPar->n_accept_mu1 / (double) (mcmcPar->n_accept_mu1 + mcmcPar->n_reject_mu1);
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_gamma / (double) (mcmcPar->n_accept_gamma + mcmcPar->n_reject_gamma);
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_pi / (double) (mcmcPar->n_accept_pi + mcmcPar->n_reject_pi);
     fprintf(file,"\t%.5f", temp);
-    /* temp = (double) mcmcPar->n_accept_phi / (double) (mcmcPar->n_accept_phi + mcmcPar->n_reject_phi); */
-    /* fprintf(file,"\t%.5f", temp); */
     temp = (double) mcmcPar->n_accept_Tinf / (double) (mcmcPar->n_accept_Tinf + mcmcPar->n_reject_Tinf);
     fprintf(file,"\t%.5f", temp);
     temp = (double) mcmcPar->n_accept_spa1 / (double) (mcmcPar->n_accept_spa1 + mcmcPar->n_reject_spa1);
     fprintf(file,"\t%.5f", temp);
-    /* temp = (double) mcmcPar->n_accept_spa2 / (double) (mcmcPar->n_accept_spa2 + mcmcPar->n_reject_spa2); */
-    /* fprintf(file,"\t%.5f", temp); */
+    temp = (double) mcmcPar->n_accept_temperature / (double) (mcmcPar->n_accept_temperature + mcmcPar->n_reject_temperature);
+    fprintf(file,"\t%.5f", temp);
   
     fprintf(file,"\t%.15f", mcmcPar->sigma_mu1);
     fprintf(file,"\t%.15f", mcmcPar->sigma_gamma);
     fprintf(file,"\t%.15f", mcmcPar->sigma_pi);
-    /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%.15f", mcmcPar->sigma_spa1);
-    /* fprintf(file,"\t%.15f", mcmcPar->sigma_spa2); */
-    /* fprintf(file,"\t%.15f", mcmcPar->sigma_phi); */
     fprintf(file,"\t%d", mcmcPar->n_like_zero);
 }
 
@@ -367,7 +367,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   /* OUTPUT TO SCREEN - HEADER */
   if(!quiet){
     /* Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tphi\tspa1\tspa2"); */
-    Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
+    Rprintf("step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
     for(i=0;i<dat->n;i++){
       Rprintf("\tTinf_%d", i+1);
     }
@@ -594,7 +594,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 
     /* OUTPUT TO OUTFILE - HEADER */
-    fprintf(file, "step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
+    fprintf(file, "step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
     for(i=0;i<dat->n;i++){
 	fprintf(file, "\tTinf_%d", i+1);
     }
@@ -606,13 +606,13 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     }
 
     /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1");
+    fprintf(mcmcFile, "step\ttemperature\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1\tp_accept_temperature");
     fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
 
 
     /* OUTPUT TO SCREEN - HEADER */
     if(!quiet){
-	Rprintf("step\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
+	Rprintf("step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
 	for(i=0;i<dat->n;i++){
 	    Rprintf("\tTinf_%d", i+1);
 	}
@@ -624,7 +624,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 	}
     }
 
-    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, 1, rng, quiet);
+    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, mcmcPar, 1, rng, quiet);
     fprint_mcmc_param(mcmcFile, mcmcPar, 1);
 
     mcmcPar->step_notune = nIter;
@@ -663,7 +663,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* OUTPUT TO FILES */
 	if(i % outEvery == 0){
-	    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, i, rng, quiet);
+	    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, mcmcPar, i, rng, quiet);
 	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
 	}
 
