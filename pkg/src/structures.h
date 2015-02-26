@@ -109,6 +109,7 @@ typedef struct{
     double prior_temperature; /* rate of a Poisson prior for the temperature distribution */
     int init_temperature; /* initial temperature for the MCMCMC */
     int n_accept_temperature, n_reject_temperature; /* accept/reject for kappa */
+    vec_double *logprior_temperature;
 } mcmc_param;
 
 
@@ -181,7 +182,7 @@ void copy_param(param *in, param *out);
  ============
 */
 
-mcmc_param *alloc_mcmc_param(int n);
+mcmc_param *alloc_mcmc_param(int n, int maxTemperature);
 
 void free_mcmc_param(mcmc_param *in);
 

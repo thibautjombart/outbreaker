@@ -197,6 +197,10 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
 	in->move_kappa->values[i] = move_kappa[i] > 0.0 ? 1.0 : 0.0;
     }
 
+    for(i=0;i<in->max_temperature;i++) {
+	in->logprior_temperature->values[i] = 0.0;
+    }
+
     /* FILL IN BOOLEANS */
     in->move_mut = move_mut;
     in->move_Tinf = move_Tinf;

@@ -351,7 +351,7 @@ void copy_param(param *in, param *out){
  ============
 */
 
-mcmc_param *alloc_mcmc_param(int n){
+mcmc_param *alloc_mcmc_param(int n, int maxTemperature){
   /* allocate pointer */
     mcmc_param *out = (mcmc_param *) malloc(sizeof(mcmc_param));
     if(out == NULL){
@@ -381,6 +381,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->candid_ances_proba = alloc_vec_double(n+1);
     out->move_alpha = alloc_vec_double(n);
     out->move_kappa = alloc_vec_double(n);
+    out->logprior_temperature = alloc_vec_double(maxTemperature);
 
     /* FILL IN INTEGERS */
     /* accept/reject counters */
@@ -455,6 +456,7 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_double(in->candid_ances_proba);
     free_vec_double(in->move_alpha);
     free_vec_double(in->move_kappa);
+    free_vec_double(in->logprior_temperature);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -537,7 +539,10 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\nTempering parameters:");
     Rprintf("\nFirst temperature, initial requested temperature: %d, %d", in->current_temperature, in->init_temperature);
     Rprintf("\nMaximum temperature: %d", in->max_temperature);
-    Rprintf("\nRate for Poisson prior for temperature: %.5f", in->prior_temperature);
+    /* Rprintf("\nRate for Poisson prior for temperature: %.5f", in->prior_temperature); */
+    Rprintf("\nVector of log prior for temperatures:\n");
+    print_vec_double(in->logprior_temperature);
+
 
 } /* end print_mcmc_param */
 
@@ -618,6 +623,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_vec_double(in->candid_ances_proba, out->candid_ances_proba);
     copy_vec_double(in->move_alpha, out->move_alpha);
     copy_vec_double(in->move_kappa, out->move_kappa);
+    copy_vec_double(in->logprior_temperature, out->logprior_temperature);
 } /* end copy_mcmc_param */
 
 

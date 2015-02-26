@@ -152,7 +152,8 @@ int find_date_first_import(data *dat, param *par){
 /* this one is only used when moving temperature */
 /* temperature is otherwise embedded in parameter movement functions  */
 double temper(double *logPost, int temperature){
-  double out = (*logPost)/(gsl_sf_pow_int(2.0, temperature));
+  /* double out = (*logPost)/(gsl_sf_pow_int(2.0, temperature)); */
+  double out = (*logPost)/temperature;
   return out;
 }
 

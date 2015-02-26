@@ -577,6 +577,7 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
     int i;
     vec_int *areOutliers = alloc_vec_int(dat->n);
+    double tempLogPost;
 
     /* OPEN OUTPUT FILES */
     FILE *file = fopen(outputFile,"w");
@@ -651,9 +652,61 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
     } /* END PRELIM MCMC FOR FINDING OUTLIERS */
 
 
-    /* CREATE TEMPORARY PARAMETERS */
+   /* CREATE TEMPORARY PARAMETERS */
     param *tempPar = alloc_param(dat->n);
     copy_param(par,tempPar);
+
+    /* PRELIM STEP - FINDING TEMPERATURE PRIOR */
+    for(i=2;i<=nIter;i++){
+	/* TUNING */
+	if(i % tuneEvery == 0 && mcmcPar->tune_any){
+	  if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
+	  if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
+	  if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
+	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
+	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
+	  if(!mcmcPar->tune_any) {
+	    mcmcPar->step_notune = i;
+	  }
+	}
+
+	/* MOVEMENTS */
+	/* move mutation rates */
+	if(mcmcPar->move_mut){
+	  /* move mu1 */
+	  move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+
+	  /* move gamma */
+	  if(par->mut_model>1){
+	    move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+	  }
+	}
+
+	/* move pi */
+	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
+
+	/* move dispersal parameters */
+	if(mcmcPar->move_spa){
+	  /* move spa1 */
+	  move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
+
+	}
+
+	/* move Tinf, kappa_i and alpha_i alltogether */
+	move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+	/* move Tinf */
+	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+	/* swap ancestries */
+	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+	/* store logost */
+	tempLogPost = logposterior_all(dat, dnaInfo, spaInfo, gen, par, rng);
+
+    } /* END PRELIM STEP - FINDING TEMPERATURE PRIOR*/
+
+
 
      /* RUN MAIN MCMC */
     for(i=2;i<=nIter;i++){
