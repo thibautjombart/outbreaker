@@ -386,7 +386,7 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
   copy_param(par,localPar);
   copy_param(par,tempPar);
 
-  mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n);
+  mcmc_param *localMcmcPar = alloc_mcmc_param(dat->n, mcmcPar->max_temperature);
   copy_mcmc_param(mcmcPar, localMcmcPar);
 
   /* CREATE TEMPORARY VECTOR STORING "GLOBAL INFLUENCE" OF EACH INDIVIDUALS */
@@ -575,225 +575,250 @@ void mcmc_find_import(vec_int *areOutliers, int outEvery, int tuneEvery, bool qu
 void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256], int tuneEvery, 
 	  bool quiet, param *par, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, mcmc_param *mcmcPar, gsl_rng *rng){
 
-    int i;
-    vec_int *areOutliers = alloc_vec_int(dat->n);
-    double tempLogPost;
+  int i, j, tuneTemperatureFor=20000;
+  vec_int *areOutliers = alloc_vec_int(dat->n);
+  double tempLogPost=0.0;
 
-    /* OPEN OUTPUT FILES */
-    FILE *file = fopen(outputFile,"w");
-    if(file==NULL){
-      error("\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile);
-      /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile); */
-      /* exit(1); */
-    }
-    FILE *mcmcFile = fopen(mcmcOutputFile,"w");
-    if(mcmcFile==NULL){
-      error("\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile);
-      /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile); */
-      /* exit(1); */
-    }
+  /* OPEN OUTPUT FILES */
+  FILE *file = fopen(outputFile,"w");
+  if(file==NULL){
+    error("\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile);
+    /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", outputFile); */
+    /* exit(1); */
+  }
+  FILE *mcmcFile = fopen(mcmcOutputFile,"w");
+  if(mcmcFile==NULL){
+    error("\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile);
+    /* fprintf(stderr, "\n[in: mcmc.c->mcmc]\nCannot open output file %s.\n", mcmcOutputFile); */
+    /* exit(1); */
+  }
 
 
-    /* OUTPUT TO OUTFILE - HEADER */
-    fprintf(file, "step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
+  /* OUTPUT TO OUTFILE - HEADER */
+  fprintf(file, "step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
+  for(i=0;i<dat->n;i++){
+    fprintf(file, "\tTinf_%d", i+1);
+  }
+  for(i=0;i<dat->n;i++){
+    fprintf(file, "\talpha_%d", i+1);
+  }
+  for(i=0;i<dat->n;i++){
+    fprintf(file, "\tkappa_%d", i+1);
+  }
+
+  /* OUTPUT TO MCMCOUTFILE - HEADER */
+  fprintf(mcmcFile, "step\ttemperature\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1\tp_accept_temperature");
+  fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
+
+
+  /* OUTPUT TO SCREEN - HEADER */
+  if(!quiet){
+    Rprintf("step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
     for(i=0;i<dat->n;i++){
-	fprintf(file, "\tTinf_%d", i+1);
+      Rprintf("\tTinf_%d", i+1);
     }
     for(i=0;i<dat->n;i++){
-	fprintf(file, "\talpha_%d", i+1);
+      Rprintf("\talpha_%d", i+1);
     }
     for(i=0;i<dat->n;i++){
-	fprintf(file, "\tkappa_%d", i+1);
+      Rprintf("\tkappa_%d", i+1);
+    }
+  }
+
+  fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, mcmcPar, 1, rng, quiet);
+  fprint_mcmc_param(mcmcFile, mcmcPar, 1);
+
+  mcmcPar->step_notune = nIter;
+
+
+  /* PRELIM STEP - FINDING OUTLIERS */
+  if(mcmcPar->find_import){
+    mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+    /* RESTORE INITIAL TUNING SETTINGS AND PARAM */
+    /* mcmcPar->tune_any = TRUE; */
+    /* copy_param(par,tempPar); */
+    /* mcmcPar->step_notune = nIter; */
+
+    /* printf("\nContent of 'areOutliers:\n");fflush(stdout); */
+    /* print_vec_int(areOutliers); */
+    for(i=0;i<dat->n;i++){
+      if(vec_int_i(areOutliers,i)==1){
+	par->alpha->values[i] = -1;
+	par->kappa->values[i] = 1;
+	mcmcPar->move_alpha->values[i] = 0.0;
+      }
+    }
+  } /* END PRELIM MCMC FOR FINDING OUTLIERS */
+
+
+  /* CREATE TEMPORARY PARAMETERS */
+  param *tempPar = alloc_param(dat->n);
+  copy_param(par,tempPar);
+
+
+  /* PRELIM STEP - FINDING TEMPERATURE PRIOR */
+  for(i=1;i<=tuneTemperatureFor;i++){
+    /* TUNING */
+    if(i % tuneEvery == 0 && mcmcPar->tune_any){
+      if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
+      if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
+      if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
+      if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
+      mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
+      if(!mcmcPar->tune_any) {
+	mcmcPar->step_notune = i;
+      }
     }
 
-    /* OUTPUT TO MCMCOUTFILE - HEADER */
-    fprintf(mcmcFile, "step\ttemperature\tp_accept_mu1\tp_accept_gamma\tp_accept_pi\t\tp_accept_Tinf\tp_accept_spa1\tp_accept_temperature");
-    fprintf(mcmcFile, "\tsigma_mu1\tsigma_gamma\tsigma_pi\tsigma_spa1\tn_like_zero");
+    /* MOVEMENTS */
+    /* move mutation rates */
+    if(mcmcPar->move_mut){
+      /* move mu1 */
+      move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 
-
-    /* OUTPUT TO SCREEN - HEADER */
-    if(!quiet){
-	Rprintf("step\ttemperature\tpost\tlike\tprior\tmu1\tmu2\tgamma\tpi\tspa1");
-	for(i=0;i<dat->n;i++){
-	    Rprintf("\tTinf_%d", i+1);
-	}
-	for(i=0;i<dat->n;i++){
-	    Rprintf("\talpha_%d", i+1);
-	}
-	for(i=0;i<dat->n;i++){
-	    Rprintf("\tkappa_%d", i+1);
-	}
+      /* move gamma */
+      if(par->mut_model>1){
+	move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+      }
     }
 
-    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, mcmcPar, 1, rng, quiet);
-    fprint_mcmc_param(mcmcFile, mcmcPar, 1);
+    /* move pi */
+    if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
 
-    mcmcPar->step_notune = nIter;
+    /* move dispersal parameters */
+    if(mcmcPar->move_spa){
+      /* move spa1 */
+      move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
+    }
 
-    /* PRELIM STEP - FINDING OUTLIERS */
-    if(mcmcPar->find_import){
-	mcmc_find_import(areOutliers, outEvery, tuneEvery, quiet, par, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+    /* move Tinf, kappa_i and alpha_i alltogether */
+    move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
-	/* RESTORE INITIAL TUNING SETTINGS AND PARAM */
-	/* mcmcPar->tune_any = TRUE; */
-	/* copy_param(par,tempPar); */
-	/* mcmcPar->step_notune = nIter; */
+    /* move Tinf */
+    if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
-	/* printf("\nContent of 'areOutliers:\n");fflush(stdout); */
-	/* print_vec_int(areOutliers); */
-	for(i=0;i<dat->n;i++){
-	    if(vec_int_i(areOutliers,i)==1){
-		par->alpha->values[i] = -1;
-		par->kappa->values[i] = 1;
-		mcmcPar->move_alpha->values[i] = 0.0;
-	    }
-	}
-    } /* END PRELIM MCMC FOR FINDING OUTLIERS */
+    /* swap ancestries */
+    swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
+    /* compute sum of tempered logPost for all temperatures */
+    tempLogPost = logposterior_all(dat, dnaInfo, spaInfo, gen, par, rng);
+    for(j=0;j<mcmcPar->max_temperature;j++){
+      mcmcPar->logprior_temperature->values[j] += temper(&tempLogPost, j+1);
+    }
+  } /* end for i ... loop */
 
-   /* CREATE TEMPORARY PARAMETERS */
-    param *tempPar = alloc_param(dat->n);
-    copy_param(par,tempPar);
+  /* compute average of tempered logPost for all temperatures */
+  /* defined as: p(i) = sum(h_m(x)) - sum(h_i(x))*/
+  for(j=0;j<mcmcPar->max_temperature;j++){
+    mcmcPar->logprior_temperature->values[j] = vec_double_i(mcmcPar->logprior_temperature, j)/tuneTemperatureFor;
+  }
+  
+  Rprintf("Average tempered log-post:");
+  print_vec_double( mcmcPar->logprior_temperature);
+  
+  /* compute log prior of temperatures */
+  /* defined as: p(i) = sum(h_m(x)) - sum(h_i(x))*/
+  for(j=0;j<mcmcPar->max_temperature;j++){
+    mcmcPar->logprior_temperature->values[j] = vec_double_i(mcmcPar->logprior_temperature, mcmcPar->max_temperature-1) - 
+      vec_double_i(mcmcPar->logprior_temperature, j);
+  }
 
-    /* PRELIM STEP - FINDING TEMPERATURE PRIOR */
-    for(i=2;i<=nIter;i++){
-	/* TUNING */
-	if(i % tuneEvery == 0 && mcmcPar->tune_any){
-	  if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
-	  if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
-	  if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
-	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
-	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
-	  if(!mcmcPar->tune_any) {
-	    mcmcPar->step_notune = i;
-	  }
-	}
+  Rprintf("Log priors:");
+  print_vec_double( mcmcPar->logprior_temperature);
+ 
 
-	/* MOVEMENTS */
-	/* move mutation rates */
-	if(mcmcPar->move_mut){
-	  /* move mu1 */
-	  move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
-
-	  /* move gamma */
-	  if(par->mut_model>1){
-	    move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
-	  }
-	}
-
-	/* move pi */
-	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
-
-	/* move dispersal parameters */
-	if(mcmcPar->move_spa){
-	  /* move spa1 */
-	  move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
-
-	}
-
-	/* move Tinf, kappa_i and alpha_i alltogether */
-	move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
-
-	/* move Tinf */
-	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
-
-	/* swap ancestries */
-	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
-
-	/* store logost */
-	tempLogPost = logposterior_all(dat, dnaInfo, spaInfo, gen, par, rng);
-
-    } /* END PRELIM STEP - FINDING TEMPERATURE PRIOR*/
+  /* END PRELIM STEP - FINDING TEMPERATURE PRIOR*/
 
 
 
-     /* RUN MAIN MCMC */
-    for(i=2;i<=nIter;i++){
-	/* /\* debugging *\/ */
-	/* printf("\n\n = MCMC iteration %d =\n",i); */
-	/* fflush(stdout); */
+  /* RUN MAIN MCMC */
+  for(i=2;i<=nIter;i++){
+    /* /\* debugging *\/ */
+    /* printf("\n\n = MCMC iteration %d =\n",i); */
+    /* fflush(stdout); */
 
-	/* OUTPUT TO FILES */
-	if(i % outEvery == 0){
-	    fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, mcmcPar, i, rng, quiet);
-	    fprint_mcmc_param(mcmcFile, mcmcPar, i);
-	}
+    /* OUTPUT TO FILES */
+    if(i % outEvery == 0){
+      fprint_chains(file, dat, dnaInfo, spaInfo, gen, par, mcmcPar, i, rng, quiet);
+      fprint_mcmc_param(mcmcFile, mcmcPar, i);
+    }
 
-	/* TUNING */
-	if(i % tuneEvery == 0 && mcmcPar->tune_any){
-	  if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
-	  if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
-	  if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
-	  /* if(mcmcPar->tune_phi) tune_phi(mcmcPar,rng); */
-	  if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
-	  /* if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng); */
-	  mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
-	  if(!mcmcPar->tune_any) {
-	    mcmcPar->step_notune = i;
-	    /* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
-	  }
-	}
+    /* TUNING */
+    if(i % tuneEvery == 0 && mcmcPar->tune_any){
+      if(mcmcPar->tune_mu1) tune_mu1(mcmcPar,rng);
+      if(mcmcPar->tune_gamma) tune_gamma(mcmcPar,rng);
+      if(mcmcPar->tune_pi) tune_pi(mcmcPar,rng);
+      /* if(mcmcPar->tune_phi) tune_phi(mcmcPar,rng); */
+      if(mcmcPar->tune_spa1) tune_spa1(mcmcPar,rng);
+      /* if(mcmcPar->tune_spa2) tune_spa2(mcmcPar,rng); */
+      mcmcPar->tune_any = mcmcPar->tune_mu1 || mcmcPar->tune_gamma || mcmcPar->tune_pi || mcmcPar->tune_spa1;
+      if(!mcmcPar->tune_any) {
+	mcmcPar->step_notune = i;
+	/* printf("\nStopped tuning at chain %d\n",i);fflush(stdout); */
+      }
+    }
 
-	/* /\* debugging *\/ */
-	/* double logLike = loglikelihood_all(dat, dnaInfo, gen, par); */
-	/* printf("\n\n = Initial Log-likelihood value (in mcmc, before movement): %f\n", logLike); */
-	/* fflush(stdout); */
+    /* /\* debugging *\/ */
+    /* double logLike = loglikelihood_all(dat, dnaInfo, gen, par); */
+    /* printf("\n\n = Initial Log-likelihood value (in mcmc, before movement): %f\n", logLike); */
+    /* fflush(stdout); */
 
-	/* check_loglikelihood_all(dat, dnaInfo, gen, par); */
+    /* check_loglikelihood_all(dat, dnaInfo, gen, par); */
 
-	/* MOVEMENTS */
-	/* move mutation rates */
-	if(mcmcPar->move_mut){
-	  /* move mu1 */
-	  move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+    /* MOVEMENTS */
+    /* move mutation rates */
+    if(mcmcPar->move_mut){
+      /* move mu1 */
+      move_mu1(par, tempPar, dat, dnaInfo, mcmcPar, rng);
 
-	  /* move gamma */
-	  if(par->mut_model>1){
-	    move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
-	  }
-	}
+      /* move gamma */
+      if(par->mut_model>1){
+	move_gamma(par, tempPar, dat, dnaInfo, mcmcPar, rng);
+      }
+    }
 
-	/* move pi */
-	if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
+    /* move pi */
+    if(mcmcPar->move_pi) move_pi(par, tempPar, dat, mcmcPar, rng);
 
-	/* /\* move phi *\/ */
-	/* if(mcmcPar->move_phi) move_phi(par, tempPar, dat, spaInfo, mcmcPar, rng); */
+    /* /\* move phi *\/ */
+    /* if(mcmcPar->move_phi) move_phi(par, tempPar, dat, spaInfo, mcmcPar, rng); */
 
-	/* move dispersal parameters */
-	if(mcmcPar->move_spa){
-	  /* move spa1 */
-	  move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
+    /* move dispersal parameters */
+    if(mcmcPar->move_spa){
+      /* move spa1 */
+      move_spa1(par, tempPar, dat, spaInfo, mcmcPar, rng);
 
-	  /* /\* move spa2 *\/ */
-	  /* if(par->spa_model>2){ */
-	  /*   move_spa2(par, tempPar, dat, spaInfo, mcmcPar, rng); */
-	  /* } */
+      /* /\* move spa2 *\/ */
+      /* if(par->spa_model>2){ */
+      /*   move_spa2(par, tempPar, dat, spaInfo, mcmcPar, rng); */
+      /* } */
 
-	}
+    }
 
-	/* move Tinf, kappa_i and alpha_i alltogether */
-	move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+    /* move Tinf, kappa_i and alpha_i alltogether */
+    move_Tinf_alpha_kappa(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
-	/* move Tinf */
-	if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+    /* move Tinf */
+    if(mcmcPar->move_Tinf) move_Tinf(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
-	/* swap ancestries */
-	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+    /* swap ancestries */
+    swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
 
-	/* tempering: move temperature */
-	if(mcmcPar->max_temperature>1) move_temperature(dat, dnaInfo, spaInfo, gen, par, mcmcPar, rng);
+    /* tempering: move temperature */
+    if(mcmcPar->max_temperature>1) move_temperature(dat, dnaInfo, spaInfo, gen, par, mcmcPar, rng);
 
-    } /* end of mcmc */
+  } /* end of mcmc */
 
 
     /* CLOSE OUTPUT OUTFILE */
-    fclose(file);
-    fclose(mcmcFile);
+  fclose(file);
+  fclose(mcmcFile);
 
-    /* FREE TEMPORARY PARAMETERS */
-    free_param(tempPar);
-    free_vec_int(areOutliers);
+  /* FREE TEMPORARY PARAMETERS */
+  free_param(tempPar);
+  free_vec_int(areOutliers);
 } /* end mcmc */
 
 

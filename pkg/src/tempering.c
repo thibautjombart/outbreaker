@@ -17,12 +17,13 @@
 
 /* COMPUTE TEMPERATURE PRIOR */
 double logprior_temperature(int temperature, mcmc_param *mcmcPar){
-  double out=0.0;
-  out = log(gsl_ran_poisson_pdf((unsigned int) temperature, (double) mcmcPar->prior_temperature));
+  /* double out=0.0; */
+  /* out = log(gsl_ran_poisson_pdf((unsigned int) temperature, (double) mcmcPar->prior_temperature)); */
 
-  /* filter and return */
-  filter_logprob(&out);
-  return out;
+  /* /\* filter and return *\/ */
+  /* filter_logprob(&out); */
+  /* return out; */
+  return vec_double_i(mcmcPar->logprior_temperature, temperature-1);
 }
 
 
