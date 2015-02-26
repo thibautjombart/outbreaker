@@ -29,7 +29,7 @@ double logprior_temperature(int temperature, mcmc_param *mcmcPar){
 
 /* MOVE TEMPERATURE */
 void move_temperature(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, mcmc_param *mcmcPar, gsl_rng *rng){
-  double logPost, logRatio=0.0, correcRatio=0.0;
+  double logPost=0.0, logRatio=0.0, correcRatio=0.0;
   int newTemperature =  mcmcPar->current_temperature;
 
   /* PROPOSE NEW TEMPERATURE */
@@ -47,7 +47,7 @@ void move_temperature(data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, genti
   logPost = logposterior_all(dat, dnaInfo, spaInfo, gen, par, rng);
 
   /* compute acceptance ratio */
-  logRatio += logPost/newTemperature - logPost/mcmcPar->current_temperature +
+  logRatio += temper(&logPost, newTemperature) - temper(&logPost, mcmcPar->current_temperature) +
     logprior_temperature(newTemperature, mcmcPar) - logprior_temperature(mcmcPar->current_temperature, mcmcPar);
 
   /* correction factor */

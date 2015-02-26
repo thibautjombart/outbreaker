@@ -17,7 +17,7 @@ int choose_alpha_i(int i, data *dat, param *currentPar, mcmc_param *mcmcPar, gsl
 
 int find_date_first_import(data *dat, param *par);
 
-void temper(double *logPost, mcmc_param *mcmcPar);
+double temper(double *logPost, int temperature);
 
 
 /*
