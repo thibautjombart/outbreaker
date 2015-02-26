@@ -8,7 +8,7 @@
 #include "likelihood.h"
 #include "moves.h"
 #include "mcmc.h"
-
+#include "tempering.h"
 
 
 /*
@@ -65,9 +65,9 @@ void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaIn
     if(!quiet){
 	Rprintf("\n%d\t", step);
 	Rprintf("\n%d\t", mcmcPar->current_temperature);
-	Rprintf(file,"\t%.15f", like*prior);
-	Rprintf(file,"\t%.15f", like);
-	Rprintf(file,"\t%.15f", prior);
+	Rprintf("\t%.15f", like*prior);
+	Rprintf("\t%.15f", like);
+	Rprintf("\t%.15f", prior);
 	Rprintf("\t%.15f", par->mu1);
 	Rprintf("\t%.15f", par->mu1 * par->gamma);
 	Rprintf("\t%.15f", par->gamma);
@@ -727,6 +727,9 @@ void mcmc(int nIter, int outEvery, char outputFile[256], char mcmcOutputFile[256
 
 	/* swap ancestries */
 	swap_ancestries(par, tempPar, dat, dnaInfo, spaInfo, gen, mcmcPar, rng);
+
+	/* tempering: move temperature */
+	if(mcmcPar->max_temperature>1) move_temperature(dat, dnaInfo, spaInfo, gen, par, mcmcPar, rng);
 
     } /* end of mcmc */
 
