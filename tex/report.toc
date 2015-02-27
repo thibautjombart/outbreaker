@@ -13,9 +13,9 @@
 \contentsline {section}{\numberline {3.1}Testing Procedures}{18}
 \contentsline {section}{\numberline {3.2}Estimating Transmission Probabilities}{18}
 \contentsline {section}{\numberline {3.3}Inferring Correct Ancestries}{20}
-\contentsline {section}{\numberline {3.4}Equine Flu Data}{21}
-\contentsline {chapter}{\numberline {4}Discussion}{23}
-\contentsline {section}{\numberline {4.1}Discuss Results}{23}
-\contentsline {section}{\numberline {4.2}Modelling Assumptions}{23}
-\contentsline {section}{\numberline {4.3}Modelling Limitations}{24}
-\contentsline {section}{\numberline {4.4}Not finished yet}{24}
+\contentsline {section}{\numberline {3.4}Equine Flu Data}{23}
+\contentsline {chapter}{\numberline {4}Discussion}{24}
+\contentsline {section}{\numberline {4.1}Discuss Results}{24}
+\contentsline {section}{\numberline {4.2}Modelling Assumptions}{24}
+\contentsline {section}{\numberline {4.3}Modelling Limitations}{25}
+\contentsline {section}{\numberline {4.4}Not finished yet}{25}
