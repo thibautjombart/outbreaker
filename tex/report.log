@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  24 FEB 2015 20:12
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  27 FEB 2015 13:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -438,36 +438,32 @@ Package pdftex.def Info: treexample.png used on input line 144.
 
 [16] [17 <./treexample.png (PNG copy)>]
 Chapter 3.
-Missing character: There is no â in font cmr10!
-Missing character: There is no € in font cmr10!
-Missing character: There is no ™ in font cmr10!
-Missing character: There is no â in font cmr10!
-Missing character: There is no € in font cmr10!
-Missing character: There is no “ in font cmr10!
-
-Package natbib Warning: Citation `Gire14' on page 18 undefined on input line 15
-9.
-
-
-Overfull \hbox (140.7947pt too wide) in paragraph at lines 155--162
-[][] 
- []
-
 [18
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 163--167
+
+Package natbib Warning: Citation `Gire14' on page 19 undefined on input line 16
+4.
+
+
+Overfull \hbox (140.7947pt too wide) in paragraph at lines 160--167
+[][] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 168--184
 
  []
 
+[19] [20]
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
-[19]
+ [21] [22]
 Chapter 4.
-[20
+[23
 
-] [21] [22] (./report.bbl [23]
+] [24] [25] (./report.bbl [26]
 Underfull \hbox (badness 3713) in paragraph at lines 19--25
 []\OT1/cmr/m/n/10.95 Thibaut Jom-bart, Anne Cori, Xavier Dide-lot, Si-mon Cauch
 emez,
@@ -485,13 +481,13 @@ Missing character: There is no “ in font cmr10!
 
 Package natbib Warning: There were undefined citations.
 
-[24
+[27
 
 ] (./report.aux) ) 
 Here is how much of TeX's memory you used:
  10257 strings out of 493304
  192169 string characters out of 6139871
- 239913 words of memory out of 5000000
+ 241913 words of memory out of 5000000
  13515 multiletter control sequences out of 15000+600000
  10851 words of font info for 38 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
@@ -510,10 +506,10 @@ ts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type
 nts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10
 .pfb>
-Output written on report.pdf (25 pages, 258873 bytes).
+Output written on report.pdf (28 pages, 264912 bytes).
 PDF statistics:
- 146 PDF objects out of 1000 (max. 8388607)
- 102 compressed objects within 2 object streams
+ 155 PDF objects out of 1000 (max. 8388607)
+ 108 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 
