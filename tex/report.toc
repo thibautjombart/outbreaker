@@ -11,10 +11,11 @@
 \contentsline {section}{\numberline {2.4}Simulating Outbreaks With Group Structure}{15}
 \contentsline {chapter}{\numberline {3}Results}{18}
 \contentsline {section}{\numberline {3.1}Testing Procedures}{18}
-\contentsline {section}{\numberline {3.2}Simulating an Ebola Outbreak}{18}
-\contentsline {section}{\numberline {3.3}Equine Flu Data}{19}
-\contentsline {chapter}{\numberline {4}Discussion}{20}
-\contentsline {section}{\numberline {4.1}Discuss Results}{20}
-\contentsline {section}{\numberline {4.2}Modelling Assumptions}{20}
-\contentsline {section}{\numberline {4.3}Modelling Limitations}{21}
-\contentsline {section}{\numberline {4.4}Not finished yet}{21}
+\contentsline {section}{\numberline {3.2}Estimating Transmission Probabilities}{18}
+\contentsline {section}{\numberline {3.3}Inferring Correct Ancestries}{20}
+\contentsline {section}{\numberline {3.4}Equine Flu Data}{21}
+\contentsline {chapter}{\numberline {4}Discussion}{23}
+\contentsline {section}{\numberline {4.1}Discuss Results}{23}
+\contentsline {section}{\numberline {4.2}Modelling Assumptions}{23}
+\contentsline {section}{\numberline {4.3}Modelling Limitations}{24}
+\contentsline {section}{\numberline {4.4}Not finished yet}{24}
