@@ -185,18 +185,85 @@ BOX/VIOLIN PLOT HERE
 
 
 \section{Inferring Correct Ancestries}
-We also hoped to show that the spatial likelihood could help to infer correct ancestries in situations where the genetic and epidemiological likelihoods were not so effective. These situations are characterised by an outbreak where there not much mutation occurring in the DNA sequences between cases and a fairly long generation time. In these situations the original outbreaker model without spatial data struggles to infer the correct ancestor for two reasons. The genetic likelihood cannot narrow down the ancestor because there are few mutations between cases so most previous cases will have very similar genetic likelihoods. Secondly, the epidemiological likelihood struggles because the fairly long generation time means that for a newly infected case we have to look quite far back into the past for potential ancestors, this will bring up many candidate ancestors and we have no other way to determine who the correct ancestor is likely to be.
+We also hoped to show that the spatial likelihood could help to infer correct ancestries in situations where the genetic and epidemiological likelihoods were not so effective. These situations are characterised by an outbreak where there not much mutation occurring in the DNA sequences between cases and a fairly long generation time. In these situations the original outbreaker model without spatial data struggles to infer the correct ancestor for two reasons. The genetic likelihood cannot narrow down the ancestor because there are few mutations between cases so most previous cases will have very similar genetic likelihoods. Secondly, the epidemiological likelihood struggles because the fairly long generation time means that for a newly infected case we have to look quite far back into the past for potential ancestors, this will bring up many candidate ancestors and we have no other way to determine who the correct ancestor is likely to be. In the transmission tree below, if there are not many mutations between cases, we would have trouble inferring an ancestor out of cases 1 to 5.
 \\
-PICTURE OF THIS GOES HERE
-\\
-The group likelihood can help in this situation if the cases are divided into groups and we have are confident of what the group transmission probabilities in the situation are. If we are sure that most transmission takes place within groups we could provide a prior that heavily promotes unequal transmission probabilities, this can give us another way of determining the most likely ancestor of a case when the genetic and epidemiological likelihoods are not useful.  An unequal transmission probability prior will reward candidate transmission probabilities that are unequal, this gives a transmission probability matrix with values that are more unequal (because there is a higher probability of accepting candidate probability values that are more unequal due to our specified prior). If the data has a true spatial structure where transmission happens overwhelmingly within groups this will be inferred quickly by the model because it is encouraged by the prior. Therefore when we go to assess the group likelihood of a particular ancestry, it will give a much higher likelihood value to two cases within the same group. Returning to the scenario from the previous paragraph, if the newly infected case belongs to group A and there are 5 candidate ancestors, one of whom belongs to group A, then the likelihood of the connection between the two cases from group A will be much higher and therefore outbreaker will infer this ancestry. Therefore if our prior knowledge that the transmission rates are very unequal is true then we will have biased outbreaker towards the correct ancestries based on their group membership. This is how the spatial structure of the data and a strong prior can help outbreaker infer correct ancestries in certain situations where the other data is not as useful.
-\\
-ANOTHER PICTURE
-\\
-To test this we created datasets that had small groups with 3-4 people in (households) and one larger group (the community), the true transmission probabilities were such that cases with a household had very high probabilities of infecting individuals in the same household, a much lower probability of infecting individuals in the community and an extremely low probability of infecting individuals in other households. Cases in the community had a reasonable probability of infecting others in the community and the rest of the probability was assigned equally to infected a member from each household. The aim of this was to try and create datasets where most transmission happened within households and infection spread from household to household via the community where the equal probability of moving to a new household modelled random mixing in a community setting. In these datasets there would be several new cases occurring in different households at the same time, if we take into account the household structure then we would assume that a new case in household A was infected by a previous case in household A. If we do not have any spatial framework in outbreaker then we have a collection of cases that happened around the same time with barely any differences in the DNA sequences between them. The transmission tree below is from such a dataset, the node colours represent the group that the case belongs to. The light blue nodes are members of the community.
-\\
-TREE GOES HERE
-\\
+\begin{center}
+\begin{tikzpicture}
+	\node at (0,0) (1){};
+	\node at (4.5,0) (2){};
+	\node at (0,3) [circle, draw=blue!50, fill=blue!20, thick] (c1) {};
+	\node at (1.5,4.1) [circle, draw=blue!50, fill=blue!20, thick] (c2) {};
+	\node at (1,1.9) [circle, draw=blue!50, fill=blue!20, thick] (c3) {};
+	\node at (2.9,4.7) [circle, draw=blue!50, fill=blue!20, thick] (c4) {1};
+	\node at (2.7,4.2) [circle, draw=blue!50, fill=blue!20, thick] (c5) {2};
+	\node at (2.3,3.8) [circle, draw=blue!50, fill=blue!20, thick] (c6) {3};	
+	\node at (2.1,1.2) [circle, draw=blue!50, fill=blue!20, thick] (c7) {4};
+	\node at (2.4,2.8) [circle, draw=blue!50, fill=blue!20, thick] (c8) {5};		
+	\node at (4.5,3) [circle, draw=blue!50, fill=blue!20, thick] (c9) {?};
+	\node at (2,2) (3) {};
+	\node at (4.5,2) (4) {};
+	
+	\draw [<->] (3) -- (4) node[midway,below] {Avg. Gen Time};
+	\draw [->] (1) -- (2) node[midway, above] {Time};
+	\draw [->] (c1) -- (c2); 
+	\draw [->] (c1) -- (c3);
+	\draw [->] (c2) -- (c4); 
+	\draw [->] (c2) -- (c5); 
+	\draw [->] (c2) -- (c6);
+	\draw [->] (c3) -- (c7); 
+	\draw [->] (c3) -- (c8);
+	\draw [->] (c4) -- (c9)[dashed]; 
+	\draw [->] (c5) -- (c9)[dashed]; 
+	\draw [->] (c6) -- (c9)[dashed];
+	\draw [->] (c7) -- (c9)[dashed]; 
+	\draw [->] (c8) -- (c9)[dashed];
+	
+	
+	
+	 	 			 
+\end{tikzpicture}
+\end{center}	
+The group likelihood can help in this situation if the cases are divided into groups and we have are confident of what the group transmission probabilities in the situation are. If we are sure that most transmission takes place within groups we could provide a prior that heavily promotes unequal transmission probabilities, this can give us another way of determining the most likely ancestor of a case when the genetic and epidemiological likelihoods are not useful.  An unequal transmission probability prior will reward candidate transmission probabilities that are unequal, this gives a transmission probability matrix with values that are more unequal (because there is a higher probability of accepting candidate probability values that are more unequal due to our specified prior). If the data has a true spatial structure where transmission happens overwhelmingly within groups this will be inferred quickly by the model because it is encouraged by the prior. Therefore when we go to assess the group likelihood of a particular ancestry, it will give a much higher likelihood value to two cases within the same group. Returning to the scenario from the previous paragraph, if the newly infected case belongs to group A and there are 5 candidate ancestors, one of whom belongs to group A, then the likelihood of the connection between the two cases from group A will be much higher and therefore outbreaker will infer this ancestry. Therefore if our prior knowledge that the transmission rates are very unequal is true then we will have biased outbreaker towards the correct ancestries based on their group membership. This is how the spatial structure of the data and a strong prior can help outbreaker infer correct ancestries in certain situations where the other data is not as useful. In the transmission tree below the nodes are coloured by group membership. If we are trying to guess an ancestor for the new case and we suspect that most transmission occurs within groups then we would guess node 5. If our prior knowledge is accurate then we are making a sensible guess because it would be most likely to have been node 5 that infected our new case. Adding in a spatial structure and prior knowledge has helped us infer the correct ancestor.
+\begin{center}
+\begin{tikzpicture}
+	\node at (0,0) (1){};
+	\node at (4.5,0) (2){};
+	\node at (0,3) [circle, draw=yellow!50, fill=yellow!20, thick] (c1) {};
+	\node at (1.5,4.1) [circle, draw=red!50, fill=red!20, thick] (c2) {};
+	\node at (1,1.9) [circle, draw=yellow!50, fill=yellow!20, thick] (c3) {};
+	\node at (2.9,4.7) [circle, draw=red!50, fill=red!20, thick] (c4) {1};
+	\node at (2.7,4.2) [circle, draw=red!50, fill=red!20, thick] (c5) {2};
+	\node at (2.3,3.8) [circle, draw=green!50, fill=green!20, thick] (c6) {3};	
+	\node at (2.1,1.2) [circle, draw=orange!50, fill=orange!20, thick] (c7) {4};
+	\node at (2.4,2.8) [circle, draw=yellow!50, fill=yellow!20, thick] (c8) {5};		
+	\node at (4.5,3) [circle, draw=yellow!50, fill=yellow!20, thick] (c9) {?};
+	\node at (2,2) (3) {};
+	\node at (4.5,2) (4) {};
+	
+	\draw [<->] (3) -- (4) node[midway,below] {Avg. Gen Time};
+	\draw [->] (1) -- (2) node[midway, above] {Time};
+	\draw [->] (c1) -- (c2); 
+	\draw [->] (c1) -- (c3);
+	\draw [->] (c2) -- (c4); 
+	\draw [->] (c2) -- (c5); 
+	\draw [->] (c2) -- (c6);
+	\draw [->] (c3) -- (c7); 
+	\draw [->] (c3) -- (c8);
+	\draw [->] (c4) -- (c9)[dashed]; 
+	\draw [->] (c5) -- (c9)[dashed]; 
+	\draw [->] (c6) -- (c9)[dashed];
+	\draw [->] (c7) -- (c9)[dashed]; 
+	\draw [->] (c8) -- (c9);
+	
+	
+	
+	 	 			 
+\end{tikzpicture}
+\end{center}
+To test this we created datasets that had small groups with 3-4 people in (households) and one larger group (the community), the true transmission probabilities were such that cases with a household had very high probabilities of infecting individuals in the same household, a much lower probability of infecting individuals in the community and an extremely low probability of infecting individuals in other households. Cases in the community had a reasonable probability of infecting others in the community and the rest of the probability was assigned equally to infected a member from each household. The aim of this was to try and create datasets where most transmission happened within households and infection spread from household to household via the community where the equal probability of moving to a new household modelled random mixing in a community setting. In these datasets there would be several new cases occurring in different households at the same time, if we take into account the household structure then we would assume that a new case in household A was infected by a previous case in household A. If we do not have any spatial framework in outbreaker then we have a collection of cases that happened around the same time with barely any differences in the DNA sequences between them. The transmission tree below is from such a dataset, the node colours represent the group that the case belongs to. The light blue nodes are members of the community, other colours are members of different households.
+\begin{center}
+\includegraphics[scale=0.6]{ancestree.png}
+\end{center}
 As described, most transmission takes place between members of the same household and the infection mostly moves from household to household via the community. We ran two different instances of outbreaker on this dataset to see which one could infer the correct ancestries better, one run had no spatial data and the other had spatial data and priors that strongly favoured unequal transmission probabilities.
 
 
