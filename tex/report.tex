@@ -262,10 +262,15 @@ The group likelihood can help in this situation if the cases are divided into gr
 \end{center}
 To test this we created datasets that had small groups with 3-4 people in (households) and one larger group (the community), the true transmission probabilities were such that cases with a household had very high probabilities of infecting individuals in the same household, a much lower probability of infecting individuals in the community and an extremely low probability of infecting individuals in other households. Cases in the community had a reasonable probability of infecting others in the community and the rest of the probability was assigned equally to infected a member from each household. The aim of this was to try and create datasets where most transmission happened within households and infection spread from household to household via the community where the equal probability of moving to a new household modelled random mixing in a community setting. In these datasets there would be several new cases occurring in different households at the same time, if we take into account the household structure then we would assume that a new case in household A was infected by a previous case in household A. If we do not have any spatial framework in outbreaker then we have a collection of cases that happened around the same time with barely any differences in the DNA sequences between them. The transmission tree below is from such a dataset, the node colours represent the group that the case belongs to. The light blue nodes are members of the community, other colours are members of different households.
 \begin{center}
-\includegraphics[scale=0.6]{ancestree.png}
+\includegraphics[scale=0.5]{ancestree.png}
 \end{center}
-As described, most transmission takes place between members of the same household and the infection mostly moves from household to household via the community. We ran two different instances of outbreaker on this dataset to see which one could infer the correct ancestries better, one run had no spatial data and the other had spatial data and priors that strongly favoured unequal transmission probabilities.
-
+As described, most transmission takes place between members of the same household and the infection mostly moves from household to household via the community. We ran two different instances of outbreaker on this dataset to see which one could infer the correct ancestries better, one run had no spatial data and the other had spatial data and priors that strongly favoured unequal transmission probabilities. For this ancestry the outbreaker run with spatial data inferred 42\% of correct ancestries (11 out of 25) whereas the run without spatial data inferred 23\% of correct ancestries (6 out of 25). The plots below show the consensus transmission trees obtained from outbreaker's {\tt get.tTree()} function. The nodes are again coloured based on group membership and the edges are coloured green if they are correct inferences of the true ancestry above.
+\begin{center}
+\includegraphics[scale=0.5]{tree_with_grps.png}
+\end{center}
+\begin{center}
+\includegraphics[scale=0.5]{tree_no_grps.png}
+\end{center}
 
 
 
