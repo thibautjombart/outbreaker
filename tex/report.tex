@@ -1,12 +1,16 @@
 \documentclass[11pt,a4paper]{report}
 \usepackage{tikz}
 \usepackage[round]{natbib}
+\usepackage{amsmath}
 \title{Adding a spatial element to Outbreaker}
 \begin{document}
 \maketitle
 \chapter*{Statement of Originality}
 \thispagestyle{empty}
-\noindent I certify that this thesis, and the research to which it refers, are the product of my own work, conducted during the current year of the MRes in Biomedical Research at Imperial College London. Any ideas or quotations from the work of other people, published or otherwise, or from my own previous work are fully acknowledged in accordance with the standard referencing practices of the discipline. The Outbreaker model referenced in this thesis is the work of Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser and Neil Ferguson at the Department of Infectious Disease Epidemiology at Imperial College London.
+\noindent I certify that this thesis, and the research to which it refers, are the product of my own work, conducted during the current year of the MRes in Biomedical Research at Imperial College London. Any ideas or quotations from the work of other people, published or otherwise, or from my own previous work are fully acknowledged in accordance with the standard referencing practices of the discipline. 
+
+
+The Outbreaker model referenced in this thesis is the work of Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser and Neil Ferguson at the Department of Infectious Disease Epidemiology at Imperial College London. For this thesis I conceived the new spatial likelihood, programmed this likelihood into the existing code, created all simulations and performed all resulting analysis myself.
 \newpage
 
 \chapter*{Abstract}
@@ -38,16 +42,16 @@ In this paper we will add a spatial framework to an existing general Bayesian mo
 The aim of this project is to see if information about the spatial structure of a population can be added to the Outbreaker model of \citet{outbrkr}, to estimate information about the rates of transmission between different groups or to further improve the process of deriving transmission tree samples from the posterior distribution using outbreak data. By adding this framework we will introduce parameters that will estimate these group transmission rates. In this first section we go through the previous body of work which led up to the development of the Outbreaker model before introducing the modelling techniques which are utilised in the Outbreaker model.
 
 
-\section{A Brief History}
-The Outbreaker package uses a Markov chain Monte Carlo process to try and sample from the posterior probability distribution of various parameters and pieces of augmented data. Specifically, it uses DNA sequence data and case data collected from an outbreak along with a generation time distribution and a time-to-collection distribution to infer the immediate ancestor of each case. These likely ancestors can be combined into a transmission tree, and if we are fairly confident in the truth of our assembled transmission tree then we can infer further properties about the outbreak from it. These properties include the rate of mutation of nucleotides in the DNA sequence of the pathogen and the effective reproduction numbers of individuals through time (which has important properties concerning the potential of an outbreak to become an epidemic [CITATION HERE Christophe's review paper?]).
+\section{Past Work}
+The Outbreaker package uses a Markov chain Monte Carlo process to try and sample from the posterior probability distribution of various parameters and pieces of augmented data. Specifically, it uses DNA sequence data and case data collected from an outbreak along with a generation time distribution and a time-to-collection distribution to infer the immediate ancestor of each case. These likely ancestors can be combined into a transmission tree, and if we are fairly confident in the truth of our assembled transmission tree then we can infer further properties about the outbreak from it. These properties include the rate of mutation of nucleotides in the DNA sequence of the pathogen and the effective reproduction numbers of individuals through time (which has important properties concerning the potential of an outbreak to become an epidemic, see \citet{Grassly08}).
 
 The Outbreaker model builds upon previous methods that use a similar process of assigning a likelihood value to transmission trees (out of potentially thousands of tree configurations) and then searching for the tree with the maximum likelihood value or using the likelihood of a tree to sample from the posterior distribution over all possible trees given the data we have collected. The earliest implementation of this approach was \citet{Haydon03}, who proposed a likelihood function for transmission trees which might define the spread of foot-and-mouth disease between farms in the UK. Their likelihood function for each transmission event is a product of two independent terms. The first term gives a likelihood value based upon whether the timings of the infection between two farms match well. \citet{Haydon03} assigned a value based upon how well the period during which farm A was infectious overlaps with the predicted time period during which farm B was infected. The better these time periods overlap, the more likely this transmission event was. The second term gives a likelihood value based on how far apart the two farms are, seeing as animals on different farms do not freely mix (especially during an outbreak) then there is only the possibility of an aerial infection, this is more plausible the closer the two farms are. For each tree they considered the likelihood of all of the separate events in the tree and came to an overall likelihood for the tree. Finally, \citet{Haydon03} proposed an algorithm which would work towards finding the transmission tree with the highest overall likelihood.
 
-As genetic sequencing became faster and cheaper [IS THIS ASSUMED KNOWLEDGE?], Cottam et al [REFERENCE PROCEEDINGS] could expand upon this previous model by including a genetic likelihood term. Now that most case data also included a DNA sequence of the pathogen then the DNA sequences could be compared to see if they could help figure out the immediate ancestor of each case. Infectious diseases mutate quickly, therefore mutations in the DNA sequences can occur between each generation of cases in an outbreak. We can compare the DNA sequences and produce a likelihood that one case is the ancestor of another case depending on how similar the two sampled DNA sequences are, the more similar two sequences are the more likely that one is an ancestor of the other. Cottam et al [ANOTHER CITATION] proceeded by selecting the transmission tree configurations which had the highest genetic likelihoods and then using the previous epidemiological likelihood (based on infection and collection times by \citet{Haydon03}) to choose 4 final trees which accounted for 95\% of the sum total of the likelihood for every possible tree. Further alterations to the model were made by \citet{Ypma13}, who combined the genetic and epidemiological likelihoods into a single term, therefore removing the assumption that the two likelihoods are independent. This is an important assumption to consider because more mutations will occur in a DNA sequence over longer periods of time so we expect that there will be some correlation between the generation times and the number of mutations that we find.
+As genetic sequencing became faster and cheaper, \citet{Cottam08} could expand upon this previous model by including a genetic likelihood term. Now that most case data also included a DNA sequence of the pathogen then the DNA sequences could be compared to see if they could help figure out the immediate ancestor of each case. Infectious diseases mutate quickly, therefore mutations in the DNA sequences can occur between each generation of cases in an outbreak. We can compare the DNA sequences and produce a likelihood that one case is the ancestor of another case depending on how similar the two sampled DNA sequences are, the more similar two sequences are the more likely that one is an ancestor of the other. \citet{Cottam08} proceeded by selecting the transmission tree configurations which had the highest genetic likelihoods and then using the previous epidemiological likelihood (based on infection and collection times by \citet{Haydon03}) to choose 4 final trees which accounted for 95\% of the sum total of the likelihood for every possible tree. Further alterations to the model were made by \citet{Ypma13}, who combined the genetic and epidemiological likelihoods into a single term, therefore removing the assumption that the two likelihoods are independent. This is an important assumption to consider because more mutations will occur in a DNA sequence over longer periods of time so we expect that there will be some correlation between the generation times and the number of mutations that we find.
 
 In the same year \citet{Morelli12} used a Markov Chain Monte Carlo (MCMC) approach to sample from the posterior distribution of transmission trees given the collected data. This technique begins with a tree and then moves the suspected ancestors of each case around according to certain probability rules to form a new tree. The likelihood of both of these trees are calculated and the new tree is accepted as a sample with a probability calculated from the ratio of the two likelihoods. The chain and the movement rules are constructed so that the probability of accepting a tree as a sample is equal to the posterior probability of the tree given the data. We can then look at the trees with the highest posterior probabilities or consider the posterior probability that one case is an ancestor of another.
 
-The Outbreaker model is a combination of these approaches, it uses an MCMC approach with independent genetic and epidemiological likelihoods. It also allows for unsampled cases to occur between two cases and a more complex account of the DNA sequence mutations. Unlike the previous approaches it can also be generalised into a package for the programming language R [CITE R PROPERLY] which means it can be run on personal computers by people with less technical computing skills within a reasonable amount of time. To understand the Outbreaker model we must first look at MCMC methods in general and understand how we can use an MCMC method to sample from a specified distribution.
+The Outbreaker model is a combination of these approaches, it uses an MCMC approach with independent genetic and epidemiological likelihoods. It also allows for unsampled cases to occur between two cases and a more complex account of the DNA sequence mutations. Unlike the previous approaches it can also be generalised into a package for the programming language R (\citet{R14}) which means it can be run on personal computers by people with less technical computing skills within a reasonable amount of time. To understand the Outbreaker model we must first look at MCMC methods in general and understand how we can use an MCMC method to sample from a specified distribution.
 
 \section{Markov Chain Monte Carlo Processes}
 Markov Chain Monte Carlo processes are a combination of two statistical tools, the easiest of the two is Monte Carlo methods. Monte Carlo methods aim to approximate values such as the expected value of a probability distribution by using a large number of samples from that distribution. To work out the expected value of a probability distribution analytically we would integrate over every possible value in the distribution multiplied by the probability of it occurring:
@@ -84,7 +88,8 @@ Outbreaker uses the Metropolis-Hastings algorithm to sample from the posterior d
 
 \chapter{Methods}
 \section{Group Data and Parameters}
-As previously mentioned, certain outbreak scenarios lend themselves to a model whereby the population is separated into distinct groups, people in these groups could have different levels of contact between members of their own group and members of other groups. This could potentially lead to different rates of transmission within and between different groups. One example of this could be groups of patients on different wards of a hospital, if someone on one ward falls ill it seems plausible that they are more likely to transmit this infection to another patient on their own ward rather than a patient on a different ward. If the outbreak spreads through several wards we could use our knowledge of what ward cases are on to assess the probability that one case infected another and help us construct a transmission tree. Another example could be to separate cases into groups based on their age, several studies have looked into how the probability of common cold transmission differs from child to child, child to adult, adult to child and adult to adult [CITE THE STUDIES PLZ].
+As previously mentioned, certain outbreak scenarios lend themselves to a model whereby the population is separated into distinct groups, people in these groups could have different levels of contact between members of their own group and members of other groups. This could potentially lead to different rates of transmission within and between different groups. One example of this could be groups of patients on different wards of a hospital, if someone on one ward falls ill it seems plausible that they are more likely to transmit this infection to another patient on their own ward rather than a patient on a different ward. If the outbreak spreads through several wards we could use our knowledge of what ward cases are on to assess the probability that one case infected another and help us construct a transmission tree. Another example could be to separate cases into groups based on their age, there is some evidence from \citet{Glass11} that the reproduction numbers for adults and children differ for pandemic influenza outbreaks, suggesting that transmission rates within and between adults and children may differ.
+
 
 We represent these differing rates of transmission between $l$ groups as parameters in an $l \times l$ transmission probability matrix where the element $p_{12}$ is the probability that a case's immediate ancestor is in group 2 given that the case is in group 1.
 \[ \left( \begin{array}{cccc}
@@ -141,13 +146,13 @@ Having implemented this method in simOutbreak, the user can now pass a matrix to
 1 & 0 & 0 \\
 \end{array} \right) \]
 \begin{center}
-\includegraphics[width=180px]{treexample.png}
+\includegraphics[scale=0.8]{treexample.png}
 \end{center}
 We can now go on to generate some data to see how the method performs on generated data and data from a real outbreak with spatial structure.
 
 \chapter{Results}
 \section{Testing Procedures}
-We tested the extended method on simulated data with a spatial structure generated by the new simOutbreak function. The efficacy of outbreaker for reconstructing transmission trees in different situations has been researched before in [cite outbreaker paper] so we kept our focus on results relating to the new spatial framework. There were two principle aims of our testing: the first was to see how well outbreaker estimated the transmission probabilities between groups for datasets where the correct ancestries are already well determined by the DNA sequence data; the second was to see if providing the model with strong and correct priors for the group transmission probabilities helped infer correct ancestries for datasets which have a strong spatial signal and where DNA sequence data is not as advantageous as usual. 
+We tested the extended method on simulated data with a spatial structure generated by the new simOutbreak function. The efficacy of outbreaker for reconstructing transmission trees in different situations has been researched before in \citet{outbrkr} so we kept our focus on results relating to the new spatial framework. There were two principle aims of our testing: the first was to see how well outbreaker estimated the transmission probabilities between groups for datasets where the correct ancestries are already well determined by the DNA sequence data; the second was to see if providing the model with strong and correct priors for the group transmission probabilities helped infer correct ancestries for datasets which have a strong spatial signal and where DNA sequence data is not as advantageous as usual. 
 
 \section{Estimating Transmission Probabilities}
 
@@ -156,16 +161,22 @@ For the first set of simulations we required datasets where outbreaker could alr
 
 
 We used an imagined scenario of collecting outbreak data from districts within a city in West Africa during the 2014 Ebola Virus Disease (EVD) outbreak. The study of the outbreak led the \citet{Ebola14} to hypothesise that the spread of EVD was in part due to a large amount of population movement between cities in bordering countries. We aimed to recreate this migration led transmission on a smaller scale between districts in a city. We created datasets where infected individuals are divided into groups based upon their district of residence and the probabilities of transmission between groups is dependent on the amount people travelling between the two districts. If many people commute between districts A and B regularly then it is more likely that an individual unknowingly infected with EVD will travel from district A to district B (or vice versa) and transmit EVD to the people who live there during their trip. To make the scenario as realistic as possible  we used the estimated epidemiological properties of EVD estimated during the recent analysis by \citet{Ebola14}.
-
-\begin{tabular}{| c | c | c |}
+\begin{center}
+\begin{tabular}{| l | p{4cm} | p{4cm} |}
+\hline
 Parameter & Value & Source \\
+\hline
 Serial Interval & Gamma distribution with mean = 13.5, s.d. = 9.2 & \citet{Ebola14} \\
-$R0$ & 1.9 & \citet{Ebola14} \\
+\hline
+$R0$ & 2.1 & \citet{Ebola14} \\
+\hline
 Mutation Rates & Substitution rate (transversions) per site per day =  5.479452e-06 & \citet{Gire14} \\
-
+\hline
+Sequence Length & 19000 bases & \citet{Volchkov99} \\
+\hline
 \end{tabular}
-
-We created NUMBER datasets using these parameters and ran several instances of outbreaker on each dataset. For each dataset outbreaker was run using DNA and spatial data, DNA data only, spatial data only and neither of the two types of data (leaving only dates of symptom onset and the epidemiological likelihood of the model). We then analysed the proportion of correct ancestries inferred on each run for each dataset to check that the transmission tree was adequately inferred using DNA sequence data alone and that the outbreaker model including the spatial framework was behaving correctly. The violin plot below shows the proportions of correct ancestries by each run over all of the simulated datasets. 
+\end{center}
+We created 426 datasets using these parameters and ran several instances of outbreaker on each dataset. For each dataset outbreaker was run using DNA and spatial data, DNA data only, spatial data only and neither of the two types of data (leaving only dates of symptom onset and the epidemiological likelihood of the model). We then analysed the proportion of correct ancestries inferred on each run for each dataset to check that the transmission tree was adequately inferred using DNA sequence data alone and that the outbreaker model including the spatial framework was behaving correctly. The violin plot below shows the proportions of correct ancestries by each run over all of the simulated datasets. 
 \begin{center}
 \includegraphics[scale=0.6]{violin_colours.png}
 \end{center}
@@ -173,14 +184,34 @@ In line with previous results from \citet{outbrkr}, outbreaker infers a much hig
 \begin{center}
 \includegraphics[scale=0.6]{trace.png}
 \end{center}
-Once we were satisfied that the extended outbreaker model was running properly we could then begin to scrutinise the posterior density samples for the transmission probability parameters. Each simulation was generated using the same transmission probability matrix but the number of cases varied so the simulations as a whole should give a good idea of how well the parameters are inferred in a variety of situations. Our first step in evaluating the posterior samples for each run was to see in the true parameter value (used to generate the dataset) fell inside the 95\% equal-tails interval, we then counted how many times this occurred for each parameter over all of the simulations to give us a rough idea of how often outbreaker infers a posterior distribution with a reasonable probability of giving the true parameter value.
-\\
-SOME KIND OF PLOT OR MATRIX SHOWING RESULTS HERE
-\\
-We also calculated the posterior sample median for each transmission probability parameter and produced a BOXPLOT/VIOLIN PLOT to describe where the sample medians fell over all of the simulations.
-\\
-BOX/VIOLIN PLOT HERE
-\\
+Once we were satisfied that the extended outbreaker model was running properly we could then begin to scrutinise the posterior density samples for the transmission probability parameters. Each simulation was generated using the same transmission probability matrix but the number of cases varied so the simulations as a whole should give a good idea of how well the parameters are inferred in a variety of situations. Our first step in evaluating the posterior samples for each run was to see in the true parameter value (used to generate the dataset) fell inside the 95\% equal-tails interval, we then counted how many times this occurred for each parameter over all of the simulations to give us a rough idea of how often outbreaker infers a posterior distribution with a reasonable probability of giving the true parameter value. The matrix of true transmission parameters is as follows:
+
+\[ \begin{pmatrix}
+	0.65 & 0.1 & 0.15 & 0.1 \\
+	0.1 & 0.6 & 0.1 & 0.2 \\
+	0.05 & 0.15 & 0.4 & 0.4 \\
+	0.15 & 0.05 & 0.4 & 0.4 \\
+\end{pmatrix} \]
+The matrix below shows the corresponding proportion of times that the true parameter was within the 95\% equal-tails interval of each run.
+\[\begin{pmatrix}
+0.8 & 0.87 & 0.97 & 0.99 \\
+0.86 & 0.89 & 0.99 & 0.89 \\
+0.54 & 0.88 & 0.88 & 0.91 \\
+0.89 & 0.48 & 0.91 & 0.87 \\
+\end{pmatrix}\]
+We also calculated the posterior sample median for each transmission probability parameter and produced a boxplot to describe where the sample medians fell over all of the simulations:
+\begin{center}
+\includegraphics[scale=0.6]{row1.png}
+\end{center}
+\begin{center}
+\includegraphics[scale=0.6]{row2.png}
+\end{center}
+\begin{center}
+\includegraphics[scale=0.6]{row3.png}
+\end{center}
+\begin{center}
+\includegraphics[scale=0.6]{row4.png}
+\end{center}
 
 
 
@@ -275,7 +306,15 @@ As described, most transmission takes place between members of the same househol
 
 
 \chapter{Discussion}
-\section{Discuss Results}
+\section{Results Analysis}
+\subsection{Estimating Transmission Parameters}
+The results of the EVD spatial simulations show that with uninformative priors the model is able to infer transmission probability parameters well where the true parameter values are greater than 0.05. For the case where the true parameter value was $0.05$ the true parameter value only fell inside the 95\% equal-tails interval of the posterior samples around half of the time. One explanation for this could be that the priors used in the test were uninformative which means that there was a bias in the model towards equal transmission probabilities within a row. We can see from the boxplots of the posterior medians for each simulation that the posterior samples for elements (3,2) and (4,1) are slightly lower than the other elements in their respective rows, perhaps a prior which favoured more unequal probabilities across rows would allow for more accurate inference of very small transmission probabilities.
+
+One area the model did well in was inferring the larger transmission probabilities of elements (1,1) and (2,2). The true parameter was within the equal-tails interval for each run in the majority of cases, although if we study the boxplots of the posterior medians we can see that the posterior medians vary a lot between runs. This suggests that the equal-tails intervals for these elements were quite wide for many runs because there must be cases where the posterior median was not close to the true parameter value but the true parameter value was still in the equal-tails interval of the posterior. The posterior median boxplots for rows 1 and 2 do not show the same features for other parameters, this means that the output of the model is still suggesting that the elements (1,1) and (2,2) could be larger than the others even if the posterior median is not as large as it should be. This could suggest to people using the model that transmission probabilities are not equal even if it does not deliver an accurate inference of the true parameter values.
+
+\subsection{Inferring Correct Ancestries}
+For the particular outbreak shown in the results section, adding the spatial framework to outbreaker greatly improved the proportion of correct ancestries inferred by outbreaker. Other datasets with a similar spatial signal and outbreak properties are also much better reconstructed by the extended outbreaker model. The benefits of including spatial data can be seen from the consensus ancestries in the results section, given what we know about the rates of transmission between groups the outbreaker model with the spatial likelihood produces more sensible results in several cases. The spatial data has caused outbreaker to infer the correct ancestry between cases 16 and 22, it has also caused outbreaker to guess an ancestry from 16 to 23 which is a sensible inference since it was unlikely that the true ancestry would look as it does with two separate infections of the same household (this is unlikely because households are small relative to the overall population so if two members of a household are infected it is very unlikely that the individual who infected the third member would no be one of the other two members). However, the majority of the ancestries correctly inferred by outbreaker with spatial data which were not also inferred by outbreaker without spatial data are transmission events between members of the community and members of households. One explanation for this could be that correct (or more sensible) inferences involving household members elsewhere in the tree made the the correct inferences between individuals 7 and 10 or 7 and 13 more probable. One feature that appeared during creating and testing the datasets was that there is no good general value for the spatial prior, some datasets were well reconstructed with a spatial prior of $\sim 1$ and the proportion of correct ancestries inferred got lower as the spatial prior got smaller. For other datasets the outbreaker model with spatial data performed similarly to the original outbreaker model when the spatial prior was equal to 1 and much better than the original model when the spatial prior was very small. Further study could perhaps enlighted us as to what features of the dataset can help us choose a good prior value.  
+
 \section{Modelling Assumptions}
 This way of modelling group structure makes some simplifying assumptions, it is important to recognise these assumptions and consider how they may effect the interpretation and usefulness of the model output. The first and main assumption is that the likelihood terms for the genetic, epidemiological and spatial data are independent, this would imply that we expect no correlation between the likelihoods for our data, yet we would actually expect there to be some correlation. We would expect cases which occur around a similar time to have a high epidemiological likelihood of transmission between each other, but this short time frame means that there has not been much time for the pathogen DNA sequences to diverge, therefore we would also see that some of these cases have similar pathogen DNA sequences and therefore a high genetic likelihood between them. As the Markov Chain approaches true transmission events we would see that the likelihoods rise and fall together, rather than being independent of each other. However, combining these likelihoods would be a very tricky process and would inevitably produce a more complex likelihood function - this has consequences in terms of computational effort when we attempt to compute the likelihood function for thousands of moves. It is also hard to gauge what sort of effect this assumption will have on the output of the model without computing a combined likelihood and comparing the results. One possibility is that having separate likelihoods which are correlated could inflate the overall likelihood value for a tree in places where the individual likelihoods are high. This could lead to a likelihood landscape with more drastic peaks and troughs, making it harder for the Markov Chain to jump between these areas of high likelihood.
 
@@ -349,10 +388,6 @@ I have called the unsampled case Alice but in reality we would know nothing abou
 If we have $n$ groups then calculating the group likelihood for a transmission event with $\kappa$ unsampled cases between them will require $n^\kappa$ individual calculations for each possible permutation of the different groups that the unsampled cases might belong to.
 
 
-
-Kappa >1
-Cartesian co-ordinates
-\citet{outbrkr}
 \bibliographystyle{plainnat}
 \bibliography{references}
 

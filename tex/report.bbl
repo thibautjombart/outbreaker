@@ -1,9 +1,37 @@
-\begin{thebibliography}{6}
+\begin{thebibliography}{12}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Cottam et~al.(2008)Cottam, Thébaud, Wadsworth, Gloster, Mansley,
+  Paton, King, and Haydon]{Cottam08}
+E.~Cottam, Gaël Thébaud, Jemma Wadsworth, John Gloster, Leonard Mansley,
+  David~J. Paton, Donald~P. King, and Daniel~T. Haydon.
+\newblock Integrating genetic and epidemiological data to determine
+  transmission pathways of foot-and-mouth disease virus.
+\newblock \emph{Proceedings. Biological sciences / The Royal Society},
+  275\penalty0 (1637):\penalty0 887--95, 2008.
+
+\bibitem[Gire et~al.(2014)Gire, Goba, Andersen, and Sealfon]{Gire14}
+Stephen~K. Gire, Augustine Goba, Kristian~G. Andersen, and Rachel S.~G.
+  Sealfon.
+\newblock Genomic surveillance elucidates ebola virus origin and transmission
+  during the 2014 outbreak.
+\newblock \emph{Science}, 345\penalty0 (6202):\penalty0 1369--1372, 2014.
+
+\bibitem[Glass et~al.(2011)Glass, Mercer, Nishiura, McBryde, and
+  Becker]{Glass11}
+K.~Glass, G.~N. Mercer, H.~Nishiura, E.~S. McBryde, and N.~G. Becker.
+\newblock Estimating reproduction numbers for adults and children from case
+  data.
+\newblock \emph{J. R. Soc. Interface}, 8:\penalty0 1248--1259, 2011.
+
+\bibitem[Grassly and Fraser(2008)]{Grassly08}
+Nicholas~C. Grassly and Christophe Fraser.
+\newblock Mathematical models of infectious diseases.
+\newblock \emph{Nature Reviews Microbiology}, 6:\penalty0 477--487, 2008.
 
 \bibitem[Haydon et~al.(2003)Haydon, Chase-Topping, Shaw, Matthews, Friar,
   Wilesmith, and J]{Haydon03}
@@ -32,12 +60,18 @@ Marco~J. Morelli, Gaël Thébaud, Joël Chadœuf, Donald~P. King, Daniel~T.
 \newblock \emph{PLoS Computational Biology}, 8\penalty0 (11):\penalty0
   e1002768, 2012.
 
-\bibitem[Team(2014)]{Ebola14}
-WHO Ebola~Response Team.
-\newblock Ebola virus disease in west africa - the first 9 months of the
-  epidemic and forward projections.
-\newblock \emph{The New England Journal of Medicine}, 371\penalty0
-  (16):\penalty0 1481--1495, 2014.
+\bibitem[R~Core~Team(2014)]{R14}
+The R~Core~Team.
+\newblock \emph{R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria, 2014.
+\newblock URL \url{http://www.R-project.org}.
+
+\bibitem[Volchkov et~al.(1999)Volchkov, Volchkova, Chepurnov, Blinov, Dolnik,
+  S.V., and Feldmann]{Volchkov99}
+V.~E. Volchkov, V.~A. Volchkova, A.~A. Chepurnov, V.M. Blinov, O.~Dolnik,
+  Netesov S.V., and H.~Feldmann.
+\newblock Characterization of the l gene and 5' trailer region of ebola virus.
+\newblock \emph{J. Gen. Biology}, 80:\penalty0 355--62, 1999.
 
 \bibitem[Voss(2014)]{Voss14}
 Jochen Voss.
@@ -45,6 +79,13 @@ Jochen Voss.
   Approach}.
 \newblock WIley Series in Computational Statistics. John Wiley and Sons Ltd,
   2014.
+
+\bibitem[WHO Ebola Response~Team(2014)]{Ebola14}
+The WHO Ebola Response~Team.
+\newblock Ebola virus disease in west africa - the first 9 months of the
+  epidemic and forward projections.
+\newblock \emph{The New England Journal of Medicine}, 371\penalty0
+  (16):\penalty0 1481--1495, 2014.
 
 \bibitem[Ypma et~al.(2013)Ypma, Marijn~van Ballegooijen, and Wallinga]{Ypma13}
 Rolf J.~F Ypma, W.~Marijn~van Ballegooijen, and J.~Wallinga.
