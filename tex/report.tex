@@ -166,13 +166,13 @@ Mutation Rates & Substitution rate (transversions) per site per day =  5.479452e
 \end{tabular}
 
 We created NUMBER datasets using these parameters and ran several instances of outbreaker on each dataset. For each dataset outbreaker was run using DNA and spatial data, DNA data only, spatial data only and neither of the two types of data (leaving only dates of symptom onset and the epidemiological likelihood of the model). We then analysed the proportion of correct ancestries inferred on each run for each dataset to check that the transmission tree was adequately inferred using DNA sequence data alone and that the outbreaker model including the spatial framework was behaving correctly. The violin plot below shows the proportions of correct ancestries by each run over all of the simulated datasets. 
-\\
-VIOLIN PLOT GOES HERE
-\\
+\begin{center}
+\includegraphics[scale=0.6]{violin_colours.png}
+\end{center}
 In line with previous results from \citet{outbrkr}, outbreaker infers a much higher proportion of correct ancestries when DNA sequence data is included. Comparing runs with and without spatial data also shows that the outbreaker model including the spatial framework performs as well as, if not very slightly better, than the original outbreaker model. We also checked the convergence of the model likelihood including the spatial likelihood for several datasets to ascertain that the model with the spatial data was mixing well and converged upon a posterior distribution suitably, an example of one of these MCMC traces is shown below. The outbreaker runs including spatial data had uninformative priors that suggested that all group transmission probabilities are equal. If all group transmission is equal we can conclude that dividing the cases into these groups does not provide us with any new information about the spatial dynamics of the outbreak. 
-\\
-TRACE GOES HERE
-\\
+\begin{center}
+\includegraphics[scale=0.6]{trace.png}
+\end{center}
 Once we were satisfied that the extended outbreaker model was running properly we could then begin to scrutinise the posterior density samples for the transmission probability parameters. Each simulation was generated using the same transmission probability matrix but the number of cases varied so the simulations as a whole should give a good idea of how well the parameters are inferred in a variety of situations. Our first step in evaluating the posterior samples for each run was to see in the true parameter value (used to generate the dataset) fell inside the 95\% equal-tails interval, we then counted how many times this occurred for each parameter over all of the simulations to give us a rough idea of how often outbreaker infers a posterior distribution with a reasonable probability of giving the true parameter value.
 \\
 SOME KIND OF PLOT OR MATRIX SHOWING RESULTS HERE
@@ -274,14 +274,6 @@ As described, most transmission takes place between members of the same househol
 
 
 
-
-
-
-\section{Equine Flu Data}
-To test the method on real outbreak data we used some of the dataset of the 2003 equine influenza outbreak in Newmarket provided with the R package OutbreakTools, the dataset contains pathogen DNA sequence data and sequence collection dates for 121 individuals in 25 different paddocks. We chose to define the group of each case to be their corresponding paddock number and took a subset of the data from the beginning of the outbreak (to keep group numbers small and the number of individuals in each group reasonable) and tried to reproduce the transmission tree inferred by [Joseph’s Equine Flu paper].
-
-
-
 \chapter{Discussion}
 \section{Discuss Results}
 \section{Modelling Assumptions}
@@ -291,12 +283,19 @@ A second, less worrying assumption is that transmission probabilities between gr
 
 
 \section{Modelling Limitations}
-In this section I will discuss constraints placed upon the model by adding the group structure framework and vice versa. The new parameters in the model cannot be considered too helpful if they unduly restrict other parts of the model. In this case the significant restraint placed on the rest of the model by the group transmission parameters is that we must assume that there are no unsampled cases between infected individuals, thus limiting the situations in which we can use the extended model to those where we can be sure that we have collected data on every case in an outbreak. These sorts of outbreak would be relatively small and in places where data can easily be collected, thankfully the imagined scenario of different wards in a hospital matches this description.
+The new parameters in the model cannot be considered too helpful if they unduly restrict other parts of the model. In this case the significant restraint placed on the rest of the model by the group transmission parameters is that we must assume that there are no unsampled cases between infected individuals, thus limiting the situations in which we can use the extended model to those where we can be sure that we have collected data on every case in an outbreak. These sorts of outbreak would be relatively small and in places where data can easily be collected, thankfully the types of scenario where we have imagined that this method will be useful match this description.
 
 When we are dealing with transmission between two cases where there are unsampled cases between them we do not know the group membership of the unsampled cases which causes problems when we come to assess the likelihood of this transmission event. For example if Rob is in red ward and Mary is in blue ward and we are considering the group likelihood of a transmission event between them with one unsampled generation, Alice say, then the group likelihood would be the product of two probabilities, that Rob gave the infection to Alice and then that Alice gave the infection to Mary. The problem is that we don't know what group Alice belongs to so we don't know what the relevant group transmission probabilities are.
 
 
-\section{Not finished yet}
+\chapter{Not finished yet}
+
+
+\section{Equine Flu Data}
+To test the method on real outbreak data we used some of the dataset of the 2003 equine influenza outbreak in Newmarket provided with the R package OutbreakTools, the dataset contains pathogen DNA sequence data and sequence collection dates for 121 individuals in 25 different paddocks. We chose to define the group of each case to be their corresponding paddock number and took a subset of the data from the beginning of the outbreak (to keep group numbers small and the number of individuals in each group reasonable) and tried to reproduce the transmission tree inferred by [Joseph’s Equine Flu paper].
+
+
+
 would sum the likelihoods that Rob infected Alice who then infected Mary for the case that Alice is a member of any possible group - in this case red or blue ward.\\
 For small values of $\kappa$ we can easily calculate the sum of these likelihoods, in the image below the group likelihood that Rob infected Mary would be
  \[ (P_{rb} \cdot P_{bb}) + (P_{rr} \cdot P_{rb}) \]
