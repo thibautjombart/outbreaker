@@ -1,23 +1,23 @@
-\contentsline {chapter}{\numberline {1}Introduction}{6}
-\contentsline {chapter}{\numberline {2}Methods}{8}
-\contentsline {section}{\numberline {2.1}Past Models}{8}
-\contentsline {section}{\numberline {2.2}Bayesian Statistics}{10}
-\contentsline {section}{\numberline {2.3}Markov Chain Monte Carlo Processes}{10}
-\contentsline {section}{\numberline {2.4}The Metropolis-Hastings Algorithm}{11}
-\contentsline {section}{\numberline {2.5}The Outbreaker MCMC Process}{12}
-\contentsline {section}{\numberline {2.6}Group Data and Parameters}{13}
-\contentsline {section}{\numberline {2.7}Group Likelihood}{13}
-\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{15}
-\contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{16}
-\contentsline {chapter}{\numberline {3}Results}{19}
-\contentsline {section}{\numberline {3.1}Testing Procedures}{19}
-\contentsline {section}{\numberline {3.2}Estimating Transmission Probabilities}{19}
-\contentsline {section}{\numberline {3.3}Inferring Correct Ancestries}{25}
-\contentsline {chapter}{\numberline {4}Discussion}{31}
-\contentsline {section}{\numberline {4.1}Results Analysis}{31}
-\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{31}
-\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{32}
-\contentsline {section}{\numberline {4.2}Modelling Assumptions}{32}
-\contentsline {section}{\numberline {4.3}Modelling Limitations}{33}
-\contentsline {chapter}{\numberline {5}Not finished yet}{35}
-\contentsline {section}{\numberline {5.1}Equine Flu Data}{35}
+\contentsline {chapter}{\numberline {1}Introduction}{7}
+\contentsline {chapter}{\numberline {2}Methods}{10}
+\contentsline {section}{\numberline {2.1}Past Models}{10}
+\contentsline {section}{\numberline {2.2}Bayesian Statistics}{13}
+\contentsline {section}{\numberline {2.3}Markov Chain Monte Carlo Processes}{13}
+\contentsline {section}{\numberline {2.4}The Metropolis-Hastings Algorithm}{15}
+\contentsline {section}{\numberline {2.5}The Outbreaker MCMC Process}{17}
+\contentsline {section}{\numberline {2.6}Group Data and Parameters}{17}
+\contentsline {section}{\numberline {2.7}Group Likelihood}{18}
+\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{20}
+\contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{22}
+\contentsline {chapter}{\numberline {3}Results}{26}
+\contentsline {section}{\numberline {3.1}Testing Procedures}{26}
+\contentsline {section}{\numberline {3.2}Simulation 1: Estimating Transmission Probabilities}{27}
+\contentsline {section}{\numberline {3.3}Inferring Correct Ancestries}{34}
+\contentsline {chapter}{\numberline {4}Discussion}{40}
+\contentsline {section}{\numberline {4.1}Results Analysis}{40}
+\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{40}
+\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{41}
+\contentsline {section}{\numberline {4.2}Modelling Assumptions}{42}
+\contentsline {section}{\numberline {4.3}Modelling Limitations}{44}
+\contentsline {chapter}{\numberline {5}Not finished yet}{45}
+\contentsline {section}{\numberline {5.1}Equine Flu Data}{45}
