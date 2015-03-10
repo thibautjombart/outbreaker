@@ -2,6 +2,7 @@
 \usepackage{tikz}
 \usepackage[round]{natbib}
 \usepackage{amsmath}
+\usepackage[doublespacing]{setspace}
 \title{Adding a spatial element to Outbreaker}
 \begin{document}
 \maketitle
@@ -148,16 +149,28 @@ This likelihood term is multiplied onto the existing likelihood term to give an 
 
 
 \section{Transmission Rate Matrix Move}
-We implemented a move for the transmission probabilities matrix in the MCMC algorithm which proposes new probabilities for each row of the matrix at a time, $l$ candidate probabilities are sampled from the Dirichlet distribution with concentration parameters equal to the old probability values in the chain multiplied by a constant value. This constant value is increased or decreased to keep the rate of acceptance of the move between 25 and 50\% for each row. The Dirichlet distribution is not symmetrical so we need to introduce a correction factor to account for the fact that in the transition density $p(x,y) \neq p(y,x)$. The prior distribution for each row is a symmetric Dirichlet distribution where all concentration parameters are equal and multiplied by a constant provided by the user. The multiplication constant reflects how confident the user is that the probabilities in the matrix are equal, larger values reflect a belief that the transmission probabilities are not equal between groups. This gives the following process for updating an element in the transmission rates matrix, it is the standard Metropolis-Hastings algorithm except we have taken the logarithm of values to preserve accuracy during computation:
+We implemented a move for the transmission probabilities matrix in the MCMC algorithm which proposes new probabilities for each row of the matrix at a time, $l$ candidate probabilities are sampled from the Dirichlet distribution with concentration parameters equal to the old probability values in the chain multiplied by a constant value. This constant value is increased or decreased to keep the rate of acceptance of the move between 25 and 50\% for each row. Because the Dirichlet distribution is not symmetrical we need to introduce a correction factor. The probability distribution function for the Dirichlet distribution for $K$ probabilities with concentration parameters $(\alpha_1,\cdots,\alpha_K)$ is given by:
+\begin{equation}
+Dir(\alpha,x) = \frac{1}{B( {\bf \alpha} )}\prod_{i=1}^{K} x_{i}^{\alpha_{i} - 1}
+\end{equation}
+
+The prior distribution for each row is a symmetric Dirichlet distribution where all concentration parameters are equal and multiplied by a constant provided by the user. The prior multiplication constant reflects how confident the user is that the probabilities in the matrix are equal, larger values reflect a belief that the transmission probabilities are not equal between groups. This gives the following process for updating an element in the transmission rates matrix, it is the standard Metropolis-Hastings algorithm except we have taken the logarithm of values to preserve accuracy during computation:
 \begin{itemize}
-\item For row $i$ we take the current probabilities, ${\bf p}_{n} =  \{p_{i1},p_{i2}, \cdots,p_{il}\}$ and sample candidate probabilities: ${\bf p}_{n+1} \sim Dir(m{\bf p})$ where $m$ is the multiplying constant.
-\item Calculate the log ratio: $ LR = \log(\Omega_3({\bf p}_{n+1})) - \log(\Omega_3({\bf p}_{n}))$
-\item Add the correction factor for the Dirichlet distribution, if we define $Dir({\bf \alpha,x})$ as the probability distribution function of the Dirichlet distribution with concentration parameters ${\bf \alpha}$ evaluated at the values ${\bf x}$ then the correction factor is given by: 
-\[ LR + \log(Dir({\bf p}_{n+1},{\bf p}_{n})) - \log(Dir({\bf p}_{n},{\bf p}_{n+1})) \]
-\item Add the values of the priors for the old and candidate rates, with the user specified constant $c$ and concentration parameter ${\bf \alpha}$ with elements $\alpha_i$ all equal this is given by: 
-\[ LR + \log(Dir({\bf \alpha},{\bf p}_{n+1})) - \log(Dir({\bf \alpha},{\bf p}_{n}))\]
-\item If $LR > 0$, we accept ${\bf p}_{n+1}$ as a sample.
-\item If $LR < 0$ then we generate a random uniform number, $U$, then if $\log(U) \leq LR$ then we accept ${\bf p}_{n+1}$ as a sample. Otherwise we reject ${\bf p}_{n+1}$ and ${\bf p}_{n+1} \leftarrow {\bf p}_{n}$.
+\item For row $i$ we take the current probabilities, ${\bf p}_{n} =  \{p_{i1},p_{i2}, \cdots,p_{il}\}$ and sample candidate probabilities: ${\bf p}_{n+1} \sim Dir(x;m{\bf p})$ where $m$ is the multiplying constant.
+\item Calculate the log ratio: 
+\begin{equation}
+\begin{split}
+\log(\Omega_3({\bf p}_{n+1})) - \log(\Omega_3({\bf p}_{n})) \\ +  \log(Dir({\bf p}_{n+1};{\bf p}_{n})) - \log(Dir({\bf p}_{n};{\bf p}_{n+1})) \\ + \log(Dir({\bf \alpha};{\bf p}_{n+1})) - \log(Dir({\bf \alpha};{\bf p}_{n}))
+\end{split}
+\end{equation}
+
+Where $\log(\Omega_3({\bf p}_{n+1})) - \log(\Omega_3({\bf p}_{n}))$ is the ratio of the group likelihoods of the old and new parameters and
+ \[ \log(Dir({\bf p}_{n+1};{\bf p}_{n})) - \log(Dir({\bf p}_{n};{\bf p}_{n+1})) \]
+is the correction factor for the proposal distribution, and
+\[ \log(Dir({\bf \alpha};{\bf p}_{n+1})) - \log(Dir({\bf \alpha};{\bf p}_{n}))\]
+are the values of the prior distributions with the user-specified multiplication constant $c$ and concentration parameter $\alpha$ with $\alpha_i$ all equal.
+\item If  the log ratio is greater than 0, we accept ${\bf p}_{n+1}$ as a sample from the posterior distribution
+\item If the log ratio is less than 0 then we generate a random uniform number, $U$, and if $\log(U)$ is less than or equal to the log ratio then we accept ${\bf p}_{n+1}$ as a sample from the posterior distribution. If the log ratio is less than 0 and $\log(U)$ then we reject ${\bf p}_{n+1}$ and draw a new candidate ${\bf p}_{n+1}$.
 \end{itemize}
 The result of this process is a number of samples of the group transmission rate parameters from the posterior distribution, we can now go on to discuss how we can analyse this output and how we can produce data to test the extended model.
 
@@ -171,30 +184,33 @@ The Outbreaker package has its own outbreak simulation procedure, {\tt simOutbre
 where $w$ is the generation time distribution. We can incorporate the probability of transmission within and between members of different groups into these probabilities by supplying a transmission probability matrix. If we continue with the notation $g_{i}$ as the group of case $i$ and $g_{\alpha_{i}}$ as the group of the immediate ancestor of case $i$ then we can introduce the group transmission probabilities into the multinomial distribution as follows:
 \[ \frac{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}{\sum_i{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}}\]
 
-At the start of the outbreak we would have $n$ individuals, $n_1$ of whom are in group 1, $n_2$ of whom are in group 2 and so on up to group $l$. We can then specify the exact numbers in each group ,perhaps indirectly through proportions of the population in each group, when the simulation begins. We would also specify the $l \times l$ matrix of transmission probabilities which would be the true, unknown parameters in our model tests. Then the procedure takes place just as before but now new cases have different probabilities of being infected by the existing cases depending on the within and between group transmission probabilities. We can then modify the output of {\tt simOutbreak} to colour the nodes of the transmission tree depending on group so it is easy to see how the outbreak has moved around the group structure. We would also need to come up with a rule for the group membership of imported cases - they could either be assigned to the existing groups at some specified frequency or marked as group unknown, which would bring up further questions about how to treat these cases in terms of transmission probabilities. In some situations such as hospital wards it might be sensible to take the first approach, our groups might be in one large ward and one small ward so we would expect imported cases to have joined one of the wards and although their ancestors are not present in our transmission tree we expect them to inherit the transmission dynamics of their group once they join one. For the second scenario we would have to decide what would be a sensible transmission probability between each group and a case where the group is unknown, we might assign a "baseline" transmission probability that we use for any cases where one or both of the groups are unknown during a transmission event. This is a better approach if our groups are set within a larger community that has some probability of transmission between the members (this is equivalent to assigning all imported cases to an extra group with equal within and between group transmission). Another benefit of this second approach is that it also provides a way of dealing with cases where group membership data is missing.
+At the start of the outbreak we would have $n$ individuals, $n_1$ of whom are in group 1, $n_2$ of whom are in group 2 and so on up to group $l$. We can then specify the exact numbers in each group ,perhaps indirectly through proportions of the population in each group, when the simulation begins. We would also specify the $l \times l$ matrix of transmission probabilities which would be the true, unknown parameters in our model tests. Then the procedure takes place just as before but now new cases have different probabilities of being infected by the existing cases depending on the within and between group transmission probabilities. We can then modify the output of {\tt simOutbreak} to colour the nodes of the transmission tree depending on group so it is easy to see how the outbreak has moved around the group structure. Imported cases are assigned to the existing groups with a probability proportional to the relative sizes of the groups, here we are assuming a scenario where imported cases inherit the group transmission probabilities of a group once they join it.
 
-Having implemented this method in simOutbreak, the user can now pass a matrix to the simOutbreak function giving the true values of the transmission probabilities within and between groups, the user must also specify the number of individuals within each group. The number of individuals in each of the groups must sum to the overall number of individuals in the simulation, individuals are then assigned to groups randomly. Imported cases are assigned a group based on the relative sizes of the groups defined by the user. Users can now also colour nodes on the plotted transmission trees by their group membership, this allows us to see how the transmission tree is affected by different group sizes and transmission probabilities. For example, the tree below was created and coloured using three groups with the transmission probability matrix
+Having implemented this method in {\tt simOutbreak}, the user can now pass a matrix to the {\tt simOutbreak} function giving the true values of the transmission probabilities within and between groups, the user must also specify the number of individuals within each group. The number of individuals in each of the groups must sum to the overall number of individuals in the simulation, individuals are then assigned to groups randomly. Imported cases are assigned a group based on the relative sizes of the groups defined by the user. Users can now also colour nodes on the plotted transmission trees by their group membership, this allows us to see how the transmission tree is affected by different group sizes and transmission probabilities. For example, the tree below was created and coloured using three groups with the transmission probability matrix
 \[ \left( \begin{array}{ccc}
 0 & 1 & 0 \\
 0 & 0 & 1 \\
 1 & 0 & 0 \\
 \end{array} \right) \]
-\begin{center}
+\begin{figure}[h!]
+\centering 
 \includegraphics[scale=0.8]{treexample.png}
-\end{center}
+\caption{A transmission tree constructed from a randomly generated outbreak using the group transmission probability matrix defined above. The direction of arrows between nodes determines the direction of infection. The nodes are coloured by the group of the individual}
+\end{figure}
 We can now go on to generate some data to see how the method performs on generated data and data from a real outbreak with group structure.
 
 \chapter{Results}
 \section{Testing Procedures}
-We tested the extended method on simulated data with a group structure generated by the new simOutbreak function. The efficacy of outbreaker for reconstructing transmission trees in different situations has been researched before in \citet{outbrkr} so we kept our focus on results relating to the new group framework. There were two principle aims of our testing: the first was to see how well outbreaker estimated the transmission probabilities between groups for datasets where the correct ancestries are already well determined by the DNA sequence data; the second was to see if providing the model with strong and correct priors for the group transmission probabilities helped infer correct ancestries for datasets which have a strong group signal and where DNA sequence data is not as advantageous as usual. 
 
-\section{Estimating Transmission Probabilities}
+We tested the extended method on simulated data with a group structure generated by the new {\tt simOutbreak} function. As explained in the Introduction, I ran two different simulations which tested different aspects of the new group framework. The first simulation aimed to see how well outbreaker estimated the transmission probabilities parameters. To do this ran the extended outbreaker model on datasets where the original outbreaker model already does a good job of inferring correct ancestries. From this I can see if outbreaker does a good job at inferring transmission probability parameters when it infers correct ancestries. The second simulation aimed to see whether the group framework can improve the inference of correct ancestries on datasets where the original outbreaker model does not perform very well. If we give outbreaker strong prior parameters with regards to the group structure of the data, does this help outbreaker infer correct ancestries?
+
+\section{Simulation 1: Estimating Transmission Probabilities}
 
 For the first set of simulations we required datasets where outbreaker could already infer the majority of correct ancestries, we could then give outbreaker the group data and an uninformative prior and see how well the posterior distributions of the transmission probability parameters capture the group dynamics of the data.
 
 
 
-We used an imagined scenario of collecting outbreak data from districts within a city in West Africa during the 2014 Ebola Virus Disease (EVD) outbreak. The study of the outbreak led the \citet{Ebola14} to hypothesise that the spread of EVD was in part due to a large amount of population movement between cities in bordering countries. We aimed to recreate this migration led transmission on a smaller scale between districts in a city. We created datasets where infected individuals are divided into groups based upon their district of residence and the probabilities of transmission between groups is dependent on the amount people travelling between the two districts. If many people commute between districts A and B regularly then it is more likely that an individual unknowingly infected with EVD will travel from district A to district B (or vice versa) and transmit EVD to the people who live there during their trip. To make the scenario as realistic as possible  we used the estimated epidemiological properties of EVD estimated during the recent analysis by \citet{Ebola14}.
+We used an imagined scenario of collecting outbreak data from districts within a city in West Africa during the 2014 Ebola Virus Disease (EVD) outbreak. The study of the outbreak led the \citet{Ebola14} to hypothesise that the geographical spread of EVD was in part due to a large amount of population movement between cities in bordering countries. We aimed to recreate this migration led transmission on a smaller scale between districts in a city. We simulated datasets where infected individuals are divided into groups based upon their district of residence and the probabilities of transmission between groups is dependent on the amount people travelling between the two districts. If many people commute between districts A and B regularly then it is more likely that an individual unknowingly infected with EVD will travel from district A to district B (or vice versa) and transmit EVD to the people who live there during their trip. To make the scenario as realistic as possible  we used the estimated epidemiological properties of EVD estimated during the recent analysis by \citet{Ebola14}.
 \begin{center}
 \begin{tabular}{| l | p{4cm} | p{4cm} |}
 \hline
@@ -204,20 +220,29 @@ Serial Interval & Gamma distribution with mean = 13.5, s.d. = 9.2 & \citet{Ebola
 \hline
 $R0$ & 2.1 & \citet{Ebola14} \\
 \hline
-Mutation Rates & Substitution rate (transversions) per site per day =  5.479452e-06 & \citet{Gire14} \\
+Mutation Rates & Substitution rate per site per day =  5.479452e-06 & \citet{Gire14} \\
 \hline
 Sequence Length & 19000 bases & \citet{Volchkov99} \\
 \hline
 \end{tabular}
 \end{center}
-We created 426 datasets using these parameters and ran several instances of outbreaker on each dataset. For each dataset outbreaker was run using DNA and group data, DNA data only, group data only and neither of the two types of data (leaving only dates of symptom onset and the epidemiological likelihood of the model). We then analysed the proportion of correct ancestries inferred on each run for each dataset to check that the transmission tree was adequately inferred using DNA sequence data alone and that the outbreaker model including the group framework was behaving correctly. The violin plot below shows the proportions of correct ancestries by each run over all of the simulated datasets. 
-\begin{center}
+We simulated 440 datasets using these parameters  and ran several instances of outbreaker on each dataset. I discarded 14 datasets where there was not at least one case from each group in the outbreak leaving 426 datasets and corresponding results. For each dataset outbreaker was run using DNA and group data, DNA data only, group data only and neither of the two types of data (leaving only dates of symptom onset and the epidemiological likelihood of the model). We then analysed the proportion of correct ancestries inferred on each run for each dataset to check that the transmission tree was adequately inferred using DNA sequence data alone and that the outbreaker model including the group framework was behaving correctly. The violin plot below shows the proportions of correct ancestries by each run over all of the simulated datasets. 
+\begin{figure}
+\centering
 \includegraphics[scale=0.6]{violin_colours.png}
-\end{center}
-In line with previous results from \citet{outbrkr}, outbreaker infers a much higher proportion of correct ancestries when DNA sequence data is included. Comparing runs with and without group data also shows that the outbreaker model including the group framework performs as well as, if not very slightly better, than the original outbreaker model. We also checked the convergence of the model likelihood including the group likelihood for several datasets to ascertain that the model with the group data was mixing well and converged upon a posterior distribution suitably, an example of one of these MCMC traces is shown below. The outbreaker runs including group data had uninformative priors that suggested that all group transmission probabilities are equal. If all group transmission is equal we can conclude that dividing the cases into these groups does not provide us with any new information about the group dynamics of the outbreak. 
-\begin{center}
+\newline
+{\bf Impact of group framework on proportion of correct ancestries inferred}
+\caption{This violin plot shows the distribution of the proportion of correctly inferred ancestries in the consensus ancestries of outbreaker runs with difference parameters.}
+
+\end{figure}
+In line with previous results from \citet{outbrkr}, outbreaker infers a much higher proportion of correct ancestries when DNA sequence data is included. Comparing runs with and without group data also shows that the outbreaker model including the group framework performs as well as, if not very slightly better, than the original outbreaker model. We also checked the convergence of the model likelihood including the group likelihood for several datasets to ascertain that the model with the group data was mixing well and converged upon a posterior distribution suitably, an example of one of these MCMC traces is shown below. The outbreaker runs including group data had uninformative priors that suggested that all group transmission probabilities are equal. 
+\begin{figure}
+\centering
 \includegraphics[scale=0.6]{trace.png}
-\end{center}
+\newline
+{\bf Mixing quality of an extended outbreaker run}
+\caption{This plot shows the values of the log-posterior density at every 500 steps of the chain for an example run of the extended outbreaker model on a simulated dataset}
+\end{figure}
 Once we were satisfied that the extended outbreaker model was running properly we could then begin to scrutinise the posterior density samples for the transmission probability parameters. Each simulation was generated using the same transmission probability matrix but the number of cases varied so the simulations as a whole should give a good idea of how well the parameters are inferred in a variety of situations. Our first step in evaluating the posterior samples for each run was to see in the true parameter value (used to generate the dataset) fell inside the 95\% equal-tails interval, we then counted how many times this occurred for each parameter over all of the simulations to give us a rough idea of how often outbreaker infers a posterior distribution with a reasonable probability of giving the true parameter value. The matrix of true transmission parameters is as follows:
 
 \[ \begin{pmatrix}
