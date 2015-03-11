@@ -1,11 +1,27 @@
 \relax 
+\citation{ONeill02}
+\citation{Gibson04}
+\citation{Teunis13}
+\citation{Wallinga04}
+\citation{Haydon03}
+\citation{Jombart11}
+\citation{Cottam08}
+\citation{Ypma13}
+\citation{outbrkr}
+\@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{7}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\citation{Cauchemez11}
+\citation{ONeill02}
+\citation{Cauchemez04}
+\citation{Cottam08}
+\citation{Ypma13}
 \citation{Haydon03}
 \citation{Cottam08}
 \citation{Ypma13}
 \citation{Morelli12}
-\@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{7}}
-\@writefile{lof}{\addvspace {10\p@ }}
-\@writefile{lot}{\addvspace {10\p@ }}
+\citation{outbrkr}
+\citation{outbrkr}
 \citation{outbrkr}
 \citation{Grassly08}
 \citation{Haydon03}
@@ -24,57 +40,73 @@
 \citation{Ypma13}
 \citation{Morelli12}
 \citation{R14}
+\citation{Robert07}
 \@writefile{toc}{\contentsline {section}{\numberline {2.2}Bayesian Statistics}{13}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Markov Chain Monte Carlo Processes}{13}}
 \citation{Voss14}
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}The Metropolis-Hastings Algorithm}{15}}
-\citation{Glass11}
-\@writefile{toc}{\contentsline {section}{\numberline {2.5}The Outbreaker MCMC Process}{17}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.6}Group Data and Parameters}{17}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Markov Chain Monte Carlo Processes}{14}}
+\citation{Voss14}
+\citation{Voss14}
+\citation{Gilks96}
+\citation{Voss14}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}The Metropolis-Hastings Algorithm}{16}}
+\citation{Cauchemez11}
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}The Outbreaker MCMC Process}{18}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.6}Group Data and Parameters}{18}}
 \citation{outbrkr}
-\@writefile{toc}{\contentsline {section}{\numberline {2.7}Group Likelihood}{18}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.7}Group Likelihood}{19}}
 \citation{outbrkr}
-\@writefile{toc}{\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{20}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{22}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces A transmission tree constructed from a randomly generated outbreak using the group transmission probability matrix defined above. The direction of arrows between nodes determines the direction of infection. The nodes are coloured by the group of the individual}}{25}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {3}Results}{26}}
-\@writefile{lof}{\addvspace {10\p@ }}
-\@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}Testing Procedures}{26}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{21}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{24}}
 \citation{Ebola14}
 \citation{Ebola14}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces A transmission tree constructed from a randomly generated outbreak using the group transmission probability matrix defined above. The direction of arrows between nodes determines the direction of infection. The nodes are coloured by the group of the individual}}{26}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.1}Simulation 1}{26}}
 \citation{Ebola14}
 \citation{Ebola14}
 \citation{Gire14}
 \citation{Volchkov99}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}Simulation 1: Estimating Transmission Probabilities}{27}}
+\@writefile{lot}{\contentsline {table}{\numberline {2.1}{\ignorespaces The table shows the values of the epidemiological properties of the pathogen used in the {\tt  simOutbreak} function, the right hand column shows the source from which the parameter value was taken.}}{27}}
+\@writefile{lot}{\contentsline {table}{\numberline {2.2}{\ignorespaces The table shows the values of the parameters passed to the {\tt  simOutbreak} function to simulate outbreak datasets}}{28}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.2}Simulation 2}{29}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces The figure shows a transmission tree, each node is an infected individual and each full line shows a previously inferred transmission event. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that in this scenario outbreaker would have difficulty inferring the correct infector of "?"}}{30}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces The figure shows a transmission tree, each node is an infected individual and each full line shows a previous inferred transmission event. Nodes are coloured by their group membership. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that with group data, outbreaker would make the sensible inference that case 5 is the infector of "?".}}{31}}
+\@writefile{lot}{\contentsline {table}{\numberline {2.3}{\ignorespaces The table gives the values of parameters used to create simulated datasets for simulation 2}}{32}}
 \citation{outbrkr}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces This violin plot shows the distribution of the proportion of correctly inferred ancestries in the consensus ancestries of outbreaker runs with difference parameters.}}{29}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces This plot shows the values of the log-posterior density at every 500 steps of the chain for an example run of the extended outbreaker model on a simulated dataset}}{30}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}Inferring Correct Ancestries}{34}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Discussion}{40}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Results}{33}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Results Analysis}{40}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{40}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{41}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Modelling Assumptions}{42}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Modelling Limitations}{44}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Not finished yet}{45}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Testing Procedures}{33}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces This violin plot shows the distribution of the proportion of correctly inferred ancestries in the consensus ancestries of outbreaker runs with difference parameters.}}{34}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Simulation 1: Estimating Transmission Probabilities}{34}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces This plot shows the values of the log-posterior density at every 500 steps of the chain for an example run of the extended outbreaker model on a simulated dataset}}{35}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Simulation 2: Inferring Correct Ancestries}{38}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Discussion}{42}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Equine Flu Data}{45}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Results}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{43}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Modelling Assumption}{44}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Further Work}{45}}
 \bibstyle{plainnat}
 \bibdata{references}
-\bibcite{Cottam08}{{1}{2008}{{Cottam et~al.}}{{Cottam, Thébaud, Wadsworth, Gloster, Mansley, Paton, King, and Haydon}}}
-\bibcite{Gire14}{{2}{2014}{{Gire et~al.}}{{Gire, Goba, Andersen, and Sealfon}}}
-\bibcite{Glass11}{{3}{2011}{{Glass et~al.}}{{Glass, Mercer, Nishiura, McBryde, and Becker}}}
-\bibcite{Grassly08}{{4}{2008}{{Grassly and Fraser}}{{}}}
-\bibcite{Haydon03}{{5}{2003}{{Haydon et~al.}}{{Haydon, Chase-Topping, Shaw, Matthews, Friar, Wilesmith, and J}}}
-\bibcite{outbrkr}{{6}{2014}{{Jombart et~al.}}{{Jombart, Cori, Didelot, Cauchemez, Fraser, and Ferguson}}}
-\bibcite{Morelli12}{{7}{2012}{{Morelli et~al.}}{{Morelli, Thébaud, Chadœuf, King, Haydon, and Soubeyrand}}}
-\bibcite{R14}{{8}{2014}{{R~Core~Team}}{{}}}
-\bibcite{Volchkov99}{{9}{1999}{{Volchkov et~al.}}{{Volchkov, Volchkova, Chepurnov, Blinov, Dolnik, S.V., and Feldmann}}}
-\bibcite{Voss14}{{10}{2014}{{Voss}}{{}}}
-\bibcite{Ebola14}{{11}{2014}{{WHO Ebola Response~Team}}{{}}}
-\bibcite{Ypma13}{{12}{2013}{{Ypma et~al.}}{{Ypma, Marijn~van Ballegooijen, and Wallinga}}}
+\bibcite{Cauchemez04}{{1}{2004}{{Cauchemez et~al.}}{{Cauchemez, Carrat, Viboud, Valleron, and Boelle}}}
+\bibcite{Cauchemez11}{{2}{2011}{{Cauchemez et~al.}}{{Cauchemez, Bhattarai, Marchbanks, Fagan, Ostroff, Ferguson, and Swerdlow}}}
+\bibcite{Cottam08}{{3}{2008}{{Cottam et~al.}}{{Cottam, Thébaud, Wadsworth, Gloster, Mansley, Paton, King, and Haydon}}}
+\bibcite{Gilks96}{{4}{1996}{{Gilks et~al.}}{{Gilks, Richardson, and Spiegelhalter}}}
+\bibcite{Gire14}{{5}{2014}{{Gire et~al.}}{{Gire, Goba, Andersen, and Sealfon}}}
+\bibcite{Grassly08}{{6}{2008}{{Grassly and Fraser}}{{}}}
+\bibcite{Haydon03}{{7}{2003}{{Haydon et~al.}}{{Haydon, Chase-Topping, Shaw, Matthews, Friar, Wilesmith, and J}}}
+\bibcite{Jombart11}{{8}{2011}{{Jombart et~al.}}{{Jombart, Eggo, Dodd, and Balloux}}}
+\bibcite{outbrkr}{{9}{2014}{{Jombart et~al.}}{{Jombart, Cori, Didelot, Cauchemez, Fraser, and Ferguson}}}
+\bibcite{Morelli12}{{10}{2012}{{Morelli et~al.}}{{Morelli, Thébaud, Chadœuf, King, Haydon, and Soubeyrand}}}
+\bibcite{ONeill02}{{11}{2002}{{O'Neill}}{{}}}
+\bibcite{R14}{{12}{2014}{{R~Core~Team}}{{}}}
+\bibcite{Robert07}{{13}{2007}{{Robert}}{{}}}
+\bibcite{Gibson04}{{14}{2004}{{Streftaris and Gibson}}{{}}}
+\bibcite{Teunis13}{{15}{2013}{{Teunis et~al.}}{{Teunis, Heijne, Sukhrie, van Eijkeren, Koopmans, and Kretzschmar}}}
+\bibcite{Volchkov99}{{16}{1999}{{Volchkov et~al.}}{{Volchkov, Volchkova, Chepurnov, Blinov, Dolnik, S.V., and Feldmann}}}
+\bibcite{Voss14}{{17}{2014}{{Voss}}{{}}}
+\bibcite{Wallinga04}{{18}{2004}{{Wallinga and Teunis}}{{}}}
+\bibcite{Ebola14}{{19}{2014}{{WHO Ebola Response~Team}}{{}}}
+\bibcite{Ypma13}{{20}{2013}{{Ypma et~al.}}{{Ypma, Marijn~van Ballegooijen, and Wallinga}}}

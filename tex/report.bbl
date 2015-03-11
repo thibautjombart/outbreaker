@@ -1,9 +1,25 @@
-\begin{thebibliography}{12}
+\begin{thebibliography}{20}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Cauchemez et~al.(2004)Cauchemez, Carrat, Viboud, Valleron, and
+  Boelle]{Cauchemez04}
+S.~Cauchemez, F.~Carrat, C.~Viboud, A.~J. Valleron, and P.~Y. Boelle.
+\newblock A bayesian mcmc approach to study transmission of influenza:
+  application to household longitudinal data.
+\newblock \emph{Statistics in Medicine}, 23:\penalty0 3469--3487, 2004.
+
+\bibitem[Cauchemez et~al.(2011)Cauchemez, Bhattarai, Marchbanks, Fagan,
+  Ostroff, Ferguson, and Swerdlow]{Cauchemez11}
+S.~Cauchemez, A.~Bhattarai, T.~L. Marchbanks, R.~P. Fagan, S.~Ostroff,
+  N.~Ferguson, and D.~Swerdlow.
+\newblock Role of social networks in shaping disease transmission during a
+  communtiy outbreak of 2009 h1n1 pandemic influenza.
+\newblock \emph{Proceedings of the National Academy of Sciences of the United
+  States of America}, 108\penalty0 (7):\penalty0 2825--2830, 2011.
 
 \bibitem[Cottam et~al.(2008)Cottam, Thébaud, Wadsworth, Gloster, Mansley,
   Paton, King, and Haydon]{Cottam08}
@@ -14,19 +30,17 @@ E.~Cottam, Gaël Thébaud, Jemma Wadsworth, John Gloster, Leonard Mansley,
 \newblock \emph{Proceedings. Biological sciences / The Royal Society},
   275\penalty0 (1637):\penalty0 887--95, 2008.
 
+\bibitem[Gilks et~al.(1996)Gilks, Richardson, and Spiegelhalter]{Gilks96}
+W.~R Gilks, S.~Richardson, and D.~J. Spiegelhalter.
+\newblock \emph{Markov Chain Monte Carlo in Practice}.
+\newblock Chapman and Hall/CRC, 1996.
+
 \bibitem[Gire et~al.(2014)Gire, Goba, Andersen, and Sealfon]{Gire14}
 Stephen~K. Gire, Augustine Goba, Kristian~G. Andersen, and Rachel S.~G.
   Sealfon.
 \newblock Genomic surveillance elucidates ebola virus origin and transmission
   during the 2014 outbreak.
 \newblock \emph{Science}, 345\penalty0 (6202):\penalty0 1369--1372, 2014.
-
-\bibitem[Glass et~al.(2011)Glass, Mercer, Nishiura, McBryde, and
-  Becker]{Glass11}
-K.~Glass, G.~N. Mercer, H.~Nishiura, E.~S. McBryde, and N.~G. Becker.
-\newblock Estimating reproduction numbers for adults and children from case
-  data.
-\newblock \emph{J. R. Soc. Interface}, 8:\penalty0 1248--1259, 2011.
 
 \bibitem[Grassly and Fraser(2008)]{Grassly08}
 Nicholas~C. Grassly and Christophe Fraser.
@@ -41,6 +55,11 @@ D.~T Haydon, M~Chase-Topping, D.~J Shaw, L~Matthews, J.~K Friar, J~Wilesmith,
   2001 foot-and-mouth outbreak.
 \newblock \emph{Proceedings of the Royal Society B: Biological Sciences},
   270\penalty0 (1511):\penalty0 121--127, 2003.
+
+\bibitem[Jombart et~al.(2011)Jombart, Eggo, Dodd, and Balloux]{Jombart11}
+Thibaut Jombart, Rosalind~M. Eggo, P.~J. Dodd, and F.~Balloux.
+\newblock Reconstructing disease outbreaks from genetic data: a graph approach.
+\newblock \emph{Heredity}, 106\penalty0 (2):\penalty0 383--90, 2011.
 
 \bibitem[Jombart et~al.(2014)Jombart, Cori, Didelot, Cauchemez, Fraser, and
   Ferguson]{outbrkr}
@@ -60,11 +79,36 @@ Marco~J. Morelli, Gaël Thébaud, Joël Chadœuf, Donald~P. King, Daniel~T.
 \newblock \emph{PLoS Computational Biology}, 8\penalty0 (11):\penalty0
   e1002768, 2012.
 
+\bibitem[O'Neill(2002)]{ONeill02}
+Philip~D. O'Neill.
+\newblock A tutorial introduction to bayesian inference for stochastic epidemic
+  models using markov chain monte carlo methods.
+\newblock \emph{Mathematical Biosciences}, 180:\penalty0 103--114, 2002.
+
 \bibitem[R~Core~Team(2014)]{R14}
 The R~Core~Team.
 \newblock \emph{R: A Language and Environment for Statistical Computing}.
 \newblock R Foundation for Statistical Computing, Vienna, Austria, 2014.
 \newblock URL \url{http://www.R-project.org}.
+
+\bibitem[Robert(2007)]{Robert07}
+C.~P. Robert.
+\newblock \emph{The Bayesian Choice}.
+\newblock Springer, second edition, 2007.
+
+\bibitem[Streftaris and Gibson(2004)]{Gibson04}
+G~Streftaris and G.~J Gibson.
+\newblock Bayesian inference for stochastic epidemics in closed populations.
+\newblock \emph{Statistical Modelling 4}, 4\penalty0 (1):\penalty0 63--75,
+  2004.
+
+\bibitem[Teunis et~al.(2013)Teunis, Heijne, Sukhrie, van Eijkeren, Koopmans,
+  and Kretzschmar]{Teunis13}
+P.~Teunis, J.~C.~M. Heijne, F.~Sukhrie, J.~van Eijkeren, M.~Koopmans, and
+  M.~Kretzschmar.
+\newblock Infectious disease transmission as a forensic problem: who infected
+  who?
+\newblock \emph{J. R. Soc. Interface}, 10, 2013.
 
 \bibitem[Volchkov et~al.(1999)Volchkov, Volchkova, Chepurnov, Blinov, Dolnik,
   S.V., and Feldmann]{Volchkov99}
@@ -79,6 +123,13 @@ Jochen Voss.
   Approach}.
 \newblock WIley Series in Computational Statistics. John Wiley and Sons Ltd,
   2014.
+
+\bibitem[Wallinga and Teunis(2004)]{Wallinga04}
+Jacco Wallinga and Peter Teunis.
+\newblock Different epidemic curves for severe acute respiratory syndrome
+  reveal similar impacts of control measures.
+\newblock \emph{American journal of epidemiology}, 160\penalty0 (6):\penalty0
+  509--16, 2004.
 
 \bibitem[WHO Ebola Response~Team(2014)]{Ebola14}
 The WHO Ebola Response~Team.
