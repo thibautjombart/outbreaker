@@ -175,21 +175,21 @@ Where $t_i$ is the collection date of $s_i$, $T^{inf}_i$ is the collection date 
 To write the group likelihood, $\Omega^{3}_i$, we can think of the transmission event between case $i$ with group $g_i$ and its immediate ancestor $\alpha_i$ with group $g_{\alpha_{i}}$ as a Bernoulli trial with $P_{g_i g_{\alpha_{i}}}$ chance of succeeding. We know the group membership of each case and the current candidate ancestor $\alpha_i$, therefore the likelihood of a transmission event between $i$ and $\alpha_i$ for the candidate transmission rates matrix, $M$, is given by:
 \[ \Omega_i^3 = p(g_i | \alpha_i, \kappa_i, g_{\alpha_i}, M) \]
 and the likelihood of a Bernoulli trial is the probability that the event takes place, which can be found by calculating the transmission probability matrix, so for this particular case the likelihood is:
-\[ \Omega_i^3 = P_{xy} \]
+\[ \Omega_i^3 = m_{g_i g_{\alpha_i}} \]
 In the Outbreaker model each transmission event is assumed to be independent of other events, therefore the group likelihood for a whole transmission tree is the product of all of the individual likelihoods for each transmission event (or the sum of the group log likelihoods).
-\[ \Omega^3 = \prod_i{\Omega_i^3} = \prod_i{P_{g_i g_{\alpha_i}}} \]
-This likelihood term is multiplied onto the existing likelihood term to give an overall likelihood for a case: $\Omega_i^1 \times \Omega_i^2 \times \Omega_i^3$. This assumes that the group, epidemiological and genetic likelihoods are all independent. This assumption simplifies the likelihood term but in real outbreak data we would expect to see some correlation between the likelihood terms. For example, if transmission rates really were higher within a group than between other groups we might expect that observed DNA sequences are generally more similar between cases in the same group because mutations that occur between two cases in the same group are more likely to stay within that group, therefore distinguishing the DNA sequences from these cases from those belonging to other groups. Having defined our group likelihood term we must now decide upon the way in which the Metropolis-Hastings algorithm will move the parameters in the transmission rate matrix to produce new candidate rates.
+\[ \Omega^3 = \prod_i{\Omega_i^3} = \prod_i{m_{g_i g_{\alpha_i}}} \]
+This likelihood term is multiplied onto the existing likelihood term to give an overall likelihood for a case: $\Omega_i^1 \times \Omega_i^2 \times p(\alpha_i) \times \Omega_i^3$. This assumes that the group, epidemiological and genetic likelihoods are all independent. This assumption simplifies the likelihood term but in real outbreak data we would expect to see some correlation between the likelihood terms. For example, if transmission rates really were higher within a group than between other groups we might expect that observed DNA sequences are generally more similar between cases in the same group because mutations that occur between two cases in the same group are more likely to stay within that group, therefore distinguishing the DNA sequences from these cases from those belonging to other groups. Having defined our group likelihood term we must now decide upon the way in which the Metropolis-Hastings algorithm will move the parameters in the transmission rate matrix to produce new candidate rates.
 
 
 \section{Transmission Rate Matrix Move}
 The proposal distribution for moving elements of the transmission probabilities matrix is not straightforward because the values in the matrix must satisfy $0 \geq m_{ij} \leq 1$ and the values of each row sum to 1. We implemented a move for the transmission probabilities matrix in the MCMC algorithm which proposes new probabilities for each row of the matrix at a time, $l$ candidate probabilities are sampled from the Dirichlet distribution with concentration parameters equal to the old probability values in the chain multiplied by a constant value. Because the Dirichlet distribution is not symmetrical we need to introduce a correction factor. The probability distribution function for the Dirichlet distribution for $K$ probabilities with concentration parameters $(\alpha_1,\cdots,\alpha_K)$ is given by:
 \begin{equation}
-Dir(\alpha,x) = \frac{1}{B( {\bf \alpha} )}\prod_{i=1}^{K} x_{i}^{\alpha_{i} - 1}
+Dir(\alpha;x) = \frac{1}{B( {\bf \alpha} )}\prod_{i=1}^{K} x_{i}^{\alpha_{i} - 1}
 \end{equation}
 
 The prior distribution for each row is a symmetric Dirichlet distribution where all concentration parameters are equal and multiplied by a constant provided by the user. The prior multiplication constant reflects how confident the user is that the probabilities in the matrix are equal, larger values reflect a belief that the transmission probabilities are not equal between groups. This gives the following process for updating an element in the transmission rates matrix, it is the standard Metropolis-Hastings algorithm except we have taken the logarithm of values to preserve accuracy during computation:
 \begin{itemize}
-\item For row $i$ we take the current probabilities, ${\bf p}_{n} =  \{p_{i1},p_{i2}, \cdots,p_{il}\}$ and sample candidate probabilities: ${\bf p}_{n+1} \sim Dir(x;m{\bf p})$ where $m$ is the multiplying constant.
+\item For row $i$ we take the current probabilities, ${\bf p}_{n} =  \{p_{i1},p_{i2}, \cdots,p_{il}\}$ and sample candidate probabilities: ${\bf p}_{n+1} \sim Dir(m{\bf p};x)$ where $m$ is the multiplying constant.
 \item Calculate the log ratio: 
 \begin{equation}
 \begin{split}
@@ -214,10 +214,13 @@ I implemented the move within the existing model using the programming languages
 \section{Simulating Outbreaks With Group Structure}
 To test the new group framework in Outbreaker, we need to be able to fit the model to data which was generated using a population that has groups which have varying tranmission rates between them.
 The Outbreaker package has its own outbreak simulation procedure, {\tt simOutbreak}, which we can extend to generate outbreak data that has the desired group structure. We can modify the formula which chooses the infector of an infected individual (in the program code this is implemented by first choosing the ancestors and then choosing who has been infected by them), currently the individual is chosen by sampling from a multinomial distribution with probabilities:
-\[ \frac{w(t-t_i)}{\sum_i{w(t-t_i)}} \]
+\begin{equation}
+ \frac{w(t-t_i)}{\sum_i{w(t-t_i)}}
+\end{equation}
 where $w$ is the generation time distribution. We can incorporate the probability of transmission within and between members of different groups into these probabilities by supplying a transmission probability matrix. If we continue with the notation $g_{i}$ as the group of case $i$ and $g_{\alpha_{i}}$ as the group of the immediate ancestor of case $i$ then we can introduce the group transmission probabilities into the multinomial distribution as follows:
-\[ \frac{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}{\sum_i{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}}\]
-
+\begin{equation}
+ \frac{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}{\sum_i{P_{g_{i}g_{\alpha_{i}}} \cdot w(t-t_i)}}
+\end{equation}
 At the start of the outbreak we would have $n$ individuals, $n_1$ of whom are in group 1, $n_2$ of whom are in group 2 and so on up to group $l$. We can then specify the exact numbers in each group ,perhaps indirectly through proportions of the population in each group, when the simulation begins. We would also specify the $l \times l$ matrix of transmission probabilities which would be the true, unknown parameters in our model tests. Then the procedure takes place just as before but now new cases have different probabilities of being infected by the existing cases depending on the within and between group transmission probabilities. We can then modify the output of {\tt simOutbreak} to colour the nodes of the transmission tree depending on group so it is easy to see how the outbreak has moved around the group structure. Imported cases are assigned to the existing groups with a probability proportional to the relative sizes of the groups, here we are assuming a scenario where imported cases inherit the group transmission probabilities of a group once they join it.
 
 Having implemented this method in {\tt simOutbreak}, the user can now pass a matrix to the {\tt simOutbreak} function giving the true values of the transmission probabilities within and between groups, the user must also specify the number of individuals within each group. The number of individuals in each of the groups must sum to the overall number of individuals in the simulation, individuals are then assigned to groups randomly. Imported cases are assigned a group based on the relative sizes of the groups defined by the user. Users can now also colour nodes on the plotted transmission trees by their group membership, this allows us to see how the transmission tree is affected by different group sizes and transmission probabilities. For example, the tree in figure 2.1 was created and coloured using three groups with the transmission probability matrix
@@ -297,8 +300,6 @@ I also hoped to show that the group likelihood could help to infer correct ances
 \\
 \begin{figure}[h!]
 \centering
-{\bf Outbreaker inference without groups}
-\caption{The figure shows a transmission tree, each node is an infected individual and each full line shows a previously inferred transmission event. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that in this scenario outbreaker would have difficulty inferring the correct infector of "?"}
 \begin{tikzpicture}
 	\node at (0,0) (1){};
 	\node at (4.5,0) (2){};
@@ -332,15 +333,15 @@ I also hoped to show that the group likelihood could help to infer correct ances
 	
 	
 	 	 			 
-\end{tikzpicture}
+\end{tikzpicture} \newline
+{\bf Outbreaker inference without groups}
+\caption{The figure shows a transmission tree, each node is an infected individual and each full line shows a previously inferred transmission event. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that in this scenario outbreaker would have difficulty inferring the correct infector of "?"}
 \end{figure}
 The group likelihood can help in this situation if the cases are divided into groups and we have are confident of what the group transmission probabilities in the situation are. If we are sure that most transmission takes place within groups we could provide a prior that heavily promotes unequal transmission probabilities. If the data has a true group structure where transmission happens overwhelmingly within groups this will be inferred quickly by the model because it is encouraged by the prior. Therefore when we go to assess the group likelihood of a particular ancestry, it will give a much higher likelihood value to two cases within the same group. 
 
 Returning to the scenario in Figure 2.3, if the newly infected case belongs to group A and there are 5 candidate ancestors, one of whom belongs to group A, then the likelihood of the connection between the two cases from group A will be much higher and therefore outbreaker will infer this ancestry. Therefore if our prior knowledge that the transmission rates are very unequal is true then we will have biased outbreaker towards the correct ancestries based on their group membership. This is how the group structure of the data and a strong prior can help outbreaker infer correct ancestries in certain situations where the other data is not as useful. In the transmission tree below the nodes are coloured by group membership. If we are trying to guess an ancestor for the new case and we suspect that most transmission occurs within groups then we would guess node 5. If our prior knowledge is accurate then we are making a sensible guess because it would be most likely to have been node 5 that infected our new case. Adding in a group structure and prior knowledge has helped us infer the correct ancestor.
 \begin{figure}[h!]
 \centering
-{\bf Outbreaker inference with groups}
-\caption{The figure shows a transmission tree, each node is an infected individual and each full line shows a previous inferred transmission event. Nodes are coloured by their group membership. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that with group data, outbreaker would make the sensible inference that case 5 is the infector of "?".}
 \begin{tikzpicture}
 	\node at (0,0) (1){};
 	\node at (4.5,0) (2){};
@@ -374,7 +375,9 @@ Returning to the scenario in Figure 2.3, if the newly infected case belongs to g
 	
 	
 	 	 			 
-\end{tikzpicture}
+\end{tikzpicture}\newline
+{\bf Outbreaker inference with groups}
+\caption{The figure shows a transmission tree, each node is an infected individual and each full line shows a previous inferred transmission event. Nodes are coloured by their group membership. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that with group data, outbreaker would make the sensible inference that case 5 is the infector of "?".}
 \end{figure}
 To test this we created datasets that had small groups with 3-4 people in (households) and one larger group (the community), the true transmission probabilities were such that cases with a household had very high probabilities of infecting individuals in the same household, a much lower probability of infecting individuals in the community and an extremely low probability of infecting individuals in other households. Cases in the community had a reasonable probability of infecting others in the community and the rest of the probability was assigned equally to infected a member from each household. Table 2.3 gives the exact parameters given to the {\tt simOutbreak} function to produce each dataset.
 \begin{table}[h!]
@@ -439,9 +442,9 @@ The matrix below shows the corresponding proportion of times that the true param
 We also calculated the posterior sample median for each transmission probability parameter and produced a boxplot to describe where the sample medians fell over all of the simulations:
 \begin{figure}[h!]
 \centering
+\includegraphics[scale=0.6]{violinmat.png} \newline
 {\bf Inference of transmission parameter matrix}
 \caption{The figure shows a violin plot for each element of the transmission parameter matrix used in the simulation. The red line indicates the true value of the parameter and the black line indicates the median of all of the posterior medians from each simulation.}
-\includegraphics[scale=0.6]{violinmat.png}
 \end{figure}
 
 
@@ -450,21 +453,21 @@ We also calculated the posterior sample median for each transmission probability
 In this simulation I present the results of the analysis one of the datasets simulated using the methods described in section 2.9.2. Figure 3.4 shows the transmission tree of the simulated outbreak. I ran two different instances of outbreaker on this dataset to see which one could infer the correct ancestries better, one run had no group data and the other had group data and priors that strongly favoured unequal transmission probabilities. For this ancestry the outbreaker run with group data inferred 42\% of correct ancestries (11 out of 25) whereas the run without group data inferred 23\% of correct ancestries (6 out of 25). Figures 3.5 and 3.6 show the inferred transmission trees obtained from the results using outbreaker's {\tt get.tTree()} function. This function constructs a transmission tree from consensus ancestries using the posterior samples from an outbreaker run. As described in section 2.9.2, in Figure 3.4 most transmission takes place between members of the same household and the infection mostly moves from household to household via the community (light blue nodes in the figures).
 \begin{figure}
 \centering
+\includegraphics[scale=0.5]{ancestree.png} \newline
 {\bf Transmission tree of true ancestries}
 \caption{The transmission tree represents who infected who during the outbreak discussed in sections 3.3 and 4.1.2. Nodes are coloured by their group, the direction of an arrow between two nodes determines the direction of transmission between two individuals. Nodes coloured light blue are members of the community groups.}
-\includegraphics[scale=0.5]{ancestree.png}
 \end{figure}
 \begin{figure}[h!]
 \centering
+\includegraphics[scale=0.5]{tree_with_grps.png} \newline
 {\bf Consensus ancestry transmission tree using group data}
 \caption{The figure shows the transmission tree inferring by the extended outbreaker model from outbreak data. Nodes are coloured by groups and the direction of arrows between nodes shows the inferred transmission events. Arrows are coloured green if the transmission events are inferred correctly and red if they are inferred incorrectly. Nodes coloured light blue are members of the community groups.}
-\includegraphics[scale=0.5]{tree_with_grps.png}
 \end{figure}
 \begin{figure}[h!]
 \centering
+\includegraphics[scale=0.5]{tree_no_grps.png} \newline
 {\bf Consensus ancestry transmission tree without using group data}
 \caption{The figure shows the transmission tree inferring by the original outbreaker model (without a group framework) from outbreak data. Nodes are coloured by groups and the direction of arrows between nodes shows the inferred transmission events. Arrows are coloured green if the transmission events are inferred correctly and red if they are inferred incorrectly. Nodes coloured light blue are members of the community groups.}
-\includegraphics[scale=0.5]{tree_no_grps.png}
 \end{figure}
 
 
