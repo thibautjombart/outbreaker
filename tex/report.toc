@@ -13,11 +13,11 @@
 \contentsline {subsection}{\numberline {2.9.2}Simulation 2}{29}
 \contentsline {chapter}{\numberline {3}Results}{33}
 \contentsline {section}{\numberline {3.1}Testing Procedures}{33}
-\contentsline {section}{\numberline {3.2}Simulation 1: Estimating Transmission Probabilities}{34}
-\contentsline {section}{\numberline {3.3}Simulation 2: Inferring Correct Ancestries}{38}
-\contentsline {chapter}{\numberline {4}Discussion}{42}
-\contentsline {section}{\numberline {4.1}Results}{42}
-\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{42}
-\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{43}
-\contentsline {section}{\numberline {4.2}Modelling Assumption}{44}
-\contentsline {section}{\numberline {4.3}Further Work}{45}
+\contentsline {section}{\numberline {3.2}Simulation 1: Estimating Transmission Probabilities}{33}
+\contentsline {section}{\numberline {3.3}Simulation 2: Inferring Correct Ancestries}{36}
+\contentsline {chapter}{\numberline {4}Discussion}{41}
+\contentsline {section}{\numberline {4.1}Results}{41}
+\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{41}
+\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{42}
+\contentsline {section}{\numberline {4.2}Modelling Assumption}{43}
+\contentsline {section}{\numberline {4.3}Further Work}{44}

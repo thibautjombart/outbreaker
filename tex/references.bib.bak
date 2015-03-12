@@ -177,6 +177,17 @@
   Url                      = {http://www.R-project.org}
 }
 
+@Book{Robert07,
+  Title                    = {The Bayesian Choice},
+  Author                   = {Robert, C. P.},
+  Publisher                = {Springer},
+  Year                     = {2007},
+  Edition                  = {Second},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.11}
+}
+
 @Article{Gibson04,
   Title                    = {Bayesian inference for stochastic epidemics in closed populations},
   Author                   = {Streftaris, G and Gibson, G. J},
