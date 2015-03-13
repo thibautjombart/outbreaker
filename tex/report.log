@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  12 MAR 2015 15:55
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  13 MAR 2015 19:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -482,14 +482,24 @@ LaTeX Warning: No \author given.
 
 ]
 Chapter 1.
+
+Overfull \hbox (2.55699pt too wide) in paragraph at lines 48--49
+\OT1/cmr/m/n/10.95 us-ing de-ter-min-is-tic com-part-men-tal mod-els (An-der-so
+n and May, 1992). These
+ []
+
 [7
 
 ] [8] [9]
 Chapter 2.
+
+Package natbib Warning: Citation `Wallinga04' on page 10 undefined on input lin
+e 62.
+
 [10
 
 ] [11] [12] [13]
-Overfull \hbox (28.502pt too wide) detected at line 90
+Overfull \hbox (28.502pt too wide) detected at line 95
 \OML/cmm/m/it/10.95 P\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 X[] \OMS/cmsy/m/n/
 10.95 2 \OML/cmm/m/it/10.95 A[]\OMS/cmsy/m/n/10.95 j\OML/cmm/m/it/10.95 X[] \OM
 S/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 A[]; X[] \OMS/cmsy/m/n/10.95 2 \OML/cmm/
@@ -500,101 +510,97 @@ t/10.95 X[] \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 A[]\OT1/cmr/m/n/10.95 )
  []
 
 [14] [15]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 116.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 121.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 116.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 121.
  [16]
-[17] [18] [19] [20] [21] [22] [23] [24]
-<treexample.png, id=101, 1003.75pt x 1208.515pt>
+[17] [18] [19] [20] [21] [22] [23] [24] [25]
+<treexample.png, id=104, 1003.75pt x 1208.515pt>
 File: treexample.png Graphic file (type png)
  <use treexample.png>
-Package pdftex.def Info: treexample.png used on input line 234.
+Package pdftex.def Info: treexample.png used on input line 244.
 (pdftex.def)             Requested size: 301.12732pt x 362.5573pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[25] [26 <./treexample.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 255--255
+ [26 <./treexample.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 265--265
 []\OT1/cmr/m/n/10.95 Gamma dis-tri-bu-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 255--256
+Underfull \hbox (badness 10000) in paragraph at lines 265--266
 []\OT1/cmr/m/n/10.95 WHO Ebola Re-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 257--258
+Underfull \hbox (badness 10000) in paragraph at lines 267--268
 []\OT1/cmr/m/n/10.95 WHO Ebola Re-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 259--259
+Underfull \hbox (badness 10000) in paragraph at lines 269--269
 []\OT1/cmr/m/n/10.95 Substitution rate
  []
 
 
-Underfull \hbox (badness 4556) in paragraph at lines 259--259
+Underfull \hbox (badness 4556) in paragraph at lines 269--269
 \OT1/cmr/m/n/10.95 per site per day =
  []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[27] [28] [29]
-Overfull \hbox (10.50638pt too wide) in paragraph at lines 387--408
+[27] [28] [29] [30]
+Overfull \hbox (10.50638pt too wide) in paragraph at lines 397--418
  [][] 
  []
 
-[30] [31] [32]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[31] [32] [33]
 Chapter 3.
-<trace.png, id=127, 468.75125pt x 562.1pt>
+<trace.png, id=130, 468.75125pt x 562.1pt>
 File: trace.png Graphic file (type png)
  <use trace.png>
-Package pdftex.def Info: trace.png used on input line 421.
+Package pdftex.def Info: trace.png used on input line 431.
 (pdftex.def)             Requested size: 281.25291pt x 337.2626pt.
 
-<final.png, id=128, 504.9264pt x 505.1673pt>
+<final.png, id=131, 504.9264pt x 505.1673pt>
 File: final.png Graphic file (type png)
  <use final.png>
-Package pdftex.def Info: final.png used on input line 429.
+Package pdftex.def Info: final.png used on input line 439.
 (pdftex.def)             Requested size: 302.95818pt x 303.1027pt.
- [33
+ [34
 
-] [34 <./trace.png (PNG copy)>] [35 <./final.png (PNG copy)>]
-<violinmat.png, id=138, 466.6233pt x 562.0197pt>
+] [35 <./trace.png (PNG copy)>] [36 <./final.png (PNG copy)>]
+<violinmat.png, id=142, 466.6233pt x 562.0197pt>
 File: violinmat.png Graphic file (type png)
  <use violinmat.png>
-Package pdftex.def Info: violinmat.png used on input line 445.
+Package pdftex.def Info: violinmat.png used on input line 455.
 (pdftex.def)             Requested size: 279.97614pt x 337.21442pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<ancestree.png, id=139, 614.295pt x 639.38875pt>
+<ancestree.png, id=143, 614.295pt x 639.38875pt>
 File: ancestree.png Graphic file (type png)
  <use ancestree.png>
-Package pdftex.def Info: ancestree.png used on input line 456.
+Package pdftex.def Info: ancestree.png used on input line 466.
 (pdftex.def)             Requested size: 307.14674pt x 319.69359pt.
 
-<tree_with_grps.png, id=141, 626.34pt x 642.4pt>
+<tree_with_grps.png, id=145, 626.34pt x 642.4pt>
 File: tree_with_grps.png Graphic file (type png)
  <use tree_with_grps.png>
-Package pdftex.def Info: tree_with_grps.png used on input line 462.
+Package pdftex.def Info: tree_with_grps.png used on input line 472.
 (pdftex.def)             Requested size: 313.16922pt x 321.19922pt.
 
-<tree_no_grps.png, id=142, 618.31pt x 652.4375pt>
+<tree_no_grps.png, id=146, 618.31pt x 652.4375pt>
 File: tree_no_grps.png Graphic file (type png)
  <use tree_no_grps.png>
-Package pdftex.def Info: tree_no_grps.png used on input line 468.
+Package pdftex.def Info: tree_no_grps.png used on input line 478.
 (pdftex.def)             Requested size: 309.15424pt x 326.21794pt.
 
 
@@ -603,24 +609,25 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[36] [37 <./violinmat.png (PNG copy)>] [38 <./ancestree.png>] [39 <./tree_with_
-grps.png>] [40 <./tree_no_grps.png>]
+[37] [38 <./violinmat.png (PNG copy)>] [39 <./ancestree.png>] [40 <./tree_with_
+grps.png>] [41 <./tree_no_grps.png>]
 Chapter 4.
-[41
+[42
 
-] [42] [43] [44] (./report.bbl [45]
+] [43] [44] [45] (./report.bbl [46]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no © in font cmr10!
- [46
+ [47
 
 ]
-Underfull \hbox (badness 3713) in paragraph at lines 66--72
+Underfull \hbox (badness 3713) in paragraph at lines 91--97
 []\OT1/cmr/m/n/10.95 Thibaut Jom-bart, Anne Cori, Xavier Dide-lot, Si-mon Cauch
 emez,
  []
 
+[48]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Ã in font cmr10!
@@ -629,35 +636,38 @@ Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Å in font cmr10!
 Missing character: There is no “ in font cmr10!
-[47]) [48] (./report.aux) ) 
+ [49])
+
+Package natbib Warning: There were undefined citations.
+
+[50] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 11308 strings out of 493304
- 204790 string characters out of 6139871
- 267317 words of memory out of 5000000
- 14521 multiletter control sequences out of 15000+600000
+ 11324 strings out of 493304
+ 205012 string characters out of 6139871
+ 255403 words of memory out of 5000000
+ 14537 multiletter control sequences out of 15000+600000
  13699 words of font info for 51 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 56i,17n,55p,1923b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.p
-fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt1
-0.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10
-.pfb>
-Output written on report.pdf (49 pages, 955392 bytes).
+ 56i,17n,55p,1596b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+bx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.p
+fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti1
+0.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on report.pdf (51 pages, 956222 bytes).
 PDF statistics:
- 242 PDF objects out of 1000 (max. 8388607)
- 163 compressed objects within 2 object streams
+ 248 PDF objects out of 1000 (max. 8388607)
+ 167 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  48 words of extra memory for PDF output out of 10000 (max. 10000000)
 

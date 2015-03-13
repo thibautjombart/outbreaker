@@ -1,16 +1,25 @@
-\begin{thebibliography}{20}
+\begin{thebibliography}{25}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Cauchemez et~al.(2004)Cauchemez, Carrat, Viboud, Valleron, and
-  Boelle]{Cauchemez04}
-S.~Cauchemez, F.~Carrat, C.~Viboud, A.~J. Valleron, and P.~Y. Boelle.
-\newblock A bayesian mcmc approach to study transmission of influenza:
-  application to household longitudinal data.
-\newblock \emph{Statistics in Medicine}, 23:\penalty0 3469--3487, 2004.
+\bibitem[Anderson and May(1992)]{Anderson92}
+Roy.~M. Anderson and Robert.~M. May.
+\newblock \emph{Infectious Diseases of Humans}.
+\newblock Oxford University Press, 1992.
+
+\bibitem[Ball and Lyne(2001)]{Ball01}
+F.~Ball and O.~D. Lyne.
+\newblock Stochastic multitype epidemics among a population partitioned into
+  households.
+\newblock \emph{Adv. Appl. Prob.}, 33:\penalty0 99--123, 2001.
+
+\bibitem[Breban et~al.(2007)Breban, Vardavas, and Blower]{Breban07}
+R.~Breban, R.~Vardavas, and S.~Blower.
+\newblock Theory versus data: How to calculate r0?
+\newblock \emph{PLoS ONE}, 2\penalty0 (3), 2007.
 
 \bibitem[Cauchemez et~al.(2011)Cauchemez, Bhattarai, Marchbanks, Fagan,
   Ostroff, Ferguson, and Swerdlow]{Cauchemez11}
@@ -29,6 +38,27 @@ E.~Cottam, Gaël Thébaud, Jemma Wadsworth, John Gloster, Leonard Mansley,
   transmission pathways of foot-and-mouth disease virus.
 \newblock \emph{Proceedings. Biological sciences / The Royal Society},
   275\penalty0 (1637):\penalty0 887--95, 2008.
+
+\bibitem[de~Groot et~al.(2013)de~Groot, Baker, Baric, Brown, Drosten, and
+  Enjuanes]{MERS}
+R.~J. de~Groot, S.~C. Baker, R.~S. Baric, C.~S. Brown, C.~Drosten, and
+  L.~Enjuanes.
+\newblock Middle east respiratory syndrome coronavirus (mers-cov): Announcement
+  of the coronavirus study group.
+\newblock \emph{Journal of Virology}, 2013.
+
+\bibitem[Eubank et~al.(2004)Eubank, Guclu, Anil~Kumar, Marathe, Srinivasan,
+  Toroczkai, and Wang]{Eubank04}
+S.~Eubank, H.~Guclu, V.~S. Anil~Kumar, M.~V. Marathe, A.~Srinivasan,
+  Z.~Toroczkai, and N.~Wang.
+\newblock Modelling disease outbreaks in realistic urban social networks.
+\newblock \emph{Nature}, 429:\penalty0 180--184, 2004.
+
+\bibitem[Ferguson et~al.(2001)Ferguson, Donnelly, and Anderson]{Ferguson01}
+N.~M. Ferguson, C.~A. Donnelly, and R.~M. Anderson.
+\newblock Transmission intesity and impact of control policies on the foot and
+  mouth epidemic in great britain.
+\newblock \emph{Nature}, 413:\penalty0 542--548, 2001.
 
 \bibitem[Gilks et~al.(1996)Gilks, Richardson, and Spiegelhalter]{Gilks96}
 W.~R Gilks, S.~Richardson, and D.~J. Spiegelhalter.
@@ -56,11 +86,6 @@ D.~T Haydon, M~Chase-Topping, D.~J Shaw, L~Matthews, J.~K Friar, J~Wilesmith,
 \newblock \emph{Proceedings of the Royal Society B: Biological Sciences},
   270\penalty0 (1511):\penalty0 121--127, 2003.
 
-\bibitem[Jombart et~al.(2011)Jombart, Eggo, Dodd, and Balloux]{Jombart11}
-Thibaut Jombart, Rosalind~M. Eggo, P.~J. Dodd, and F.~Balloux.
-\newblock Reconstructing disease outbreaks from genetic data: a graph approach.
-\newblock \emph{Heredity}, 106\penalty0 (2):\penalty0 383--90, 2011.
-
 \bibitem[Jombart et~al.(2014)Jombart, Cori, Didelot, Cauchemez, Fraser, and
   Ferguson]{outbrkr}
 Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser,
@@ -70,6 +95,15 @@ Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser,
 \newblock \emph{PLoS Computational Biology}, 10\penalty0 (1):\penalty0
   e1003457, 2014.
 
+\bibitem[Koser et~al.(2012)Koser, Holden, Ellington, Cartwright, and
+  Brown]{Koser12}
+C.~U Koser, M.T.G. Holden, M.~J. Ellington, E.~J.~P. Cartwright, and N.~M.
+  Brown.
+\newblock Rapid whole-genome sequencing for investigation of a neonatal mrsa
+  outbreak.
+\newblock \emph{The New England Journal of Medicine}, 366:\penalty0 2267--2275,
+  2012.
+
 \bibitem[Morelli et~al.(2012)Morelli, Thébaud, Chadœuf, King, Haydon, and
   Soubeyrand]{Morelli12}
 Marco~J. Morelli, Gaël Thébaud, Joël Chadœuf, Donald~P. King, Daniel~T.
@@ -78,12 +112,6 @@ Marco~J. Morelli, Gaël Thébaud, Joël Chadœuf, Donald~P. King, Daniel~T.
   using epidemiological and genetic data.
 \newblock \emph{PLoS Computational Biology}, 8\penalty0 (11):\penalty0
   e1002768, 2012.
-
-\bibitem[O'Neill(2002)]{ONeill02}
-Philip~D. O'Neill.
-\newblock A tutorial introduction to bayesian inference for stochastic epidemic
-  models using markov chain monte carlo methods.
-\newblock \emph{Mathematical Biosciences}, 180:\penalty0 103--114, 2002.
 
 \bibitem[R~Core~Team(2014)]{R14}
 The R~Core~Team.
@@ -96,11 +124,11 @@ C.~P. Robert.
 \newblock \emph{The Bayesian Choice}.
 \newblock Springer, second edition, 2007.
 
-\bibitem[Streftaris and Gibson(2004)]{Gibson04}
-G~Streftaris and G.~J Gibson.
-\newblock Bayesian inference for stochastic epidemics in closed populations.
-\newblock \emph{Statistical Modelling 4}, 4\penalty0 (1):\penalty0 63--75,
-  2004.
+\bibitem[Snitkin et~al.(2012)Snitkin, Zelazny, Thomas, and Stock]{Snitkin12}
+E.~Snitkin, A.~Zelazny, P.~Thomas, and F.~Stock.
+\newblock Tracking a hospital outbreak of carbapenem-resistant klebsiella
+  pneumoniae with whole-genome sequencing.
+\newblock \emph{Sci. Transl. Med.}, 4\penalty0 (148), 2012.
 
 \bibitem[Teunis et~al.(2013)Teunis, Heijne, Sukhrie, van Eijkeren, Koopmans,
   and Kretzschmar]{Teunis13}
@@ -124,13 +152,6 @@ Jochen Voss.
 \newblock WIley Series in Computational Statistics. John Wiley and Sons Ltd,
   2014.
 
-\bibitem[Wallinga and Teunis(2004)]{Wallinga04}
-Jacco Wallinga and Peter Teunis.
-\newblock Different epidemic curves for severe acute respiratory syndrome
-  reveal similar impacts of control measures.
-\newblock \emph{American journal of epidemiology}, 160\penalty0 (6):\penalty0
-  509--16, 2004.
-
 \bibitem[WHO Ebola Response~Team(2014)]{Ebola14}
 The WHO Ebola Response~Team.
 \newblock Ebola virus disease in west africa - the first 9 months of the
@@ -138,10 +159,29 @@ The WHO Ebola Response~Team.
 \newblock \emph{The New England Journal of Medicine}, 371\penalty0
   (16):\penalty0 1481--1495, 2014.
 
-\bibitem[Ypma et~al.(2013)Ypma, Marijn~van Ballegooijen, and Wallinga]{Ypma13}
+\bibitem[Ypma et~al.(2012)Ypma, Bataille, Stegeman, Koch, Wallinga, and van
+  Ballegooijen~WM.]{Ypma12}
+R.~J.~F. Ypma, A.~M. Bataille, A.~Stegeman, G.~Koch, J.~Wallinga, and van
+  Ballegooijen~WM.
+\newblock Unravelling transmission trees of infectious diseases by combining
+  genetic and epidemiological data.
+\newblock \emph{Proc. Biol. Sci.}, 279\penalty0 (1728):\penalty0 444--450,
+  2012.
+
+\bibitem[Ypma et~al.(2013{\natexlab{a}})Ypma, Jonges, Bataille, Stegeman, Koch,
+  van Boven, Koopmans, van Ballegooijen~WM., and Wallinga]{Ypmawind}
+R.~J.~F. Ypma, M.~Jonges, A.~M. Bataille, A.~Stegeman, G.~Koch, M.~van Boven,
+  M.~Koopmans, van Ballegooijen~WM., and J.~Wallinga.
+\newblock Genetic data provide evidence for wind-mediated transmission of
+  highly pathogenic avian influenza.
+\newblock \emph{J. Infect. Dis.}, 207:\penalty0 730--735, 2013{\natexlab{a}}.
+
+\bibitem[Ypma et~al.(2013{\natexlab{b}})Ypma, Marijn~van Ballegooijen, and
+  Wallinga]{Ypma13}
 Rolf J.~F Ypma, W.~Marijn~van Ballegooijen, and J.~Wallinga.
 \newblock Relating pylogenetic trees to transmission trees of infectious
   disease outbreaks.
-\newblock \emph{Genetics}, 195\penalty0 (3):\penalty0 1055--62, 2013.
+\newblock \emph{Genetics}, 195\penalty0 (3):\penalty0 1055--62,
+  2013{\natexlab{b}}.
 
 \end{thebibliography}
