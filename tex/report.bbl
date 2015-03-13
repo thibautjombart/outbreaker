@@ -1,4 +1,4 @@
-\begin{thebibliography}{25}
+\begin{thebibliography}{27}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -20,6 +20,13 @@ F.~Ball and O.~D. Lyne.
 R.~Breban, R.~Vardavas, and S.~Blower.
 \newblock Theory versus data: How to calculate r0?
 \newblock \emph{PLoS ONE}, 2\penalty0 (3), 2007.
+
+\bibitem[Cauchemez et~al.(2004)Cauchemez, Carrat, Viboud, Valleron, and
+  Boelle]{Cauchemez04}
+S.~Cauchemez, F.~Carrat, C.~Viboud, A.~J. Valleron, and P.~Y. Boelle.
+\newblock A bayesian mcmc approach to study transmission of influenza:
+  application to household longitudinal data.
+\newblock \emph{Statistics in Medicine}, 23:\penalty0 3469--3487, 2004.
 
 \bibitem[Cauchemez et~al.(2011)Cauchemez, Bhattarai, Marchbanks, Fagan,
   Ostroff, Ferguson, and Swerdlow]{Cauchemez11}
@@ -151,6 +158,13 @@ Jochen Voss.
   Approach}.
 \newblock WIley Series in Computational Statistics. John Wiley and Sons Ltd,
   2014.
+
+\bibitem[Wallinga and Teunis(2004)]{Wallinga04}
+Jacco Wallinga and Peter Teunis.
+\newblock Different epidemic curves for severe acute respiratory syndrome
+  reveal similar impacts of control measures.
+\newblock \emph{American journal of epidemiology}, 160\penalty0 (6):\penalty0
+  509--16, 2004.
 
 \bibitem[WHO Ebola Response~Team(2014)]{Ebola14}
 The WHO Ebola Response~Team.

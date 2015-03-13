@@ -1,0 +1,398 @@
+% This file was created with JabRef 2.10b2.
+% Encoding: UTF-8
+
+
+@Book{Anderson92,
+  Title                    = {Infectious Diseases of Humans},
+  Author                   = {Anderson, Roy. M. and May, Robert. M.},
+  Publisher                = {Oxford University Press},
+  Year                     = {1992},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Ball01,
+  Title                    = {Stochastic Multitype Epidemics Among a Population Partitioned into Households},
+  Author                   = {Ball, F. and Lyne, O. D.},
+  Journal                  = {Adv. Appl. Prob.},
+  Year                     = {2001},
+  Pages                    = {99-123},
+  Volume                   = {33},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Breban07,
+  Title                    = {Theory versus Data: How to Calculate R0?},
+  Author                   = {Breban, R. and Vardavas, R. and Blower, S.},
+  Journal                  = {PLoS ONE},
+  Year                     = {2007},
+  Number                   = {3},
+  Volume                   = {2},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Cauchemez11,
+  Title                    = {Role of social networks in shaping disease transmission during a communtiy outbreak of 2009 H1N1 pandemic influenza},
+  Author                   = {Cauchemez, S. and Bhattarai, A. and Marchbanks, T. L. and Fagan, R. P. and Ostroff, S. and Ferguson, N. and Swerdlow, D.},
+  Journal                  = {Proceedings of the National Academy of Sciences of the United States of America},
+  Year                     = {2011},
+  Number                   = {7},
+  Pages                    = {2825-2830},
+  Volume                   = {108},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.11}
+}
+
+@Article{Cauchemez04,
+  Title                    = {A Bayesian MCMC approach to study transmission of influenza: application to household longitudinal data},
+  Author                   = {Cauchemez, S. and Carrat, F. and Viboud, C. and Valleron, A. J. and Boelle, P. Y.},
+  Journal                  = {Statistics in Medicine},
+  Year                     = {2004},
+  Pages                    = {3469-3487},
+  Volume                   = {23},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.11}
+}
+
+@Article{Didelot14,
+  Title                    = {Bayesian inference of infectious disease transmission from whole-genome sequence data},
+  Author                   = {Colijn, Caroline and Gardy, Jennifer and Didelot, Xavier},
+  Journal                  = {Molecular biology and evolution},
+  Year                     = {2014},
+  Number                   = {7},
+  Pages                    = {1869-79},
+  Volume                   = {31},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Cottam08,
+  Title                    = {Integrating genetic and epidemiological data to determine transmission pathways of foot-and-mouth disease virus},
+  Author                   = {Cottam, E. and Thébaud, Gaël and Wadsworth, Jemma and Gloster, John and Mansley, Leonard and Paton, David J. and King, Donald P. and Haydon, Daniel T.},
+  Journal                  = {Proceedings. Biological sciences / The Royal Society},
+  Year                     = {2008},
+  Number                   = {1637},
+  Pages                    = {887-95},
+  Volume                   = {275},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.02}
+}
+
+@Article{Eubank04,
+  Title                    = {Modelling disease outbreaks in realistic urban social networks},
+  Author                   = {Eubank, S. and Guclu, H. and Anil Kumar, V. S. and Marathe, M. V. and Srinivasan, A. and Toroczkai, Z. and Wang, N.},
+  Journal                  = {Nature},
+  Year                     = {2004},
+  Pages                    = {180-184},
+  Volume                   = {429},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Ferguson01,
+  Title                    = {Transmission intesity and impact of control policies on the foot and mouth epidemic in Great Britain},
+  Author                   = {Ferguson, N. M. and Donnelly, C. A. and Anderson, R. M.},
+  Journal                  = {Nature},
+  Year                     = {2001},
+  Pages                    = {542-548},
+  Volume                   = {413},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Book{Gilks96,
+  Title                    = {Markov Chain Monte Carlo in Practice},
+  Author                   = {Gilks, W. R and Richardson, S. and Spiegelhalter, D. J.},
+  Publisher                = {Chapman and Hall/CRC},
+  Year                     = {1996},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.06}
+}
+
+@Article{Gire14,
+  Title                    = {Genomic surveillance elucidates Ebola virus origin and transmission during the 2014 outbreak},
+  Author                   = {Gire, Stephen K. and Goba, Augustine and Andersen, Kristian G. and Sealfon, Rachel S. G.},
+  Journal                  = {Science},
+  Year                     = {2014},
+  Number                   = {6202},
+  Pages                    = {1369-1372},
+  Volume                   = {345},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.17}
+}
+
+@Article{Glass11,
+  Title                    = {Estimating reproduction numbers for adults and children from case data},
+  Author                   = {Glass, K. and Mercer, G. N. and Nishiura, H. and McBryde, E. S. and Becker, N. G.},
+  Journal                  = {J. R. Soc. Interface},
+  Year                     = {2011},
+  Pages                    = {1248-1259},
+  Volume                   = {8},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.02}
+}
+
+@Article{Grassly08,
+  Title                    = {Mathematical models of infectious diseases},
+  Author                   = {Grassly, Nicholas C. and Fraser, Christophe},
+  Journal                  = {Nature Reviews Microbiology},
+  Year                     = {2008},
+  Pages                    = {477-487},
+  Volume                   = {6},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.02}
+}
+
+@Article{MERS,
+  Title                    = {Middle East Respiratory Syndrome Coronavirus (MERS-CoV): Announcement of the Coronavirus Study Group},
+  Author                   = {de Groot, R. J. and Baker, S. C. and Baric, R. S. and Brown, C. S. and Drosten, C. and Enjuanes, L.},
+  Journal                  = {Journal of Virology},
+  Year                     = {2013},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Haydon03,
+  Title                    = {The construction and analysis of epidemic trees with reference to the 2001 foot-and-mouth outbreak},
+  Author                   = {Haydon, D. T and Chase-Topping, M and Shaw, D. J and Matthews, L and Friar, J. K and Wilesmith, J and Woolhouse M. E. J},
+  Journal                  = {Proceedings of the Royal Society B: Biological Sciences},
+  Year                     = {2003},
+  Number                   = {1511},
+  Pages                    = {121-127},
+  Volume                   = {270},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{outbrkr,
+  Title                    = {Bayesian Reconstruction of Disease Outbreaks by Combining Epidemiologic and Genomic Data},
+  Author                   = {Jombart, Thibaut and Cori, Anne and Didelot, Xavier and Cauchemez, Simon and Fraser, Christophe and Ferguson, Neil},
+  Journal                  = {PLoS Computational Biology},
+  Year                     = {2014},
+  Number                   = {1},
+  Pages                    = {e1003457},
+  Volume                   = {10},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Jombart11,
+  Title                    = {Reconstructing disease outbreaks from genetic data: a graph approach},
+  Author                   = {Jombart, Thibaut and Eggo, Rosalind M. and Dodd, P. J. and Balloux, F.},
+  Journal                  = {Heredity},
+  Year                     = {2011},
+  Number                   = {2},
+  Pages                    = {383-90},
+  Volume                   = {106},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Koser12,
+  Title                    = {Rapid Whole-Genome Sequencing for Investigation of a Neonatal MRSA Outbreak},
+  Author                   = {Koser, C. U and Holden, M.T.G. and Ellington, M. J. and Cartwright, E. J. P. and Brown, N. M.},
+  Journal                  = {The New England Journal of Medicine},
+  Year                     = {2012},
+  Pages                    = {2267-2275},
+  Volume                   = {366},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Morelli12,
+  Title                    = {A Bayesian inference framework to reconstruct transmission trees using epidemiological and genetic data},
+  Author                   = {Morelli, Marco J. and Thébaud, Gaël and Chadœuf, Joël and King, Donald P. and Haydon, Daniel T. and Soubeyrand, Samuel.},
+  Journal                  = {PLoS Computational Biology},
+  Year                     = {2012},
+  Number                   = {11},
+  Pages                    = {e1002768},
+  Volume                   = {8},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{ONeill02,
+  Title                    = {A tutorial introduction to Bayesian inference for stochastic Epidemic models using Markov chain Monte Carlo methods},
+  Author                   = {O'Neill, Philip D.},
+  Journal                  = {Mathematical Biosciences},
+  Year                     = {2002},
+  Pages                    = {103-114},
+  Volume                   = {180},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.11}
+}
+
+@Manual{R14,
+  Title                    = {R: A Language and Environment for Statistical Computing},
+
+  Address                  = {Vienna, Austria},
+  Author                   = {R Core Team, The},
+  Organization             = {R Foundation for Statistical Computing},
+  Year                     = {2014},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.02},
+  Url                      = {http://www.R-project.org}
+}
+
+@Book{Robert07,
+  Title                    = {The Bayesian Choice},
+  Author                   = {Robert, C. P.},
+  Publisher                = {Springer},
+  Year                     = {2007},
+  Edition                  = {Second},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.11}
+}
+
+@Article{Snitkin12,
+  Title                    = {Tracking a Hospital Outbreak of Carbapenem-Resistant Klebsiella pneumoniae with Whole-Genome Sequencing},
+  Author                   = {Snitkin, E. and Zelazny, A. and Thomas, P. and Stock, F.},
+  Journal                  = {Sci. Transl. Med.},
+  Year                     = {2012},
+  Number                   = {148},
+  Volume                   = {4},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Gibson04,
+  Title                    = {Bayesian inference for stochastic epidemics in closed populations},
+  Author                   = {Streftaris, G and Gibson, G. J},
+  Journal                  = {Statistical Modelling 4},
+  Year                     = {2004},
+  Number                   = {1},
+  Pages                    = {63-75},
+  Volume                   = {4},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Teunis13,
+  Title                    = {Infectious disease transmission as a forensic problem: who infected who?},
+  Author                   = {Teunis, P. and Heijne, J. C. M. and Sukhrie, F. and van Eijkeren, J. and Koopmans, M. and Kretzschmar, M.},
+  Journal                  = {J. R. Soc. Interface},
+  Year                     = {2013},
+  Volume                   = {10},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.11}
+}
+
+@Article{Volchkov99,
+  Title                    = {Characterization of the L gene and 5' trailer region of Ebola virus},
+  Author                   = {Volchkov, V. E. and Volchkova, V. A. and Chepurnov, A. A. and Blinov, V.M. and Dolnik, O. and Netesov S.V. and Feldmann, H.},
+  Journal                  = {J. Gen. Biology},
+  Year                     = {1999},
+  Pages                    = {355-62},
+  Volume                   = {80},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.02}
+}
+
+@Book{Voss14,
+  Title                    = {An Introduction to Statistical Computing - A Simulation-Based Approach},
+  Author                   = {Voss, Jochen},
+  Publisher                = {John Wiley and Sons Ltd},
+  Year                     = {2014},
+  Series                   = {WIley Series in Computational Statistics},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.06}
+}
+
+@Article{Wallinga04,
+  Title                    = {Different epidemic curves for severe acute respiratory syndrome reveal similar impacts of control measures},
+  Author                   = {Wallinga, Jacco and Teunis, Peter},
+  Journal                  = {American journal of epidemiology},
+  Year                     = {2004},
+  Number                   = {6},
+  Pages                    = {509-16},
+  Volume                   = {160},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{Ebola14,
+  Title                    = {Ebola Virus Disease in West Africa - The First 9 Months of the Epidemic and Forward Projections},
+  Author                   = {WHO Ebola Response Team, The},
+  Journal                  = {The New England Journal of Medicine},
+  Year                     = {2014},
+  Number                   = {16},
+  Pages                    = {1481-1495},
+  Volume                   = {371},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.23}
+}
+
+@Article{Ypma12,
+  Title                    = {Unravelling transmission trees of infectious diseases by combining genetic and epidemiological data},
+  Author                   = {Ypma, R. J. F. and Bataille, A. M. and Stegeman, A. and Koch, G. and Wallinga, J. and van Ballegooijen WM.},
+  Journal                  = {Proc. Biol. Sci.},
+  Year                     = {2012},
+  Number                   = {1728},
+  Pages                    = {444-450},
+  Volume                   = {279},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Ypmawind,
+  Title                    = {Genetic data provide evidence for wind-mediated transmission of highly pathogenic avian influenza},
+  Author                   = {Ypma, R. J. F. and Jonges, M. and Bataille, A. M. and Stegeman, A. and Koch, G. and van Boven, M. and Koopmans, M. and van Ballegooijen WM. and Wallinga, J.},
+  Journal                  = {J. Infect. Dis.},
+  Year                     = {2013},
+  Pages                    = {730-735},
+  Volume                   = {207},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
+@Article{Ypma13,
+  Title                    = {Relating pylogenetic trees to transmission trees of infectious disease outbreaks},
+  Author                   = {Ypma, Rolf J. F and Marijn van Ballegooijen, W. and Wallinga, J.},
+  Journal                  = {Genetics},
+  Year                     = {2013},
+  Number                   = {3},
+  Pages                    = {1055-62},
+  Volume                   = {195},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.02.04}
+}
+
+@Article{,
+  Owner                    = {joel},
+  Timestamp                = {2015.03.13}
+}
+
