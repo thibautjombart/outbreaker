@@ -53,27 +53,30 @@
 \citation{Gilks96}
 \citation{Voss14}
 \@writefile{toc}{\contentsline {section}{\numberline {2.4}The Metropolis-Hastings Algorithm}{16}}
-\citation{Cauchemez11}
 \@writefile{toc}{\contentsline {section}{\numberline {2.5}The Outbreaker MCMC Process}{18}}
 \@writefile{toc}{\contentsline {section}{\numberline {2.6}Group Data and Parameters}{18}}
 \citation{outbrkr}
 \@writefile{toc}{\contentsline {section}{\numberline {2.7}Group Likelihood}{19}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{21}}
+\citation{R14}
 \citation{outbrkr}
-\@writefile{toc}{\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{22}}
 \@writefile{toc}{\contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{24}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces A transmission tree constructed from a randomly generated outbreak using the group transmission probability matrix defined above. The direction of arrows between nodes determines the direction of infection. The nodes are coloured by the group of the individual}}{26}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.1}Simulation 1}{25}}
+\citation{outbrkr}
 \citation{Ebola14}
 \citation{Ebola14}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces {\bf  Example transmission tree from simulated outbreak data.} A transmission tree constructed from a randomly generated outbreak using the group transmission probability matrix defined in section 2.9. The direction of arrows between nodes determines the direction of infection. The nodes are coloured by the group of the individual}}{26}}
 \citation{Ebola14}
 \citation{Ebola14}
 \citation{Gire14}
 \citation{Volchkov99}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.1}Simulation 1}{27}}
 \@writefile{lot}{\contentsline {table}{\numberline {2.1}{\ignorespaces The table shows the values of the epidemiological properties of the pathogen used in the {\tt  simOutbreak} function, the right hand column shows the source from which the parameter value was taken.}}{28}}
 \@writefile{lot}{\contentsline {table}{\numberline {2.2}{\ignorespaces The table shows the values of the parameters passed to the {\tt  simOutbreak} function to simulate outbreak datasets}}{28}}
+\citation{outbrkr}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.9.2}Simulation 2}{29}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces The figure shows a transmission tree, each node is an infected individual and each full line shows a previously inferred transmission event. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that in this scenario outbreaker would have difficulty inferring the correct infector of "?"}}{30}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces The figure shows a transmission tree, each node is an infected individual and each full line shows a previous inferred transmission event. Nodes are coloured by their group membership. The node with a "?" is a newly infected case, the dotted lines represent potential infectors of "?". The figure aims to show that with group data, outbreaker would make the sensible inference that case 5 is the infector of "?".}}{32}}
+\citation{Cauchemez04}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces {\bf  Schematic example of outbreaker model inference without group data}. The figure shows a transmission tree, each node is an infected individual and each full line shows a previously inferred transmission event. The node with a ``?'' is a newly infected case, the dotted lines represent potential infectors of ``?''. The figure aims to show that in this scenario outbreaker would have difficulty inferring the correct infector of ``?''}}{30}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces {\bf  A schematic example of outbreaker model inference with group data.} The figure shows a transmission tree, each node is an infected individual and each full line shows a previous inferred transmission event. Nodes are coloured by their group membership. The node with a ``?'' is a newly infected case, the dotted lines represent potential infectors of ``?''. The figure aims to show that with group data, outbreaker would make the sensible inference that case 5 is the infector of ``?''.}}{32}}
 \@writefile{lot}{\contentsline {table}{\numberline {2.3}{\ignorespaces The table gives the values of parameters used to create simulated datasets for simulation 2}}{32}}
 \citation{outbrkr}
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Results}{34}}
@@ -101,25 +104,27 @@
 \bibcite{Anderson92}{{1}{1992}{{Anderson and May}}{{}}}
 \bibcite{Ball01}{{2}{2001}{{Ball and Lyne}}{{}}}
 \bibcite{Breban07}{{3}{2007}{{Breban et~al.}}{{Breban, Vardavas, and Blower}}}
-\bibcite{Cauchemez11}{{4}{2011}{{Cauchemez et~al.}}{{Cauchemez, Bhattarai, Marchbanks, Fagan, Ostroff, Ferguson, and Swerdlow}}}
-\bibcite{Cottam08}{{5}{2008}{{Cottam et~al.}}{{Cottam, Thébaud, Wadsworth, Gloster, Mansley, Paton, King, and Haydon}}}
-\bibcite{MERS}{{6}{2013}{{de~Groot et~al.}}{{de~Groot, Baker, Baric, Brown, Drosten, and Enjuanes}}}
-\bibcite{Eubank04}{{7}{2004}{{Eubank et~al.}}{{Eubank, Guclu, Anil~Kumar, Marathe, Srinivasan, Toroczkai, and Wang}}}
-\bibcite{Ferguson01}{{8}{2001}{{Ferguson et~al.}}{{Ferguson, Donnelly, and Anderson}}}
-\bibcite{Gilks96}{{9}{1996}{{Gilks et~al.}}{{Gilks, Richardson, and Spiegelhalter}}}
-\bibcite{Gire14}{{10}{2014}{{Gire et~al.}}{{Gire, Goba, Andersen, and Sealfon}}}
-\bibcite{Grassly08}{{11}{2008}{{Grassly and Fraser}}{{}}}
-\bibcite{Haydon03}{{12}{2003}{{Haydon et~al.}}{{Haydon, Chase-Topping, Shaw, Matthews, Friar, Wilesmith, and J}}}
-\bibcite{outbrkr}{{13}{2014}{{Jombart et~al.}}{{Jombart, Cori, Didelot, Cauchemez, Fraser, and Ferguson}}}
-\bibcite{Koser12}{{14}{2012}{{Koser et~al.}}{{Koser, Holden, Ellington, Cartwright, and Brown}}}
-\bibcite{Morelli12}{{15}{2012}{{Morelli et~al.}}{{Morelli, Thébaud, Chadœuf, King, Haydon, and Soubeyrand}}}
-\bibcite{R14}{{16}{2014}{{R~Core~Team}}{{}}}
-\bibcite{Robert07}{{17}{2007}{{Robert}}{{}}}
-\bibcite{Snitkin12}{{18}{2012}{{Snitkin et~al.}}{{Snitkin, Zelazny, Thomas, and Stock}}}
-\bibcite{Teunis13}{{19}{2013}{{Teunis et~al.}}{{Teunis, Heijne, Sukhrie, van Eijkeren, Koopmans, and Kretzschmar}}}
-\bibcite{Volchkov99}{{20}{1999}{{Volchkov et~al.}}{{Volchkov, Volchkova, Chepurnov, Blinov, Dolnik, S.V., and Feldmann}}}
-\bibcite{Voss14}{{21}{2014}{{Voss}}{{}}}
-\bibcite{Ebola14}{{22}{2014}{{WHO Ebola Response~Team}}{{}}}
-\bibcite{Ypma12}{{23}{2012}{{Ypma et~al.}}{{Ypma, Bataille, Stegeman, Koch, Wallinga, and van Ballegooijen~WM.}}}
-\bibcite{Ypmawind}{{24}{2013{a}}{{Ypma et~al.}}{{Ypma, Jonges, Bataille, Stegeman, Koch, van Boven, Koopmans, van Ballegooijen~WM., and Wallinga}}}
-\bibcite{Ypma13}{{25}{2013{b}}{{Ypma et~al.}}{{Ypma, Marijn~van Ballegooijen, and Wallinga}}}
+\bibcite{Cauchemez04}{{4}{2004}{{Cauchemez et~al.}}{{Cauchemez, Carrat, Viboud, Valleron, and Boelle}}}
+\bibcite{Cauchemez11}{{5}{2011}{{Cauchemez et~al.}}{{Cauchemez, Bhattarai, Marchbanks, Fagan, Ostroff, Ferguson, and Swerdlow}}}
+\bibcite{Cottam08}{{6}{2008}{{Cottam et~al.}}{{Cottam, Thébaud, Wadsworth, Gloster, Mansley, Paton, King, and Haydon}}}
+\bibcite{MERS}{{7}{2013}{{de~Groot et~al.}}{{de~Groot, Baker, Baric, Brown, Drosten, and Enjuanes}}}
+\bibcite{Eubank04}{{8}{2004}{{Eubank et~al.}}{{Eubank, Guclu, Anil~Kumar, Marathe, Srinivasan, Toroczkai, and Wang}}}
+\bibcite{Ferguson01}{{9}{2001}{{Ferguson et~al.}}{{Ferguson, Donnelly, and Anderson}}}
+\bibcite{Gilks96}{{10}{1996}{{Gilks et~al.}}{{Gilks, Richardson, and Spiegelhalter}}}
+\bibcite{Gire14}{{11}{2014}{{Gire et~al.}}{{Gire, Goba, Andersen, and Sealfon}}}
+\bibcite{Grassly08}{{12}{2008}{{Grassly and Fraser}}{{}}}
+\bibcite{Haydon03}{{13}{2003}{{Haydon et~al.}}{{Haydon, Chase-Topping, Shaw, Matthews, Friar, Wilesmith, and J}}}
+\bibcite{outbrkr}{{14}{2014}{{Jombart et~al.}}{{Jombart, Cori, Didelot, Cauchemez, Fraser, and Ferguson}}}
+\bibcite{Koser12}{{15}{2012}{{Koser et~al.}}{{Koser, Holden, Ellington, Cartwright, and Brown}}}
+\bibcite{Morelli12}{{16}{2012}{{Morelli et~al.}}{{Morelli, Thébaud, Chadœuf, King, Haydon, and Soubeyrand}}}
+\bibcite{R14}{{17}{2014}{{R~Core~Team}}{{}}}
+\bibcite{Robert07}{{18}{2007}{{Robert}}{{}}}
+\bibcite{Snitkin12}{{19}{2012}{{Snitkin et~al.}}{{Snitkin, Zelazny, Thomas, and Stock}}}
+\bibcite{Teunis13}{{20}{2013}{{Teunis et~al.}}{{Teunis, Heijne, Sukhrie, van Eijkeren, Koopmans, and Kretzschmar}}}
+\bibcite{Volchkov99}{{21}{1999}{{Volchkov et~al.}}{{Volchkov, Volchkova, Chepurnov, Blinov, Dolnik, S.V., and Feldmann}}}
+\bibcite{Voss14}{{22}{2014}{{Voss}}{{}}}
+\bibcite{Wallinga04}{{23}{2004}{{Wallinga and Teunis}}{{}}}
+\bibcite{Ebola14}{{24}{2014}{{WHO Ebola Response~Team}}{{}}}
+\bibcite{Ypma12}{{25}{2012}{{Ypma et~al.}}{{Ypma, Bataille, Stegeman, Koch, Wallinga, and van Ballegooijen~WM.}}}
+\bibcite{Ypmawind}{{26}{2013{a}}{{Ypma et~al.}}{{Ypma, Jonges, Bataille, Stegeman, Koch, van Boven, Koopmans, van Ballegooijen~WM., and Wallinga}}}
+\bibcite{Ypma13}{{27}{2013{b}}{{Ypma et~al.}}{{Ypma, Marijn~van Ballegooijen, and Wallinga}}}

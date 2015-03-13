@@ -7,9 +7,9 @@
 \contentsline {section}{\numberline {2.5}The Outbreaker MCMC Process}{18}
 \contentsline {section}{\numberline {2.6}Group Data and Parameters}{18}
 \contentsline {section}{\numberline {2.7}Group Likelihood}{19}
-\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{22}
+\contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{21}
 \contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{24}
-\contentsline {subsection}{\numberline {2.9.1}Simulation 1}{27}
+\contentsline {subsection}{\numberline {2.9.1}Simulation 1}{25}
 \contentsline {subsection}{\numberline {2.9.2}Simulation 2}{29}
 \contentsline {chapter}{\numberline {3}Results}{34}
 \contentsline {section}{\numberline {3.1}Testing Procedures}{34}
