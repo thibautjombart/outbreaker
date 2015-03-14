@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  13 MAR 2015 23:37
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  14 MAR 2015 11:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -555,86 +555,85 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[27] [28] [29]
+[27] [28] [29] [30]
 Overfull \hbox (52.00797pt too wide) in paragraph at lines 399--420
  [][] 
  []
-
-[30]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [31] [32] [33]
 Chapter 3.
-<trace.png, id=131, 468.75125pt x 562.1pt>
+
+Overfull \hbox (15.07283pt too wide) in paragraph at lines 441--441
+[]\OT1/cmr/bx/n/14.4 Simulation 1: Test-ing the Abil-ity to In-fer Within
+ []
+
+<trace.png, id=131, 468.75125pt x 501.875pt>
 File: trace.png Graphic file (type png)
  <use trace.png>
 Package pdftex.def Info: trace.png used on input line 445.
-(pdftex.def)             Requested size: 281.25291pt x 337.2626pt.
+(pdftex.def)             Requested size: 281.25291pt x 301.12732pt.
 
-<final.png, id=132, 504.9264pt x 505.1673pt>
+<final.png, id=133, 504.9264pt x 505.1673pt>
 File: final.png Graphic file (type png)
  <use final.png>
-Package pdftex.def Info: final.png used on input line 453.
+Package pdftex.def Info: final.png used on input line 452.
 (pdftex.def)             Requested size: 302.95818pt x 303.1027pt.
  [34
 
-] [35 <./trace.png (PNG copy)>] [36 <./final.png (PNG copy)>]
-<violinmat.png, id=143, 466.6233pt x 562.0197pt>
+] [35 <./trace.png>] <violinmat.png, id=141, 466.6233pt x 562.0197pt>
 File: violinmat.png Graphic file (type png)
  <use violinmat.png>
-Package pdftex.def Info: violinmat.png used on input line 469.
+Package pdftex.def Info: violinmat.png used on input line 471.
 (pdftex.def)             Requested size: 279.97614pt x 337.21442pt.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<ancestree.png, id=144, 614.295pt x 639.38875pt>
+[36] [37 <./final.png (PNG copy)>]
+<ancestree.png, id=149, 614.295pt x 639.38875pt>
 File: ancestree.png Graphic file (type png)
  <use ancestree.png>
-Package pdftex.def Info: ancestree.png used on input line 480.
+Package pdftex.def Info: ancestree.png used on input line 481.
 (pdftex.def)             Requested size: 307.14674pt x 319.69359pt.
 
-<tree_with_grps.png, id=146, 626.34pt x 642.4pt>
+<tree_with_grps.png, id=150, 626.34pt x 642.4pt>
 File: tree_with_grps.png Graphic file (type png)
  <use tree_with_grps.png>
-Package pdftex.def Info: tree_with_grps.png used on input line 486.
+Package pdftex.def Info: tree_with_grps.png used on input line 487.
 (pdftex.def)             Requested size: 313.16922pt x 321.19922pt.
 
-<tree_no_grps.png, id=147, 618.31pt x 652.4375pt>
+<tree_no_grps.png, id=151, 618.31pt x 652.4375pt>
 File: tree_no_grps.png Graphic file (type png)
  <use tree_no_grps.png>
-Package pdftex.def Info: tree_no_grps.png used on input line 492.
+Package pdftex.def Info: tree_no_grps.png used on input line 493.
 (pdftex.def)             Requested size: 309.15424pt x 326.21794pt.
 
+[38 <./violinmat.png>]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[37] [38 <./violinmat.png (PNG copy)>] [39 <./ancestree.png>] [40 <./tree_with_
-grps.png>] [41 <./tree_no_grps.png>]
+[39] [40 <./ancestree.png>] [41 <./tree_with_grps.png>] [42 <./tree_no_grps.png
+>]
 Chapter 4.
-[42
+[43
 
-] [43] [44] [45] (./report.bbl [46]
+] [44] [45] [46] (./report.bbl [47]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no © in font cmr10!
- [47
+ [48
 
 ]
-Underfull \hbox (badness 3713) in paragraph at lines 98--104
+Underfull \hbox (badness 3713) in paragraph at lines 105--111
 []\OT1/cmr/m/n/10.95 Thibaut Jom-bart, Anne Cori, Xavier Dide-lot, Si-mon Cauch
 emez,
  []
 
-[48]
+[49]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Ã in font cmr10!
@@ -643,12 +642,12 @@ Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Å in font cmr10!
 Missing character: There is no “ in font cmr10!
- [49]) [50] (./report.aux) ) 
+ [50]) [51] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 11328 strings out of 493304
- 205101 string characters out of 6139871
- 267534 words of memory out of 5000000
- 14541 multiletter control sequences out of 15000+600000
+ 11334 strings out of 493304
+ 205200 string characters out of 6139871
+ 255520 words of memory out of 5000000
+ 14547 multiletter control sequences out of 15000+600000
  13699 words of font info for 51 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  56i,17n,55p,1610b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -668,10 +667,10 @@ fonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
 m/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti1
 0.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (51 pages, 970045 bytes).
+Output written on report.pdf (52 pages, 976514 bytes).
 PDF statistics:
- 252 PDF objects out of 1000 (max. 8388607)
- 170 compressed objects within 2 object streams
+ 257 PDF objects out of 1000 (max. 8388607)
+ 172 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  48 words of extra memory for PDF output out of 10000 (max. 10000000)
 
