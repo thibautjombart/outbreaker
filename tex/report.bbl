@@ -1,4 +1,4 @@
-\begin{thebibliography}{29}
+\begin{thebibliography}{30}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -58,7 +58,7 @@ R.~J. de~Groot, S.~C. Baker, R.~S. Baric, C.~S. Brown, C.~Drosten, and
   and Earn]{Dushoff07}
 J.~Dushoff, J.~B. Plotkin, C.~Viboud, L.~Simonsen, M.~Miller, M.~Loeb, and
   D.~J.~D. Earn.
-\newblock Vacnetworks to protect a vulnerable subpopulation.
+\newblock Vaccinating to protect a vulnerable subpopulation.
 \newblock \emph{PLoS Med}, 4\penalty0 (5), 2007.
 
 \bibitem[Eubank et~al.(2004)Eubank, Guclu, Anil~Kumar, Marathe, Srinivasan,
@@ -173,6 +173,13 @@ Jochen Voss.
   Approach}.
 \newblock WIley Series in Computational Statistics. John Wiley and Sons Ltd,
   2014.
+
+\bibitem[Wallinga et~al.(2010)Wallinga, van Boven, and Lipsitch]{Wallinga10}
+J.~Wallinga, M.~van Boven, and M.~Lipsitch.
+\newblock Optimizing infectious disease interventions during an emerging
+  epidemic.
+\newblock \emph{Proc. Natl. Acad. Sci. USA}, 107\penalty0 (2):\penalty0
+  923--928, 2010.
 
 \bibitem[Wallinga and Teunis(2004)]{Wallinga04}
 Jacco Wallinga and Peter Teunis.

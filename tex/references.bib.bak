@@ -231,6 +231,19 @@
   Timestamp                = {2015.03.13}
 }
 
+@Article{Lugner13,
+  Title                    = {Cost-effectiveness of targeted vaccination to protect new-borns against pertussis: Comparing Neonatal, maternal, and cocooning vaccination strategies},
+  Author                   = {Lugner, A. K. and van der Maas, N. and van Boven, M. and Mooi, F. R. and de Melker, H. E.},
+  Journal                  = {Vaccine},
+  Year                     = {2013},
+  Number                   = {46},
+  Pages                    = {5392-5397},
+  Volume                   = {31},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.14}
+}
+
 @Article{Morelli12,
   Title                    = {A Bayesian inference framework to reconstruct transmission trees using epidemiological and genetic data},
   Author                   = {Morelli, Marco J. and Thébaud, Gaël and Chadœuf, Joël and King, Donald P. and Haydon, Daniel T. and Soubeyrand, Samuel.},
@@ -337,6 +350,19 @@
 
   Owner                    = {joel},
   Timestamp                = {2015.02.06}
+}
+
+@Article{Wallinga10,
+  Title                    = {Optimizing infectious disease interventions during an emerging epidemic},
+  Author                   = {Wallinga, J. and van Boven, M. and Lipsitch, M.},
+  Journal                  = {Proc. Natl. Acad. Sci. USA},
+  Year                     = {2010},
+  Number                   = {2},
+  Pages                    = {923-928},
+  Volume                   = {107},
+
+  Owner                    = {joel},
+  Timestamp                = {2015.03.14}
 }
 
 @Article{Wallinga04,
