@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  14 MAR 2015 12:05
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.3)  14 MAR 2015 18:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -372,36 +372,62 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty
 Package: setspace 2011/12/19 v6.7a set line spacing
+)
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count121
+\Gm@cntv=\count122
+\c@Gm@tempcnt=\count123
+\Gm@bindingoffset=\dimen157
+\Gm@wd@mp=\dimen158
+\Gm@odd@mp=\dimen159
+\Gm@even@mp=\dimen160
+\Gm@layoutwidth=\dimen161
+\Gm@layoutheight=\dimen162
+\Gm@layouthoffset=\dimen163
+\Gm@layoutvoffset=\dimen164
+\Gm@dimlist=\toks29
 ) (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
 ABD: EveryShipout initializing macros
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count121
-\scratchdimen=\dimen157
+\scratchcounter=\count124
+\scratchdimen=\dimen165
 \scratchbox=\box37
-\nofMPsegments=\count122
-\nofMParguments=\count123
-\everyMPshowfont=\toks29
-\MPscratchCnt=\count124
-\MPscratchDim=\dimen158
-\MPnumerator=\count125
-\makeMPintoPDFobject=\count126
-\everyMPtoPDFconversion=\toks30
+\nofMPsegments=\count125
+\nofMParguments=\count126
+\everyMPshowfont=\toks30
+\MPscratchCnt=\count127
+\MPscratchDim=\dimen166
+\MPnumerator=\count128
+\makeMPintoPDFobject=\count129
+\everyMPtoPDFconversion=\toks31
 ) (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
 )
@@ -409,10 +435,6 @@ Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
 Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
-)
-(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
-Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
-Package ifpdf Info: pdfTeX in PDF mode is detected.
 )
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
@@ -450,12 +472,45 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for U+msa on input line 10.
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(56.9055pt, 483.69687pt, 56.9055pt)
+* v-part:(T,H,B)=(56.9055pt, 731.23584pt, 56.9055pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=483.69687pt
+* \textheight=731.23584pt
+* \oddsidemargin=-15.36449pt
+* \evensidemargin=-15.36449pt
+* \topmargin=-52.36449pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=50.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
+LaTeX Font Info:    Try loading font information for U+msa on input line 11.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 10.
+LaTeX Font Info:    Try loading font information for U+msb on input line 11.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -465,166 +520,136 @@ LaTeX Warning: No \author given.
 
 [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [1
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Underfull \hbox (badness 10000) in paragraph at lines 21--27
+
+ []
+
+[1
 
 ] [2
 
-] [3
-
-]
-(./report.toc [4
-
-])
+] (./report.toc)
 \tf@toc=\write4
 \openout4 = `report.toc'.
 
- [5] [6
+ [3
 
-]
+] [4]
 Chapter 1.
+[5
 
-Overfull \hbox (2.55699pt too wide) in paragraph at lines 48--49
-\OT1/cmr/m/n/10.95 us-ing de-ter-min-is-tic com-part-men-tal mod-els (An-der-so
-n and May, 1992). These
- []
-
+] [6]
+Chapter 2.
 [7
 
-] [8] [9]
-Chapter 2.
-[10
-
-] [11] [12] [13]
-Overfull \hbox (28.502pt too wide) detected at line 95
-\OML/cmm/m/it/10.95 P\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 X[] \OMS/cmsy/m/n/
-10.95 2 \OML/cmm/m/it/10.95 A[]\OMS/cmsy/m/n/10.95 j\OML/cmm/m/it/10.95 X[] \OM
-S/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 A[]; X[] \OMS/cmsy/m/n/10.95 2 \OML/cmm/
-m/it/10.95 A[]; []  ; X[] \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 A[]\OT1/cmr
-/m/n/10.95 ) = \OML/cmm/m/it/10.95 P\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 X[]
- \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 A[]\OMS/cmsy/m/n/10.95 j\OML/cmm/m/i
-t/10.95 X[] \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 A[]\OT1/cmr/m/n/10.95 )
- []
-
-[14] [15]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 121.
+] [8] [9] [10]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 116.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 121.
- [16]
-[17] [18] [19] [20] [21] [22] [23] [24] [25]
-<treexample.png, id=106, 1003.75pt x 1208.515pt>
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 116.
+
+[11] [12] [13] [14] [15] [16] <treexample.png, id=76, 1003.75pt x 1208.515pt>
 File: treexample.png Graphic file (type png)
- <use treexample.png>
-Package pdftex.def Info: treexample.png used on input line 250.
+
+<use treexample.png>
+Package pdftex.def Info: treexample.png used on input line 245.
 (pdftex.def)             Requested size: 301.12732pt x 362.5573pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[26] [27 <./treexample.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 268--268
+[17] [18 <./treexample.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 263--263
 []\OT1/cmr/m/n/10.95 Gamma dis-tri-bu-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 268--269
+Underfull \hbox (badness 10000) in paragraph at lines 263--264
 []\OT1/cmr/m/n/10.95 WHO Ebola Re-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 270--271
+Underfull \hbox (badness 10000) in paragraph at lines 265--266
 []\OT1/cmr/m/n/10.95 WHO Ebola Re-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 272--272
+Underfull \hbox (badness 10000) in paragraph at lines 267--267
 []\OT1/cmr/m/n/10.95 Substitution rate
  []
 
 
-Underfull \hbox (badness 4556) in paragraph at lines 272--272
+Underfull \hbox (badness 4556) in paragraph at lines 267--267
 \OT1/cmr/m/n/10.95 per site per day =
  []
 
-[28] [29] [30]
-Overfull \hbox (52.00797pt too wide) in paragraph at lines 401--422
- [][] 
- []
-
-[31] [32] [33] [34]
+[19] [20] [21] [22] [23]
 Chapter 3.
-
-Overfull \hbox (15.07283pt too wide) in paragraph at lines 443--443
-[]\OT1/cmr/bx/n/14.4 Simulation 1: Test-ing the Abil-ity to In-fer Within
- []
-
-<trace.png, id=135, 468.75125pt x 501.875pt>
+<trace.png, id=100, 468.75125pt x 501.875pt>
 File: trace.png Graphic file (type png)
  <use trace.png>
-Package pdftex.def Info: trace.png used on input line 447.
+Package pdftex.def Info: trace.png used on input line 433.
 (pdftex.def)             Requested size: 281.25291pt x 301.12732pt.
 
-<final.png, id=137, 504.9264pt x 505.1673pt>
+<final.png, id=102, 504.9264pt x 505.1673pt>
 File: final.png Graphic file (type png)
  <use final.png>
-Package pdftex.def Info: final.png used on input line 454.
+Package pdftex.def Info: final.png used on input line 440.
 (pdftex.def)             Requested size: 302.95818pt x 303.1027pt.
- [35
+ [24
 
-] [36 <./trace.png>] <violinmat.png, id=146, 466.6233pt x 562.0197pt>
+]
+<violinmat.png, id=107, 466.6233pt x 562.0197pt>
 File: violinmat.png Graphic file (type png)
  <use violinmat.png>
-Package pdftex.def Info: violinmat.png used on input line 473.
+Package pdftex.def Info: violinmat.png used on input line 459.
 (pdftex.def)             Requested size: 279.97614pt x 337.21442pt.
 
-[37] [38 <./final.png (PNG copy)>]
-<ancestree.png, id=153, 614.295pt x 639.38875pt>
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[25 <./trace.png>] [26 <./final.png (PNG copy)>]
+<ancestree.png, id=115, 1003.75pt x 1208.515pt>
 File: ancestree.png Graphic file (type png)
  <use ancestree.png>
-Package pdftex.def Info: ancestree.png used on input line 483.
-(pdftex.def)             Requested size: 307.14674pt x 319.69359pt.
-
-<tree_with_grps.png, id=154, 626.34pt x 642.4pt>
+Package pdftex.def Info: ancestree.png used on input line 470.
+(pdftex.def)             Requested size: 401.49289pt x 483.39743pt.
+ [27 <./violinmat.png>] <tree_with_grps.png, id=120, 1003.75pt x 1208.515pt>
 File: tree_with_grps.png Graphic file (type png)
- <use tree_with_grps.png>
-Package pdftex.def Info: tree_with_grps.png used on input line 489.
-(pdftex.def)             Requested size: 313.16922pt x 321.19922pt.
 
-<tree_no_grps.png, id=155, 618.31pt x 652.4375pt>
+<use tree_with_grps.png>
+Package pdftex.def Info: tree_with_grps.png used on input line 475.
+(pdftex.def)             Requested size: 401.49289pt x 483.39743pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<tree_no_grps.png, id=121, 1003.75pt x 1208.515pt>
 File: tree_no_grps.png Graphic file (type png)
  <use tree_no_grps.png>
-Package pdftex.def Info: tree_no_grps.png used on input line 495.
-(pdftex.def)             Requested size: 309.15424pt x 326.21794pt.
-
-[39 <./violinmat.png>]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+Package pdftex.def Info: tree_no_grps.png used on input line 480.
+(pdftex.def)             Requested size: 401.49289pt x 483.39743pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[40] [41 <./ancestree.png>] [42 <./tree_with_grps.png>] [43 <./tree_no_grps.png
->]
+[28] [29 <./ancestree.png (PNG copy)>] [30 <./tree_with_grps.png (PNG copy)>]
+[31 <./tree_no_grps.png (PNG copy)>]
 Chapter 4.
-[44
+[32
 
-] [45] [46] [47] (./report.bbl [48]
+] [33] (./report.bbl [34]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no © in font cmr10!
- [49
+ [35
 
 ]
-Underfull \hbox (badness 3713) in paragraph at lines 105--111
-[]\OT1/cmr/m/n/10.95 Thibaut Jom-bart, Anne Cori, Xavier Dide-lot, Si-mon Cauch
-emez,
- []
-
-[50]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Ã in font cmr10!
@@ -633,36 +658,36 @@ Missing character: There is no Ã in font cmr10!
 Missing character: There is no « in font cmr10!
 Missing character: There is no Å in font cmr10!
 Missing character: There is no “ in font cmr10!
- [51] [52]) [53] (./report.aux) ) 
+ [36]) [37] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 11350 strings out of 493304
- 205427 string characters out of 6139871
- 266577 words of memory out of 5000000
- 14562 multiletter control sequences out of 15000+600000
- 16618 words of font info for 63 fonts, out of 8000000 for 9000
+ 11829 strings out of 493304
+ 212462 string characters out of 6139871
+ 283043 words of memory out of 5000000
+ 15031 multiletter control sequences out of 15000+600000
+ 16925 words of font info for 64 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  56i,17n,55p,1610b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-mi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.p
-fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (54 pages, 986266 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on report.pdf (38 pages, 1164860 bytes).
 PDF statistics:
- 267 PDF objects out of 1000 (max. 8388607)
- 179 compressed objects within 2 object streams
+ 214 PDF objects out of 1000 (max. 8388607)
+ 145 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  48 words of extra memory for PDF output out of 10000 (max. 10000000)
 
