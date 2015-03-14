@@ -1,4 +1,4 @@
-\begin{thebibliography}{27}
+\begin{thebibliography}{29}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -53,6 +53,13 @@ R.~J. de~Groot, S.~C. Baker, R.~S. Baric, C.~S. Brown, C.~Drosten, and
 \newblock Middle east respiratory syndrome coronavirus (mers-cov): Announcement
   of the coronavirus study group.
 \newblock \emph{Journal of Virology}, 2013.
+
+\bibitem[Dushoff et~al.(2007)Dushoff, Plotkin, Viboud, Simonsen, Miller, Loeb,
+  and Earn]{Dushoff07}
+J.~Dushoff, J.~B. Plotkin, C.~Viboud, L.~Simonsen, M.~Miller, M.~Loeb, and
+  D.~J.~D. Earn.
+\newblock Vacnetworks to protect a vulnerable subpopulation.
+\newblock \emph{PLoS Med}, 4\penalty0 (5), 2007.
 
 \bibitem[Eubank et~al.(2004)Eubank, Guclu, Anil~Kumar, Marathe, Srinivasan,
   Toroczkai, and Wang]{Eubank04}
@@ -110,6 +117,14 @@ C.~U Koser, M.T.G. Holden, M.~J. Ellington, E.~J.~P. Cartwright, and N.~M.
   outbreak.
 \newblock \emph{The New England Journal of Medicine}, 366:\penalty0 2267--2275,
   2012.
+
+\bibitem[Lugner et~al.(2013)Lugner, van~der Maas, van Boven, Mooi, and
+  de~Melker]{Lugner13}
+A.~K. Lugner, N.~van~der Maas, M.~van Boven, F.~R. Mooi, and H.~E. de~Melker.
+\newblock Cost-effectiveness of targeted vaccination to protect new-borns
+  against pertussis: Comparing neonatal, maternal, and cocooning vaccination
+  strategies.
+\newblock \emph{Vaccine}, 31\penalty0 (46):\penalty0 5392--5397, 2013.
 
 \bibitem[Morelli et~al.(2012)Morelli, Thébaud, Chadœuf, King, Haydon, and
   Soubeyrand]{Morelli12}
