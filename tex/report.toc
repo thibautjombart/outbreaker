@@ -8,16 +8,17 @@
 \contentsline {section}{\numberline {2.6}Group Data and Parameters}{18}
 \contentsline {section}{\numberline {2.7}Group Likelihood}{19}
 \contentsline {section}{\numberline {2.8}Transmission Rate Matrix Move}{21}
-\contentsline {section}{\numberline {2.9}Simulating Outbreaks With Group Structure}{24}
-\contentsline {subsection}{\numberline {2.9.1}Simulation 1}{25}
-\contentsline {subsection}{\numberline {2.9.2}Simulation 2}{29}
-\contentsline {chapter}{\numberline {3}Results}{34}
-\contentsline {section}{\numberline {3.1}Testing Procedures}{34}
-\contentsline {section}{\numberline {3.2}Simulation 1: Testing the Ability to Infer Within and Between Group Transmission Probabilities}{34}
-\contentsline {section}{\numberline {3.3}Simulation 2: Inferring Correct Ancestries}{39}
-\contentsline {chapter}{\numberline {4}Discussion}{43}
-\contentsline {section}{\numberline {4.1}Results}{43}
-\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{43}
-\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{45}
-\contentsline {section}{\numberline {4.2}Modelling Assumption}{45}
-\contentsline {section}{\numberline {4.3}Further Work}{47}
+\contentsline {section}{\numberline {2.9}The Effect of Group Parameters on the Parameter $\kappa $}{24}
+\contentsline {section}{\numberline {2.10}Simulating Outbreaks With Group Structure}{25}
+\contentsline {subsection}{\numberline {2.10.1}Simulation 1}{26}
+\contentsline {subsection}{\numberline {2.10.2}Simulation 2}{30}
+\contentsline {chapter}{\numberline {3}Results}{35}
+\contentsline {section}{\numberline {3.1}Testing Procedures}{35}
+\contentsline {section}{\numberline {3.2}Simulation 1: Testing the Ability to Infer Within and Between Group Transmission Probabilities}{35}
+\contentsline {section}{\numberline {3.3}Simulation 2: Inferring Correct Ancestries}{40}
+\contentsline {chapter}{\numberline {4}Discussion}{44}
+\contentsline {section}{\numberline {4.1}Results}{44}
+\contentsline {subsection}{\numberline {4.1.1}Estimating Transmission Parameters}{44}
+\contentsline {subsection}{\numberline {4.1.2}Inferring Correct Ancestries}{46}
+\contentsline {section}{\numberline {4.2}Modelling Assumption}{46}
+\contentsline {section}{\numberline {4.3}Perspectives}{48}
