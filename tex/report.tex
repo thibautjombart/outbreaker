@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[doublespacing]{setspace}
+\usepackage[margin=2cm]{geometry}
 \title{Using group information in the statistical reconstruction of disease outbreaks}
 \begin{document}
 
@@ -17,7 +18,12 @@
 \noindent I certify that this thesis, and the research to which it refers, are the product of my own work, conducted during the current year of the MRes in Biomedical Research at Imperial College London. Any ideas or quotations from the work of other people, published or otherwise, or from my own previous work are fully acknowledged in accordance with the standard referencing practices of the discipline. 
 
 
-The Outbreaker model referenced in this thesis is the work of Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser and Neil Ferguson at the Department of Infectious Disease Epidemiology at Imperial College London. For this thesis I conceived the new spatial likelihood, programmed this likelihood into the existing code, created all simulations and performed all resulting analysis myself.
+The Outbreaker model referenced in this thesis is the work of Thibaut Jombart, Anne Cori, Xavier Didelot, Simon Cauchemez, Christophe Fraser and Neil Ferguson at the Department of Infectious Disease Epidemiology at Imperial College London. For this thesis I conceived the new spatial likelihood, programmed this likelihood into the existing code, created all simulations and performed all resulting analysis myself.\\
+\newline
+\noindent
+{\bf{\LARGE Abbreviations}}
+This is where my abbreviations go
+MCMC - Markov chain Monte Carlo
 \newpage
 
 \chapter*{Abstract}
@@ -26,19 +32,8 @@ The popularity of outbreak reconstruction methods is increasing, this is due som
 
 \newpage
 
-\chapter*{Acknowledgements}
-\thispagestyle{empty}
-This is where my acknowledgements go
-\newpage
-
 \tableofcontents
 \pagestyle{plain}
-\newpage
-
-\chapter*{Abbreviations}
-\thispagestyle{empty}
-This is where my abbreviations go
-MCMC - Markov chain Monte Carlo
 \newpage
 
 
@@ -310,9 +305,9 @@ Number of Iterations and Burn-in & 1e5,2e4 \\
 
 We simulated 440 datasets using these parameters and collected the results from each run of outbreaker on each dataset using a high-performance cluster. Outbreaker was run 4 times on each dataset. One run included both group and DNA sequence data, one run included only group data, one run included only DNA sequence data, and one run included neither types of data (leaving just symptom onset times). All runs were computed for 100000 iterations with a 20000 iteration burn-in period. I discarded 14 datasets where there was not at least one case from each group in the outbreak leaving 426 datasets and their corresponding results. For each dataset we calculated the proportion of consensus ancestries from the posterior tree samples (for all 4 outbreaker runs) that were equal to the real ancestries from the dataset. A consensus ancestry for an individual $i$ is formed by looking for the most common infector of $i$ from the posterior tree samples, the function {\tt get.tTree} in the outbreaker R package performs this task. This check gives some indication that outbreaker was adequately reconstructing the outbreaks.
 
-After this "sanity test" assessment we examined the posterior density samples for the transmission probability parameters. Each simulation was generated using the same transmission probability matrix but the number of cases varied so the simulations as a whole should give a good idea of how well the parameters are inferred in for this simulation scenario. Our first step in evaluating the posterior samples for each run was to check whether the true parameter value (used to generate the dataset) fell inside the 95\% equal-tails interval (a credible interval with 2.5\% of the posterior density in each tail). I then counted how many times this occurred for each parameter over all of the simulations to quantify how often outbreaker infers a posterior distribution with a reasonable probability of giving the true parameter value.
+After this ``sanity test'' assessment we examined the posterior density samples for the transmission probability parameters. Each simulation was generated using the same transmission probability matrix but the number of cases varied so the simulations as a whole should give a good idea of how well the parameters are inferred in for this simulation scenario. Our first step in evaluating the posterior samples for each run was to check whether the true parameter value (used to generate the dataset) fell inside the 95\% equal-tails interval (a credible interval with 2.5\% of the posterior density in each tail). I then counted how many times this occurred for each parameter over all of the simulations to quantify how often outbreaker infers a posterior distribution with a reasonable probability of giving the true parameter value.
 \subsection{Simulation 2}
-I also hoped to show that the group likelihood could help to infer correct ancestries in situations where the genetic and epidemiological likelihoods were not so effective. These situations are characterised by an outbreak where there are low rates mutation in the pathogen DNA sequences and a fairly flat pathogen generation time \citep{outbrkr}. In these situations the original outbreaker model without group data struggles to infer the correct ancestor for two reasons. The genetic likelihood cannot narrow down the ancestor because there are few mutations between cases so most previous cases will have very similar genetic likelihoods. Secondly, the epidemiological likelihood struggles because the fairly long generation time means that for a newly infected case outbreaker has to look quite far back into the past for potential ancestors, this will bring up many candidate ancestors and outbreaker have no other way to determine who the correct ancestor is likely to be. In the schematic example shown in Figure 2.2, if there are not many mutations between cases, outbreaker would have trouble inferring an ancestor out of cases 1 to 5.
+We also hoped to show that the group likelihood could help to infer correct ancestries in situations where the genetic and epidemiological likelihoods were not so effective. These situations are characterised by an outbreak where there are low rates mutation in the pathogen DNA sequences and a fairly flat pathogen generation time, outbreaker struggles with outbreak reconstruction under these conditions \citep{outbrkr}.  In these situations the original outbreaker model without group data struggles to infer the correct ancestor for two reasons. The genetic likelihood cannot narrow down the ancestor because there are few mutations between cases so most previous cases will have very similar genetic likelihoods. Secondly, the epidemiological likelihood struggles because the fairly long generation time means that for a newly infected case outbreaker has to look quite far back into the past for potential ancestors, this will bring up many candidate ancestors and outbreaker have no other way to determine who the correct ancestor is likely to be. In the schematic example shown in Figure 2.2, if there are not many mutations between cases, outbreaker would have trouble inferring an ancestor out of cases 1 to 5.
 \\
 \begin{figure}[h!]
 \centering
@@ -393,7 +388,7 @@ Returning to the schematic example now shown in Figure 2.3, if the newly infecte
 
 \caption{{\bf A schematic example of outbreaker model inference with group data.} The figure shows a transmission tree, each node is an infected individual and each full line shows a previous inferred transmission event. Nodes are coloured by their group membership. The node with a ``?'' is a newly infected case, the dotted lines represent potential infectors of ``?''. The figure aims to show that with group data, outbreaker would make the sensible inference that case 5 is the infector of ``?''.}
 \end{figure}
-To test this, we created datasets that had small groups containing 3-4 people (households) and one larger group (the community). The true transmission probabilities were designed such that cases within a household had very high probabilities of infecting individuals in the same household, a much lower probability of infecting individuals in the community and an extremely low probability of infecting individuals in other households. Cases in the community had a reasonable probability of infecting others in the community and a relatively low probability of infecting a member from any household. The intention between these groups and parameters was to try and replicate some of the properties of influenza transmission within households that are part of community \citep{Cauchemez04}. Table 2.3 gives the exact parameters given to the {\tt simOutbreak} function to produce each dataset.
+To test this, we created a dataset that had small groups containing 3-4 people (households) and one larger group (the community). The true transmission probabilities were designed such that cases within a household had very high probabilities of infecting individuals in the same household, a much lower probability of infecting individuals in the community and an extremely low probability of infecting individuals in other households. Cases in the community had a reasonable probability of infecting others in the community and a relatively low probability of infecting a member from any household. The intention of these groups and parameters was to try and replicate some of the properties of influenza transmission within households that are part of a community \citep{Cauchemez04}. The parameters of the dataset were chosen to provide a balance between an outbreak that the original model would struggle with and an outbreak that resembled an influenza outbreak. Table 2.3 gives the exact parameters given to the {\tt simOutbreak} function to produce this dataset.
 \begin{table}[h!]
 \centering
 {\bf Table of parameters for simulation 2}
@@ -402,40 +397,31 @@ To test this, we created datasets that had small groups containing 3-4 people (h
 \hline
 Parameter & Value \\
 \hline
-Generation time & Gamma($\alpha = 1.72 days	,\beta=0.16 days$) \\
+Generation time & Gamma, mean = 9, s.d = 8.66 (days) \\
 \hline
-Community group size & 15 \\
+Community group size & 20 \\
 \hline
-Number of households & Pois($\lambda=12$) \\
+Number of households & 13 = $n_{H}$ \\
 \hline
-Household size & Pois($\lambda=4$) and always $\geq 2$ \\
+Household sizes & 5,4,6,2,7,6,3,2,3,8,4,2,6 \\
 \hline
-$R0$ & 1.6 \\
+$R_0$ & 3 \\
 \hline
-Within household transmission probability & 0.9999 \\
+Within household transmission probability & 0.999 $= p_{H}$ \\
 \hline
-Within community transmission probability & 0.1 \\
+Within community transmission probability & 0.1 $= p_{C}$\\
 \hline
-DNA sequence mutations per site per day & transitions: 1e-4, transversions: 5e-5 \\
+Household to community transmission probability & $p_{HtC} =\frac{(1-p_{H})}{2}$ \\
+\hline
+Community to household transmission probability & $p_{HtH} = \frac{p_{HtC}}{n_{H} - 1}$\\
+\hline
+DNA sequence mutations per site per day & transitions: 1e-5, transversions: 5e-6 \\
 \hline
 \end{tabular}
 \end{table}
+After generating the dataset I performed several runs of outbreaker on it, the first run was the original outbreaker model without group data and the other runs were the extended outbreaker model with a variety of different prior multiplication constants. It is not obvious or easy to find a good value for the multiplication constant so it was decided that we would not try to create run many simulations and perform a systematic analysis. Instead we opted to focus in depth on the results from the single dataset. Further work may be able to determine the properties of a dataset which could inform a sensible prior choice.
 
-For a simulated dataset with 6 households the transition matrix used to simulate the data was as follows, the first row and column is the community and the other 6 groups are all households:
-\[\begin{pmatrix}
-0.1 & 0.15 & 0.15 & 0.15 & 0.15 & 0.15 & 0.15 \\
-5e-5 & 0.9999 & 1e-5 & 1e-5 & 1e-5 & 1e-5 & 1e-5 \\
-5e-5 & 1e-5 & 0.9999 & 1e-5 & 1e-5 & 1e-5 & 1e-5\\
-5e-5 & 1e-5 & 1e-5 & 0.9999 & 1e-5 & 1e-5 & 1e-5\\
-5e-5 & 1e-5 & 1e-5 & 1e-5 & 0.9999 & 1e-5 & 1e-5\\
-5e-5 & 1e-5 & 1e-5 & 1e-5 & 1e-5 & 0.9999 & 1e-5\\
-5e-5 & 1e-5 & 1e-5 & 1e-5 & 1e-5 & 1e-5 & 1e-5\\
-\end{pmatrix}\]
-Denoting the within household transmission probability as $p_{H}$, within community transmission probability as $p_{C}$ and the number of households and $n_{H}$ then the household to community transmission probability is $p_{HtC} = \frac{(1-p_{H})}{2}$ and the household to other household transmission probability is $p_{HtH} = \frac{p_{HtC}}{n_{H} - 1}$.
-
-For this simulation I generated several datasets and analysed them using the extended outbreaker model with various values for the Dirichlet prior multiplication constant. It is not obvious or easy to find a good value for the constant that works well across many datasets so I did not attempt to run many instances of this simulation on the high performance clusters. Further work may be able to determine the properties of a dataset which could inform a sensible prior choice.
-
-
+We selected the run of the extended outbreaker model which inferred the highest proportion of correct ancestries to compare with the original model. We also looked for the ancestries in each run that had over 75\% support from the estimated posterior distribution. 
 
 \chapter{Results}
 \section{Testing Procedures}
@@ -477,24 +463,22 @@ We then studied the variation in the medians of the posterior samples for each p
 
 
 \section{Simulation 2: Inferring Correct Ancestries}
-In this simulation I present the results of the analysis one of the datasets simulated using the methods described in section 2.9.2. Figure 3.4 shows the transmission tree of the simulated outbreak. I ran two different instances of outbreaker on this dataset to see which one could infer the correct ancestries better, one run had no group data and the other had group data and priors that strongly favoured unequal transmission probabilities. For this ancestry the outbreaker run with group data inferred 42\% of correct ancestries (11 out of 25) whereas the run without group data inferred 23\% of correct ancestries (6 out of 25). Figures 3.5 and 3.6 show the inferred transmission trees obtained from the results using outbreaker's {\tt get.tTree()} function. This function constructs a transmission tree from consensus ancestries using the posterior samples from an outbreaker run. As described in section 2.9.2, in Figure 3.4 most transmission takes place between members of the same household and the infection mostly moves from household to household via the community (light blue nodes in the figures).
+In this simulation I present the results of the analysis on the dataset simulated using the parameters described in section 2.9.2. The real ancestries from the generated dataset are shown in Figure 3.4, as desired most transmission takes place between members of the same household and the infection mostly moves from household to household via the community. The extended outbreaker run which inferred the highest proportion of correct ancestries had a multiplication constant equal to $0.25$. Figure 3.4 shows the transmission tree of the simulated outbreak. The consensus ancestries inferred by the original outbreaker model with no group data inferred 44 out of 57 ancestry pairs correctly (76\%). The consensus ancestries from the extended model including spatial data inferred 54 out of 57 ancestry pairs correctly (95\%).Figures 3.5 and 3.6 show the consensus ancestries obtained from each run. Strangely both consensus ancestries suggest that cases 53 and 55 infected each other (although this is hard to spot in Figure 3.5).
+
 \begin{figure}
 \centering
-\includegraphics[scale=0.5]{ancestree.png} \newline
-{\bf Transmission tree of true ancestries}
-\caption{The transmission tree represents who infected who during the outbreak discussed in sections 3.3 and 4.1.2. Nodes are coloured by their group, the direction of an arrow between two nodes determines the direction of transmission between two individuals. Nodes coloured light blue are members of the community groups.}
+\includegraphics[scale=0.4]{ancestree.png} \newline
+\caption{{\bf Transmission tree of real ancestries from simulated dataset}. Transmission tree representing who infected who during simulated outbreak described in sections 3.3 and 4.1.2. Nodes are coloured by their group, the direction of an arrow between two nodes determines the direction of transmission between two individuals. Nodes coloured light blue are members of the community groups, all other coloured nodes are members of one of the 13 households.}
 \end{figure}
 \begin{figure}[h!]
 \centering
-\includegraphics[scale=0.5]{tree_with_grps.png} \newline
-{\bf Consensus ancestry transmission tree using group data}
-\caption{The figure shows the transmission tree inferring by the extended outbreaker model from outbreak data. Nodes are coloured by groups and the direction of arrows between nodes shows the inferred transmission events. Arrows are coloured green if the transmission events are inferred correctly and red if they are inferred incorrectly. Nodes coloured light blue are members of the community groups.}
+\includegraphics[scale=0.4]{tree_with_grps.png} \newline
+\caption{{\bf Transmission tree of consensus ancestries from extended outbreaker model}. Transmission tree inferred by the extended outbreaker model from outbreak data. Nodes are coloured by groups and the direction of arrows between nodes shows the inferred transmission events. Arrows are coloured green if the consensus ancestor is inferred correctly and red otherwise. Nodes coloured light blue are members of the community group, all other coloured nodes are members of one of the 13 households.}
 \end{figure}
 \begin{figure}[h!]
 \centering
-\includegraphics[scale=0.5]{tree_no_grps.png} \newline
-{\bf Consensus ancestry transmission tree without using group data}
-\caption{The figure shows the transmission tree inferring by the original outbreaker model (without a group framework) from outbreak data. Nodes are coloured by groups and the direction of arrows between nodes shows the inferred transmission events. Arrows are coloured green if the transmission events are inferred correctly and red if they are inferred incorrectly. Nodes coloured light blue are members of the community groups.}
+\includegraphics[scale=0.4]{tree_no_grps.png} \newline
+\caption{{\bf Transmission tree of consensus ancestries from original outbreaker model (no group framework)}. Transmission tree inferred by the original outbreaker model (no group framework) from outbreak data. Nodes are coloured by groups and the direction of arrows between nodes shows the inferred transmission events. Arrows are coloured green if the consensus ancestor is inferred correctly and red otherwise. Nodes coloured light blue are members of the community group, all other coloured nodes are members of one of the 13 households.}
 \end{figure}
 
 
