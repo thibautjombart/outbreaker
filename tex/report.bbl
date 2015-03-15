@@ -1,4 +1,4 @@
-\begin{thebibliography}{30}
+\begin{thebibliography}{31}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -117,6 +117,13 @@ C.~U Koser, M.T.G. Holden, M.~J. Ellington, E.~J.~P. Cartwright, and N.~M.
   outbreak.
 \newblock \emph{The New England Journal of Medicine}, 366:\penalty0 2267--2275,
   2012.
+
+\bibitem[Lloyd-Smith et~al.(2005)Lloyd-Smith, Schreiber, Kopp, and
+  Getz]{Lloyd05}
+J.~O. Lloyd-Smith, S.~J. Schreiber, P.~E. Kopp, and W.~M. Getz.
+\newblock Superspreading and the effect of individual variation on disease
+  emergence.
+\newblock \emph{Nature}, 438:\penalty0 355--359, 2005.
 
 \bibitem[Lugner et~al.(2013)Lugner, van~der Maas, van Boven, Mooi, and
   de~Melker]{Lugner13}
