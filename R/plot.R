@@ -168,7 +168,7 @@ transGraph <- function(x, labels=NULL, burnin=x$burnin, threshold=0.2, col.pal=N
 
 
     ## set layout
-    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$onset, maxx=V(out)$onset), rescale=FALSE)
+    attr(out, "layout") <- layout.fruchterman.reingold(out, params=list(minx=V(out)$onset, maxx=V(out)$onset))
 
 
     ## MAKE THE PLOT ##
