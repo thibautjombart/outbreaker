@@ -1,3 +1,8 @@
+			CHANGES IN OUTBREAKER VERSION 1.1-6
+BUG FIXES
+	o fixed an error in transGraph caused by changes in igraph.
+
+
 			CHANGES IN OUTBREAKER VERSION 1.1-5
 BUG FIXES
 	o genetic likelihood with large numbers of mutation was prone to

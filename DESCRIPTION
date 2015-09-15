@@ -1,6 +1,6 @@
 Package: outbreaker
 Version: 1.1-6
-Date: 2015-09-12
+Date: 2015-09-11
 Title: Bayesian Reconstruction of Disease Outbreaks by Combining Epidemiologic and Genomic Data
 Author:  Thibaut Jombart <thibautjombart@gmail.com>, Anne Cori, Joel Hellewell
 Maintainer: Thibaut Jombart <thibautjombart@gmail.com>
