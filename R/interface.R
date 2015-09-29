@@ -4,8 +4,7 @@
 ##################
 outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
                        mut.model=1, spa.model=0,
-                       w.dens, w.trunc=length(w.dens),
-                       f.dens=w.dens, f.trunc=length(f.dens),
+                       w.dens, f.dens=w.dens,
                        dist.mat=NULL,
                        init.tree=c("seqTrack","random","star"),
                        init.kappa=NULL, init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL,
@@ -51,7 +50,6 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         if(max(init.tree)>length(dates)) stop("inconvenient values in init.tree (some indices > n)")
         ances <- as.integer(init.tree-1) # translate indices on C scale (0:(n-1))
     }
-    if(length(w.dens)<w.trunc) stop(paste("incomplete w.dens: values needed from t=0 to t=", w.trunc-1,sep=""))
     w.dens[1] <- 0 # force w_0 = 0
     w.dens[w.dens<0] <- 0
     if(sum(w.dens) <= 1e-14) stop("w.dens is zero everywhere")
@@ -78,6 +76,22 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     }
     dates <- as.integer(dates)
 
+    ## complete w.dens ##
+    max.range <- diff(range(dates))
+    ## add an exponential tail summing to 1e-4 to 'w'
+    ## to cover the span of the outbreak
+    ## (avoids starting with -Inf temporal loglike)
+    if(length(w.dens)<max.range) {
+        length.to.add <- (max.range-length(w.dens)) + 10 # +10 to be on the safe side
+        val.to.add <- dexp(1:length.to.add, 1)
+        val.to.add <- 1e-4*(val.to.add/sum(val.to.add))
+        w.dens <- c(w.dens, val.to.add)
+        w.dens <- w.dens/sum(w.dens)
+    }
+
+    ## w.trunc and f.trunc ##
+    w.trunc <- length(w.dens)
+    f.trunc <- length(f.dens)
 
     ## handle idx.dna ##
     ## need to go from: id of case for each sequence (idx.dna)
@@ -328,8 +342,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 ###############################
 outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
-                                w.dens, w.trunc=length(w.dens),
-                                f.dens=w.dens, f.trunc=length(f.dens),
+                                w.dens, f.dens=w.dens,
                                 dist.mat=NULL,
                                 init.tree=c("seqTrack","random","star"),
                                 init.kappa=NULL,
@@ -372,7 +385,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         clusterEvalQ(clust, library(outbreaker))
 
         ## transfer data onto each child ##
-        listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "w.trunc", "f.dens", "f.trunc", "dist.mat", "init.tree", "init.kappa", "n.iter",
+        listArgs <- c("dna", "dates", "idx.dna", "mut.model", "spa.model", "w.dens", "f.dens", "dist.mat", "init.tree", "init.kappa", "n.iter",
                       "sample.every", "tune.every", "burnin", "import.method", "find.import.n", "pi.prior1", "pi.prior2", "init.mu1", "init.mu2",
                       "init.spa1", "move.mut", "spa1.prior", "move.mut", "move.ances", "move.kappa", "move.Tinf", "move.pi", "move.spa",
                       "outlier.threshold", "max.kappa", "res.file.names", "tune.file.names", "seed")
@@ -382,8 +395,8 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
         ## set calls to outbreaker on each child ##
         res <- parLapply(clust, 1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                                   mut.model=mut.model, spa.model=spa.model,
-                                                                  w.dens=w.dens, w.trunc=w.trunc,
-                                                                  f.dens=f.dens, f.trunc=f.trunc,
+                                                                  w.dens=w.dens,
+                                                                  f.dens=f.dens,
                                                                   dist.mat=dist.mat, ## locations=locations,
                                                                   init.tree=init.tree, init.kappa=init.kappa,
                                                                   n.iter=n.iter, sample.every=sample.every,
@@ -418,8 +431,8 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
     } else {
         res <- lapply(1:n.runs, function(i)  outbreaker(dna=dna, dates=dates, idx.dna=idx.dna,
                                                         mut.model=mut.model, spa.model=spa.model,
-                                                        w.dens=w.dens, w.trunc=w.trunc,
-                                                        f.dens=f.dens, f.trunc=f.trunc,
+                                                        w.dens=w.dens,
+                                                        f.dens=f.dens,
                                                         dist.mat=dist.mat,
                                                         init.tree=init.tree, init.kappa=init.kappa,
                                                         n.iter=n.iter, sample.every=sample.every,
