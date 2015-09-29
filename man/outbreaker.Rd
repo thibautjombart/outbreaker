@@ -34,8 +34,8 @@
 }
 \usage{
 outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
-           w.dens, w.trunc=length(w.dens), f.dens=w.dens,
-           f.trunc=length(f.dens), dist.mat=NULL,
+           w.dens, f.dens=w.dens,
+           dist.mat=NULL,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
            init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL, n.iter=1e5,
            sample.every=500, tune.every=500, burnin=2e4,
@@ -49,8 +49,8 @@ outbreaker(dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
 
 outbreaker.parallel(n.runs, parallel=TRUE, n.cores=NULL,
            dna=NULL, dates, idx.dna=NULL, mut.model=1, spa.model=0,
-           w.dens, w.trunc=length(w.dens), f.dens=w.dens,
-           f.trunc=length(f.dens), dist.mat=NULL,
+           w.dens, f.dens=w.dens,
+           dist.mat=NULL,
            init.tree=c("seqTrack","random","star"), init.kappa=NULL,
            init.mu1=NULL, init.mu2=init.mu1, init.spa1=NULL, n.iter=1e5,
            sample.every=500, tune.every=500, burnin=2e4,
@@ -92,17 +92,17 @@ outbreaker.parallel(n.runs, parallel=TRUE, n.cores=NULL,
     instantaneously infectious. If not standardized, this distribution
     is rescaled to sum to 1.}
   
-  \item{w.trunc}{an integer indicating after which time step the
-    distribution \code{w.dens} should be truncated to zero (effectively,
-    the maximum duration of the infectious period).}
+  %% \item{w.trunc}{an integer indicating after which time step the
+  %%   distribution \code{w.dens} should be truncated to zero (effectively,
+  %%   the maximum duration of the infectious period).}
   
   \item{f.dens}{similar to \code{w.dens}, except that this is the
     distribution of the colonization time, i.e. time interval during
     which the pathogen can be sampled from the patient.}
   
-  \item{f.trunc}{an integer indicating after which time step the
-    distribution \code{f.dens} should be truncated to zero (effectively,
-    the maximum duration of colonization).}
+  %% \item{f.trunc}{an integer indicating after which time step the
+  %%   distribution \code{f.dens} should be truncated to zero (effectively,
+  %%   the maximum duration of colonization).}
 
   \item{dist.mat}{a matrix of pairwise spatial distances between the
     cases.}
