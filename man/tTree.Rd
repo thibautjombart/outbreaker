@@ -14,6 +14,10 @@ get.tTree(x, burnin = 20000, best = c("ancestries", "tree"))
   col.pal = NULL, annot = c("dist", "n.gen", "prob"), sep = "/", ...)
 
 \method{findMutations}{tTree}(x, dna, ...)
+
+\method{plot}{tTree}(x, y = NULL, edge.col = "black",
+  col.edge.by = "prob", col.pal = NULL, annot = c("dist", "n.gen",
+  "prob"), sep = "/", ...)
 }
 \arguments{
 \item{x}{for \code{get.tTree}, the output of \code{outbreaker} or
