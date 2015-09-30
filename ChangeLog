@@ -1,3 +1,14 @@
+			CHANGES IN OUTBREAKER VERSION 1.1-7
+NEW FEATURES
+	o an exponential tail summing to 1e-4 is now added to the
+	generation time distribution to cover the range of the outbreak;
+	this will avoid occasional issues of -Inf temporal log-likelihood
+	for some initial trees.
+
+	o the arguments w.trunc and f.trunc have now disappeared, as they
+	were no longer relevant
+
+
 			CHANGES IN OUTBREAKER VERSION 1.1-6
 BUG FIXES
 	o fixed an error in transGraph caused by changes in igraph.

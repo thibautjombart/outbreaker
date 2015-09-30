@@ -1,0 +1,11 @@
+*~
+adegenet.Rcheck
+*.o
+*.so
+.RData
+.Rhistory
+.Rproj.user/
+.Rproj.user
+tutorials/*bbl
+tutorials/*gz
+*.blg

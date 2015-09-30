@@ -171,22 +171,17 @@ double gentime_dens(gentime *in, int t, int kappa_i){
     /* error if requested kappa_i does not exist */
     if(kappa_i > in->maxK || kappa_i<1){
       error("\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK);
-      /* fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d generations (max: %d). Exiting.\n", kappa_i, in->maxK); */
-      /* fflush(stdout); */
-      /* exit(1); */
     }
 
     /* error if requested time too large */
-    if(t >= in->maxK*in->truncW){
-      error("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
-      /* fprintf(stderr, "\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW); */
-      /* fflush(stdout); */
-      /* exit(1); */
+    if(t >= in->maxK * in->truncW){
+      warning("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (max: %d). Exiting.\n", t, in->maxK*in->truncW);
+      return 0.0;
     }
 
     /* error if requested time is <= 0 */
     if(t <= 0){
-      /* warning("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (min: 1).\n", t); */
+      warning("\n[in: structures.c->gentime_dens]\nTrying to get density for %d time units (min: 1).\n", t);
       return 0.0;
     }
 
