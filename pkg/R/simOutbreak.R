@@ -77,7 +77,6 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 
 
 
-
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
 
@@ -91,6 +90,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     }
 
     
+
 
     R0 <- rep(R0, length=l) # recycle R0
 
@@ -280,8 +280,10 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 		
 
 
+
 		areSus <- which(res$status=="S") # IDs of susceptibles
 		Sus.groups <- res$group[areSus]
+
 
 
 		##for each ancestor we create a vector which has the probabilities of a member of the current ancestor's group infecting a member of the potential infected person's group
@@ -354,13 +356,14 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             ## group of the imported cases
 
 
+
 	    if(imp.case.group == "assign"){
+
 
 		##find group frequencies in population
 		freqs <- group.sizes/n.hosts
 		##assign groups to imported cases based on relative group frequencies in population
 		res$group <- c(res$group, sample(1:l,size=nbImpCases,replace=TRUE, prob=freqs))		
-
 
 
             ## dna sequences of the new infections
@@ -556,6 +559,7 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     ## colors
     if(vertex.col=="group"){
 
+
 	V(out)$color <- num2col(V(out)$group, col.pal=funky)
 	#V(out)$color <- funky(x$group)[x$group]
 
@@ -579,8 +583,6 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
         }
     }
     if(col.edge.by=="dist") edge.col <- num2col(E(out)$dist, col.pal=edge.col.pal, x.min=0, x.max=1)
-
-
 
 
     ## labels
