@@ -864,22 +864,84 @@ void swap_ancestries(param *currentPar, param *tempPar, data *dat, dna_dist *dna
 
 } /* end swap_ancestries */
 
+void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar, gsl_rng *rng, int i){
 
+/* declarations */
 
+  double logRatio=0.0, temp,correction,rowsum;
+  int k,j,moves;
+  bool iszero = FALSE;
+  double toMove[dat->num_of_groups];
+  double moved[dat->num_of_groups];
+  double toMoveMult[dat->num_of_groups];
+  double movedMult[dat->num_of_groups];
+  double oldll,newll,from,to,oldpr,newpr;
 
+  for(j=0;j<dat->num_of_groups;j++){
+    toMove[j] = mat_double_ij(currentPar->trans_mat_probs,i,j);
+    toMoveMult[j] = toMove[j]*vec_double_i(mcmcPar->tmat_mult,i);
+  }
+  
+  gsl_ran_dirichlet(rng,dat->num_of_groups,toMoveMult,moved);
+  
+  for(j=0;j<dat->num_of_groups;j++){
+     write_mat_double(tempPar->trans_mat_probs,i,j,moved[j]);
+     movedMult[j] = moved[j]*vec_double_i(mcmcPar->tmat_mult,i);
+  }
 
+  /* correction factor*/
+	
+  for(j=0;j<dat->num_of_groups;j++){
+	if(mat_double_ij(tempPar->trans_mat_probs,i,j) == 0){
+ 		iszero=TRUE;
+	}
+  }
 
+  if(iszero==FALSE){
+	from = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,movedMult,toMove);
+	to = gsl_ran_dirichlet_lnpdf(dat->num_of_groups,toMoveMult,moved);
+	correction = from - to;
+  }else{
+	correction = NEARMINUSINF;
+  }
 
+  
+  /* likelihood ratio */
+  newll = loglikelihood_grp_all(dat,tempPar,rng);
+  oldll = loglikelihood_grp_all(dat,currentPar,rng);
+  logRatio = newll - oldll;
+  logRatio += correction;
 
+  
+  /* priors */
+  if(iszero == FALSE){
+	newpr = logprior_dirichlet_tmat(moved,currentPar->tmat_prior_mult,dat->num_of_groups);
+	oldpr = logprior_dirichlet_tmat(toMove,currentPar->tmat_prior_mult,dat->num_of_groups);
+	logRatio += newpr - oldpr;
+  }
+  
+   /* filter */
+  filter_logprob(&logRatio);
 
+   
+  
+  /* accept/reject */
+ 
+  if(logRatio >= 0){
+	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
+	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
+	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
+   }else if(log(gsl_rng_uniform(rng)) <= logRatio){
+	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
+	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
+	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
+   } else {
+	copy_mat_double(currentPar->trans_mat_probs, tempPar->trans_mat_probs);
+	temp = vec_int_i(mcmcPar->n_reject_trans_mat,i);
+	write_vec_int(mcmcPar->n_reject_trans_mat,i,temp+1);
+   }
 
-
-
-
-
-
-
-
+}/*function end */
 /* NO LONGER USED */
 
 

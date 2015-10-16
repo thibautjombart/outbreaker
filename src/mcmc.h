@@ -10,7 +10,7 @@
   ===================
 */
 
-void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet);
+void fprint_chains(FILE *file, data *dat, dna_dist *dnaInfo, spatial_dist *spaInfo, gentime *gen, param *par, int step, gsl_rng *rng, bool quiet, mcmc_param *mcmcPar);
 
 void fprint_mcmc_param(FILE *file, mcmc_param *mcmcPar, int step);
 

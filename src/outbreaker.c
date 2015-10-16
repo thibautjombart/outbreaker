@@ -20,19 +20,19 @@
 void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *length, 
 		  int *idxCasesInDna, int *mutModel, double *gentimeDens, int *wTrunc, 
 		  double *colltimeDens, int *fTrunc,
-		  double *distMat, int *locations, int *spaModel,
+		  double *distMat, int *locations, int *spaModel, int *grpModel,
 		  int *ances, int *init_kappa, int *nIter, int *outputEvery, int *tuneEvery, 
 		  double *piParam1, double *piParam2, 
 		  double *phiParam1, double *phiParam2, 
 		  double *initMu1, double *initGamma, 
 		  double *initSpa1, double *initSpa2, 
-		  double *spa1Prior, double *spa2Prior,
+		  double *spa1Prior, double *spa2Prior, double *initTmat, double *tmatPriorMult,
 		  int *moveMut, int *moveAlpha, int *moveKappa, int *moveTinf, 
-		  int *movePi, int *movePhi, int *moveSpa,
+		  int *movePi, int *movePhi, int *moveSpa, int *moveTmat,
 		  int *importMethod, int *findImportAt, int *burnin, 
 		  double *outlierThreshold, int *maxK,
 		  int *quiet, int *vecDist, int *stepStopTune,
-		  char **resFileName, char **tuneFileName, int *seed){
+		  char **resFileName, char **tuneFileName, int *seed, int *l, int *group_vec){
     /* DECLARATIONS */
     int N = *n;
     gsl_rng *rng;
@@ -43,7 +43,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     spatial_dist * spatialInfo;
     mcmc_param * mcmcPar;
     int i,j, counter;
-
+    mat_double *trans_mat;
+    int num_of_groups = *l;
     bool checkLike;
     bool findImport = (bool) *importMethod>0;
 
@@ -53,7 +54,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CONVERT DATA */
-    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations);
+    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations, group_vec, l);
     /* Rprintf("\n>>> Data <<<\n"); */
     /* print_data(dat); */
 
@@ -71,8 +72,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CREATE AND INIT PARAMETERS */
-    par = alloc_param(N);
-    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng);
+    par = alloc_param(N,num_of_groups);
+    init_param(par, dat,  gen, ances, init_kappa, *piParam1, *piParam2, *phiParam1, *phiParam2, *initMu1, *initGamma, *initSpa1, *initSpa2, *spa1Prior, *spa2Prior, *outlierThreshold, *mutModel, *spaModel, *importMethod, rng, num_of_groups, initTmat, *grpModel, *tmatPriorMult);
     /* Rprintf("\n>>> param <<<\n"); */
     /* print_param(par); */
 
@@ -88,9 +89,17 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* Rprintf("\n>>> SPATIAL info <<<\n"); */
     /* print_spatial_dist(spatialInfo); */
 
+	/* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
+	//Rprintf("\nBefore check init LL\n");/* fflush(stdout); */
+    mcmcPar = alloc_mcmc_param(N, num_of_groups);
+    init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
+		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, (bool) *moveTmat, findImport, *burnin, *findImportAt);
+    //Rprintf("\nMCMC parameters\n"); /* fflush(stdout); */
+    //print_mcmc_param(mcmcPar);
 
+	
     /* COMPUTE PRIORS */
-    double logPrior = logprior_all(par);
+    double logPrior = logprior_all(par, mcmcPar);
     /* Rprintf("\nPrior value (log): %.10f\n", logPrior);/\* fflush(stdout); *\/ */
 
    /* COMPUTE LIKELIHOOD */
@@ -98,17 +107,8 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
     /* Rprintf("\n\n = Initial Log-likelihood value: %f\n", logLike); */
 
     /* COMPUTE POSTERIOR */
-    double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng);
+    double logPost = logposterior_all(dat, dnaInfo, spatialInfo, gen, par, rng, mcmcPar);
     /* Rprintf("\nLog-posterior value: %.10f\n", logPost);/\* fflush(stdout); *\/ */
-
-    /* ALLOCATE AND INITIALIZE MCMC PARAMETERS */
-    /* Rprintf("\nBefore check init LL\n");/\* fflush(stdout); *\/ */
-
-    mcmcPar = alloc_mcmc_param(N);
-    init_mcmc_param(mcmcPar, par, dat, (bool) *moveMut, moveAlpha, moveKappa, (bool) *moveTinf, 
-		    (bool) *movePi, (bool) *movePhi, (bool) *moveSpa, findImport, *burnin, *findImportAt);
-    /* Rprintf("\nMCMC parameters\n");fflush(stdout); */
-    /* print_mcmc_param(mcmcPar); */
 
     /* CHECK THAT INITIAL STATE HAS A NON-NULL LIKELIHOOD */
     checkLike = check_loglikelihood_all(dat, dnaInfo, spatialInfo, gen, par, rng);

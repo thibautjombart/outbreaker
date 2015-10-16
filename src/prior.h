@@ -22,7 +22,10 @@ double logprior_mu1(param *par);
 
 double logprior_gamma(param *par);
 
-double logprior_all(param *par);
+double logprior_trans_mat(param *par,int i);
 
+double logprior_dirichlet_tmat(double in[], double mult, int num_groups);
+
+double logprior_all(param *par, mcmc_param *mcmcPar);
 
 #endif

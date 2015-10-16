@@ -147,13 +147,22 @@ double logprior_spa2(param *par){
 /*     return out; */
 /* } */
 
-
-
-
-
-double logprior_all(param *par){
-    /* int i; */
+double logprior_dirichlet_tmat(double in[], double mult,int num_groups){
+ int j;
+ double out;
+ double hp = (double) (1.0/(double)num_groups) * mult;
+ double hyper_params[num_groups];
+ for(j=0;j<num_groups;j++){
+	hyper_params[j] = hp;
+ }
+ out = gsl_ran_dirichlet_lnpdf(num_groups,hyper_params,in);
+ filter_logprob(&out);
+ return out;
+}
+double logprior_all(param *par,mcmc_param *mcmcPar){
+    int i,j;
     double out=0.0;
+    double tempvec[mcmcPar->n_accept_trans_mat->length];
 
     out += logprior_mu1(par);
     if(par->mut_model>1) out += logprior_gamma(par);
@@ -164,6 +173,15 @@ double logprior_all(param *par){
     }
     if(par->spa_model==2){
 	out += logprior_phi(par);
+    }
+
+    if(par->grp_model==1){
+     for(i=0;i<mcmcPar->n_accept_trans_mat->length;i++){
+	for(j=0;j<par->trans_mat_probs->n;j++){
+	    tempvec[j] = mat_double_ij(par->trans_mat_probs,i,j);
+	}
+	out+= logprior_dirichlet_tmat(tempvec,par->tmat_prior_mult,par->trans_mat_probs->n);
+     }
     }
     
     filter_logprob(&out);

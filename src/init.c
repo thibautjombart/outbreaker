@@ -87,7 +87,7 @@ int find_maxLike_kappa_i(int T, gentime *gen){
 
 
 /* INITIALIZE PARAMETERS */
-void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng){
+void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kappa, double pi_param1, double pi_param2, double phi_param1, double phi_param2, double init_mu1, double init_gamma, double init_spa1, double init_spa2, double spa1_prior, double spa2_prior, double outlier_threshold, int mut_model, int spa_model, int import_method, gsl_rng *rng, int l, double *initTmat, int grp_model, double tmat_prior_mult){
     int i, ancesId, T, TmaxLike;
 
     /* Tinf */
@@ -125,6 +125,7 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     /* integers */
     par->mut_model = mut_model;
     par->spa_model = spa_model;
+    par->grp_model = grp_model;
     if(par->mut_model==0) {
 	par->import_method = 2;
     } else {
@@ -146,14 +147,25 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     par->phi = gsl_ran_beta(rng,phi_param1,phi_param2);
     par->phi_param1 = phi_param1;
     par->phi_param2 = phi_param2;
+    par->tmat_prior_mult = tmat_prior_mult;
+    /* transmission matrices */
+    /* read in probs mat */
+    int j=0,k=0,x=0;
+    for(k=0;k<(l*l);k++){
+			write_mat_double(par->trans_mat_probs,x,j,initTmat[k]);
+		x++;
+		if(x % l == 0	){x=0;j++;}
+		
+		
+    }
 }
 
 
 
 
 
-void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool find_import, int burnin, int find_import_at){
-    int i, N = dat->n;
+void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *move_alpha, int *move_kappa, bool move_Tinf, bool move_pi, bool move_phi, bool move_spa, bool move_trans_mat, bool find_import, int burnin, int find_import_at){
+    int i,j, N = dat->n;
 
     /* INITIALIZE COUNTERS */
     /* the first set of parameters is accepted by definition */
@@ -172,6 +184,11 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_reject_alpha = 0;
     in->n_accept_kappa = in->n_move_kappa;
     in->n_reject_kappa = 0;
+    for(i=0;i<dat->num_of_groups;i++){
+	write_vec_int(in->n_accept_trans_mat,i,1);
+	write_vec_int(in->n_reject_trans_mat,i,0);
+	write_vec_double(in->tmat_mult,i,5.0);
+    }
 
 
     /* INITIALIZE MCMC PARAMETERS */
@@ -203,6 +220,7 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->move_phi = move_phi;
     in->move_spa = move_spa;
     in->find_import = find_import;
+    in->move_trans_mat = move_trans_mat;
 
    /* check that we don't move useless things */
     if(par->mut_model==0){
@@ -223,8 +241,10 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->tune_spa2 = (move_spa && par->spa_model>2) ? TRUE : FALSE;
     in->tune_pi = move_pi;
     in->tune_phi = move_phi;
-    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2;
+    in->tune_tmat = move_trans_mat;
+    	
 
+    in->tune_any = in->tune_mu1 || in->tune_gamma || in->tune_spa1 || in->tune_spa2 || in->tune_pi || in->tune_phi || in->tune_spa1 || in->tune_spa2 || in->tune_tmat;
 } /* end init_mcmc_param */
 
 

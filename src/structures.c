@@ -9,7 +9,7 @@
    DATA
   ======
 */
-data *alloc_data(int n, int nSeq, int length){
+data *alloc_data(int n, int nSeq, int length, int l){
     /* allocate pointer */
     data *out = (data *) malloc(sizeof(data));
     if(out == NULL){
@@ -22,6 +22,7 @@ data *alloc_data(int n, int nSeq, int length){
     out->n = n;
     out->length = length;
     out->nSeq = nSeq;
+    out->num_of_groups = l;
 
     /* dates: collection times for each sequence */
     out->dates = alloc_vec_int(n);
@@ -35,6 +36,9 @@ data *alloc_data(int n, int nSeq, int length){
     /* locations of each case */
     out->locations = alloc_vec_int(n);
 
+    /* group membership */
+    out->group_vec = alloc_vec_int(n);
+
     return out;
 } /* end alloc_data */
 
@@ -47,6 +51,7 @@ void free_data(data *in){
     free_list_dnaseq(in->dna);
     free_vec_int(in->idxCasesInDna);
     free_vec_int(in->locations);
+    free_vec_int(in->group_vec);
     free(in);
 } /* end free_data*/
 
@@ -62,6 +67,9 @@ void print_data(data *in){
     print_vec_int(in->idxCasesInDna);
     Rprintf("\n= Locations of the cases=\n");
     print_vec_int(in->locations);
+    Rprintf("\n= Group membership vector=\n");
+    print_vec_int(in->group_vec);
+    Rprintf("\n Number of different groups= %d\n",in->num_of_groups);
 } /* end print_data*/
 
 
@@ -69,9 +77,9 @@ void print_data(data *in){
 
 /* Create a data object using inputs from R */
 data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
-		   int *nSeq, int *length, int *idxCasesInDna, int *locations){
+		   int *nSeq, int *length, int *idxCasesInDna, int *locations, int *group_vec, int *l){
     int i, j, count=0;
-    data * out = alloc_data(*n, *nSeq, *length);
+    data * out = alloc_data(*n, *nSeq, *length, *l);
 
     /* FILL IN VECTORS OF LENGTH N: DATES AND INDICES OF DNA */
     for(i=0;i<*n;i++){
@@ -84,6 +92,9 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
 
 	/* locations */
 	out->locations->values[i] = locations[i];
+
+	/*groups*/
+	out->group_vec->values[i] = group_vec[i];
     }
 
     out->timespan = max_vec_int(out->dates) - min_vec_int(out->dates);
@@ -219,7 +230,7 @@ double colltime_dens(gentime *in, int t){
  =======
 */
 
-param *alloc_param(int n){
+param *alloc_param(int n, int l){
   /* allocate pointer */
     param *out = (param *) malloc(sizeof(param));
     if(out == NULL){
@@ -233,6 +244,7 @@ param *alloc_param(int n){
     out->kappa_temp = 0;
     out->mut_model = 0;
     out->spa_model = 0;
+    out->grp_model = 0;
     out->import_method = 0;
 
     /* allocates vectors of integers */
@@ -255,7 +267,9 @@ param *alloc_param(int n){
     out->phi = 0.5;
     out->phi_param1 = 1.0;
     out->phi_param2 = 1.0;
-
+    out->tmat_prior_mult = 10;
+    /* fill in transmission matrix */
+    out->trans_mat_probs = alloc_mat_double(l,l);
     /* return */
     return out;
 } /* end alloc_param */
@@ -267,6 +281,7 @@ void free_param(param *in){
     free_vec_int(in->Tinf);
     free_vec_int(in->alpha);
     free_vec_int(in->kappa);
+    free_mat_double(in->trans_mat_probs);
     free(in);
 } /* end free_param*/
 
@@ -300,6 +315,13 @@ void print_param(param *in){
     Rprintf("%.5f", in->phi);
     Rprintf("\n= priors on phi (parameter of beta distribution) =\n");
     Rprintf("%.5f  %.5f", in->phi_param1, in->phi_param2);
+    Rprintf("\n= group model used =\n");
+    Rprintf("%d", in->grp_model);
+    Rprintf("\n= transmission probability matrix =\n");
+    print_mat_double(in->trans_mat_probs);
+    Rprintf("\n= transmission matrix priors multiplication = \n");
+    Rprintf("%f",in->tmat_prior_mult);
+
 } /* end print_param*/
 
 
@@ -325,8 +347,12 @@ void copy_param(param *in, param *out){
     out->outlier_threshold = in->outlier_threshold;
     out->mut_model = in->mut_model;
     out->spa_model = in->spa_model;
+    out->grp_model = in->grp_model;
     out->import_method = in->import_method;
+    out->tmat_prior_mult = in->tmat_prior_mult;
 
+    
+    copy_mat_double(in->trans_mat_probs,out->trans_mat_probs);
     copy_vec_int(in->Tinf,out->Tinf);
     copy_vec_int(in->alpha,out->alpha);
     copy_vec_int(in->kappa,out->kappa);
@@ -346,7 +372,7 @@ void copy_param(param *in, param *out){
  ============
 */
 
-mcmc_param *alloc_mcmc_param(int n){
+mcmc_param *alloc_mcmc_param(int n, int l){
   /* allocate pointer */
     mcmc_param *out = (mcmc_param *) malloc(sizeof(mcmc_param));
     if(out == NULL){
@@ -376,7 +402,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->candid_ances_proba = alloc_vec_double(n+1);
     out->move_alpha = alloc_vec_double(n);
     out->move_kappa = alloc_vec_double(n);
-
+    out->tmat_mult = alloc_vec_double(l);
     /* FILL IN INTEGERS */
     /* accept/reject counters */
     out->n_accept_mu1 = 0;
@@ -394,12 +420,19 @@ mcmc_param *alloc_mcmc_param(int n){
     out->n_accept_kappa = 0;
     out->n_reject_kappa = 0;
     out->n_like_zero = 0;
-
+    out->n_accept_phi = 0;
+    out->n_reject_phi = 0;
+    out->n_accept_pi = 0;
+    out->n_reject_pi = 0;
+    out->n_accept_trans_mat = alloc_vec_int(l);
+    out->n_reject_trans_mat = alloc_vec_int(l);
+    
     /* movement */
     out->move_mut = TRUE;
     out->move_pi = TRUE;
     out->move_phi = TRUE;
     out->move_spa = TRUE;
+    out->move_trans_mat = TRUE;
     /* out->move_phi = TRUE; */
 
     /* tuning */
@@ -408,6 +441,7 @@ mcmc_param *alloc_mcmc_param(int n){
     out->tune_gamma = TRUE;
     out->tune_pi = TRUE;
     out->tune_phi = TRUE;
+    out->tune_tmat = TRUE;
     out->step_notune = -1;
 
     /* misc */
@@ -442,6 +476,9 @@ void free_mcmc_param(mcmc_param *in){
     free_vec_double(in->candid_ances_proba);
     free_vec_double(in->move_alpha);
     free_vec_double(in->move_kappa);
+    free_vec_double(in->tmat_mult);
+    free_vec_int(in->n_accept_trans_mat);
+    free_vec_int(in->n_reject_trans_mat);
     free(in);
 } /* end free_mcmc_param*/
 
@@ -449,6 +486,7 @@ void free_mcmc_param(mcmc_param *in){
 
 
 void print_mcmc_param(mcmc_param *in){
+int i = 0;
     Rprintf("\nsigma for mu1: %.10f",in->sigma_mu1);
     Rprintf("\nsigma for gamma: %.10f",in->sigma_gamma);
     Rprintf("\nsigma for pi: %.10f",in->sigma_pi);
@@ -456,6 +494,8 @@ void print_mcmc_param(mcmc_param *in){
     Rprintf("\nsigma for spa1: %.10f",in->sigma_spa1);
     Rprintf("\nsigma for spa2: %.10f",in->sigma_spa2);
     Rprintf("\nlambda for Tinf: %.10f",in->lambda_Tinf);
+    Rprintf("\n Multipliers for Dirichlet proposal: \n");
+    print_vec_double(in->tmat_mult);
     Rprintf("\nnb moves for Tinf: %d",in->n_move_Tinf);
     Rprintf("\nnb moves for alpha: %d",in->n_move_alpha);
     Rprintf("\nnb moves for kappa: %d",in->n_move_kappa);
@@ -478,6 +518,11 @@ void print_mcmc_param(mcmc_param *in){
 
     Rprintf("\nkappa: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", in->n_accept_kappa, in->n_reject_kappa, (double) in->n_accept_kappa / in->n_reject_kappa);
 
+    for(i=0;i<in->n_accept_trans_mat->length;i++){
+    Rprintf("\ntrans mat row %d: nb. accepted: %d   nb. rejected: %d   (acc/rej ratio:%.3f)", i+1, vec_int_i(in->n_accept_trans_mat,i), vec_int_i(in->n_reject_trans_mat,i), (double) vec_int_i(in->n_accept_trans_mat,i) / (double) vec_int_i(in->n_reject_trans_mat,i));
+   	}
+
+		
     Rprintf("\nIndices of Tinf_i to move:\n");
     print_vec_int(in->idx_move_Tinf);
     Rprintf("\nIndices of alpha_i to move:\n");
@@ -501,6 +546,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->tune_phi) Rprintf("phi ");
     if(in->tune_spa1) Rprintf("spa1 ");
     if(in->tune_spa2) Rprintf("spa2 ");
+    if(in->tune_tmat) Rprintf("trans_mat ");
     Rprintf("\nTuning stopped at step %d\n", in->step_notune);
 
     Rprintf("\nMoved parameters:");
@@ -511,6 +557,7 @@ void print_mcmc_param(mcmc_param *in){
     if(in->move_pi) Rprintf("pi ");
     if(in->move_phi) Rprintf("phi ");
     if(in->move_spa) Rprintf("spa ");
+    if(in->move_trans_mat) Rprintf("trans_mat ");
     Rprintf("\nMove alpha_i:");
     print_vec_double(in->move_alpha);
     Rprintf("\nMove kappa_i:");
@@ -561,6 +608,7 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->sigma_gamma = in->sigma_gamma;
     out->lambda_Tinf = in->lambda_Tinf;
     out->sigma_pi = in->sigma_pi;
+    out->sigma_phi = in->sigma_phi;
     out->sigma_spa1 = in->sigma_spa1;
     out->sigma_spa2 = in->sigma_spa2;
     out->n_like_zero = in->n_like_zero;
@@ -571,12 +619,14 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     out->tune_pi = in->tune_pi;
     out->tune_spa1 = in->tune_spa1;
     out->tune_spa2 = in->tune_spa2;
+    out->tune_tmat = in->tune_tmat;
     out->step_notune = in->step_notune;
 
     out->move_mut = in->move_mut;
     out->move_pi = in->move_pi;
     out->move_phi = in->move_phi;
     out->move_spa = in->move_spa;
+    out->move_trans_mat = in->move_trans_mat;
     out->burnin = in->burnin;
     out->find_import_at = in->find_import_at;
     out->find_import = in->find_import;
@@ -590,6 +640,9 @@ void copy_mcmc_param(mcmc_param *in, mcmc_param *out){
     copy_vec_double(in->candid_ances_proba, out->candid_ances_proba);
     copy_vec_double(in->move_alpha, out->move_alpha);
     copy_vec_double(in->move_kappa, out->move_kappa);
+    copy_vec_int(in->n_accept_trans_mat, out->n_accept_trans_mat);
+    copy_vec_int(in->n_reject_trans_mat, out->n_reject_trans_mat);
+    copy_vec_double(in->tmat_mult,out->tmat_mult);
 } /* end alloc_mcmc_param */
 
 

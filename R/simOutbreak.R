@@ -179,13 +179,21 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
                         rate.import.case=0.01, diverg.import=10, group.freq=1,
                         spatial=FALSE, disp=0.1, area.size=10, reach=1,
+						group.sizes=c(n.hosts), trans.mat=matrix(ncol=length(group.sizes),nrow=length(group.sizes),rep(1/length(group.sizes),length(group.sizes)^2)),
                         plot=spatial){
 
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
-    if(any(group.freq<0)) stop("negative group frequencies provided")
-    group.freq <- group.freq/sum(group.freq)
-    K <- length(group.freq)
+    ## checking that group sizes and number of hosts are the same
+    if(sum(group.sizes)!=n.hosts) stop("group sizes do not add up to number of hosts")
+
+
+    l <- length(group.sizes)
+  
+    ## checking that the transmission probabilities sum to one
+    for(i in 1:l){
+	if(sum(trans.mat[i,]) != 1) stop("rows of transmission matrix do not sum to 1")
+    }
     ## host.group <- sample(1:K, size=n.hosts, prob=group.freq, replace=TRUE)
     R0 <- rep(R0, length=K) # recycle R0
 
@@ -249,9 +257,9 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     }
 
     ## define the group of 'n' hosts
-    choose.group <- function(n){
-        out <- sample(1:K, size=n, prob=group.freq, replace=TRUE)
-        return(out)
+    #choose.group <- function(n){
+    #    out <- sample(1:K, size=n, prob=group.freq, replace=TRUE)
+    #    return(out)
     }
 
     ## handle 'plot' argument ##
@@ -268,7 +276,14 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     res$onset[1] <- 0
     res$id <- 1 # id of infected individuals
     res$ances <- NA
-    res$group <- choose.group(1)
+
+    ##setting up group membership for the number of hosts
+    res$group <- rep(x=1:l,times=group.sizes)
+
+    ## shuffling group membership randomly
+    res$group <- res$group[sample(1:n.hosts,replace=FALSE)]
+
+    #res$group <- choose.group(1)
     EVE <- seq.gen()
     res$dna <- matrix(seq.dupli(EVE, diverg.import),nrow=1)
     class(res$dna) <- "DNAbin"
@@ -330,7 +345,8 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         }
 
         ## temporal (spatial) force of infection * R0
-        indivForce <- indivForce * R0[res$group]
+		indivGroups <- res$group[res$id]
+        indivForce <- indivForce * R0[indivGroups]
 
         ## global force of infection (R0 \sum_j I_t^j / N)
         N <- res$dynam$nrec[t] + res$dynam$ninf[t] + res$dynam$nsus[t] # this may change because of imports
@@ -354,20 +370,42 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             ## identify the infectors of the new cases ##
             newAnces <- sample(res$id, size=nbNewInf, replace=TRUE, prob=indivForce)
             res$ances <- c(res$ances,newAnces)
+            ## vector of the group membership of ancestors
+            Ances.groups <- res$group[newAnces]
 
-            ## find the groups of the new cases ##
-            newGroup <- choose.group(nbNewInf)
-            res$group <- c(res$group,newGroup)
 
             ## id of the new cases ##
             if(!spatial){ # non-spatial case - ID doesn't matter
-                areSus <- which(res$status=="S") # IDs of susceptibles
-                newId <- sample(areSus, size=nbNewInf, replace=FALSE)
-                res$id <- c(res$id, newId)
-                res$status[newId] <- "I"
-            } else {
+		areSus <- which(res$status=="S") # IDs of susceptibles
+		Sus.groups <- res$group[areSus]
+
+
+
+		##for each ancestor we create a vector which has the probabilities of a member of the current ancestor's group infecting a member of the potential infected person's group
+		##we then use this to sample the newly infected
+
+				
+
+		for(j in 1:length(newAnces)){
+			print(paste("Infector: ", newAnces[j], " in group: ", Ances.groups[j]))
+			areSus <- which(res$status=="S") # IDs of susceptibles
+			Sus.groups <- res$group[areSus]
+			probvec <- trans.mat[Ances.groups[j],Sus.groups]
+			newId <- sample(areSus,size=1,prob=probvec)
+			print(paste("infected: ", newId, " in group: ", res$group[newId]))
+			
+			res$id <- c(res$id,newId)
+			res$status[newId] <- "I"
+		}      
+      
+      }else{
+
                 for(i in 1:nbNewInf){ # for each new infection
                     areSus <- which(res$status=="S") # IDs of susceptibles
+
+		    ##it was decided that at least for the moment we will not consider group membership for the spatial case
+		    ##there will be a lot of correlation between someone's group membership and their geographical location
+		    ##especially in somewhere like a hospital ward, must think on how to deal with this
                     newId <- sample(areSus, 1, prob=k.spa[newAnces[i],areSus]) # prob depend on location
                     res$id <- c(res$id, newId)
                     res$status[newId] <- "I"
@@ -410,8 +448,13 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             }
 
             ## group of the imported cases
-            res$group <- c(res$group, choose.group(nbImpCases))
+		if(imp.case.group == "assign"){
 
+
+		##find group frequencies in population
+		freqs <- group.sizes/n.hosts
+		##assign groups to imported cases based on relative group frequencies in population
+		res$group <- c(res$group, sample(1:l,size=nbImpCases,replace=TRUE, prob=freqs))		
             ## dna sequences of the new infections
             newSeq <- t(sapply(1:nbImpCases, function(i) seq.dupli(EVE, diverg.import)))
             res$dna <- rbind(res$dna, newSeq)
@@ -432,6 +475,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
     ## data need to be reordered so that res$id is 1:res$n
     res$n <- nrow(res$dna)
     res$ances <- match(res$ances, res$id)
+    res$group <- res$group[res$id]
     res$id <- 1:res$n
     res$xy <- res$inf.xy # don't keep entire distribution, not right order anymore anyway
     res$inf.xy <- NULL # simpler to just call coords 'xy'
@@ -480,7 +524,7 @@ print.simOutbreak <- function(x, ...){
     cat("\nSize :", x$n,"cases (out of", x$dynam$nsus[1],"susceptible hosts)")
     cat("\nGenome length :", ncol(x$dna),"nucleotids")
     cat("\nDate range :", min(x$onset),"-",max(x$onset))
-    cat("\nGroup distribution:")
+    cat("\nGroup memberships:")
     print(table(x$group))
 
     cat("\nContent:\n")
@@ -572,8 +616,9 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     from <- as.character(x$ances)
     to <- as.character(x$id)
     isNotNA <- !is.na(from) & !is.na(to)
-    vnames <- unique(c(from,to))
-    vnames <- vnames[!is.na(vnames)]
+    #vnames <- unique(c(from,to))
+    #vnames <- vnames[!is.na(vnames)]
+    vnames <- x$id
     dat <- data.frame(from,to,stringsAsFactors=FALSE)[isNotNA,,drop=FALSE]
     out <- graph.data.frame(dat, directed=TRUE, vertices=data.frame(names=vnames))
 
@@ -590,15 +635,22 @@ as.igraph.simOutbreak <- function(x, edge.col="black", col.edge.by="dist", verte
     names(x$onset) <- x$id
     V(out)$date <- x$onset[V(out)$name]
 
-    ## ## groups
-    ## names(x$group) <- x$id
-    ## V(out)$group <- x$group[V(out)$name]
+    ## groups
 
+	
+	V(out)$group <- x$group
+	
     ## colors
+    if(vertex.col=="group"){
+
+
+	V(out)$color <- num2col(V(out)$group, col.pal=funky)
+
+
+	}else{
+
     V(out)$color <- vertex.col
-    ## V(out)$color <- fac2col(factor(V(out)$group), col.pal=vertex.col.pal)
-
-
+	}
     ## SET EDGE INFO ##
     ## genetic distances to ancestor
     E(out)$dist <- x$nmut[!is.na(x$ances)]
