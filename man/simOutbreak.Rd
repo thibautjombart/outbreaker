@@ -13,9 +13,11 @@
 \usage{
 simOutbreak(R0, infec.curve, n.hosts = 200, duration = 50,
   seq.length = 10000, mu.transi = 1e-04, mu.transv = mu.transi/2,
-  rate.import.case = 0.01, diverg.import = 10, group.freq = 1,
-  spatial = FALSE, disp = 0.1, area.size = 10, reach = 1,
-  plot = spatial)
+  rate.import.case = 0.01, diverg.import = 10, spatial = FALSE,
+  disp = 0.1, area.size = 10, reach = 1, plot = spatial,
+  group.sizes = c(n.hosts), trans.mat = matrix(ncol = length(group.sizes),
+  nrow = length(group.sizes), rep(1/length(group.sizes),
+  length(group.sizes)^2)))
 
 \method{print}{simOutbreak}(x, ...)
 
@@ -27,9 +29,9 @@ simOutbreak(R0, infec.curve, n.hosts = 200, duration = 50,
   vertex.col = "gold", edge.col.pal = NULL, annot = c("dist", "n.gen"),
   sep = "/", ...)
 
-\method{plot}{simOutbreak}(x, y = NULL, edge.col = "black",
-  col.edge.by = "dist", vertex.col = "gold", edge.col.pal = NULL,
-  annot = c("dist", "n.gen"), sep = "/", ...)
+plot.simOutbreak(x, y = NULL, edge.col = "black", col.edge.by = "dist",
+  vertex.col = "gold", edge.col.pal = NULL, annot = c("dist", "n.gen"),
+  sep = "/", ...)
 }
 \arguments{
 \item{R0}{the basic reproduction number; to use several groups, provide a
@@ -58,9 +60,6 @@ step.}
 \item{diverg.import}{the number of time steps to the MRCA of all imported
 cases.}
 
-\item{group.freq}{the frequency of the different groups; to use several
-groups, provide a vector with several values.}
-
 \item{spatial}{a logical indicating if a spatial model should be used.}
 
 \item{disp}{the magnitude of dispersal (standard deviation of a normal
@@ -74,6 +73,13 @@ infections.}
 
 \item{plot}{a logical indicating whether an animated plot of the outbreak
 should be displayed; only available with the spatial model.}
+
+\item{group.sizes}{the sizes of the different groups; to use several
+groups, provide a vector with several values. The sum of the group sizes must
+equal the number of hosts (n.hosts).}
+
+\item{trans.mat}{a matrix of probabilities of transmission between the specified groups,
+the rows of this matrix must sum to 1.}
 
 \item{x,object}{\code{simOutbreak} objects.}
 

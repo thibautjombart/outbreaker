@@ -885,7 +885,7 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
   gsl_ran_dirichlet(rng,dat->num_of_groups,toMoveMult,moved);
   
   for(j=0;j<dat->num_of_groups;j++){
-     write_mat_double(tempPar->trans_mat_probs,i,j,moved[j]);
+     tempPar->trans_mat_probs->rows[i]->values[j] = moved[j];
      movedMult[j] = moved[j]*vec_double_i(mcmcPar->tmat_mult,i);
   }
 
@@ -930,15 +930,15 @@ void move_tmat(param *currentPar, param *tempPar, data *dat, mcmc_param *mcmcPar
   if(logRatio >= 0){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
 	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
-	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
+	mcmcPar->n_accept_trans_mat->values[i] = temp + 1;
    }else if(log(gsl_rng_uniform(rng)) <= logRatio){
 	copy_mat_double(tempPar->trans_mat_probs,currentPar->trans_mat_probs);
-	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);
-	write_vec_int(mcmcPar->n_accept_trans_mat,i,temp+1);
+	temp = vec_int_i(mcmcPar->n_accept_trans_mat,i);	
+	mcmcPar->n_accept_trans_mat->values[i] = temp + 1;
    } else {
 	copy_mat_double(currentPar->trans_mat_probs, tempPar->trans_mat_probs);
 	temp = vec_int_i(mcmcPar->n_reject_trans_mat,i);
-	write_vec_int(mcmcPar->n_reject_trans_mat,i,temp+1);
+	mcmcPar->n_reject_trans_mat->values[i] = temp + 1;
    }
 
 }/*function end */

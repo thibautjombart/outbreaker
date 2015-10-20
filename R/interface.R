@@ -43,6 +43,8 @@
 #' (mu2).
 #' @param spa.model an integer indicating the spatial model to be used. 0: no
 #' spatial model (default). 1: exponential kernel (under development).
+#' @param grp.model an integer indicator whether group data should be used in the model
+#' 0: no group data (default), 1: group data included.
 #' @param w.dens a vector of numeric values indicating the generation time
 #' distribution, reflecting the infectious potential of a case t=0, 1, 2, ...
 #' time steps after infection. By convention, w.dens[1]=0, meaning that an
@@ -119,6 +121,15 @@
 #' @param n.cores an integer indicating the number of cores to be used for
 #' parallelized computations; if NULL (default value), then up to 6 cores are
 #' used, depending on availability.
+#' @param init.Tmat a matrix of the initial values to use for the matrix of transmission probabilities
+#' between groups
+#' @param tmat.prior.mult a multiplier for the dirichlet concentration parameter in the prior.
+#' Larger values should be used when prior knowledge suggests that the transmission probabilities between
+#' groups are equal (equivalent to no group effect). Smaller values encourage more unequal transmission 
+#' probabilities.
+#' @param group.vec a vector of the sizes of each group
+#' @param move.Tmat an integer specifying whether the initial transmission probability should be moved
+#' 0: no, 1: yes (default)
 #' @return Both procedures return a list with the following components:
 #' \itemize{ \item chains: a data.frame containing MCMC outputs (which are also
 #' stored in the file indicated in \code{res.file.name}).
@@ -608,7 +619,7 @@ outbreaker.parallel <- function(n.runs, parallel=TRUE, n.cores=NULL,
                                 find.import.n=50,
                                 pi.prior1=10, pi.prior2=1, spa1.prior=1,
                                 move.mut=TRUE, move.ances=TRUE, move.kappa=TRUE,
-                                move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE
+                                move.Tinf=TRUE, move.pi=TRUE, move.spa=TRUE, move.Tmat=TRUE,
                                 outlier.threshold = 5, max.kappa=10,
                                 quiet=TRUE, res.file.name="chains.txt", tune.file.name="tuning.txt", seed=NULL,init.Tmat=NULL,tmat.prior.mult=30){
 

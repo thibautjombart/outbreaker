@@ -328,15 +328,15 @@ bool tune_any = FALSE;
 		paccept = (double) vec_int_i(in->n_accept_trans_mat,i)/ (double) (vec_int_i(in->n_accept_trans_mat,i) + vec_int_i(in->n_reject_trans_mat,i));
 		if(paccept<0.25){
 			temp = vec_double_i(in->tmat_mult,i);
-			write_vec_double(in->tmat_mult,i,temp*1.25);
-			write_vec_int(in->n_accept_trans_mat,i,1);
-			write_vec_int(in->n_reject_trans_mat,i,0);
+			in->tmat_mult->values[i] = temp*1.25;
+			in->n_accept_trans_mat->values[i] = 1;
+			in->n_reject_trans_mat->values[i] = 0;
 			tuned[i] = 1;
 		} else if (paccept>0.5) {
 			temp = vec_double_i(in->tmat_mult,i);
-			write_vec_double(in->tmat_mult,i,temp/1.25);
-			write_vec_int(in->n_accept_trans_mat,i,1);
-			write_vec_int(in->n_reject_trans_mat,i,0);
+			in->tmat_mult->values[i] = temp/1.25;
+			in->n_accept_trans_mat->values[i] = 1;
+			in->n_reject_trans_mat->values[i] = 0;
 			tuned[i] = 1;
 		} else {
 			tuned[i] = 0;

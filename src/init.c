@@ -152,7 +152,8 @@ void init_param(param *par, data *dat,  gentime *gen, int *ances, int *init_kapp
     /* read in probs mat */
     int j=0,k=0,x=0;
     for(k=0;k<(l*l);k++){
-			write_mat_double(par->trans_mat_probs,x,j,initTmat[k]);
+		par->trans_mat_probs->rows[j]->values[x] = initTmat[k];
+		//write_mat_double(par->trans_mat_probs,x,j,initTmat[k]);
 		x++;
 		if(x % l == 0	){x=0;j++;}
 		
@@ -185,9 +186,9 @@ void init_mcmc_param(mcmc_param *in, param *par, data *dat, bool move_mut, int *
     in->n_accept_kappa = in->n_move_kappa;
     in->n_reject_kappa = 0;
     for(i=0;i<dat->num_of_groups;i++){
-	write_vec_int(in->n_accept_trans_mat,i,1);
-	write_vec_int(in->n_reject_trans_mat,i,0);
-	write_vec_double(in->tmat_mult,i,5.0);
+	in->n_accept_trans_mat->values[i] = 1;
+	in->n_reject_trans_mat->values[i] = 1;
+	in->tmat_mult->values[i] = 5.0;
     }
 
 

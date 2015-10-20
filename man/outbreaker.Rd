@@ -6,29 +6,31 @@
 \title{Outbreaker: disease outbreak reconstruction using genetic data}
 \usage{
 outbreaker(dna = NULL, dates, idx.dna = NULL, mut.model = 1,
-  spa.model = 0, w.dens, f.dens = w.dens, dist.mat = NULL,
-  init.tree = c("seqTrack", "random", "star"), init.kappa = NULL,
-  init.mu1 = NULL, init.mu2 = init.mu1, init.spa1 = NULL,
-  n.iter = 1e+05, sample.every = 500, tune.every = 500, burnin = 20000,
-  import.method = c("genetic", "full", "none"), find.import.n = 50,
-  pi.prior1 = 10, pi.prior2 = 1, spa1.prior = 1, move.mut = TRUE,
-  move.ances = TRUE, move.kappa = TRUE, move.Tinf = TRUE,
-  move.pi = TRUE, move.spa = TRUE, outlier.threshold = 5,
-  max.kappa = 10, quiet = TRUE, res.file.name = "chains.txt",
-  tune.file.name = "tuning.txt", seed = NULL)
-
-outbreaker.parallel(n.runs, parallel = TRUE, n.cores = NULL, dna = NULL,
-  dates, idx.dna = NULL, mut.model = 1, spa.model = 0, w.dens,
-  f.dens = w.dens, dist.mat = NULL, init.tree = c("seqTrack", "random",
-  "star"), init.kappa = NULL, init.mu1 = NULL, init.mu2 = init.mu1,
+  spa.model = 0, grp.model = 0, w.dens, f.dens = w.dens,
+  dist.mat = NULL, init.tree = c("seqTrack", "random", "star"),
+  init.kappa = NULL, init.mu1 = NULL, init.mu2 = init.mu1,
   init.spa1 = NULL, n.iter = 1e+05, sample.every = 500,
   tune.every = 500, burnin = 20000, import.method = c("genetic", "full",
   "none"), find.import.n = 50, pi.prior1 = 10, pi.prior2 = 1,
   spa1.prior = 1, move.mut = TRUE, move.ances = TRUE, move.kappa = TRUE,
-  move.Tinf = TRUE, move.pi = TRUE, move.spa = TRUE,
+  move.Tinf = TRUE, move.pi = TRUE, move.spa = TRUE, move.Tmat = TRUE,
   outlier.threshold = 5, max.kappa = 10, quiet = TRUE,
   res.file.name = "chains.txt", tune.file.name = "tuning.txt",
-  seed = NULL)
+  seed = NULL, group.vec = NULL, init.Tmat = NULL, tmat.prior.mult = 15)
+
+outbreaker.parallel(n.runs, parallel = TRUE, n.cores = NULL, dna = NULL,
+  dates, idx.dna = NULL, mut.model = 1, spa.model = 0, grp.model = 0,
+  w.dens, f.dens = w.dens, dist.mat = NULL, init.tree = c("seqTrack",
+  "random", "star"), init.kappa = NULL, init.mu1 = NULL,
+  init.mu2 = init.mu1, init.spa1 = NULL, n.iter = 1e+05,
+  sample.every = 500, tune.every = 500, burnin = 20000,
+  import.method = c("genetic", "full", "none"), find.import.n = 50,
+  pi.prior1 = 10, pi.prior2 = 1, spa1.prior = 1, move.mut = TRUE,
+  move.ances = TRUE, move.kappa = TRUE, move.Tinf = TRUE,
+  move.pi = TRUE, move.spa = TRUE, move.Tmat = TRUE,
+  outlier.threshold = 5, max.kappa = 10, quiet = TRUE,
+  res.file.name = "chains.txt", tune.file.name = "tuning.txt",
+  seed = NULL, init.Tmat = NULL, tmat.prior.mult = 30)
 }
 \arguments{
 \item{dna}{the DNA sequences in \code{DNAbin} format (see
@@ -50,6 +52,9 @@ one single mutation rate; 2: two rates, transitions (mu1) / transversions
 
 \item{spa.model}{an integer indicating the spatial model to be used. 0: no
 spatial model (default). 1: exponential kernel (under development).}
+
+\item{grp.model}{an integer indicator whether group data should be used in the model
+0: no group data (default), 1: group data included.}
 
 \item{w.dens}{a vector of numeric values indicating the generation time
 distribution, reflecting the infectious potential of a case t=0, 1, 2, ...
@@ -124,6 +129,9 @@ should be estimated ('moved' in the MCMC), or not, all defaulting to TRUE.
 indicating for which cases different components should be moved during the
 MCMC.}
 
+\item{move.Tmat}{an integer specifying whether the initial transmission probability should be moved
+0: no, 1: yes (default)}
+
 \item{outlier.threshold}{a numeric value indicating the threshold for
 detecting low likelihood values corresponding to imported cases. Outliers
 have a likelihood \code{outlier.threshold} smaller than the average.}
@@ -141,6 +149,16 @@ to store MCMC outputs.}
 used to store MCMC tuning outputs.}
 
 \item{seed}{an integer used to set the random seed of the C procedures.}
+
+\item{group.vec}{a vector of the sizes of each group}
+
+\item{init.Tmat}{a matrix of the initial values to use for the matrix of transmission probabilities
+between groups}
+
+\item{tmat.prior.mult}{a multiplier for the dirichlet concentration parameter in the prior.
+Larger values should be used when prior knowledge suggests that the transmission probabilities between
+groups are equal (equivalent to no group effect). Smaller values encourage more unequal transmission
+probabilities.}
 
 \item{n.runs}{an integer indicating the number of independent chains to run,
 either in parallel (if \code{parallel} is used), or serially (otherwise).}
