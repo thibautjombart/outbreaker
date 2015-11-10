@@ -199,7 +199,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
 	if(sum(trans.mat[i,]) != 1) stop("rows of transmission matrix do not sum to 1")
     }
     ## host.group <- sample(1:K, size=n.hosts, prob=group.freq, replace=TRUE)
-    R0 <- rep(R0, length=K) # recycle R0
+    R0 <- rep(R0, length=l) # recycle R0
 
     ## normalize gen.time
     infec.curve <- infec.curve/sum(infec.curve)
@@ -350,7 +350,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         }
 
         ## temporal (spatial) force of infection * R0
-		indivGroups <- res$group[res$id]
+		    indivGroups <- res$group[res$id]
         indivForce <- indivForce * R0[indivGroups]
 
         ## global force of infection (R0 \sum_j I_t^j / N)
@@ -440,15 +440,15 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
             }
 
            ## group of the imported cases
-		        if(imp.case.group == "assign"){
+		        
               ##find group frequencies in population
 		          freqs <- group.sizes/n.hosts
 		          ##assign groups to imported cases based on relative group frequencies in population
-		          res$group <- c(res$group, sample(1:l,size=nbImpCases,replace=TRUE, prob=freqs))		
+		          res$group <- c(res$group, sample.int(n=l,size=nbImpCases,replace=TRUE, prob=freqs))		
               ## dna sequences of the new infections
               newSeq <- t(sapply(1:nbImpCases, function(i) seq.dupli(EVE, diverg.import)))
               res$dna <- rbind(res$dna, newSeq)
-          }
+          
         }
 
         ## set recovered status ##
