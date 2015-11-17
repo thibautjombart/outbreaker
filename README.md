@@ -7,8 +7,7 @@ Welcome to the project page of *outbreaker*!
 This page is dedicated to the development of the R package *outbreaker*.
 Whenever possible, it is recommended to use the development version of the package rather than the older CRAN version. The devel version (at least the master branch) is meant to be as functional as the CRAN version, but integrates the latest new features and bug fixes.
 
-For documentation and tutorials, see *The R-epi-project*:
-https://sites.google.com/site/therepiproject/r-pac/outbreaker
+For documentation and tutorials, see [The R-epi-project](https://sites.google.com/site/therepiproject/r-pac/outbreaker).
 
 
 Installing *outbreaker*
