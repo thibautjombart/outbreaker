@@ -18,7 +18,7 @@ To install the development version from github (the package *devtools is require
 library(devtools)
 install_github("thibautjombart/outbreaker")
 ```
-Note that on Windows, a toolkit needs ([devtools](https://cran.r-project.org/bin/windows/Rtools/)) to be installed separately for *devtools* to work. On every system, [*GNU scientific library*](http://www.gnu.org/software/gsl/) also needs to be installed for *outbreaker* to be compiled. 
+Note that on Windows, a toolkit ([Rtools](https://cran.r-project.org/bin/windows/Rtools/)) needs to be installed separately for *devtools* to work. On every system, [*GNU scientific library*](http://www.gnu.org/software/gsl/) also needs to be installed for *outbreaker* to be compiled. 
 
 Once installed, the package can be loaded using:
 
