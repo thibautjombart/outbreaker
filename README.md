@@ -10,7 +10,7 @@ Whenever possible, it is recommended to use the development version of the packa
 For documentation and tutorials, see [The R-epi-project](https://sites.google.com/site/therepiproject/r-pac/outbreaker).
 
 
-Installing *outbreaker*
+Installing *outbreaker* devel
 -------------
 To install the development version from github (the package *devtools is required*):
 
@@ -18,14 +18,9 @@ To install the development version from github (the package *devtools is require
 library(devtools)
 install_github("thibautjombart/outbreaker")
 ```
+Note that on Windows, a toolkit needs ([devtools](https://cran.r-project.org/bin/windows/Rtools/)) to be installed separately for *devtools* to work. On every system, [*GNU scientific library*](http://www.gnu.org/software/gsl/) also needs to be installed for *outbreaker* to be compiled. 
 
-The stable version can be installed from CRAN using:
-
-```r
-install.packages("outbreaker")
-```
-
-Then, to load the package, use:
+Once installed, the package can be loaded using:
 
 ```r
 library("outbreaker")
