@@ -25,3 +25,9 @@ Once installed, the package can be loaded using:
 ```r
 library("outbreaker")
 ```
+
+Asking a question
+------------------
+- general questions can be asked on the [R-epi forum](http://groups.google.com/forum/#!forum/r-epi)
+- for bug reports, feature requests, contributions, use github's [issue system](https://github.com/thibautjombart/outbreaker/issues)
+
