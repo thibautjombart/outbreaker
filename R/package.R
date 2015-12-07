@@ -16,7 +16,7 @@
 #'
 #' @importFrom graphics plot barplot lines mtext matplot legend
 #'
-#' @importFrom grDevices colorRampPalette, grey
+#' @importFrom grDevices colorRampPalette grey
 #'
 #' @importFrom graphics arrows boxplot points text
 #'
