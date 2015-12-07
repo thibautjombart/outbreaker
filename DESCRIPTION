@@ -10,3 +10,4 @@ Imports: utils, graphics, ape, igraph, adegenet
 URL: http://sites.google.com/site/therepiproject/r-pac/outbreaker
 Description: Bayesian reconstruction of disease outbreaks using epidemiological and genetic information.
 License: GPL (>=2)
+SystemRequirements: gsl (>= 2.0)
