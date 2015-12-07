@@ -132,7 +132,7 @@ void free_data(data *in);
 
 void print_data(data *in);
 
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations);
+data * Rinput2data(char ** DNAbinInput, int *Tcollec, int *n,int *nSeq, int *length, int *idxCasesInDna, int *locations);
 
 
 

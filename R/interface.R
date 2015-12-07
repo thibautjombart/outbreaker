@@ -284,7 +284,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
     ## HANDLE DNA / CHARACTER DATA
     if(inherits(dna, "DNAbin") && !is.matrix(dna)) dna <- as.matrix(dna)
-    if(!inherits(dna, "DNAbin") || !(is.matrix(dna) && mode(dna)=="character")) stop("dna must be a DNAbin object or a character matrix.")
+    if(!inherits(dna, "DNAbin") && !(is.matrix(dna) && mode(dna)=="character")) stop("dna must be a DNAbin object or a character matrix.")
     if(is.character(dates)) stop("dates are characters; they must be integers or dates with POSIXct format (see ?as.POSIXct)")
     if(is.character(init.tree)) {
         init.tree <- match.arg(init.tree)

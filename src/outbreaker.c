@@ -54,8 +54,8 @@ void R_outbreaker(char **DNAinput, int *Tcollec, int *n, int *nSeq, int *length,
 
     /* CONVERT DATA */
     dat = Rinput2data(DNAinput, Tcollec, n, nSeq, length, idxCasesInDna, locations);
-    /* Rprintf("\n>>> Data <<<\n"); */
-    /* print_data(dat); */
+    Rprintf("\n>>> Data <<<\n");
+    print_data(dat);
 
 
     /* /\* GET TIME SPAN *\/ */

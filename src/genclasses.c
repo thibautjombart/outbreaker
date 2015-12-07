@@ -191,15 +191,15 @@ list_dnaseq * DNA2list_dnaseq(char **in, long int *n, long int *length){
     list_dnaseq *out = alloc_list_dnaseq(*n,*length);
 
     /* FILL IN THE OUTPUT */
-    for(i=0;i<*n;i++){
-	for(j=0;j<*length;j++){
-	    out->list[i]->seq[j] = in[count++][1];
+    for(j=0;j<*length;j++){
+      for(i=0;i<*n;i++){
+	    out->list[i]->seq[j] = in[count++][0];
 	}
     }
 
-    printf("\nlist_dnaseq in C:\n");
-    print_list_dnaseq(out);
-    printf("\n");
+    /* Rprintf("\nlist_dnaseq in C:\n"); */
+    /* print_list_dnaseq(out); */
+    /* Rprintf("\n"); */
 
     /* RETURN */
     return out;

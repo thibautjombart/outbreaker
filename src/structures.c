@@ -68,7 +68,7 @@ void print_data(data *in){
 
 
 /* Create a data object using inputs from R */
-data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
+data * Rinput2data(char ** DNAinput, int *Tcollec, int *n,
 		   int *nSeq, int *length, int *idxCasesInDna, int *locations){
     int i, j, count=0;
     data * out = alloc_data(*n, *nSeq, *length);
@@ -92,9 +92,9 @@ data * Rinput2data(unsigned char * DNAbinInput, int *Tcollec, int *n,
     /* FILL IN DNA DATA */
     /* dna sequences */
     /* avoid using DNAbin2list_dnaseq here as it re-allocates memory */
-    for(i=0;i<*nSeq;i++){
-	for(j=0;j<*length;j++){
-	    out->dna->list[i]->seq[j] = DNAbin2char(DNAbinInput[count++]);
+    for(j=0;j<*length;j++){
+      for(i=0;i<*nSeq;i++){
+	    out->dna->list[i]->seq[j] = DNAinput[count++][0];
 	}
   }
 
