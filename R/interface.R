@@ -282,8 +282,9 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
         init.gamma <- 1
     }
 
-    if(!inherits(dna, "DNAbin")) stop("dna is not a DNAbin object.")
-    if(!is.matrix(dna)) dna <- as.matrix(dna)
+    ## HANDLE DNA / CHARACTER DATA
+    if(inherits(dna, "DNAbin") && !is.matrix(dna)) dna <- as.matrix(dna)
+    if(!inherits(dna, "DNAbin") || !(is.matrix(dna) && mode(dna)=="character")) stop("dna must be a DNAbin object or a character matrix.")
     if(is.character(dates)) stop("dates are characters; they must be integers or dates with POSIXct format (see ?as.POSIXct)")
     if(is.character(init.tree)) {
         init.tree <- match.arg(init.tree)
@@ -305,7 +306,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     n.seq <- as.integer(nrow(dna))
     n.ind <- as.integer(length(dates))
     n.nucl <- as.integer(ncol(dna))
-    dnaraw <- unlist(as.list(dna),use.names=FALSE)
+    dnaraw <- unlist(as.list(as.character(dna)),use.names=FALSE)
     ## if(n.ind != length(dates)) stop(paste("dna and dates have different number of individuals -",n.ind,"versus",length(dates)))
 
     ## handle dates ##
@@ -435,9 +436,15 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     diag(canBeAnces) <- FALSE
 
     if(is.character(init.tree)){
-        ## check init
+        ## check no missing sequences for seqTrack
         if(init.tree=="seqTrack" && !all(1:n.ind %in% idx.dna)) {
             warning("Can't use seqTrack initialization with missing DNA sequences - using a star-like tree")
+            init.tree <- "star"
+        }
+
+        ## check 'dna' is DNAbin for seqTrack
+        if(init.tree=="seqTrack" && !inherits(dna,"DNAbin")) {
+            warning("Can't use seqTrack initialization with character (non-DNAbin) sequences - using a star-like tree")
             init.tree <- "star"
         }
 

@@ -17,7 +17,7 @@
   ======================
 */
 
-void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, int *length, 
+void R_outbreaker(char **DNAinput, int *Tcollec, int *n, int *nSeq, int *length, 
 		  int *idxCasesInDna, int *mutModel, double *gentimeDens, int *wTrunc, 
 		  double *colltimeDens, int *fTrunc,
 		  double *distMat, int *locations, int *spaModel,
@@ -53,7 +53,7 @@ void R_outbreaker(unsigned char *DNAbinInput, int *Tcollec, int *n, int *nSeq, i
 
 
     /* CONVERT DATA */
-    dat = Rinput2data(DNAbinInput, Tcollec, n, nSeq, length, idxCasesInDna, locations);
+    dat = Rinput2data(DNAinput, Tcollec, n, nSeq, length, idxCasesInDna, locations);
     /* Rprintf("\n>>> Data <<<\n"); */
     /* print_data(dat); */
 

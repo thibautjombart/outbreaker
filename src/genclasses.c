@@ -183,6 +183,32 @@ list_dnaseq * DNAbin2list_dnaseq(unsigned char *in, long int *n, long int *lengt
 
 
 
+/* convert vector of characters to list_dnaseq */
+list_dnaseq * DNA2list_dnaseq(char **in, long int *n, long int *length){
+    long int i, j, count=0;
+
+    /* ALLOC OUTPUT */
+    list_dnaseq *out = alloc_list_dnaseq(*n,*length);
+
+    /* FILL IN THE OUTPUT */
+    for(i=0;i<*n;i++){
+	for(j=0;j<*length;j++){
+	    out->list[i]->seq[j] = in[count++][1];
+	}
+    }
+
+    printf("\nlist_dnaseq in C:\n");
+    print_list_dnaseq(out);
+    printf("\n");
+
+    /* RETURN */
+    return out;
+}
+
+
+
+
+
 /* copy a dnaseq object */
 void copy_dnaseq(dnaseq *in, dnaseq *out){
     if(out->length!=in->length){
