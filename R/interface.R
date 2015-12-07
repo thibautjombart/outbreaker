@@ -31,27 +31,35 @@
 #' @param dna the DNA sequences in \code{DNAbin} format (see
 #' \code{\link[ape]{read.dna}} in the ape package); this can be imported from a
 #' fasta file (extension .fa, .fas, or .fasta) using \code{adegenet}'s function
-#' \link[adegenet]{fasta2DNAbin}.
+#' \link[adegenet]{fasta2DNAbin}; alternatively, a matrix of single characters strings.
+#'
 #' @param dates a vector indicating the collection dates, provided either as
 #' integer numbers or in a usual date format such as \code{Date} or
 #' \code{POSIXct} format. By convention, zero will indicate the oldest date.
+#'
 #' @param idx.dna an optional integer vector indicating to which case each dna
 #' sequence in \code{dna} corresponds. Not required if each case has a
 #' sequence, and the order of the sequences matches that of the cases.
+#'
 #' @param mut.model an integer indicating the mutational model to be used; 1:
 #' one single mutation rate; 2: two rates, transitions (mu1) / transversions
 #' (mu2).
+#'
 #' @param spa.model an integer indicating the spatial model to be used. 0: no
 #' spatial model (default). 1: exponential kernel (under development).
+#'
 #' @param w.dens a vector of numeric values indicating the generation time
 #' distribution, reflecting the infectious potential of a case t=0, 1, 2, ...
 #' time steps after infection. By convention, w.dens[1]=0, meaning that an
 #' newly infected patient cannot be instantaneously infectious. If not
 #' standardized, this distribution is rescaled to sum to 1.
+#'
 #' @param f.dens similar to \code{w.dens}, except that this is the distribution
 #' of the colonization time, i.e. time interval during which the pathogen can
 #' be sampled from the patient.
+#'
 #' @param dist.mat a matrix of pairwise spatial distances between the cases.
+#'
 #' @param init.tree the tree used to initialize the MCMC. Can be either a
 #' character string indicating how this tree should be computed, or a vector of
 #' integers corresponding to the tree itself, where the i-th value corresponds
@@ -60,65 +68,88 @@
 #' seqTrack output as initialize tree), "random" (ancestor randomly selected
 #' from preceding cases), and "star" (all cases coalesce to the first case).
 #' Note that for SeqTrack, all cases should have been sequenced.
+#'
 #' @param init.kappa as \code{init.tree}, but values indicate the number of
 #' generations between each case and its most recent sampled ancestor.
+#'
 #' @param n.iter an integer indicating the number of iterations in the MCMC,
 #' including the burnin period; defaults to \code{100,000}.
+#'
 #' @param sample.every an integer indicating the frequency at which to sample
 #' from the MCMC, defaulting to 500 (i.e., output to file every 500
 #' iterations).
+#'
 #' @param tune.every an integer indicating the frequency at which proposal
 #' distributions are tuned, defaulting to 500 (i.e., tune proposal distribution
 #' every 500 iterations).
+#'
 #' @param burnin an integer indicating the number of iterations for the burnin
 #' period, after which the chains are supposed to have mixed; estimated values
 #' of parameter are only relevant after the burnin period. Used only when
 #' imported cases are automatically detected.
+#'
 #' @param import.method a character string indicating which method to use for
 #' detecting imported cases; available choices are 'gen' (based on genetic
 #' likelihood), 'full' (based on full likelihood), and 'none' (no imported case
 #' detection).
+#'
 #' @param find.import.n an integer indicating how many chains should be used to
 #' determine imported cases; note that this corresponds to chains that are
 #' output after the burnin, so that a total of (burnin +
 #' output.every*find.import.n) chains will be used in the prior run to
 #' determine imported cases. Defaults to \code{50}.
+#'
 #' @param pi.prior1,pi.prior2 two numeric values being the parameters of the
 #' Beta distribution used as a prior for \eqn{\pi}. This prior is Beta(10,1) by
 #' default, indicating that a majority of cases are likely to have been
 #' observed. Use Beta(1,1) for a flat prior.
+#'
 #' @param init.mu1,init.mu2 initial values for the mutation rates (mu1:
 #' transitions; mu2: transversions).
+#'
 #' @param init.spa1 initial values of the spatial parameter.
+#'
 #' @param spa1.prior parameters of the prior distribution for the spatial
 #' parameters. In the spatial model 1, \code{spa1.prior} is the mean of an
 #' exponential distribution.
+#'
 #' @param move.mut,move.pi,move.spa logicals indicating whether the named items
 #' should be estimated ('moved' in the MCMC), or not, all defaulting to TRUE.
 #' \code{move.mut} handles both mutation rates.
+#'
 #' @param move.ances,move.kappa,move.Tinf vectors of logicals of length 'n'
 #' indicating for which cases different components should be moved during the
 #' MCMC.
+#'
 #' @param outlier.threshold a numeric value indicating the threshold for
 #' detecting low likelihood values corresponding to imported cases. Outliers
 #' have a likelihood \code{outlier.threshold} smaller than the average.
+#'
 #' @param max.kappa an integer indicating the maximum number of generations
 #' between a case and its most recent sampled ancestor; defaults to 10.
+#'
 #' @param quiet a logical indicating whether messages should be displayed on
 #' the screen.
+#'
 #' @param res.file.name a character string indicating the name of the file used
 #' to store MCMC outputs.
+#'
 #' @param tune.file.name a character string indicating the name of the file
 #' used to store MCMC tuning outputs.
+#'
 #' @param seed an integer used to set the random seed of the C procedures.
+#'
 #' @param n.runs an integer indicating the number of independent chains to run,
 #' either in parallel (if \code{parallel} is used), or serially (otherwise).
+#'
 #' @param parallel a logical indicating whether the package \code{parallel}
 #' should be used to run parallelized computations; by default, it is used if
 #' available.
+#'
 #' @param n.cores an integer indicating the number of cores to be used for
 #' parallelized computations; if NULL (default value), then up to 6 cores are
 #' used, depending on availability.
+#'
 #' @return Both procedures return a list with the following components:
 #' \itemize{ \item chains: a data.frame containing MCMC outputs (which are also
 #' stored in the file indicated in \code{res.file.name}).

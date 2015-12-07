@@ -34,7 +34,7 @@ outbreaker.parallel(n.runs, parallel = TRUE, n.cores = NULL, dna = NULL,
 \item{dna}{the DNA sequences in \code{DNAbin} format (see
 \code{\link[ape]{read.dna}} in the ape package); this can be imported from a
 fasta file (extension .fa, .fas, or .fasta) using \code{adegenet}'s function
-\link[adegenet]{fasta2DNAbin}.}
+\link[adegenet]{fasta2DNAbin}; alternatively, a matrix of single characters strings.}
 
 \item{dates}{a vector indicating the collection dates, provided either as
 integer numbers or in a usual date format such as \code{Date} or
