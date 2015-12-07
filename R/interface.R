@@ -285,6 +285,10 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
     ## HANDLE DNA / CHARACTER DATA
     if(inherits(dna, "DNAbin") && !is.matrix(dna)) dna <- as.matrix(dna)
     if(!inherits(dna, "DNAbin") && !(is.matrix(dna) && mode(dna)=="character")) stop("dna must be a DNAbin object or a character matrix.")
+    if(!inherits(dna, "DNAbin") && mut.model > 1L){
+        warning("Character sequences provided - forcing mutation model to 1 (Hamming)")
+        mut.model <- 1L
+    }
     if(is.character(dates)) stop("dates are characters; they must be integers or dates with POSIXct format (see ?as.POSIXct)")
     if(is.character(init.tree)) {
         init.tree <- match.arg(init.tree)
@@ -450,7 +454,7 @@ outbreaker <- function(dna=NULL, dates, idx.dna=NULL,
 
         ## seqTrack init
         if(init.tree=="seqTrack"){
-            D <- as.matrix(dist.dna(dna, model="TN93"))
+            D <- as.matrix(dist.dna(dna, model="raw"))
             D[!canBeAnces] <- 1e15
             ances <- apply(D,2,which.min)-1 # -1 for compatibility with C
             ances[dates==min(dates)] <- -1 # unknown ancestor

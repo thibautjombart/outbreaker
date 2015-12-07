@@ -92,6 +92,11 @@ bool is_atgc(char in){
     return FALSE;
 }
 
+bool is_typed(char in){
+    if(in!='-') return TRUE;
+    return FALSE;
+}
+
 
 int get_mutation1(dna_dist * in, int i, int j){
     return in->mutation1->rows[i]->values[j];
@@ -164,7 +169,7 @@ dna_dist * compute_dna_distances(list_dnaseq *in, int mut_model){
 	    for(j=i+1;j<N;j++){
 		/* for all pairs of nucleotides */
 		for(k=0;k<L;k++){
-		    if(is_atgc(in->list[i]->seq[k]) && is_atgc(in->list[j]->seq[k])){ /*if non-missing data*/
+		    if(is_typed(in->list[i]->seq[k]) && is_typed(in->list[j]->seq[k])){ /*if non-missing data*/
 			/* one more nucleotide was comparable */
 			out->nbcommon->rows[i]->values[j] = out->nbcommon->rows[i]->values[j] + 1;
 			if(in->list[i]->seq[k] != in->list[j]->seq[k]){
