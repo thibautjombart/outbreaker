@@ -12,9 +12,15 @@
 #'
 #' @import parallel
 #'
-#' @importFrom utils packageDescription
+#' @importFrom utils packageDescription read.table
 #'
 #' @importFrom graphics plot barplot lines mtext matplot legend
+#'
+#' @importFrom grDevices colorRampPalette, grey
+#'
+#' @importFrom graphics arrows boxplot points text
+#'
+#' @importFrom stats anova density dexp dist lm median rbinom rnorm rpois runif
 #'
 #' @import igraph
 #'
