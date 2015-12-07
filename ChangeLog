@@ -1,5 +1,8 @@
 			CHANGES IN OUTBREAKER VERSION 1.1-7
 NEW FEATURES
+	o in addition to DNA sequences, outbreaker can now use any other
+	sequence of characters, e.g. amino-acid sequences, or MLST data.
+
 	o an exponential tail summing to 1e-4 is now added to the
 	generation time distribution to cover the range of the outbreak;
 	this will avoid occasional issues of -Inf temporal log-likelihood

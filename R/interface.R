@@ -31,7 +31,8 @@
 #' @param dna the DNA sequences in \code{DNAbin} format (see
 #' \code{\link[ape]{read.dna}} in the ape package); this can be imported from a
 #' fasta file (extension .fa, .fas, or .fasta) using \code{adegenet}'s function
-#' \link[adegenet]{fasta2DNAbin}; alternatively, a matrix of single characters strings.
+#' \link[adegenet]{fasta2DNAbin}; alternatively, a matrix of single characters strings,
+#' in which case only the mutation model 1 is available.
 #'
 #' @param dates a vector indicating the collection dates, provided either as
 #' integer numbers or in a usual date format such as \code{Date} or
@@ -43,7 +44,8 @@
 #'
 #' @param mut.model an integer indicating the mutational model to be used; 1:
 #' one single mutation rate; 2: two rates, transitions (mu1) / transversions
-#' (mu2).
+#' (mu2); if 'dna' is a sequence of character strings (not a DNAbin object), only
+#' the model 1 is available.
 #'
 #' @param spa.model an integer indicating the spatial model to be used. 0: no
 #' spatial model (default). 1: exponential kernel (under development).
