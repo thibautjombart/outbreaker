@@ -502,7 +502,7 @@ s,@LIBS@,|#_!!_#|,g
 s,@build_alias@,|#_!!_#|,g
 s,@host_alias@,|#_!!_#|,g
 s,@target_alias@,|#_!!_#|,g
-s,@GSL_CONFIG@,|#_!!_#|/usr/local/bin/gsl-config,g
+s,@GSL_CONFIG@,|#_!!_#|/usr/bin/gsl-config,g
 s,@CC@,|#_!!_#|gcc,g
 s,@CFLAGS@,|#_!!_#|-UNDEBUG -Wall -pedantic -g -O0,g
 s,@LDFLAGS@,|#_!!_#|,g
@@ -510,8 +510,8 @@ s,@CPPFLAGS@,|#_!!_#|,g
 s,@ac_ct_CC@,|#_!!_#|gcc,g
 s,@EXEEXT@,|#_!!_#|,g
 s,@OBJEXT@,|#_!!_#|o,g
-s,@GSL_CFLAGS@,|#_!!_#|-I/usr/local/include,g
-s,@GSL_LIBS@,|#_!!_#|-L/usr/local/lib -lgsl -lgslcblas -lm,g
+s,@GSL_CFLAGS@,|#_!!_#|-I/usr/include,g
+s,@GSL_LIBS@,|#_!!_#|-L/usr/lib -lgsl -lgslcblas -lm,g
 s,@LIBOBJS@,|#_!!_#|,g
 s,@LTLIBOBJS@,|#_!!_#|,g
 :end

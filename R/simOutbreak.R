@@ -93,6 +93,8 @@ disperse <- function(xy, disp=.1, area.size=10){
 #' @param diverg.import the number of time steps to the MRCA of all imported
 #' cases.
 #' @param spatial a logical indicating if a spatial model should be used.
+#' @param stop.once.cleared a logical indicating if the simulation should stop
+#' when the global force of infection is close to zero (<10^-12); TRUE by default.
 #' @param disp the magnitude of dispersal (standard deviation of a normal
 #' distribution).
 #' @param area.size the size of the square area to be used for spatial
@@ -125,6 +127,7 @@ disperse <- function(xy, disp=.1, area.size=10){
 #' @param sep a character used to separate fields used to annotate the edges,
 #' whenever more than one type of information is used for annotation.
 #' @param \dots further arguments to be passed to other methods
+#'
 #' @return === simOutbreak class ===\cr \code{simOutbreak} objects are lists
 #' containing the following slots:\cr \itemize{ \item n: the number of cases in
 #' the outbreak\cr \item dna: DNA sequences in the DNAbin matrix format\cr
@@ -179,7 +182,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
                         seq.length=1e4, mu.transi=1e-4, mu.transv=mu.transi/2,
                         rate.import.case=0.01, diverg.import=10, group.freq=1,
                         spatial=FALSE, disp=0.1, area.size=10, reach=1,
-                        plot=spatial){
+                        plot=spatial, stop.once.cleared=TRUE){
 
     ## HANDLE ARGUMENTS ##
     ## handle group sizes
@@ -337,7 +340,7 @@ simOutbreak <- function(R0, infec.curve, n.hosts=200, duration=50,
         globForce <- sum(indivForce)/N
 
         ## stop if no ongoing infection in the population
-        if(globForce < 1e-12) break;
+        if(stop.once.cleared && (globForce < 1e-12)) break;
 
         ## compute proba of infection for each susceptible
         p <- 1-exp(-globForce)
