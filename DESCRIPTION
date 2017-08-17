@@ -1,13 +1,10 @@
 Package: outbreaker
 Version: 1.1-8
-Date: 2016-01-15
+Date: 2017-08-17
 Title: Bayesian Reconstruction of Disease Outbreaks by Combining Epidemiologic
     and Genomic Data
 Author: Thibaut Jombart <thibautjombart@gmail.com>, Anne Cori, Joel Hellewell
 Maintainer: Thibaut Jombart <thibautjombart@gmail.com>
-Suggests:
-    EpiEstim,
-    OutbreakTools
 Depends:
     R (>= 3.0.0),
     parallel
@@ -22,4 +19,4 @@ Description: Bayesian reconstruction of disease outbreaks using epidemiological
     and genetic information.
 License: GPL (>=2)
 SystemRequirements: gsl (>= 1.12)
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

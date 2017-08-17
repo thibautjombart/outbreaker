@@ -28,6 +28,6 @@
 #'
 #' @importFrom ape dist.dna as.DNAbin
 #'
-#' @useDynLib outbreaker
+#' @useDynLib outbreaker, .registration = TRUE
 #'
 NULL
